@@ -1,0 +1,26 @@
+{
+  "jhipsterApp": {
+    "department": {
+      "home": {
+        "title": "Departments",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Department",
+        "createOrEditLabel": "Criar ou editar Department",
+        "notFound": "Nenhum Department encontrado"
+      },
+      "created": "Um novo Department foi criado com o identificador {{ param }}",
+      "updated": "Um Department foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Department foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Department {{ id }}?"
+      },
+      "detail": {
+        "title": "Department"
+      },
+      "id": "Id",
+      "departmentName": "Department Name",
+      "location": "Location",
+      "employee": "Employee"
+    }
+  }
+}
