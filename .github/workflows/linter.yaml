@@ -1,0 +1,10 @@
+on: push
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+
+      - uses: github/super-linter/slim@4e51915f4a812abf59fed160bb14595c0a38a9e7 # v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
