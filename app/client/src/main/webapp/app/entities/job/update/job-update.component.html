@@ -8,10 +8,12 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
-          <label class="form-label" jhiTranslate="jhipsterApp.job.id" for="field_id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-        </div>
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" jhiTranslate="jhipsterApp.job.id" for="field_id">Id</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
 
         <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.job.jobTitle" for="field_jobTitle">Job Title</label>
@@ -39,7 +41,9 @@
             formControlName="tasks"
             [compareWith]="compareTask"
           >
-            <option [ngValue]="taskOption" *ngFor="let taskOption of tasksSharedCollection">{{ taskOption.title }}</option>
+            @for (taskOption of tasksSharedCollection; track $index) {
+              <option [ngValue]="taskOption">{{ taskOption.title }}</option>
+            }
           </select>
         </div>
 
@@ -54,7 +58,9 @@
             [compareWith]="compareEmployee"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="employeeOption" *ngFor="let employeeOption of employeesSharedCollection">{{ employeeOption.id }}</option>
+            @for (employeeOption of employeesSharedCollection; track $index) {
+              <option [ngValue]="employeeOption">{{ employeeOption.id }}</option>
+            }
           </select>
         </div>
       </div>

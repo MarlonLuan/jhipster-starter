@@ -8,10 +8,12 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
-          <label class="form-label" jhiTranslate="jhipsterApp.department.id" for="field_id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-        </div>
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" jhiTranslate="jhipsterApp.department.id" for="field_id">Id</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
 
         <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.department.departmentName" for="field_departmentName">Department Name</label>
@@ -23,18 +25,15 @@
             data-cy="departmentName"
             formControlName="departmentName"
           />
-          <div
-            *ngIf="
-              editForm.get('departmentName')!.invalid && (editForm.get('departmentName')!.dirty || editForm.get('departmentName')!.touched)
-            "
-          >
-            <small
-              class="form-text text-danger"
-              *ngIf="editForm.get('departmentName')?.errors?.required"
-              jhiTranslate="entity.validation.required"
-              >This field is required.</small
-            >
-          </div>
+          @if (
+            editForm.get('departmentName')!.invalid && (editForm.get('departmentName')!.dirty || editForm.get('departmentName')!.touched)
+          ) {
+            <div>
+              @if (editForm.get('departmentName')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
         </div>
 
         <div class="mb-3">
@@ -48,7 +47,9 @@
             [compareWith]="compareLocation"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="locationOption" *ngFor="let locationOption of locationsCollection">{{ locationOption.id }}</option>
+            @for (locationOption of locationsCollection; track $index) {
+              <option [ngValue]="locationOption">{{ locationOption.id }}</option>
+            }
           </select>
         </div>
       </div>
