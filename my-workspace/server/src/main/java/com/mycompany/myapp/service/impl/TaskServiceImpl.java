@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service Implementation for managing {@link Task}.
+ * Service Implementation for managing {@link com.mycompany.myapp.domain.Task}.
  */
 @Service
 @Transactional
 public class TaskServiceImpl implements TaskService {
 
-    private final Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
 
     private final TaskRepository taskRepository;
 

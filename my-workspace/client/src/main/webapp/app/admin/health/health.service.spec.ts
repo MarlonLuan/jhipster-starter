@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
-import { HealthService } from './health.service';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { HealthService } from './health.service';
 
 describe('HealthService Service', () => {
   let service: HealthService;
@@ -11,7 +12,7 @@ describe('HealthService Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
 
     service = TestBed.inject(HealthService);
