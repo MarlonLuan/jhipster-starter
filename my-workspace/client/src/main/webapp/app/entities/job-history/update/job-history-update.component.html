@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2 id="jhi-job-history-heading" data-cy="JobHistoryCreateUpdateHeading" jhiTranslate="jhipsterApp.jobHistory.home.createOrEditLabel">
         Create or edit a Job History
       </h2>
@@ -8,13 +8,15 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
-          <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.id" for="field_id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-        </div>
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="jhipsterApp.jobHistory.id">Id</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
 
-        <div class="row mb-3">
-          <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.startDate" for="field_startDate">Start Date</label>
+        <div class="mb-3">
+          <label class="form-label" for="field_startDate" jhiTranslate="jhipsterApp.jobHistory.startDate">Start Date</label>
           <div class="d-flex">
             <input
               id="field_startDate"
@@ -28,8 +30,8 @@
           </div>
         </div>
 
-        <div class="row mb-3">
-          <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.endDate" for="field_endDate">End Date</label>
+        <div class="mb-3">
+          <label class="form-label" for="field_endDate" jhiTranslate="jhipsterApp.jobHistory.endDate">End Date</label>
           <div class="d-flex">
             <input
               id="field_endDate"
@@ -43,24 +45,28 @@
           </div>
         </div>
 
-        <div class="row mb-3">
-          <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.language" for="field_language">Language</label>
+        <div class="mb-3">
+          <label class="form-label" for="field_language" jhiTranslate="jhipsterApp.jobHistory.language">Language</label>
           <select class="form-control" name="language" formControlName="language" id="field_language" data-cy="language">
             <option [ngValue]="null">{{ 'jhipsterApp.Language.null' | translate }}</option>
-            <option *ngFor="let language of languageValues" [value]="language">{{ 'jhipsterApp.Language.' + language | translate }}</option>
+            @for (language of languageValues; track $index) {
+              <option [value]="language">{{ 'jhipsterApp.Language.' + language | translate }}</option>
+            }
           </select>
         </div>
 
-        <div class="row mb-3">
-          <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.job" for="field_job">Job</label>
+        <div class="mb-3">
+          <label class="form-label" for="field_job" jhiTranslate="jhipsterApp.jobHistory.job">Job</label>
           <select class="form-control" id="field_job" data-cy="job" name="job" formControlName="job" [compareWith]="compareJob">
             <option [ngValue]="null"></option>
-            <option [ngValue]="jobOption" *ngFor="let jobOption of jobsSharedCollection">{{ jobOption.id }}</option>
+            @for (jobOption of jobsCollection; track $index) {
+              <option [ngValue]="jobOption">{{ jobOption.id }}</option>
+            }
           </select>
         </div>
 
-        <div class="row mb-3">
-          <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.department" for="field_department">Department</label>
+        <div class="mb-3">
+          <label class="form-label" for="field_department" jhiTranslate="jhipsterApp.jobHistory.department">Department</label>
           <select
             class="form-control"
             id="field_department"
@@ -70,14 +76,14 @@
             [compareWith]="compareDepartment"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="departmentOption" *ngFor="let departmentOption of departmentsSharedCollection">
-              {{ departmentOption.id }}
-            </option>
+            @for (departmentOption of departmentsCollection; track $index) {
+              <option [ngValue]="departmentOption">{{ departmentOption.id }}</option>
+            }
           </select>
         </div>
 
-        <div class="row mb-3">
-          <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.employee" for="field_employee">Employee</label>
+        <div class="mb-3">
+          <label class="form-label" for="field_employee" jhiTranslate="jhipsterApp.jobHistory.employee">Employee</label>
           <select
             class="form-control"
             id="field_employee"
@@ -87,7 +93,9 @@
             [compareWith]="compareEmployee"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="employeeOption" *ngFor="let employeeOption of employeesSharedCollection">{{ employeeOption.id }}</option>
+            @for (employeeOption of employeesCollection; track $index) {
+              <option [ngValue]="employeeOption">{{ employeeOption.id }}</option>
+            }
           </select>
         </div>
       </div>

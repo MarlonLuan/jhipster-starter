@@ -1,14 +1,15 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
 
 /**
- * Task entity.\n@author The JHipster team.
+ * Task entity.
+ * @author The JHipster team.
  */
 @Entity
 @Table(name = "task")
@@ -28,8 +29,8 @@ public class Task implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany(mappedBy = "tasks")
-    @JsonIgnoreProperties(value = { "tasks", "employee" }, allowSetters = true)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tasks")
+    @JsonIgnoreProperties(value = { "tasks", "employee", "jobHistory" }, allowSetters = true)
     private Set<Job> jobs = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -114,7 +115,7 @@ public class Task implements Serializable {
         if (!(o instanceof Task)) {
             return false;
         }
-        return id != null && id.equals(((Task) o).id);
+        return getId() != null && getId().equals(((Task) o).getId());
     }
 
     @Override
