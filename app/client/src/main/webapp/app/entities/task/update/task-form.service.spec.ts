@@ -23,7 +23,7 @@ describe('Task Form Service', () => {
             title: expect.any(Object),
             description: expect.any(Object),
             jobs: expect.any(Object),
-          })
+          }),
         );
       });
 
@@ -36,14 +36,13 @@ describe('Task Form Service', () => {
             title: expect.any(Object),
             description: expect.any(Object),
             jobs: expect.any(Object),
-          })
+          }),
         );
       });
     });
 
     describe('getTask', () => {
       it('should return NewTask for default Task initial value', () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createTaskFormGroup(sampleWithNewData);
 
         const task = service.getTask(formGroup) as any;
