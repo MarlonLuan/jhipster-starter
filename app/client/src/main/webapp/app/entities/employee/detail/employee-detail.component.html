@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    @if (employee) {
+    @if (employee()) {
       <div>
         <h2 data-cy="employeeDetailsHeading"><span jhiTranslate="jhipsterApp.employee.detail.title">Employee</span></h2>
 
@@ -13,53 +13,53 @@
         <dl class="row-md jh-entity-details">
           <dt><span jhiTranslate="jhipsterApp.employee.id">Id</span></dt>
           <dd>
-            <span>{{ employee.id }}</span>
+            <span>{{ employee()!.id }}</span>
           </dd>
           <dt>
-            <span jhiTranslate="jhipsterApp.employee.firstName" [ngbTooltip]="'jhipsterApp.employee.help.firstName' | translate"
+            <span [ngbTooltip]="'jhipsterApp.employee.help.firstName' | translate" jhiTranslate="jhipsterApp.employee.firstName"
               >First Name</span
             >
           </dt>
           <dd>
-            <span>{{ employee.firstName }}</span>
+            <span>{{ employee()!.firstName }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.employee.lastName">Last Name</span></dt>
           <dd>
-            <span>{{ employee.lastName }}</span>
+            <span>{{ employee()!.lastName }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.employee.email">Email</span></dt>
           <dd>
-            <span>{{ employee.email }}</span>
+            <span>{{ employee()!.email }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.employee.phoneNumber">Phone Number</span></dt>
           <dd>
-            <span>{{ employee.phoneNumber }}</span>
+            <span>{{ employee()!.phoneNumber }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.employee.hireDate">Hire Date</span></dt>
           <dd>
-            <span>{{ employee.hireDate | formatMediumDatetime }}</span>
+            <span>{{ employee()!.hireDate | formatMediumDatetime }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.employee.salary">Salary</span></dt>
           <dd>
-            <span>{{ employee.salary }}</span>
+            <span>{{ employee()!.salary }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.employee.commissionPct">Commission Pct</span></dt>
           <dd>
-            <span>{{ employee.commissionPct }}</span>
+            <span>{{ employee()!.commissionPct }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.employee.manager">Manager</span></dt>
           <dd>
-            @if (employee.manager) {
+            @if (employee()!.manager) {
               <div>
-                <a [routerLink]="['/employee', employee.manager.id, 'view']">{{ employee.manager.id }}</a>
+                <a [routerLink]="['/employee', employee()!.manager?.id, 'view']">{{ employee()!.manager?.id }}</a>
               </div>
             }
           </dd>
           <dt><span jhiTranslate="jhipsterApp.employee.department">Department</span></dt>
           <dd>
-            @if (employee.department) {
+            @if (employee()!.department) {
               <div>
-                <a [routerLink]="['/department', employee.department.id, 'view']">{{ employee.department.id }}</a>
+                <a [routerLink]="['/department', employee()!.department?.id, 'view']">{{ employee()!.department?.id }}</a>
               </div>
             }
           </dd>
@@ -69,7 +69,7 @@
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
-        <button type="button" [routerLink]="['/employee', employee.id, 'edit']" class="btn btn-primary">
+        <button type="button" [routerLink]="['/employee', employee()!.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
         </button>
       </div>
