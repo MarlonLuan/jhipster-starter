@@ -28,10 +28,10 @@ import tech.jhipster.web.util.ResponseUtil;
  * REST controller for managing {@link com.mycompany.myapp.domain.Region}.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/regions")
 public class RegionResource {
 
-    private final Logger log = LoggerFactory.getLogger(RegionResource.class);
+    private static final Logger log = LoggerFactory.getLogger(RegionResource.class);
 
     private static final String ENTITY_NAME = "region";
 
@@ -54,17 +54,16 @@ public class RegionResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new regionDTO, or with status {@code 400 (Bad Request)} if the region has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/regions")
+    @PostMapping("")
     public ResponseEntity<RegionDTO> createRegion(@RequestBody RegionDTO regionDTO) throws URISyntaxException {
         log.debug("REST request to save Region : {}", regionDTO);
         if (regionDTO.getId() != null) {
             throw new BadRequestAlertException("A new region cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        RegionDTO result = regionService.save(regionDTO);
-        return ResponseEntity
-            .created(new URI("/api/regions/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        regionDTO = regionService.save(regionDTO);
+        return ResponseEntity.created(new URI("/api/regions/" + regionDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, regionDTO.getId().toString()))
+            .body(regionDTO);
     }
 
     /**
@@ -77,7 +76,7 @@ public class RegionResource {
      * or with status {@code 500 (Internal Server Error)} if the regionDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/regions/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<RegionDTO> updateRegion(
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody RegionDTO regionDTO
@@ -94,11 +93,10 @@ public class RegionResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        RegionDTO result = regionService.update(regionDTO);
-        return ResponseEntity
-            .ok()
+        regionDTO = regionService.update(regionDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, regionDTO.getId().toString()))
-            .body(result);
+            .body(regionDTO);
     }
 
     /**
@@ -112,7 +110,7 @@ public class RegionResource {
      * or with status {@code 500 (Internal Server Error)} if the regionDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/regions/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<RegionDTO> partialUpdateRegion(
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody RegionDTO regionDTO
@@ -141,10 +139,18 @@ public class RegionResource {
      * {@code GET  /regions} : get all the regions.
      *
      * @param pageable the pagination information.
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of regions in body.
      */
-    @GetMapping("/regions")
-    public ResponseEntity<List<RegionDTO>> getAllRegions(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    @GetMapping("")
+    public ResponseEntity<List<RegionDTO>> getAllRegions(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(name = "filter", required = false) String filter
+    ) {
+        if ("country-is-null".equals(filter)) {
+            log.debug("REST request to get all Regions where country is null");
+            return new ResponseEntity<>(regionService.findAllWhereCountryIsNull(), HttpStatus.OK);
+        }
         log.debug("REST request to get a page of Regions");
         Page<RegionDTO> page = regionService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -157,8 +163,8 @@ public class RegionResource {
      * @param id the id of the regionDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the regionDTO, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/regions/{id}")
-    public ResponseEntity<RegionDTO> getRegion(@PathVariable UUID id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<RegionDTO> getRegion(@PathVariable("id") UUID id) {
         log.debug("REST request to get Region : {}", id);
         Optional<RegionDTO> regionDTO = regionService.findOne(id);
         return ResponseUtil.wrapOrNotFound(regionDTO);
@@ -170,12 +176,11 @@ public class RegionResource {
      * @param id the id of the regionDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/regions/{id}")
-    public ResponseEntity<Void> deleteRegion(@PathVariable UUID id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRegion(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Region : {}", id);
         regionService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
