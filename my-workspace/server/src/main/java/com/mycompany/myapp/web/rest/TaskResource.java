@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -28,7 +27,7 @@ import tech.jhipster.web.util.ResponseUtil;
  * REST controller for managing {@link com.mycompany.myapp.domain.Task}.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/tasks")
 public class TaskResource {
 
     private final Logger log = LoggerFactory.getLogger(TaskResource.class);
@@ -54,17 +53,16 @@ public class TaskResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new taskDTO, or with status {@code 400 (Bad Request)} if the task has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/tasks")
+    @PostMapping("")
     public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) throws URISyntaxException {
         log.debug("REST request to save Task : {}", taskDTO);
         if (taskDTO.getId() != null) {
             throw new BadRequestAlertException("A new task cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        TaskDTO result = taskService.save(taskDTO);
-        return ResponseEntity
-            .created(new URI("/api/tasks/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        taskDTO = taskService.save(taskDTO);
+        return ResponseEntity.created(new URI("/api/tasks/" + taskDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, taskDTO.getId().toString()))
+            .body(taskDTO);
     }
 
     /**
@@ -77,7 +75,7 @@ public class TaskResource {
      * or with status {@code 500 (Internal Server Error)} if the taskDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/tasks/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<TaskDTO> updateTask(@PathVariable(value = "id", required = false) final UUID id, @RequestBody TaskDTO taskDTO)
         throws URISyntaxException {
         log.debug("REST request to update Task : {}, {}", id, taskDTO);
@@ -92,11 +90,10 @@ public class TaskResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        TaskDTO result = taskService.update(taskDTO);
-        return ResponseEntity
-            .ok()
+        taskDTO = taskService.update(taskDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, taskDTO.getId().toString()))
-            .body(result);
+            .body(taskDTO);
     }
 
     /**
@@ -110,7 +107,7 @@ public class TaskResource {
      * or with status {@code 500 (Internal Server Error)} if the taskDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/tasks/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<TaskDTO> partialUpdateTask(
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody TaskDTO taskDTO
@@ -141,8 +138,8 @@ public class TaskResource {
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of tasks in body.
      */
-    @GetMapping("/tasks")
-    public ResponseEntity<List<TaskDTO>> getAllTasks(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    @GetMapping("")
+    public ResponseEntity<List<TaskDTO>> getAllTasks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Tasks");
         Page<TaskDTO> page = taskService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -155,8 +152,8 @@ public class TaskResource {
      * @param id the id of the taskDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the taskDTO, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/tasks/{id}")
-    public ResponseEntity<TaskDTO> getTask(@PathVariable UUID id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskDTO> getTask(@PathVariable("id") UUID id) {
         log.debug("REST request to get Task : {}", id);
         Optional<TaskDTO> taskDTO = taskService.findOne(id);
         return ResponseUtil.wrapOrNotFound(taskDTO);
@@ -168,12 +165,11 @@ public class TaskResource {
      * @param id the id of the taskDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/tasks/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Task : {}", id);
         taskService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
