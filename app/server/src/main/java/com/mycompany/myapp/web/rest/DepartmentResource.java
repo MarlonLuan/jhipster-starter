@@ -149,7 +149,7 @@ public class DepartmentResource {
     @GetMapping("")
     public ResponseEntity<List<DepartmentDTO>> getAllDepartments(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false) String filter
+        @RequestParam(name = "filter", required = false) String filter
     ) {
         if ("jobhistory-is-null".equals(filter)) {
             log.debug("REST request to get all Departments where jobHistory is null");
@@ -168,7 +168,7 @@ public class DepartmentResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the departmentDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<DepartmentDTO> getDepartment(@PathVariable UUID id) {
+    public ResponseEntity<DepartmentDTO> getDepartment(@PathVariable("id") UUID id) {
         log.debug("REST request to get Department : {}", id);
         Optional<DepartmentDTO> departmentDTO = departmentService.findOne(id);
         return ResponseUtil.wrapOrNotFound(departmentDTO);
@@ -181,7 +181,7 @@ public class DepartmentResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDepartment(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteDepartment(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Department : {}", id);
         departmentService.delete(id);
         return ResponseEntity
