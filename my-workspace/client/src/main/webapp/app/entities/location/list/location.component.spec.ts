@@ -18,8 +18,11 @@ describe('Location Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'location', component: LocationComponent }]), HttpClientTestingModule],
-      declarations: [LocationComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'location', component: LocationComponent }]),
+        HttpClientTestingModule,
+        LocationComponent,
+      ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -32,7 +35,7 @@ describe('Location Management Component', () => {
                 page: '1',
                 size: '1',
                 sort: 'id,desc',
-              })
+              }),
             ),
             snapshot: { queryParams: {} },
           },
@@ -53,8 +56,8 @@ describe('Location Management Component', () => {
         new HttpResponse({
           body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
           headers,
-        })
-      )
+        }),
+      ),
     );
   });
 
@@ -107,7 +110,7 @@ describe('Location Management Component', () => {
         queryParams: expect.objectContaining({
           sort: ['name,asc'],
         }),
-      })
+      }),
     );
   });
 });
