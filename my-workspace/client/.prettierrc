@@ -10,3 +10,13 @@ arrowParens: avoid
 
 # jsx and tsx rules:
 bracketSameLine: false
+
+plugins:
+  - prettier-plugin-packagejson
+  - prettier-plugin-java
+  
+# java rules:
+overrides:
+  - files: "*.java"
+    options:
+      tabWidth: 4
