@@ -1,9 +1,10 @@
 package com.mycompany.myapp.domain;
 
+import static com.mycompany.myapp.domain.CountryTestSamples.*;
+import static com.mycompany.myapp.domain.RegionTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mycompany.myapp.web.rest.TestUtil;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class RegionTest {
@@ -11,14 +12,28 @@ class RegionTest {
     @Test
     void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(Region.class);
-        Region region1 = new Region();
-        region1.setId(UUID.randomUUID());
+        Region region1 = getRegionSample1();
         Region region2 = new Region();
+        assertThat(region1).isNotEqualTo(region2);
+
         region2.setId(region1.getId());
         assertThat(region1).isEqualTo(region2);
-        region2.setId(UUID.randomUUID());
+
+        region2 = getRegionSample2();
         assertThat(region1).isNotEqualTo(region2);
-        region1.setId(null);
-        assertThat(region1).isNotEqualTo(region2);
+    }
+
+    @Test
+    void countryTest() {
+        Region region = getRegionRandomSampleGenerator();
+        Country countryBack = getCountryRandomSampleGenerator();
+
+        region.setCountry(countryBack);
+        assertThat(region.getCountry()).isEqualTo(countryBack);
+        assertThat(countryBack.getRegion()).isEqualTo(region);
+
+        region.country(null);
+        assertThat(region.getCountry()).isNull();
+        assertThat(countryBack.getRegion()).isNull();
     }
 }

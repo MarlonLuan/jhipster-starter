@@ -1,6 +1,7 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.RegionDTO;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,13 @@ public interface RegionService {
      * @return the list of entities.
      */
     Page<RegionDTO> findAll(Pageable pageable);
+
+    /**
+     * Get all the RegionDTO where Country is {@code null}.
+     *
+     * @return the {@link List} of entities.
+     */
+    List<RegionDTO> findAllWhereCountryIsNull();
 
     /**
      * Get the "id" region.

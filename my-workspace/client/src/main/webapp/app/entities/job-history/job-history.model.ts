@@ -8,7 +8,7 @@ export interface IJobHistory {
   id: string;
   startDate?: dayjs.Dayjs | null;
   endDate?: dayjs.Dayjs | null;
-  language?: Language | null;
+  language?: keyof typeof Language | null;
   job?: Pick<IJob, 'id'> | null;
   department?: Pick<IDepartment, 'id'> | null;
   employee?: Pick<IEmployee, 'id'> | null;

@@ -1,6 +1,7 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.CountryDTO;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,13 @@ public interface CountryService {
      * @return the list of entities.
      */
     Page<CountryDTO> findAll(Pageable pageable);
+
+    /**
+     * Get all the CountryDTO where Location is {@code null}.
+     *
+     * @return the {@link List} of entities.
+     */
+    List<CountryDTO> findAllWhereLocationIsNull();
 
     /**
      * Get the "id" country.
