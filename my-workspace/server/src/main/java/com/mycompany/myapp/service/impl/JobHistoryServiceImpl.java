@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service Implementation for managing {@link JobHistory}.
+ * Service Implementation for managing {@link com.mycompany.myapp.domain.JobHistory}.
  */
 @Service
 @Transactional
 public class JobHistoryServiceImpl implements JobHistoryService {
 
-    private final Logger log = LoggerFactory.getLogger(JobHistoryServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(JobHistoryServiceImpl.class);
 
     private final JobHistoryRepository jobHistoryRepository;
 
