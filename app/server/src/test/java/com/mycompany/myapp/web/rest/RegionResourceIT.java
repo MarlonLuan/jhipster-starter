@@ -11,9 +11,9 @@ import com.mycompany.myapp.domain.Region;
 import com.mycompany.myapp.repository.RegionRepository;
 import com.mycompany.myapp.service.dto.RegionDTO;
 import com.mycompany.myapp.service.mapper.RegionMapper;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,7 +170,7 @@ class RegionResourceIT {
         int databaseSizeBeforeUpdate = regionRepository.findAll().size();
 
         // Update the region
-        Region updatedRegion = regionRepository.findById(region.getId()).get();
+        Region updatedRegion = regionRepository.findById(region.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedRegion are not directly saved in db
         em.detach(updatedRegion);
         updatedRegion.regionName(UPDATED_REGION_NAME);
@@ -276,8 +276,6 @@ class RegionResourceIT {
         Region partialUpdatedRegion = new Region();
         partialUpdatedRegion.setId(region.getId());
 
-        partialUpdatedRegion.regionName(UPDATED_REGION_NAME);
-
         restRegionMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedRegion.getId())
@@ -291,7 +289,7 @@ class RegionResourceIT {
         List<Region> regionList = regionRepository.findAll();
         assertThat(regionList).hasSize(databaseSizeBeforeUpdate);
         Region testRegion = regionList.get(regionList.size() - 1);
-        assertThat(testRegion.getRegionName()).isEqualTo(UPDATED_REGION_NAME);
+        assertThat(testRegion.getRegionName()).isEqualTo(DEFAULT_REGION_NAME);
     }
 
     @Test

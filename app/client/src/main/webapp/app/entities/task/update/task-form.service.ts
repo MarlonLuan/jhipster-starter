@@ -38,7 +38,7 @@ export class TaskFormService {
         {
           nonNullable: true,
           validators: [Validators.required],
-        }
+        },
       ),
       title: new FormControl(taskRawValue.title),
       description: new FormControl(taskRawValue.description),
@@ -56,7 +56,7 @@ export class TaskFormService {
       {
         ...taskRawValue,
         id: { value: taskRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */
+      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
     );
   }
 
