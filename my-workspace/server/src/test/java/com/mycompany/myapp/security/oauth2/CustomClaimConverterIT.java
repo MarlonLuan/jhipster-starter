@@ -18,11 +18,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
 
 @IntegrationTest
@@ -37,7 +37,7 @@ class CustomClaimConverterIT {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    @MockBean
+    @MockitoBean
     private RestTemplate restTemplate;
 
     @Autowired
@@ -46,7 +46,7 @@ class CustomClaimConverterIT {
     private CustomClaimConverter customClaimConverter;
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         customClaimConverter = new CustomClaimConverter(clientRegistrationRepository.findByRegistrationId("oidc"), restTemplate);
     }
 
@@ -58,8 +58,7 @@ class CustomClaimConverterIT {
                 any(HttpEntity.class),
                 ArgumentMatchers.<Class<ObjectNode>>any()
             )
-        )
-            .thenReturn(ResponseEntity.ok(userInfo));
+        ).thenReturn(ResponseEntity.ok(userInfo));
     }
 
     @Test
@@ -139,10 +138,9 @@ class CustomClaimConverterIT {
         mockHttpGetUserInfo(user);
 
         assertThatCode(() -> {
-                Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
-                assertThat(convertedClaims).containsEntry("preferred_username", USERNAME).doesNotContainKeys("given_name", "family_name");
-            })
-            .doesNotThrowAnyException();
+            Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
+            assertThat(convertedClaims).containsEntry("preferred_username", USERNAME).doesNotContainKeys("given_name", "family_name");
+        }).doesNotThrowAnyException();
     }
 
     @Test
@@ -157,13 +155,12 @@ class CustomClaimConverterIT {
         mockHttpGetUserInfo(user);
 
         assertThatCode(() -> {
-                Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
-                assertThat(convertedClaims)
-                    .containsEntry("preferred_username", USERNAME)
-                    .containsEntry("given_name", NAME)
-                    .containsEntry("family_name", FAMILY_NAME);
-            })
-            .doesNotThrowAnyException();
+            Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
+            assertThat(convertedClaims)
+                .containsEntry("preferred_username", USERNAME)
+                .containsEntry("given_name", NAME)
+                .containsEntry("family_name", FAMILY_NAME);
+        }).doesNotThrowAnyException();
     }
 
     @Test
@@ -178,14 +175,13 @@ class CustomClaimConverterIT {
         mockHttpGetUserInfo(user);
 
         assertThatCode(() -> {
-                Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
-                System.out.println(convertedClaims);
-                assertThat(convertedClaims)
-                    .containsEntry("preferred_username", USERNAME)
-                    .containsEntry("given_name", NAME)
-                    .containsEntry("family_name", FAMILY_NAME + " " + NAME_SUFFIX);
-            })
-            .doesNotThrowAnyException();
+            Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
+            System.out.println(convertedClaims);
+            assertThat(convertedClaims)
+                .containsEntry("preferred_username", USERNAME)
+                .containsEntry("given_name", NAME)
+                .containsEntry("family_name", FAMILY_NAME + " " + NAME_SUFFIX);
+        }).doesNotThrowAnyException();
     }
 
     @Test
@@ -200,9 +196,8 @@ class CustomClaimConverterIT {
         mockHttpGetUserInfo(user);
 
         assertThatCode(() -> {
-                Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
-                assertThat(convertedClaims).containsEntry("preferred_username", USERNAME).containsEntry("email", EMAIL);
-            })
-            .doesNotThrowAnyException();
+            Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
+            assertThat(convertedClaims).containsEntry("preferred_username", USERNAME).containsEntry("email", EMAIL);
+        }).doesNotThrowAnyException();
     }
 }

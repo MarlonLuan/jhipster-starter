@@ -3,11 +3,14 @@ import { Observable, Observer, Subscription } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
 
 export class EventWithContent<T> {
-  constructor(public name: string, public content: T) {}
+  constructor(
+    public name: string,
+    public content: T,
+  ) {}
 }
 
 /**
- * An utility class to manage RX events
+ * A utility class to manage RX events
  */
 @Injectable({
   providedIn: 'root',
@@ -49,7 +52,7 @@ export class EventManager {
             }
           }
           return false;
-        })
+        }),
       )
       .subscribe(callback);
   }

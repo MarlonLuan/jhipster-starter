@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { CountryDetailComponent } from './country-detail.component';
@@ -8,29 +9,46 @@ describe('Country Management Detail Component', () => {
   let comp: CountryDetailComponent;
   let fixture: ComponentFixture<CountryDetailComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [CountryDetailComponent],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [CountryDetailComponent],
       providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: { data: of({ country: { id: '9fec3727-3421-4967-b213-ba36557ca194' } }) },
-        },
+        provideRouter(
+          [
+            {
+              path: '**',
+              loadComponent: () => import('./country-detail.component').then(m => m.CountryDetailComponent),
+              resolve: { country: () => of({ id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' }) },
+            },
+          ],
+          withComponentInputBinding(),
+        ),
       ],
     })
       .overrideTemplate(CountryDetailComponent, '')
       .compileComponents();
+  });
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(CountryDetailComponent);
     comp = fixture.componentInstance;
   });
 
   describe('OnInit', () => {
-    it('Should load country on init', () => {
-      // WHEN
-      comp.ngOnInit();
+    it('should load country on init', async () => {
+      const harness = await RouterTestingHarness.create();
+      const instance = await harness.navigateByUrl('/', CountryDetailComponent);
 
       // THEN
-      expect(comp.country).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+      expect(instance.country()).toEqual(expect.objectContaining({ id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' }));
+    });
+  });
+
+  describe('PreviousState', () => {
+    it('should navigate to previous state', () => {
+      jest.spyOn(window.history, 'back');
+      comp.previousState();
+      expect(window.history.back).toHaveBeenCalled();
     });
   });
 });
