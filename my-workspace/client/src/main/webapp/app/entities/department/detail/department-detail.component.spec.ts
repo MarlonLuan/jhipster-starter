@@ -17,7 +17,7 @@ describe('Department Management Detail Component', () => {
           [
             {
               path: '**',
-              component: DepartmentDetailComponent,
+              loadComponent: () => import('./department-detail.component').then(m => m.DepartmentDetailComponent),
               resolve: { department: () => of({ id: '9fec3727-3421-4967-b213-ba36557ca194' }) },
             },
           ],

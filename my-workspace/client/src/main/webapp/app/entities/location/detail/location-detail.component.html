@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    @if (location()) {
+    @if (location(); as locationRef) {
       <div>
         <h2 data-cy="locationDetailsHeading"><span jhiTranslate="jhipsterApp.location.detail.title">Location</span></h2>
 
@@ -13,29 +13,29 @@
         <dl class="row-md jh-entity-details">
           <dt><span jhiTranslate="jhipsterApp.location.id">Id</span></dt>
           <dd>
-            <span>{{ location()!.id }}</span>
+            <span>{{ locationRef.id }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.location.streetAddress">Street Address</span></dt>
           <dd>
-            <span>{{ location()!.streetAddress }}</span>
+            <span>{{ locationRef.streetAddress }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.location.postalCode">Postal Code</span></dt>
           <dd>
-            <span>{{ location()!.postalCode }}</span>
+            <span>{{ locationRef.postalCode }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.location.city">City</span></dt>
           <dd>
-            <span>{{ location()!.city }}</span>
+            <span>{{ locationRef.city }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.location.stateProvince">State Province</span></dt>
           <dd>
-            <span>{{ location()!.stateProvince }}</span>
+            <span>{{ locationRef.stateProvince }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.location.country">Country</span></dt>
           <dd>
             @if (location()!.country) {
               <div>
-                <a [routerLink]="['/country', location()!.country?.id, 'view']">{{ location()!.country?.id }}</a>
+                <a [routerLink]="['/country', location()!.country?.id, 'view']">{{ locationRef.country?.id }}</a>
               </div>
             }
           </dd>
@@ -45,7 +45,7 @@
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
-        <button type="button" [routerLink]="['/location', location()!.id, 'edit']" class="btn btn-primary">
+        <button type="button" [routerLink]="['/location', locationRef.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
         </button>
       </div>

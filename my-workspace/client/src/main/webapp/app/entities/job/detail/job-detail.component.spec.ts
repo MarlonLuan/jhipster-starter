@@ -17,7 +17,7 @@ describe('Job Management Detail Component', () => {
           [
             {
               path: '**',
-              component: JobDetailComponent,
+              loadComponent: () => import('./job-detail.component').then(m => m.JobDetailComponent),
               resolve: { job: () => of({ id: '9fec3727-3421-4967-b213-ba36557ca194' }) },
             },
           ],

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { combineLatest } from 'rxjs';
 
 import SharedModule from 'app/shared/shared.module';
@@ -52,10 +52,6 @@ export default class MetricsComponent implements OnInit {
       this.updatingMetrics.set(false);
       this.changeDetector.markForCheck();
     });
-  }
-
-  metricsKeyExists(key: keyof Metrics): boolean {
-    return Boolean(this.metrics()?.[key]);
   }
 
   metricsKeyExistsAndObjectNotEmpty(key: keyof Metrics): boolean {

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ import { ILocation } from 'app/entities/location/location.model';
 import { LocationService } from 'app/entities/location/service/location.service';
 import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
-import { DepartmentFormService, DepartmentFormGroup } from './department-form.service';
+import { DepartmentFormGroup, DepartmentFormService } from './department-form.service';
 
 @Component({
   standalone: true,

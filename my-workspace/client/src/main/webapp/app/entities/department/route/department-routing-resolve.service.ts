@@ -1,14 +1,14 @@
 import { inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { of, EMPTY, Observable } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
 
 const departmentResolve = (route: ActivatedRouteSnapshot): Observable<null | IDepartment> => {
-  const id = route.params['id'];
+  const id = route.params.id;
   if (id) {
     return inject(DepartmentService)
       .find(id)
@@ -16,10 +16,9 @@ const departmentResolve = (route: ActivatedRouteSnapshot): Observable<null | IDe
         mergeMap((department: HttpResponse<IDepartment>) => {
           if (department.body) {
             return of(department.body);
-          } else {
-            inject(Router).navigate(['404']);
-            return EMPTY;
           }
+          inject(Router).navigate(['404']);
+          return EMPTY;
         }),
       );
   }

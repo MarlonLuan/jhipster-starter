@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    @if (job()) {
+    @if (job(); as jobRef) {
       <div>
         <h2 data-cy="jobDetailsHeading"><span jhiTranslate="jhipsterApp.job.detail.title">Job</span></h2>
 
@@ -13,23 +13,23 @@
         <dl class="row-md jh-entity-details">
           <dt><span jhiTranslate="jhipsterApp.job.id">Id</span></dt>
           <dd>
-            <span>{{ job()!.id }}</span>
+            <span>{{ jobRef.id }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.job.jobTitle">Job Title</span></dt>
           <dd>
-            <span>{{ job()!.jobTitle }}</span>
+            <span>{{ jobRef.jobTitle }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.job.minSalary">Min Salary</span></dt>
           <dd>
-            <span>{{ job()!.minSalary }}</span>
+            <span>{{ jobRef.minSalary }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.job.maxSalary">Max Salary</span></dt>
           <dd>
-            <span>{{ job()!.maxSalary }}</span>
+            <span>{{ jobRef.maxSalary }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.job.task">Task</span></dt>
           <dd>
-            @for (task of job()!.tasks; track $index; let last = $last) {
+            @for (task of jobRef.tasks; track $index; let last = $last) {
               <span>
                 <a [routerLink]="['/task', task.id, 'view']">{{ task?.title }}</a
                 >{{ last ? '' : ', ' }}
@@ -40,7 +40,7 @@
           <dd>
             @if (job()!.employee) {
               <div>
-                <a [routerLink]="['/employee', job()!.employee?.id, 'view']">{{ job()!.employee?.id }}</a>
+                <a [routerLink]="['/employee', job()!.employee?.id, 'view']">{{ jobRef.employee?.id }}</a>
               </div>
             }
           </dd>
@@ -50,7 +50,7 @@
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
-        <button type="button" [routerLink]="['/job', job()!.id, 'edit']" class="btn btn-primary">
+        <button type="button" [routerLink]="['/job', jobRef.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
         </button>
       </div>

@@ -15,6 +15,7 @@
           </div>
         }
 
+        @let departmentNameRef = editForm.get('departmentName')!;
         <div class="mb-3">
           <label class="form-label" for="field_departmentName" jhiTranslate="jhipsterApp.department.departmentName">Department Name</label>
           <input
@@ -25,9 +26,7 @@
             data-cy="departmentName"
             formControlName="departmentName"
           />
-          @if (
-            editForm.get('departmentName')!.invalid && (editForm.get('departmentName')!.dirty || editForm.get('departmentName')!.touched)
-          ) {
+          @if (departmentNameRef.invalid && (departmentNameRef.dirty || departmentNameRef.touched)) {
             <div>
               @if (editForm.get('departmentName')?.errors?.required) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
