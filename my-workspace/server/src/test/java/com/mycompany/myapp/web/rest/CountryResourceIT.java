@@ -1,19 +1,21 @@
 package com.mycompany.myapp.web.rest;
 
+import static com.mycompany.myapp.domain.CountryAsserts.*;
+import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Country;
 import com.mycompany.myapp.repository.CountryRepository;
 import com.mycompany.myapp.service.dto.CountryDTO;
 import com.mycompany.myapp.service.mapper.CountryMapper;
-import java.util.List;
+import jakarta.persistence.EntityManager;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,9 @@ class CountryResourceIT {
 
     private static final String ENTITY_API_URL = "/api/countries";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    @Autowired
+    private ObjectMapper om;
 
     @Autowired
     private CountryRepository countryRepository;
@@ -81,23 +86,25 @@ class CountryResourceIT {
     @Test
     @Transactional
     void createCountry() throws Exception {
-        int databaseSizeBeforeCreate = countryRepository.findAll().size();
+        long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
-        restCountryMockMvc
-            .perform(
-                post(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(countryDTO))
-            )
-            .andExpect(status().isCreated());
+        var returnedCountryDTO = om.readValue(
+            restCountryMockMvc
+                .perform(
+                    post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(countryDTO))
+                )
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(),
+            CountryDTO.class
+        );
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeCreate + 1);
-        Country testCountry = countryList.get(countryList.size() - 1);
-        assertThat(testCountry.getCountryName()).isEqualTo(DEFAULT_COUNTRY_NAME);
+        assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
+        var returnedCountry = countryMapper.toEntity(returnedCountryDTO);
+        assertCountryUpdatableFieldsEquals(returnedCountry, getPersistedCountry(returnedCountry));
     }
 
     @Test
@@ -107,21 +114,15 @@ class CountryResourceIT {
         countryRepository.saveAndFlush(country);
         CountryDTO countryDTO = countryMapper.toDto(country);
 
-        int databaseSizeBeforeCreate = countryRepository.findAll().size();
+        long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restCountryMockMvc
-            .perform(
-                post(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(countryDTO))
-            )
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(countryDTO)))
             .andExpect(status().isBadRequest());
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeCreate);
+        assertSameRepositoryCount(databaseSizeBeforeCreate);
     }
 
     @Test
@@ -167,10 +168,10 @@ class CountryResourceIT {
         // Initialize the database
         countryRepository.saveAndFlush(country);
 
-        int databaseSizeBeforeUpdate = countryRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the country
-        Country updatedCountry = countryRepository.findById(country.getId()).get();
+        Country updatedCountry = countryRepository.findById(country.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedCountry are not directly saved in db
         em.detach(updatedCountry);
         updatedCountry.countryName(UPDATED_COUNTRY_NAME);
@@ -181,21 +182,19 @@ class CountryResourceIT {
                 put(ENTITY_API_URL_ID, countryDTO.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(countryDTO))
+                    .content(om.writeValueAsBytes(countryDTO))
             )
             .andExpect(status().isOk());
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeUpdate);
-        Country testCountry = countryList.get(countryList.size() - 1);
-        assertThat(testCountry.getCountryName()).isEqualTo(UPDATED_COUNTRY_NAME);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertPersistedCountryToMatchAllProperties(updatedCountry);
     }
 
     @Test
     @Transactional
     void putNonExistingCountry() throws Exception {
-        int databaseSizeBeforeUpdate = countryRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         country.setId(UUID.randomUUID());
 
         // Create the Country
@@ -207,19 +206,18 @@ class CountryResourceIT {
                 put(ENTITY_API_URL_ID, countryDTO.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(countryDTO))
+                    .content(om.writeValueAsBytes(countryDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchCountry() throws Exception {
-        int databaseSizeBeforeUpdate = countryRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         country.setId(UUID.randomUUID());
 
         // Create the Country
@@ -231,19 +229,18 @@ class CountryResourceIT {
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(countryDTO))
+                    .content(om.writeValueAsBytes(countryDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamCountry() throws Exception {
-        int databaseSizeBeforeUpdate = countryRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         country.setId(UUID.randomUUID());
 
         // Create the Country
@@ -251,17 +248,11 @@ class CountryResourceIT {
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restCountryMockMvc
-            .perform(
-                put(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(countryDTO))
-            )
+            .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(countryDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
@@ -270,28 +261,25 @@ class CountryResourceIT {
         // Initialize the database
         countryRepository.saveAndFlush(country);
 
-        int databaseSizeBeforeUpdate = countryRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the country using partial update
         Country partialUpdatedCountry = new Country();
         partialUpdatedCountry.setId(country.getId());
-
-        partialUpdatedCountry.countryName(UPDATED_COUNTRY_NAME);
 
         restCountryMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedCountry.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedCountry))
+                    .content(om.writeValueAsBytes(partialUpdatedCountry))
             )
             .andExpect(status().isOk());
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeUpdate);
-        Country testCountry = countryList.get(countryList.size() - 1);
-        assertThat(testCountry.getCountryName()).isEqualTo(UPDATED_COUNTRY_NAME);
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertCountryUpdatableFieldsEquals(createUpdateProxyForBean(partialUpdatedCountry, country), getPersistedCountry(country));
     }
 
     @Test
@@ -300,7 +288,7 @@ class CountryResourceIT {
         // Initialize the database
         countryRepository.saveAndFlush(country);
 
-        int databaseSizeBeforeUpdate = countryRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the country using partial update
         Country partialUpdatedCountry = new Country();
@@ -313,21 +301,20 @@ class CountryResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedCountry.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedCountry))
+                    .content(om.writeValueAsBytes(partialUpdatedCountry))
             )
             .andExpect(status().isOk());
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeUpdate);
-        Country testCountry = countryList.get(countryList.size() - 1);
-        assertThat(testCountry.getCountryName()).isEqualTo(UPDATED_COUNTRY_NAME);
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertCountryUpdatableFieldsEquals(partialUpdatedCountry, getPersistedCountry(partialUpdatedCountry));
     }
 
     @Test
     @Transactional
     void patchNonExistingCountry() throws Exception {
-        int databaseSizeBeforeUpdate = countryRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         country.setId(UUID.randomUUID());
 
         // Create the Country
@@ -339,19 +326,18 @@ class CountryResourceIT {
                 patch(ENTITY_API_URL_ID, countryDTO.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(countryDTO))
+                    .content(om.writeValueAsBytes(countryDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchCountry() throws Exception {
-        int databaseSizeBeforeUpdate = countryRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         country.setId(UUID.randomUUID());
 
         // Create the Country
@@ -363,19 +349,18 @@ class CountryResourceIT {
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(countryDTO))
+                    .content(om.writeValueAsBytes(countryDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamCountry() throws Exception {
-        int databaseSizeBeforeUpdate = countryRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         country.setId(UUID.randomUUID());
 
         // Create the Country
@@ -384,16 +369,12 @@ class CountryResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restCountryMockMvc
             .perform(
-                patch(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(countryDTO))
+                patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(countryDTO))
             )
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Country in the database
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
@@ -402,7 +383,7 @@ class CountryResourceIT {
         // Initialize the database
         countryRepository.saveAndFlush(country);
 
-        int databaseSizeBeforeDelete = countryRepository.findAll().size();
+        long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the country
         restCountryMockMvc
@@ -410,7 +391,34 @@ class CountryResourceIT {
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
-        List<Country> countryList = countryRepository.findAll();
-        assertThat(countryList).hasSize(databaseSizeBeforeDelete - 1);
+        assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
+    }
+
+    protected long getRepositoryCount() {
+        return countryRepository.count();
+    }
+
+    protected void assertIncrementedRepositoryCount(long countBefore) {
+        assertThat(countBefore + 1).isEqualTo(getRepositoryCount());
+    }
+
+    protected void assertDecrementedRepositoryCount(long countBefore) {
+        assertThat(countBefore - 1).isEqualTo(getRepositoryCount());
+    }
+
+    protected void assertSameRepositoryCount(long countBefore) {
+        assertThat(countBefore).isEqualTo(getRepositoryCount());
+    }
+
+    protected Country getPersistedCountry(Country country) {
+        return countryRepository.findById(country.getId()).orElseThrow();
+    }
+
+    protected void assertPersistedCountryToMatchAllProperties(Country expectedCountry) {
+        assertCountryAllPropertiesEquals(expectedCountry, getPersistedCountry(expectedCountry));
+    }
+
+    protected void assertPersistedCountryToMatchUpdatableProperties(Country expectedCountry) {
+        assertCountryAllUpdatablePropertiesEquals(expectedCountry, getPersistedCountry(expectedCountry));
     }
 }

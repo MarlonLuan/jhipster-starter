@@ -8,6 +8,8 @@ import com.mycompany.myapp.service.dto.DepartmentDTO;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
 import com.mycompany.myapp.service.dto.JobDTO;
 import com.mycompany.myapp.service.dto.JobHistoryDTO;
+import java.util.Objects;
+import java.util.UUID;
 import org.mapstruct.*;
 
 /**
@@ -34,4 +36,8 @@ public interface JobHistoryMapper extends EntityMapper<JobHistoryDTO, JobHistory
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     EmployeeDTO toDtoEmployeeId(Employee employee);
+
+    default String map(UUID value) {
+        return Objects.toString(value, null);
+    }
 }
