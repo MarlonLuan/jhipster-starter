@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    @if (country) {
+    @if (country()) {
       <div>
         <h2 data-cy="countryDetailsHeading"><span jhiTranslate="jhipsterApp.country.detail.title">Country</span></h2>
 
@@ -13,17 +13,17 @@
         <dl class="row-md jh-entity-details">
           <dt><span jhiTranslate="jhipsterApp.country.id">Id</span></dt>
           <dd>
-            <span>{{ country.id }}</span>
+            <span>{{ country()!.id }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.country.countryName">Country Name</span></dt>
           <dd>
-            <span>{{ country.countryName }}</span>
+            <span>{{ country()!.countryName }}</span>
           </dd>
           <dt><span jhiTranslate="jhipsterApp.country.region">Region</span></dt>
           <dd>
-            @if (country.region) {
+            @if (country()!.region) {
               <div>
-                <a [routerLink]="['/region', country.region.id, 'view']">{{ country.region.id }}</a>
+                <a [routerLink]="['/region', country()!.region?.id, 'view']">{{ country()!.region?.id }}</a>
               </div>
             }
           </dd>
@@ -33,7 +33,7 @@
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
-        <button type="button" [routerLink]="['/country', country.id, 'edit']" class="btn btn-primary">
+        <button type="button" [routerLink]="['/country', country()!.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
         </button>
       </div>

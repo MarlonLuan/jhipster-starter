@@ -3,7 +3,6 @@ import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
 import { ILocation } from 'app/entities/location/location.model';
@@ -24,7 +23,7 @@ describe('Department Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), DepartmentUpdateComponent],
+      imports: [HttpClientTestingModule, DepartmentUpdateComponent],
       providers: [
         FormBuilder,
         {
