@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
 import { IEmployee } from '../employee.model';
 import { EmployeeService } from '../service/employee.service';
-import { EmployeeFormService, EmployeeFormGroup } from './employee-form.service';
+import { EmployeeFormGroup, EmployeeFormService } from './employee-form.service';
 
 @Component({
   standalone: true,

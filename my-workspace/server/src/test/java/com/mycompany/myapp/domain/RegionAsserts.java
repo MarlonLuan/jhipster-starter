@@ -56,5 +56,7 @@ public class RegionAsserts {
      * @param expected the expected entity
      * @param actual the actual entity
      */
-    public static void assertRegionUpdatableRelationshipsEquals(Region expected, Region actual) {}
+    public static void assertRegionUpdatableRelationshipsEquals(Region expected, Region actual) {
+        // empty method
+    }
 }

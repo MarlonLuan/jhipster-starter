@@ -1,21 +1,18 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { DepartmentComponent } from './list/department.component';
-import { DepartmentDetailComponent } from './detail/department-detail.component';
-import { DepartmentUpdateComponent } from './update/department-update.component';
 import DepartmentResolve from './route/department-routing-resolve.service';
 
 const departmentRoute: Routes = [
   {
     path: '',
-    component: DepartmentComponent,
+    loadComponent: () => import('./list/department.component').then(m => m.DepartmentComponent),
     data: {},
     canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',
-    component: DepartmentDetailComponent,
+    loadComponent: () => import('./detail/department-detail.component').then(m => m.DepartmentDetailComponent),
     resolve: {
       department: DepartmentResolve,
     },
@@ -23,7 +20,7 @@ const departmentRoute: Routes = [
   },
   {
     path: 'new',
-    component: DepartmentUpdateComponent,
+    loadComponent: () => import('./update/department-update.component').then(m => m.DepartmentUpdateComponent),
     resolve: {
       department: DepartmentResolve,
     },
@@ -31,7 +28,7 @@ const departmentRoute: Routes = [
   },
   {
     path: ':id/edit',
-    component: DepartmentUpdateComponent,
+    loadComponent: () => import('./update/department-update.component').then(m => m.DepartmentUpdateComponent),
     resolve: {
       department: DepartmentResolve,
     },

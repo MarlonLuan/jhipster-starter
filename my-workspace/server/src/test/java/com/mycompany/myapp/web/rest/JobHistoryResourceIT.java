@@ -74,9 +74,8 @@ class JobHistoryResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static JobHistory createEntity(EntityManager em) {
-        JobHistory jobHistory = new JobHistory().startDate(DEFAULT_START_DATE).endDate(DEFAULT_END_DATE).language(DEFAULT_LANGUAGE);
-        return jobHistory;
+    public static JobHistory createEntity() {
+        return new JobHistory().startDate(DEFAULT_START_DATE).endDate(DEFAULT_END_DATE).language(DEFAULT_LANGUAGE);
     }
 
     /**
@@ -85,14 +84,13 @@ class JobHistoryResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static JobHistory createUpdatedEntity(EntityManager em) {
-        JobHistory jobHistory = new JobHistory().startDate(UPDATED_START_DATE).endDate(UPDATED_END_DATE).language(UPDATED_LANGUAGE);
-        return jobHistory;
+    public static JobHistory createUpdatedEntity() {
+        return new JobHistory().startDate(UPDATED_START_DATE).endDate(UPDATED_END_DATE).language(UPDATED_LANGUAGE);
     }
 
     @BeforeEach
     public void initTest() {
-        jobHistory = createEntity(em);
+        jobHistory = createEntity();
     }
 
     @AfterEach
