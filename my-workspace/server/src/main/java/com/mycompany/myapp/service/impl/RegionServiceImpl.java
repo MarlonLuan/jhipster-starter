@@ -81,8 +81,7 @@ public class RegionServiceImpl implements RegionService {
     @Transactional(readOnly = true)
     public List<RegionDTO> findAllWhereCountryIsNull() {
         log.debug("Request to get all regions where Country is null");
-        return StreamSupport
-            .stream(regionRepository.findAll().spliterator(), false)
+        return StreamSupport.stream(regionRepository.findAll().spliterator(), false)
             .filter(region -> region.getCountry() == null)
             .map(regionMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
