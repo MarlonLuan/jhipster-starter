@@ -60,11 +60,11 @@ public class SecurityConfiguration {
                 csrf
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                     // See https://stackoverflow.com/q/74447118/65681
-                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
-            )
+                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
             .addFilterAfter(new CookieCsrfFilter(), BasicAuthenticationFilter.class)
-            .authorizeHttpRequests(authz ->
-                // prettier-ignore
+            .authorizeHttpRequests(
+                authz ->
+                    // prettier-ignore
                 authz
                     .requestMatchers(mvc.pattern("/api/authenticate")).permitAll()
                     .requestMatchers(mvc.pattern("/api/auth-info")).permitAll()
@@ -77,7 +77,7 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/management/prometheus")).permitAll()
                     .requestMatchers(mvc.pattern("/management/**")).hasAuthority(AuthoritiesConstants.ADMIN)
             )
-            .oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.oidcUserService(this.oidcUserService())))
+            .oauth2Login(oauth2 -> oauth2.loginPage("/").userInfoEndpoint(userInfo -> userInfo.oidcUserService(this.oidcUserService())))
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter())))
             .oauth2Client(withDefaults());
         return http.build();
