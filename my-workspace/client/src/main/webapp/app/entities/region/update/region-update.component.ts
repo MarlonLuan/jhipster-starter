@@ -1,28 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
-import { RegionFormService, RegionFormGroup } from './region-form.service';
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
+import { RegionFormGroup, RegionFormService } from './region-form.service';
 
 @Component({
   selector: 'jhi-region-update',
   templateUrl: './region-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class RegionUpdateComponent implements OnInit {
   isSaving = false;
   region: IRegion | null = null;
 
-  editForm: RegionFormGroup = this.regionFormService.createRegionFormGroup();
+  protected regionService = inject(RegionService);
+  protected regionFormService = inject(RegionFormService);
+  protected activatedRoute = inject(ActivatedRoute);
 
-  constructor(
-    protected regionService: RegionService,
-    protected regionFormService: RegionFormService,
-    protected activatedRoute: ActivatedRoute
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  editForm: RegionFormGroup = this.regionFormService.createRegionFormGroup();
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ region }) => {
