@@ -1,0 +1,50 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 * * * *'
+
+jobs:
+  beta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
+
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
+        with:
+          node-version: lts/*
+
+      - run: sudo npm un generator-jhipster -g
+
+      - run: sudo npm i generator-jhipster -g
+
+      - run: |
+          echo "y" | rm -rf my-workspace
+          mkdir my-workspace
+
+      - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        id: date        
+
+      - run: |
+          sudo date -s "2000-01-01"
+          cd my-workspace
+          mkdir client
+          cd client
+          echo "a" | jhipster jdl ../../jdl/workspace.jdl --skip-git --skip-install --skip-server
+
+      - run: |
+          sudo date -s "2000-01-01"
+          cd my-workspace
+          mkdir server
+          cd server
+          echo "a" | jhipster jdl ../../jdl/workspace.jdl --skip-git --skip-install --skip-client
+
+      - run: |
+          echo "${{ steps.date.outputs.date }}"
+          sudo date -s "${{ steps.date.outputs.date }}"
+
+      - uses: peter-evans/create-pull-request@6d6857d36972b65feb161a90e484f2984215f83e # v6
+        with:
+          title: beta
+          body:
+          commit-message: beta
+          branch: beta
