@@ -59,11 +59,10 @@ public class JobHistoryResource {
         if (jobHistoryDTO.getId() != null) {
             throw new BadRequestAlertException("A new jobHistory cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        JobHistoryDTO result = jobHistoryService.save(jobHistoryDTO);
-        return ResponseEntity
-            .created(new URI("/api/job-histories/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        jobHistoryDTO = jobHistoryService.save(jobHistoryDTO);
+        return ResponseEntity.created(new URI("/api/job-histories/" + jobHistoryDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, jobHistoryDTO.getId().toString()))
+            .body(jobHistoryDTO);
     }
 
     /**
@@ -93,11 +92,10 @@ public class JobHistoryResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        JobHistoryDTO result = jobHistoryService.update(jobHistoryDTO);
-        return ResponseEntity
-            .ok()
+        jobHistoryDTO = jobHistoryService.update(jobHistoryDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, jobHistoryDTO.getId().toString()))
-            .body(result);
+            .body(jobHistoryDTO);
     }
 
     /**
@@ -173,8 +171,7 @@ public class JobHistoryResource {
     public ResponseEntity<Void> deleteJobHistory(@PathVariable("id") UUID id) {
         log.debug("REST request to delete JobHistory : {}", id);
         jobHistoryService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
