@@ -8,10 +8,12 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
-          <label class="form-label" jhiTranslate="jhipsterApp.location.id" for="field_id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-        </div>
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" jhiTranslate="jhipsterApp.location.id" for="field_id">Id</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
 
         <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.location.streetAddress" for="field_streetAddress">Street Address</label>
@@ -65,7 +67,9 @@
             [compareWith]="compareCountry"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="countryOption" *ngFor="let countryOption of countriesCollection">{{ countryOption.id }}</option>
+            @for (countryOption of countriesCollection; track $index) {
+              <option [ngValue]="countryOption">{{ countryOption.id }}</option>
+            }
           </select>
         </div>
       </div>

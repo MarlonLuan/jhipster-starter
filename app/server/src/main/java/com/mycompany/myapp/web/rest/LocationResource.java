@@ -147,7 +147,7 @@ public class LocationResource {
     @GetMapping("")
     public ResponseEntity<List<LocationDTO>> getAllLocations(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false) String filter
+        @RequestParam(name = "filter", required = false) String filter
     ) {
         if ("department-is-null".equals(filter)) {
             log.debug("REST request to get all Locations where department is null");
@@ -166,7 +166,7 @@ public class LocationResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the locationDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<LocationDTO> getLocation(@PathVariable UUID id) {
+    public ResponseEntity<LocationDTO> getLocation(@PathVariable("id") UUID id) {
         log.debug("REST request to get Location : {}", id);
         Optional<LocationDTO> locationDTO = locationService.findOne(id);
         return ResponseUtil.wrapOrNotFound(locationDTO);
@@ -179,7 +179,7 @@ public class LocationResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLocation(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteLocation(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Location : {}", id);
         locationService.delete(id);
         return ResponseEntity
