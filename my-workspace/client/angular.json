@@ -26,7 +26,7 @@
             "outputPath": "target/classes/static/",
             "index": "src/main/webapp/index.html",
             "main": "src/main/webapp/main.ts",
-            "polyfills": "src/main/webapp/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -76,15 +76,15 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "jhipster:build:development",
+            "buildTarget": "jhipster:build:development",
             "port": 4200
           },
           "configurations": {
             "production": {
-              "browserTarget": "jhipster:build:production"
+              "buildTarget": "jhipster:build:production"
             },
             "development": {
-              "browserTarget": "jhipster:build:development"
+              "buildTarget": "jhipster:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -92,7 +92,8 @@
         "test": {
           "builder": "@angular-builders/jest:run",
           "options": {
-            "configPath": "jest.conf.js"
+            "configPath": "jest.conf.js",
+            "tsConfig": "tsconfig.spec.json"
           }
         }
       }

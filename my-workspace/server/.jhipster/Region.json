@@ -1,8 +1,9 @@
 {
+  "annotations": {
+    "changelogDate": "20231214115931"
+  },
   "applications": ["jhipster"],
-  "changelogDate": "20231014142653",
   "dto": "mapstruct",
-  "embedded": false,
   "entityTableName": "region",
   "fields": [
     {
@@ -14,12 +15,9 @@
       "fieldType": "String"
     }
   ],
-  "fluentMethods": true,
-  "jpaMetamodelFiltering": false,
   "name": "Region",
   "pagination": "pagination",
-  "readOnly": false,
   "relationships": [],
-  "service": "serviceImpl",
-  "skipClient": true
+  "searchEngine": "no",
+  "service": "serviceImpl"
 }
