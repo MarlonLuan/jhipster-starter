@@ -34,7 +34,7 @@ public class JobHistoryResource {
 
     private static final String ENTITY_NAME = "jobHistory";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final JobHistoryService jobHistoryService;
@@ -135,10 +135,10 @@ public class JobHistoryResource {
     }
 
     /**
-     * {@code GET  /job-histories} : get all the jobHistories.
+     * {@code GET  /job-histories} : get all the Job Histories.
      *
      * @param pageable the pagination information.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of jobHistories in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Job Histories in body.
      */
     @GetMapping("")
     public ResponseEntity<List<JobHistoryDTO>> getAllJobHistories(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {

@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
 
 import { ITask } from '../task.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../task.test-samples';
@@ -18,7 +18,7 @@ describe('Task Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(TaskService);
@@ -30,7 +30,7 @@ describe('Task Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.body));
+      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(returnedFromService);
@@ -42,7 +42,7 @@ describe('Task Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.create(task).subscribe(resp => (expectedResult = resp.body));
+      service.create(task).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'POST' });
       req.flush(returnedFromService);
@@ -54,7 +54,7 @@ describe('Task Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.update(task).subscribe(resp => (expectedResult = resp.body));
+      service.update(task).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'PUT' });
       req.flush(returnedFromService);
@@ -66,7 +66,7 @@ describe('Task Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp.body));
+      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'PATCH' });
       req.flush(returnedFromService);
@@ -87,21 +87,17 @@ describe('Task Service', () => {
     });
 
     it('should delete a Task', () => {
-      const expected = true;
+      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe();
 
-      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.ok));
-
-      const req = httpMock.expectOne({ method: 'DELETE' });
-      req.flush({ status: 200 });
-      expect(expectedResult).toBe(expected);
+      const requests = httpMock.match({ method: 'DELETE' });
+      expect(requests.length).toBe(1);
     });
 
     describe('addTaskToCollectionIfMissing', () => {
       it('should add a Task to an empty array', () => {
         const task: ITask = sampleWithRequiredData;
         expectedResult = service.addTaskToCollectionIfMissing([], task);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(task);
+        expect(expectedResult).toEqual([task]);
       });
 
       it('should not add a Task to an array that contains it', () => {
@@ -135,16 +131,13 @@ describe('Task Service', () => {
         const task: ITask = sampleWithRequiredData;
         const task2: ITask = sampleWithPartialData;
         expectedResult = service.addTaskToCollectionIfMissing([], task, task2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(task);
-        expect(expectedResult).toContain(task2);
+        expect(expectedResult).toEqual([task, task2]);
       });
 
       it('should accept null and undefined values', () => {
         const task: ITask = sampleWithRequiredData;
         expectedResult = service.addTaskToCollectionIfMissing([], null, task, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(task);
+        expect(expectedResult).toEqual([task]);
       });
 
       it('should return initial array if no Task is added', () => {
