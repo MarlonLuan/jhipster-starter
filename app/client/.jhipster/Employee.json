@@ -1,11 +1,10 @@
 {
   "annotations": {
-    "changelogDate": "20231214120323"
+    "changelogDate": "20240502121923"
   },
   "applications": ["jhipster"],
   "documentation": "The Employee entity.",
   "dto": "mapstruct",
-  "entityTableName": "employee",
   "fields": [
     {
       "fieldName": "id",
