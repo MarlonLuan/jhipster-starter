@@ -8,7 +8,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { LoginService } from 'app/login/login.service';
 
-import { HomeComponent } from './home.component';
+import HomeComponent from './home.component';
 
 describe('Home Component', () => {
   let comp: HomeComponent;
@@ -28,7 +28,7 @@ describe('Home Component', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [HomeComponent],
+      imports: [HomeComponent],
       providers: [AccountService, LoginService],
     })
       .overrideTemplate(HomeComponent, '')
@@ -45,7 +45,7 @@ describe('Home Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should synchronize account variable with current account', () => {
+    it('should synchronize account variable with current account', () => {
       // GIVEN
       mockAccountService.identity = jest.fn(() => of(account));
 
@@ -53,12 +53,12 @@ describe('Home Component', () => {
       comp.ngOnInit();
 
       // THEN
-      expect(comp.account).toEqual(account);
+      expect(comp.account()).toEqual(account);
     });
   });
 
   describe('login', () => {
-    it('Should call loginService.login on login', () => {
+    it('should call loginService.login on login', () => {
       // WHEN
       comp.login();
 
