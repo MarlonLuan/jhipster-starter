@@ -1,4 +1,4 @@
 /**
- * Spring Security configuration.
+ * Application security utilities.
  */
 package com.mycompany.myapp.security;

@@ -1,8 +1,8 @@
 package com.mycompany.myapp.service.mapper;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.mycompany.myapp.domain.LocationAsserts.*;
+import static com.mycompany.myapp.domain.LocationTestSamples.*;
 
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,14 @@ class LocationMapperTest {
     private LocationMapper locationMapper;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         locationMapper = new LocationMapperImpl();
+    }
+
+    @Test
+    void shouldConvertToDtoAndBack() {
+        var expected = getLocationSample1();
+        var actual = locationMapper.toEntity(locationMapper.toDto(expected));
+        assertLocationAllPropertiesEquals(expected, actual);
     }
 }

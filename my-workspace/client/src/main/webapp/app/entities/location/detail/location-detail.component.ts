@@ -1,22 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, input } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
+import SharedModule from 'app/shared/shared.module';
 import { ILocation } from '../location.model';
 
 @Component({
   selector: 'jhi-location-detail',
   templateUrl: './location-detail.component.html',
+  imports: [SharedModule, RouterModule],
 })
-export class LocationDetailComponent implements OnInit {
-  location: ILocation | null = null;
-
-  constructor(protected activatedRoute: ActivatedRoute) {}
-
-  ngOnInit(): void {
-    this.activatedRoute.data.subscribe(({ location }) => {
-      this.location = location;
-    });
-  }
+export class LocationDetailComponent {
+  location = input<ILocation | null>(null);
 
   previousState(): void {
     window.history.back();

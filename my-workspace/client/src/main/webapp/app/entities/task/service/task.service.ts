@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -14,9 +14,10 @@ export type EntityArrayResponseType = HttpResponse<ITask[]>;
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/tasks');
+  protected readonly http = inject(HttpClient);
+  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/tasks');
 
   create(task: NewTask): Observable<EntityResponseType> {
     return this.http.post<ITask>(this.resourceUrl, task, { observe: 'response' });
@@ -57,7 +58,7 @@ export class TaskService {
   ): Type[] {
     const tasks: Type[] = tasksToCheck.filter(isPresent);
     if (tasks.length > 0) {
-      const taskCollectionIdentifiers = taskCollection.map(taskItem => this.getTaskIdentifier(taskItem)!);
+      const taskCollectionIdentifiers = taskCollection.map(taskItem => this.getTaskIdentifier(taskItem));
       const tasksToAdd = tasks.filter(taskItem => {
         const taskIdentifier = this.getTaskIdentifier(taskItem);
         if (taskCollectionIdentifiers.includes(taskIdentifier)) {

@@ -1,6 +1,7 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.DepartmentDTO;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,13 @@ public interface DepartmentService {
      * @return the list of entities.
      */
     Page<DepartmentDTO> findAll(Pageable pageable);
+
+    /**
+     * Get all the DepartmentDTO where JobHistory is {@code null}.
+     *
+     * @return the {@link List} of entities.
+     */
+    List<DepartmentDTO> findAllWhereJobHistoryIsNull();
 
     /**
      * Get the "id" department.
