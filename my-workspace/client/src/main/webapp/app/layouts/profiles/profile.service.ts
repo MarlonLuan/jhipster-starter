@@ -1,17 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, shareReplay } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { ProfileInfo, InfoResponse } from './profile-info.model';
+import { InfoResponse, ProfileInfo } from './profile-info.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
-  private infoUrl = this.applicationConfigService.getEndpointFor('management/info');
-  private profileInfo$?: Observable<ProfileInfo>;
+  private readonly http = inject(HttpClient);
+  private readonly applicationConfigService = inject(ApplicationConfigService);
 
-  constructor(private http: HttpClient, private applicationConfigService: ApplicationConfigService) {}
+  private readonly infoUrl = this.applicationConfigService.getEndpointFor('management/info');
+  private profileInfo$?: Observable<ProfileInfo>;
 
   getProfileInfo(): Observable<ProfileInfo> {
     if (this.profileInfo$) {
@@ -34,7 +35,7 @@ export class ProfileService {
         }
         return profileInfo;
       }),
-      shareReplay()
+      shareReplay(),
     );
     return this.profileInfo$;
   }

@@ -1,9 +1,10 @@
 {
+  "annotations": {
+    "changelogDate": "19700101120511"
+  },
   "applications": ["jhipster"],
-  "changelogDate": "19700101120501",
+  "documentation": "Task entity.\\n@author The JHipster team.",
   "dto": "mapstruct",
-  "embedded": false,
-  "entityTableName": "task",
   "fields": [
     {
       "fieldName": "id",
@@ -18,21 +19,17 @@
       "fieldType": "String"
     }
   ],
-  "fluentMethods": true,
-  "javadoc": "Task entity.\\n@author The JHipster team.",
-  "jpaMetamodelFiltering": false,
   "name": "Task",
   "pagination": "pagination",
-  "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "job",
       "otherEntityRelationshipName": "task",
-      "ownerSide": false,
       "relationshipName": "job",
+      "relationshipSide": "right",
       "relationshipType": "many-to-many"
     }
   ],
-  "service": "serviceImpl",
-  "skipClient": true
+  "searchEngine": "no",
+  "service": "serviceImpl"
 }
