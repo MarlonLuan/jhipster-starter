@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import dayjs from 'dayjs/esm';
+
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { IJobHistory, NewJobHistory } from '../job-history.model';
 
@@ -44,10 +45,10 @@ export type JobHistoryFormGroup = FormGroup<JobHistoryFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class JobHistoryFormService {
-  createJobHistoryFormGroup(jobHistory: JobHistoryFormGroupInput = { id: null }): JobHistoryFormGroup {
+  createJobHistoryFormGroup(jobHistory?: JobHistoryFormGroupInput): JobHistoryFormGroup {
     const jobHistoryRawValue = this.convertJobHistoryToJobHistoryRawValue({
       ...this.getFormDefaults(),
-      ...jobHistory,
+      ...(jobHistory ?? { id: null }),
     });
     return new FormGroup<JobHistoryFormGroupContent>({
       id: new FormControl(
@@ -72,12 +73,10 @@ export class JobHistoryFormService {
 
   resetForm(form: JobHistoryFormGroup, jobHistory: JobHistoryFormGroupInput): void {
     const jobHistoryRawValue = this.convertJobHistoryToJobHistoryRawValue({ ...this.getFormDefaults(), ...jobHistory });
-    form.reset(
-      {
-        ...jobHistoryRawValue,
-        id: { value: jobHistoryRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...jobHistoryRawValue,
+      id: { value: jobHistoryRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): JobHistoryFormDefaults {

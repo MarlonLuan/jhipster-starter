@@ -1,47 +1,61 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { ITask, NewTask } from '../task.model';
 
 export type PartialUpdateTask = Partial<ITask> & Pick<ITask, 'id'>;
 
-export type EntityResponseType = HttpResponse<ITask>;
-export type EntityArrayResponseType = HttpResponse<ITask[]>;
+@Injectable()
+export class TasksService {
+  readonly tasksParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(undefined);
+  readonly tasksResource = httpResource<ITask[]>(() => {
+    const params = this.tasksParams();
+    if (!params) {
+      return undefined;
+    }
+    return { url: this.resourceUrl, params };
+  });
+  /**
+   * This signal holds the list of task that have been fetched. It is updated when the tasksResource emits a new value.
+   * In case of error while fetching the tasks, the signal is set to an empty array.
+   */
+  readonly tasks = computed(() => (this.tasksResource.hasValue() ? this.tasksResource.value() : []));
+  protected readonly applicationConfigService = inject(ApplicationConfigService);
+  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/tasks');
+}
 
 @Injectable({ providedIn: 'root' })
-export class TaskService {
+export class TaskService extends TasksService {
   protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/tasks');
-
-  create(task: NewTask): Observable<EntityResponseType> {
-    return this.http.post<ITask>(this.resourceUrl, task, { observe: 'response' });
+  create(task: NewTask): Observable<ITask> {
+    return this.http.post<ITask>(this.resourceUrl, task);
   }
 
-  update(task: ITask): Observable<EntityResponseType> {
-    return this.http.put<ITask>(`${this.resourceUrl}/${this.getTaskIdentifier(task)}`, task, { observe: 'response' });
+  update(task: ITask): Observable<ITask> {
+    return this.http.put<ITask>(`${this.resourceUrl}/${encodeURIComponent(this.getTaskIdentifier(task))}`, task);
   }
 
-  partialUpdate(task: PartialUpdateTask): Observable<EntityResponseType> {
-    return this.http.patch<ITask>(`${this.resourceUrl}/${this.getTaskIdentifier(task)}`, task, { observe: 'response' });
+  partialUpdate(task: PartialUpdateTask): Observable<ITask> {
+    return this.http.patch<ITask>(`${this.resourceUrl}/${encodeURIComponent(this.getTaskIdentifier(task))}`, task);
   }
 
-  find(id: string): Observable<EntityResponseType> {
-    return this.http.get<ITask>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  find(id: string): Observable<ITask> {
+    return this.http.get<ITask>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
-  query(req?: any): Observable<EntityArrayResponseType> {
+  query(req?: any): Observable<HttpResponse<ITask[]>> {
     const options = createRequestOption(req);
     return this.http.get<ITask[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  delete(id: string): Observable<undefined> {
+    return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
   getTaskIdentifier(task: Pick<ITask, 'id'>): string {
