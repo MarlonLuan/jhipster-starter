@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -25,14 +25,13 @@ export class DepartmentUpdateComponent implements OnInit {
 
   locationsCollection: ILocation[] = [];
 
-  editForm: DepartmentFormGroup = this.departmentFormService.createDepartmentFormGroup();
+  protected departmentService = inject(DepartmentService);
+  protected departmentFormService = inject(DepartmentFormService);
+  protected locationService = inject(LocationService);
+  protected activatedRoute = inject(ActivatedRoute);
 
-  constructor(
-    protected departmentService: DepartmentService,
-    protected departmentFormService: DepartmentFormService,
-    protected locationService: LocationService,
-    protected activatedRoute: ActivatedRoute,
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  editForm: DepartmentFormGroup = this.departmentFormService.createDepartmentFormGroup();
 
   compareLocation = (o1: ILocation | null, o2: ILocation | null): boolean => this.locationService.compareLocation(o1, o2);
 
