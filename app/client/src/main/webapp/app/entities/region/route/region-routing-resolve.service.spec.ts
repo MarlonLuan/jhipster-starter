@@ -8,12 +8,11 @@ import { of } from 'rxjs';
 import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
 
-import { RegionRoutingResolveService } from './region-routing-resolve.service';
+import regionResolve from './region-routing-resolve.service';
 
 describe('Region routing resolve service', () => {
   let mockRouter: Router;
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
-  let routingResolveService: RegionRoutingResolveService;
   let service: RegionService;
   let resultRegion: IRegion | null | undefined;
 
@@ -34,7 +33,6 @@ describe('Region routing resolve service', () => {
     mockRouter = TestBed.inject(Router);
     jest.spyOn(mockRouter, 'navigate').mockImplementation(() => Promise.resolve(true));
     mockActivatedRouteSnapshot = TestBed.inject(ActivatedRoute).snapshot;
-    routingResolveService = TestBed.inject(RegionRoutingResolveService);
     service = TestBed.inject(RegionService);
     resultRegion = undefined;
   });
@@ -46,8 +44,12 @@ describe('Region routing resolve service', () => {
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN
-      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
-        resultRegion = result;
+      TestBed.runInInjectionContext(() => {
+        regionResolve(mockActivatedRouteSnapshot).subscribe({
+          next(result) {
+            resultRegion = result;
+          },
+        });
       });
 
       // THEN
@@ -61,8 +63,12 @@ describe('Region routing resolve service', () => {
       mockActivatedRouteSnapshot.params = {};
 
       // WHEN
-      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
-        resultRegion = result;
+      TestBed.runInInjectionContext(() => {
+        regionResolve(mockActivatedRouteSnapshot).subscribe({
+          next(result) {
+            resultRegion = result;
+          },
+        });
       });
 
       // THEN
@@ -76,8 +82,12 @@ describe('Region routing resolve service', () => {
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN
-      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
-        resultRegion = result;
+      TestBed.runInInjectionContext(() => {
+        regionResolve(mockActivatedRouteSnapshot).subscribe({
+          next(result) {
+            resultRegion = result;
+          },
+        });
       });
 
       // THEN

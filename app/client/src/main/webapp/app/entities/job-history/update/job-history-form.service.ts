@@ -55,7 +55,7 @@ export class JobHistoryFormService {
         {
           nonNullable: true,
           validators: [Validators.required],
-        }
+        },
       ),
       startDate: new FormControl(jobHistoryRawValue.startDate),
       endDate: new FormControl(jobHistoryRawValue.endDate),
@@ -76,7 +76,7 @@ export class JobHistoryFormService {
       {
         ...jobHistoryRawValue,
         id: { value: jobHistoryRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */
+      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
     );
   }
 
@@ -91,7 +91,7 @@ export class JobHistoryFormService {
   }
 
   private convertJobHistoryRawValueToJobHistory(
-    rawJobHistory: JobHistoryFormRawValue | NewJobHistoryFormRawValue
+    rawJobHistory: JobHistoryFormRawValue | NewJobHistoryFormRawValue,
   ): IJobHistory | NewJobHistory {
     return {
       ...rawJobHistory,
@@ -101,7 +101,7 @@ export class JobHistoryFormService {
   }
 
   private convertJobHistoryToJobHistoryRawValue(
-    jobHistory: IJobHistory | (Partial<NewJobHistory> & JobHistoryFormDefaults)
+    jobHistory: IJobHistory | (Partial<NewJobHistory> & JobHistoryFormDefaults),
   ): JobHistoryFormRawValue | PartialWithRequiredKeyOf<NewJobHistoryFormRawValue> {
     return {
       ...jobHistory,

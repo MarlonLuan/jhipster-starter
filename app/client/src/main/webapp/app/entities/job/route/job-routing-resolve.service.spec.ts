@@ -8,12 +8,11 @@ import { of } from 'rxjs';
 import { IJob } from '../job.model';
 import { JobService } from '../service/job.service';
 
-import { JobRoutingResolveService } from './job-routing-resolve.service';
+import jobResolve from './job-routing-resolve.service';
 
 describe('Job routing resolve service', () => {
   let mockRouter: Router;
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
-  let routingResolveService: JobRoutingResolveService;
   let service: JobService;
   let resultJob: IJob | null | undefined;
 
@@ -34,7 +33,6 @@ describe('Job routing resolve service', () => {
     mockRouter = TestBed.inject(Router);
     jest.spyOn(mockRouter, 'navigate').mockImplementation(() => Promise.resolve(true));
     mockActivatedRouteSnapshot = TestBed.inject(ActivatedRoute).snapshot;
-    routingResolveService = TestBed.inject(JobRoutingResolveService);
     service = TestBed.inject(JobService);
     resultJob = undefined;
   });
@@ -46,8 +44,12 @@ describe('Job routing resolve service', () => {
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN
-      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
-        resultJob = result;
+      TestBed.runInInjectionContext(() => {
+        jobResolve(mockActivatedRouteSnapshot).subscribe({
+          next(result) {
+            resultJob = result;
+          },
+        });
       });
 
       // THEN
@@ -61,8 +63,12 @@ describe('Job routing resolve service', () => {
       mockActivatedRouteSnapshot.params = {};
 
       // WHEN
-      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
-        resultJob = result;
+      TestBed.runInInjectionContext(() => {
+        jobResolve(mockActivatedRouteSnapshot).subscribe({
+          next(result) {
+            resultJob = result;
+          },
+        });
       });
 
       // THEN
@@ -76,8 +82,12 @@ describe('Job routing resolve service', () => {
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN
-      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
-        resultJob = result;
+      TestBed.runInInjectionContext(() => {
+        jobResolve(mockActivatedRouteSnapshot).subscribe({
+          next(result) {
+            resultJob = result;
+          },
+        });
       });
 
       // THEN
