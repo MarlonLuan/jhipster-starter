@@ -3,7 +3,6 @@ import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
 import { IJob } from 'app/entities/job/job.model';
@@ -30,7 +29,7 @@ describe('JobHistory Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), JobHistoryUpdateComponent],
+      imports: [HttpClientTestingModule, JobHistoryUpdateComponent],
       providers: [
         FormBuilder,
         {
@@ -94,10 +93,10 @@ describe('JobHistory Management Update Component', () => {
 
     it('Should call employee query and add missing value', () => {
       const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const employee: IEmployee = { id: '915c5101-2308-4101-954f-38e8150b8c47' };
+      const employee: IEmployee = { id: '15c51012-3081-4015-a4f3-8e8150b8c475' };
       jobHistory.employee = employee;
 
-      const employeeCollection: IEmployee[] = [{ id: '970b2d98-4224-4e70-ab02-5e49830c4e68' }];
+      const employeeCollection: IEmployee[] = [{ id: '70b2d984-224e-470b-8025-e49830c4e68a' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const expectedCollection: IEmployee[] = [employee, ...employeeCollection];
       jest.spyOn(employeeService, 'addEmployeeToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -116,7 +115,7 @@ describe('JobHistory Management Update Component', () => {
       jobHistory.job = job;
       const department: IDepartment = { id: 'b707f154-4fb3-4cd0-a88f-6c3244da277a' };
       jobHistory.department = department;
-      const employee: IEmployee = { id: '1fdd7e99-2c09-4743-bf5d-e4cdf99caa7f' };
+      const employee: IEmployee = { id: 'fdd7e992-c097-443f-a5de-4cdf99caa7ff' };
       jobHistory.employee = employee;
 
       activatedRoute.data = of({ jobHistory });

@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { ASC } from 'app/config/navigation.constants';
 import { DepartmentComponent } from './list/department.component';
 import { DepartmentDetailComponent } from './detail/department-detail.component';
 import { DepartmentUpdateComponent } from './update/department-update.component';
@@ -11,9 +10,7 @@ const departmentRoute: Routes = [
   {
     path: '',
     component: DepartmentComponent,
-    data: {
-      defaultSort: 'id,' + ASC,
-    },
+    data: {},
     canActivate: [UserRouteAccessService],
   },
   {
