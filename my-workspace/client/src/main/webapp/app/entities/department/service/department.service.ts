@@ -16,7 +16,10 @@ export type EntityArrayResponseType = HttpResponse<IDepartment[]>;
 export class DepartmentService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/departments');
 
-  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(department: NewDepartment): Observable<EntityResponseType> {
     return this.http.post<IDepartment>(this.resourceUrl, department, { observe: 'response' });
