@@ -1,14 +1,14 @@
 import { inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { of, EMPTY, Observable } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
 
 const regionResolve = (route: ActivatedRouteSnapshot): Observable<null | IRegion> => {
-  const id = route.params['id'];
+  const id = route.params.id;
   if (id) {
     return inject(RegionService)
       .find(id)
@@ -16,10 +16,9 @@ const regionResolve = (route: ActivatedRouteSnapshot): Observable<null | IRegion
         mergeMap((region: HttpResponse<IRegion>) => {
           if (region.body) {
             return of(region.body);
-          } else {
-            inject(Router).navigate(['404']);
-            return EMPTY;
           }
+          inject(Router).navigate(['404']);
+          return EMPTY;
         }),
       );
   }

@@ -1,21 +1,18 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { LocationComponent } from './list/location.component';
-import { LocationDetailComponent } from './detail/location-detail.component';
-import { LocationUpdateComponent } from './update/location-update.component';
 import LocationResolve from './route/location-routing-resolve.service';
 
 const locationRoute: Routes = [
   {
     path: '',
-    component: LocationComponent,
+    loadComponent: () => import('./list/location.component').then(m => m.LocationComponent),
     data: {},
     canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',
-    component: LocationDetailComponent,
+    loadComponent: () => import('./detail/location-detail.component').then(m => m.LocationDetailComponent),
     resolve: {
       location: LocationResolve,
     },
@@ -23,7 +20,7 @@ const locationRoute: Routes = [
   },
   {
     path: 'new',
-    component: LocationUpdateComponent,
+    loadComponent: () => import('./update/location-update.component').then(m => m.LocationUpdateComponent),
     resolve: {
       location: LocationResolve,
     },
@@ -31,7 +28,7 @@ const locationRoute: Routes = [
   },
   {
     path: ':id/edit',
-    component: LocationUpdateComponent,
+    loadComponent: () => import('./update/location-update.component').then(m => m.LocationUpdateComponent),
     resolve: {
       location: LocationResolve,
     },

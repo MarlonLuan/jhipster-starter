@@ -1,17 +1,18 @@
 import { ITask, NewTask } from './task.model';
 
 export const sampleWithRequiredData: ITask = {
-  id: '099b6577-e459-4ae6-8877-0fc9de254d22',
+  id: '0967e5a6-70cd-4242-82c1-b3161b64814c',
 };
 
 export const sampleWithPartialData: ITask = {
-  id: '21bb33a1-76d1-49b8-b664-78c1444c1282',
+  id: '79944e83-9a34-4ade-b41e-a631525e7c8a',
+  title: 'cook bashfully',
 };
 
 export const sampleWithFullData: ITask = {
-  id: '93779c99-4145-4ec8-b238-9ba23b40a7d9',
-  title: 'quickly closely',
-  description: 'clean potato',
+  id: 'edc12e7f-dd40-4346-a2af-7aff3f20fa98',
+  title: 'wherever consistency eyebrow',
+  description: 'deeply',
 };
 
 export const sampleWithNewData: NewTask = {
