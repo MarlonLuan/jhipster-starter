@@ -147,7 +147,7 @@ public class CountryResource {
     @GetMapping("")
     public ResponseEntity<List<CountryDTO>> getAllCountries(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false) String filter
+        @RequestParam(name = "filter", required = false) String filter
     ) {
         if ("location-is-null".equals(filter)) {
             log.debug("REST request to get all Countrys where location is null");
@@ -166,7 +166,7 @@ public class CountryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the countryDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CountryDTO> getCountry(@PathVariable UUID id) {
+    public ResponseEntity<CountryDTO> getCountry(@PathVariable("id") UUID id) {
         log.debug("REST request to get Country : {}", id);
         Optional<CountryDTO> countryDTO = countryService.findOne(id);
         return ResponseUtil.wrapOrNotFound(countryDTO);
@@ -179,7 +179,7 @@ public class CountryResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCountry(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteCountry(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Country : {}", id);
         countryService.delete(id);
         return ResponseEntity

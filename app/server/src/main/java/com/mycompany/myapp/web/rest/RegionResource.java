@@ -147,7 +147,7 @@ public class RegionResource {
     @GetMapping("")
     public ResponseEntity<List<RegionDTO>> getAllRegions(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false) String filter
+        @RequestParam(name = "filter", required = false) String filter
     ) {
         if ("country-is-null".equals(filter)) {
             log.debug("REST request to get all Regions where country is null");
@@ -166,7 +166,7 @@ public class RegionResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the regionDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<RegionDTO> getRegion(@PathVariable UUID id) {
+    public ResponseEntity<RegionDTO> getRegion(@PathVariable("id") UUID id) {
         log.debug("REST request to get Region : {}", id);
         Optional<RegionDTO> regionDTO = regionService.findOne(id);
         return ResponseUtil.wrapOrNotFound(regionDTO);
@@ -179,7 +179,7 @@ public class RegionResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRegion(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteRegion(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Region : {}", id);
         regionService.delete(id);
         return ResponseEntity
