@@ -1,4 +1,4 @@
 /**
- * JPA domain objects.
+ * Domain objects.
  */
 package com.mycompany.myapp.domain;

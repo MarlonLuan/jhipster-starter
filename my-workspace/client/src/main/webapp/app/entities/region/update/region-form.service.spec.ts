@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { sampleWithRequiredData, sampleWithNewData } from '../region.test-samples';
+import { sampleWithNewData, sampleWithRequiredData } from '../region.test-samples';
 
 import { RegionFormService } from './region-form.service';
 
@@ -21,7 +21,7 @@ describe('Region Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             regionName: expect.any(Object),
-          })
+          }),
         );
       });
 
@@ -32,14 +32,13 @@ describe('Region Form Service', () => {
           expect.objectContaining({
             id: expect.any(Object),
             regionName: expect.any(Object),
-          })
+          }),
         );
       });
     });
 
     describe('getRegion', () => {
       it('should return NewRegion for default Region initial value', () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createRegionFormGroup(sampleWithNewData);
 
         const region = service.getRegion(formGroup) as any;
