@@ -1,0 +1,48 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 * * * *'
+jobs:
+  next:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+
+      - run: npm un generator-jhipster -g
+
+      - run: git clone --depth=1 https://github.com/jhipster/generator-jhipster.git
+
+      - run: |
+          cd generator-jhipster
+          npm i -f
+          npm link
+
+      - run: |
+          echo "y" | rm -rf my-workspace
+          mkdir my-workspace
+
+      - run: |
+          cd my-workspace
+          mkdir client
+          cd client
+          echo "a" | jhipster jdl ../../jdl/workspace.jdl --skip-git --skip-install --skip-server
+
+      - run: |
+          cd my-workspace
+          mkdir server
+          cd server
+          echo "a" | jhipster jdl ../../jdl/workspace.jdl --skip-git --skip-install --skip-client
+
+      - run: echo "y" | rm -rf generator-jhipster
+
+      - uses: peter-evans/create-pull-request@v8
+        with:
+          title: next
+          body:
+          commit-message: next
+          branch: next
+          draft: true
