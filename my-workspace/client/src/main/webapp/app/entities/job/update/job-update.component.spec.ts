@@ -1,18 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of, Subject, from } from 'rxjs';
+import { Subject, from, of } from 'rxjs';
 
-import { JobFormService } from './job-form.service';
-import { JobService } from '../service/job.service';
-import { IJob } from '../job.model';
 import { ITask } from 'app/entities/task/task.model';
 import { TaskService } from 'app/entities/task/service/task.service';
 import { IEmployee } from 'app/entities/employee/employee.model';
 import { EmployeeService } from 'app/entities/employee/service/employee.service';
+import { IJob } from '../job.model';
+import { JobService } from '../service/job.service';
+import { JobFormService } from './job-form.service';
 
 import { JobUpdateComponent } from './job-update.component';
 
@@ -27,9 +25,9 @@ describe('Job Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [JobUpdateComponent],
+      imports: [JobUpdateComponent],
       providers: [
+        provideHttpClient(),
         FormBuilder,
         {
           provide: ActivatedRoute,
@@ -55,10 +53,10 @@ describe('Job Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Task query and add missing value', () => {
       const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const tasks: ITask[] = [{ id: 'e2e1acc3-9ec5-447c-a291-12013cfe06b8' }];
+      const tasks: ITask[] = [{ id: 'd8d76ad3-c40b-4ffe-a6d3-c1e54dd01752' }];
       job.tasks = tasks;
 
-      const taskCollection: ITask[] = [{ id: '28ec4d12-3c43-41a0-aef2-139c0d1dae95' }];
+      const taskCollection: ITask[] = [{ id: 'e7b83ab8-5c9a-4e24-902e-4ac7ce2ed7a4' }];
       jest.spyOn(taskService, 'query').mockReturnValue(of(new HttpResponse({ body: taskCollection })));
       const additionalTasks = [...tasks];
       const expectedCollection: ITask[] = [...additionalTasks, ...taskCollection];
@@ -70,17 +68,17 @@ describe('Job Management Update Component', () => {
       expect(taskService.query).toHaveBeenCalled();
       expect(taskService.addTaskToCollectionIfMissing).toHaveBeenCalledWith(
         taskCollection,
-        ...additionalTasks.map(expect.objectContaining)
+        ...additionalTasks.map(expect.objectContaining),
       );
       expect(comp.tasksSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should call Employee query and add missing value', () => {
       const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const employee: IEmployee = { id: 'cc381ce0-37da-481c-b93f-59c6b8377b93' };
+      const employee: IEmployee = { id: '82386609-c22a-408b-aa39-2f1550f5bdc8' };
       job.employee = employee;
 
-      const employeeCollection: IEmployee[] = [{ id: '7a8cb8b7-0871-4787-878c-f824fc1ad02b' }];
+      const employeeCollection: IEmployee[] = [{ id: 'e1ae7501-b38f-47f3-85f6-722bfa97d50e' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [employee];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
@@ -92,16 +90,16 @@ describe('Job Management Update Component', () => {
       expect(employeeService.query).toHaveBeenCalled();
       expect(employeeService.addEmployeeToCollectionIfMissing).toHaveBeenCalledWith(
         employeeCollection,
-        ...additionalEmployees.map(expect.objectContaining)
+        ...additionalEmployees.map(expect.objectContaining),
       );
       expect(comp.employeesSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should update editForm', () => {
       const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const task: ITask = { id: '0e59552b-7478-49d0-b770-a8c547701da7' };
+      const task: ITask = { id: '25cbf0df-f012-432e-b5a7-c40411a705fd' };
       job.tasks = [task];
-      const employee: IEmployee = { id: '3db2d831-b39e-4611-8df5-d50291065983' };
+      const employee: IEmployee = { id: '1995d324-f84c-4715-ad13-e735414fa35e' };
       job.employee = employee;
 
       activatedRoute.data = of({ job });

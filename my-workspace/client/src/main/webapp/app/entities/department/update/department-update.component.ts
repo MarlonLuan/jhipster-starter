@@ -1,33 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import { DepartmentFormService, DepartmentFormGroup } from './department-form.service';
-import { IDepartment } from '../department.model';
-import { DepartmentService } from '../service/department.service';
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { ILocation } from 'app/entities/location/location.model';
 import { LocationService } from 'app/entities/location/service/location.service';
+import { IDepartment } from '../department.model';
+import { DepartmentService } from '../service/department.service';
+import { DepartmentFormGroup, DepartmentFormService } from './department-form.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-department-update',
   templateUrl: './department-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class DepartmentUpdateComponent implements OnInit {
   isSaving = false;
   department: IDepartment | null = null;
 
-  locationsSharedCollection: ILocation[] = [];
+  locationsCollection: ILocation[] = [];
 
+  protected departmentService = inject(DepartmentService);
+  protected departmentFormService = inject(DepartmentFormService);
+  protected locationService = inject(LocationService);
+  protected activatedRoute = inject(ActivatedRoute);
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: DepartmentFormGroup = this.departmentFormService.createDepartmentFormGroup();
-
-  constructor(
-    protected departmentService: DepartmentService,
-    protected departmentFormService: DepartmentFormService,
-    protected locationService: LocationService,
-    protected activatedRoute: ActivatedRoute
-  ) {}
 
   compareLocation = (o1: ILocation | null, o2: ILocation | null): boolean => this.locationService.compareLocation(o1, o2);
 
@@ -79,21 +83,21 @@ export class DepartmentUpdateComponent implements OnInit {
     this.department = department;
     this.departmentFormService.resetForm(this.editForm, department);
 
-    this.locationsSharedCollection = this.locationService.addLocationToCollectionIfMissing<ILocation>(
-      this.locationsSharedCollection,
-      department.location
+    this.locationsCollection = this.locationService.addLocationToCollectionIfMissing<ILocation>(
+      this.locationsCollection,
+      department.location,
     );
   }
 
   protected loadRelationshipsOptions(): void {
     this.locationService
-      .query()
+      .query({ filter: 'department-is-null' })
       .pipe(map((res: HttpResponse<ILocation[]>) => res.body ?? []))
       .pipe(
         map((locations: ILocation[]) =>
-          this.locationService.addLocationToCollectionIfMissing<ILocation>(locations, this.department?.location)
-        )
+          this.locationService.addLocationToCollectionIfMissing<ILocation>(locations, this.department?.location),
+        ),
       )
-      .subscribe((locations: ILocation[]) => (this.locationsSharedCollection = locations));
+      .subscribe((locations: ILocation[]) => (this.locationsCollection = locations));
   }
 }

@@ -1,16 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of, Subject, from } from 'rxjs';
+import { Subject, from, of } from 'rxjs';
 
-import { LocationFormService } from './location-form.service';
-import { LocationService } from '../service/location.service';
-import { ILocation } from '../location.model';
 import { ICountry } from 'app/entities/country/country.model';
 import { CountryService } from 'app/entities/country/service/country.service';
+import { LocationService } from '../service/location.service';
+import { ILocation } from '../location.model';
+import { LocationFormService } from './location-form.service';
 
 import { LocationUpdateComponent } from './location-update.component';
 
@@ -24,9 +22,9 @@ describe('Location Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [LocationUpdateComponent],
+      imports: [LocationUpdateComponent],
       providers: [
+        provideHttpClient(),
         FormBuilder,
         {
           provide: ActivatedRoute,
@@ -49,37 +47,33 @@ describe('Location Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call Country query and add missing value', () => {
+    it('Should call country query and add missing value', () => {
       const location: ILocation = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const country: ICountry = { id: '1dc3931a-f7f3-4e64-a0fc-036e2b1b4be0' };
+      const country: ICountry = { id: '34a0c755-7e6d-46d3-b2fb-70f3e8b11d64' };
       location.country = country;
 
-      const countryCollection: ICountry[] = [{ id: '0623b3cc-a3d9-4adb-9023-2538b6114a5d' }];
+      const countryCollection: ICountry[] = [{ id: '19a4717d-7554-4987-b783-5ad76fe83122' }];
       jest.spyOn(countryService, 'query').mockReturnValue(of(new HttpResponse({ body: countryCollection })));
-      const additionalCountries = [country];
-      const expectedCollection: ICountry[] = [...additionalCountries, ...countryCollection];
+      const expectedCollection: ICountry[] = [country, ...countryCollection];
       jest.spyOn(countryService, 'addCountryToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ location });
       comp.ngOnInit();
 
       expect(countryService.query).toHaveBeenCalled();
-      expect(countryService.addCountryToCollectionIfMissing).toHaveBeenCalledWith(
-        countryCollection,
-        ...additionalCountries.map(expect.objectContaining)
-      );
-      expect(comp.countriesSharedCollection).toEqual(expectedCollection);
+      expect(countryService.addCountryToCollectionIfMissing).toHaveBeenCalledWith(countryCollection, country);
+      expect(comp.countriesCollection).toEqual(expectedCollection);
     });
 
     it('Should update editForm', () => {
       const location: ILocation = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const country: ICountry = { id: '3bfd7634-d887-49f0-87c0-6ab42e8f4414' };
+      const country: ICountry = { id: 'ca9a7ce3-9ea1-431b-9270-d741e42fa99e' };
       location.country = country;
 
       activatedRoute.data = of({ location });
       comp.ngOnInit();
 
-      expect(comp.countriesSharedCollection).toContain(country);
+      expect(comp.countriesCollection).toContain(country);
       expect(comp.location).toEqual(location);
     });
   });
