@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { ASC } from 'app/config/navigation.constants';
 import { JobHistoryComponent } from './list/job-history.component';
 import { JobHistoryDetailComponent } from './detail/job-history-detail.component';
 import { JobHistoryUpdateComponent } from './update/job-history-update.component';
@@ -11,9 +10,7 @@ const jobHistoryRoute: Routes = [
   {
     path: '',
     component: JobHistoryComponent,
-    data: {
-      defaultSort: 'id,' + ASC,
-    },
+    data: {},
     canActivate: [UserRouteAccessService],
   },
   {
