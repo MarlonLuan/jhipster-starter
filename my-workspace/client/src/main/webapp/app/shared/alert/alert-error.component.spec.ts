@@ -15,8 +15,7 @@ describe('Alert Error Component', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
-      declarations: [AlertErrorComponent],
+      imports: [TranslateModule.forRoot(), AlertErrorComponent],
       providers: [EventManager, AlertService],
     })
       .overrideTemplate(AlertErrorComponent, '')
@@ -37,33 +36,33 @@ describe('Alert Error Component', () => {
   });
 
   describe('Error Handling', () => {
-    it('Should display an alert on status 0', () => {
+    it('should display an alert on status 0', () => {
       // GIVEN
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: { status: 0 } });
       // THEN
-      expect(comp.alerts.length).toBe(1);
-      expect(comp.alerts[0].translationKey).toBe('error.server.not.reachable');
+      expect(comp.alerts().length).toBe(1);
+      expect(comp.alerts()[0].translationKey).toBe('error.server.not.reachable');
     });
 
-    it('Should display an alert on status 404', () => {
+    it('should display an alert on status 404', () => {
       // GIVEN
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: { status: 404 } });
       // THEN
-      expect(comp.alerts.length).toBe(1);
-      expect(comp.alerts[0].translationKey).toBe('error.url.not.found');
+      expect(comp.alerts().length).toBe(1);
+      expect(comp.alerts()[0].translationKey).toBe('error.url.not.found');
     });
 
-    it('Should display an alert on generic error', () => {
+    it('should display an alert on generic error', () => {
       // GIVEN
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: { error: { message: 'Error Message' } } });
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: { error: 'Second Error Message' } });
       // THEN
-      expect(comp.alerts.length).toBe(2);
-      expect(comp.alerts[0].translationKey).toBe('Error Message');
-      expect(comp.alerts[1].translationKey).toBe('Second Error Message');
+      expect(comp.alerts().length).toBe(2);
+      expect(comp.alerts()[0].translationKey).toBe('Error Message');
+      expect(comp.alerts()[1].translationKey).toBe('Second Error Message');
     });
 
-    it('Should display an alert on status 400 for generic error', () => {
+    it('should display an alert on status 400 for generic error', () => {
       // GIVEN
       const response = new HttpErrorResponse({
         url: 'http://localhost:8080/api/foos',
@@ -71,7 +70,7 @@ describe('Alert Error Component', () => {
         status: 400,
         statusText: 'Bad Request',
         error: {
-          type: 'https://www.jhipster.tech/problem/constraint-violation',
+          type: 'https://www.jhipster.tech/problem/problem-with-message',
           title: 'Bad Request',
           status: 400,
           path: '/api/foos',
@@ -80,11 +79,11 @@ describe('Alert Error Component', () => {
       });
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: response });
       // THEN
-      expect(comp.alerts.length).toBe(1);
-      expect(comp.alerts[0].translationKey).toBe('error.validation');
+      expect(comp.alerts().length).toBe(1);
+      expect(comp.alerts()[0].translationKey).toBe('error.validation');
     });
 
-    it('Should display an alert on status 400 for generic error without message', () => {
+    it('should display an alert on status 400 for generic error without message', () => {
       // GIVEN
       const response = new HttpErrorResponse({
         url: 'http://localhost:8080/api/foos',
@@ -94,11 +93,11 @@ describe('Alert Error Component', () => {
       });
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: response });
       // THEN
-      expect(comp.alerts.length).toBe(1);
-      expect(comp.alerts[0].translationKey).toBe('Bad Request');
+      expect(comp.alerts().length).toBe(1);
+      expect(comp.alerts()[0].translationKey).toBe('Bad Request');
     });
 
-    it('Should display an alert on status 400 for invalid parameters', () => {
+    it('should display an alert on status 400 for invalid parameters', () => {
       // GIVEN
       const response = new HttpErrorResponse({
         url: 'http://localhost:8080/api/foos',
@@ -106,7 +105,7 @@ describe('Alert Error Component', () => {
         status: 400,
         statusText: 'Bad Request',
         error: {
-          type: 'https://www.jhipster.tech/problem/constraint-violation',
+          type: 'https://www.jhipster.tech/problem/problem-with-message',
           title: 'Method argument not valid',
           status: 400,
           path: '/api/foos',
@@ -116,11 +115,11 @@ describe('Alert Error Component', () => {
       });
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: response });
       // THEN
-      expect(comp.alerts.length).toBe(1);
-      expect(comp.alerts[0].translationKey).toBe('error.Size');
+      expect(comp.alerts().length).toBe(1);
+      expect(comp.alerts()[0].translationKey).toBe('error.Size');
     });
 
-    it('Should display an alert on status 400 for error headers', () => {
+    it('should display an alert on status 400 for error headers', () => {
       // GIVEN
       const response = new HttpErrorResponse({
         url: 'http://localhost:8080/api/foos',
@@ -134,11 +133,11 @@ describe('Alert Error Component', () => {
       });
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: response });
       // THEN
-      expect(comp.alerts.length).toBe(1);
-      expect(comp.alerts[0].translationKey).toBe('Error Message');
+      expect(comp.alerts().length).toBe(1);
+      expect(comp.alerts()[0].translationKey).toBe('Error Message');
     });
 
-    it('Should display an alert on status 500 with detail', () => {
+    it('should display an alert on status 500 with detail', () => {
       // GIVEN
       const response = new HttpErrorResponse({
         url: 'http://localhost:8080/api/foos',
@@ -153,8 +152,8 @@ describe('Alert Error Component', () => {
       });
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: response });
       // THEN
-      expect(comp.alerts.length).toBe(1);
-      expect(comp.alerts[0].translationKey).toBe('error.http.500');
+      expect(comp.alerts().length).toBe(1);
+      expect(comp.alerts()[0].translationKey).toBe('error.http.500');
     });
   });
 });
