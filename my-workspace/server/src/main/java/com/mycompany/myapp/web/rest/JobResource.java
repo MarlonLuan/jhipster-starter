@@ -35,7 +35,7 @@ public class JobResource {
 
     private static final String ENTITY_NAME = "job";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final JobService jobService;
@@ -132,12 +132,12 @@ public class JobResource {
     }
 
     /**
-     * {@code GET  /jobs} : get all the jobs.
+     * {@code GET  /jobs} : get all the Jobs.
      *
      * @param pageable the pagination information.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of jobs in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Jobs in body.
      */
     @GetMapping("")
     public ResponseEntity<List<JobDTO>> getAllJobs(

@@ -29,10 +29,10 @@ export type LocationFormGroup = FormGroup<LocationFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class LocationFormService {
-  createLocationFormGroup(location: LocationFormGroupInput = { id: null }): LocationFormGroup {
+  createLocationFormGroup(location?: LocationFormGroupInput): LocationFormGroup {
     const locationRawValue = {
       ...this.getFormDefaults(),
-      ...location,
+      ...(location ?? { id: null }),
     };
     return new FormGroup<LocationFormGroupContent>({
       id: new FormControl(
@@ -56,12 +56,10 @@ export class LocationFormService {
 
   resetForm(form: LocationFormGroup, location: LocationFormGroupInput): void {
     const locationRawValue = { ...this.getFormDefaults(), ...location };
-    form.reset(
-      {
-        ...locationRawValue,
-        id: { value: locationRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...locationRawValue,
+      id: { value: locationRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): LocationFormDefaults {

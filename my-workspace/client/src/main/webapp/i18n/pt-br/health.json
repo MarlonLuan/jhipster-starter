@@ -12,6 +12,7 @@
     },
     "indicator": {
       "diskSpace": "Espaço em disco",
+      "ssl": "SSL",
       "mail": "E-mail",
       "livenessState": "Liveness state",
       "readinessState": "Readiness state",
