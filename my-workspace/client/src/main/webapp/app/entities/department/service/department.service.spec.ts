@@ -37,7 +37,6 @@ describe('Department Service', () => {
     });
 
     it('should create a Department', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const department = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
