@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
 
 import { IDepartment } from '../department.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../department.test-samples';
@@ -18,7 +18,7 @@ describe('Department Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(DepartmentService);
@@ -30,7 +30,7 @@ describe('Department Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.body));
+      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(returnedFromService);
@@ -42,7 +42,7 @@ describe('Department Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.create(department).subscribe(resp => (expectedResult = resp.body));
+      service.create(department).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'POST' });
       req.flush(returnedFromService);
@@ -54,7 +54,7 @@ describe('Department Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.update(department).subscribe(resp => (expectedResult = resp.body));
+      service.update(department).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'PUT' });
       req.flush(returnedFromService);
@@ -66,7 +66,7 @@ describe('Department Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp.body));
+      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'PATCH' });
       req.flush(returnedFromService);
@@ -87,21 +87,17 @@ describe('Department Service', () => {
     });
 
     it('should delete a Department', () => {
-      const expected = true;
+      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe();
 
-      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.ok));
-
-      const req = httpMock.expectOne({ method: 'DELETE' });
-      req.flush({ status: 200 });
-      expect(expectedResult).toBe(expected);
+      const requests = httpMock.match({ method: 'DELETE' });
+      expect(requests.length).toBe(1);
     });
 
     describe('addDepartmentToCollectionIfMissing', () => {
       it('should add a Department to an empty array', () => {
         const department: IDepartment = sampleWithRequiredData;
         expectedResult = service.addDepartmentToCollectionIfMissing([], department);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(department);
+        expect(expectedResult).toEqual([department]);
       });
 
       it('should not add a Department to an array that contains it', () => {
@@ -135,16 +131,13 @@ describe('Department Service', () => {
         const department: IDepartment = sampleWithRequiredData;
         const department2: IDepartment = sampleWithPartialData;
         expectedResult = service.addDepartmentToCollectionIfMissing([], department, department2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(department);
-        expect(expectedResult).toContain(department2);
+        expect(expectedResult).toEqual([department, department2]);
       });
 
       it('should accept null and undefined values', () => {
         const department: IDepartment = sampleWithRequiredData;
         expectedResult = service.addDepartmentToCollectionIfMissing([], null, department, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(department);
+        expect(expectedResult).toEqual([department]);
       });
 
       it('should return initial array if no Department is added', () => {

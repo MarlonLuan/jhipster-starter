@@ -35,7 +35,7 @@ public class CountryResource {
 
     private static final String ENTITY_NAME = "country";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final CountryService countryService;
@@ -136,11 +136,11 @@ public class CountryResource {
     }
 
     /**
-     * {@code GET  /countries} : get all the countries.
+     * {@code GET  /countries} : get all the Countries.
      *
      * @param pageable the pagination information.
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of countries in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Countries in body.
      */
     @GetMapping("")
     public ResponseEntity<List<CountryDTO>> getAllCountries(

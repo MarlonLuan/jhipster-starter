@@ -1,47 +1,63 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { ICountry, NewCountry } from '../country.model';
 
 export type PartialUpdateCountry = Partial<ICountry> & Pick<ICountry, 'id'>;
 
-export type EntityResponseType = HttpResponse<ICountry>;
-export type EntityArrayResponseType = HttpResponse<ICountry[]>;
+@Injectable()
+export class CountriesService {
+  readonly countriesParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
+    undefined,
+  );
+  readonly countriesResource = httpResource<ICountry[]>(() => {
+    const params = this.countriesParams();
+    if (!params) {
+      return undefined;
+    }
+    return { url: this.resourceUrl, params };
+  });
+  /**
+   * This signal holds the list of country that have been fetched. It is updated when the countriesResource emits a new value.
+   * In case of error while fetching the countries, the signal is set to an empty array.
+   */
+  readonly countries = computed(() => (this.countriesResource.hasValue() ? this.countriesResource.value() : []));
+  protected readonly applicationConfigService = inject(ApplicationConfigService);
+  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/countries');
+}
 
 @Injectable({ providedIn: 'root' })
-export class CountryService {
+export class CountryService extends CountriesService {
   protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/countries');
-
-  create(country: NewCountry): Observable<EntityResponseType> {
-    return this.http.post<ICountry>(this.resourceUrl, country, { observe: 'response' });
+  create(country: NewCountry): Observable<ICountry> {
+    return this.http.post<ICountry>(this.resourceUrl, country);
   }
 
-  update(country: ICountry): Observable<EntityResponseType> {
-    return this.http.put<ICountry>(`${this.resourceUrl}/${this.getCountryIdentifier(country)}`, country, { observe: 'response' });
+  update(country: ICountry): Observable<ICountry> {
+    return this.http.put<ICountry>(`${this.resourceUrl}/${encodeURIComponent(this.getCountryIdentifier(country))}`, country);
   }
 
-  partialUpdate(country: PartialUpdateCountry): Observable<EntityResponseType> {
-    return this.http.patch<ICountry>(`${this.resourceUrl}/${this.getCountryIdentifier(country)}`, country, { observe: 'response' });
+  partialUpdate(country: PartialUpdateCountry): Observable<ICountry> {
+    return this.http.patch<ICountry>(`${this.resourceUrl}/${encodeURIComponent(this.getCountryIdentifier(country))}`, country);
   }
 
-  find(id: string): Observable<EntityResponseType> {
-    return this.http.get<ICountry>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  find(id: string): Observable<ICountry> {
+    return this.http.get<ICountry>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
-  query(req?: any): Observable<EntityArrayResponseType> {
+  query(req?: any): Observable<HttpResponse<ICountry[]>> {
     const options = createRequestOption(req);
     return this.http.get<ICountry[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  delete(id: string): Observable<undefined> {
+    return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
   getCountryIdentifier(country: Pick<ICountry, 'id'>): string {
