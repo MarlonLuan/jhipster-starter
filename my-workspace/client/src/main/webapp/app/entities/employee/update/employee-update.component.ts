@@ -4,15 +4,20 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import { EmployeeFormService, EmployeeFormGroup } from './employee-form.service';
-import { IEmployee } from '../employee.model';
-import { EmployeeService } from '../service/employee.service';
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
+import { IEmployee } from '../employee.model';
+import { EmployeeService } from '../service/employee.service';
+import { EmployeeFormService, EmployeeFormGroup } from './employee-form.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-employee-update',
   templateUrl: './employee-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class EmployeeUpdateComponent implements OnInit {
   isSaving = false;
@@ -27,7 +32,7 @@ export class EmployeeUpdateComponent implements OnInit {
     protected employeeService: EmployeeService,
     protected employeeFormService: EmployeeFormService,
     protected departmentService: DepartmentService,
-    protected activatedRoute: ActivatedRoute
+    protected activatedRoute: ActivatedRoute,
   ) {}
 
   compareEmployee = (o1: IEmployee | null, o2: IEmployee | null): boolean => this.employeeService.compareEmployee(o1, o2);
@@ -84,11 +89,11 @@ export class EmployeeUpdateComponent implements OnInit {
 
     this.employeesSharedCollection = this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(
       this.employeesSharedCollection,
-      employee.manager
+      employee.manager,
     );
     this.departmentsSharedCollection = this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(
       this.departmentsSharedCollection,
-      employee.department
+      employee.department,
     );
   }
 
@@ -97,7 +102,9 @@ export class EmployeeUpdateComponent implements OnInit {
       .query()
       .pipe(map((res: HttpResponse<IEmployee[]>) => res.body ?? []))
       .pipe(
-        map((employees: IEmployee[]) => this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, this.employee?.manager))
+        map((employees: IEmployee[]) =>
+          this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, this.employee?.manager),
+        ),
       )
       .subscribe((employees: IEmployee[]) => (this.employeesSharedCollection = employees));
 
@@ -106,8 +113,8 @@ export class EmployeeUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<IDepartment[]>) => res.body ?? []))
       .pipe(
         map((departments: IDepartment[]) =>
-          this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(departments, this.employee?.department)
-        )
+          this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(departments, this.employee?.department),
+        ),
       )
       .subscribe((departments: IDepartment[]) => (this.departmentsSharedCollection = departments));
   }

@@ -35,6 +35,10 @@ public class EmployeeDTO implements Serializable {
 
     private EmployeeDTO manager;
 
+    /**
+     * Another side of the same relationship
+     */
+    @Schema(description = "Another side of the same relationship")
     private DepartmentDTO department;
 
     public UUID getId() {
