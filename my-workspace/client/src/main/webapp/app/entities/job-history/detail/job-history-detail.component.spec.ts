@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { JobHistoryDetailComponent } from './job-history-detail.component';
@@ -8,29 +9,46 @@ describe('JobHistory Management Detail Component', () => {
   let comp: JobHistoryDetailComponent;
   let fixture: ComponentFixture<JobHistoryDetailComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [JobHistoryDetailComponent],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [JobHistoryDetailComponent],
       providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: { data: of({ jobHistory: { id: '9fec3727-3421-4967-b213-ba36557ca194' } }) },
-        },
+        provideRouter(
+          [
+            {
+              path: '**',
+              loadComponent: () => import('./job-history-detail.component').then(m => m.JobHistoryDetailComponent),
+              resolve: { jobHistory: () => of({ id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' }) },
+            },
+          ],
+          withComponentInputBinding(),
+        ),
       ],
     })
       .overrideTemplate(JobHistoryDetailComponent, '')
       .compileComponents();
+  });
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(JobHistoryDetailComponent);
     comp = fixture.componentInstance;
   });
 
   describe('OnInit', () => {
-    it('Should load jobHistory on init', () => {
-      // WHEN
-      comp.ngOnInit();
+    it('should load jobHistory on init', async () => {
+      const harness = await RouterTestingHarness.create();
+      const instance = await harness.navigateByUrl('/', JobHistoryDetailComponent);
 
       // THEN
-      expect(comp.jobHistory).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+      expect(instance.jobHistory()).toEqual(expect.objectContaining({ id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' }));
+    });
+  });
+
+  describe('PreviousState', () => {
+    it('should navigate to previous state', () => {
+      jest.spyOn(window.history, 'back');
+      comp.previousState();
+      expect(window.history.back).toHaveBeenCalled();
     });
   });
 });
