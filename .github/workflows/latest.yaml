@@ -1,0 +1,41 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '* * * * *'
+
+jobs:
+  latest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
+        with:
+          node-version: lts/*
+
+      - run: sudo npm un generator-jhipster -g
+
+      - run: sudo npm i generator-jhipster -g
+
+      - run: |
+          echo "y" | rm -rf app
+          mkdir app
+
+      - run: |
+          cd app
+          mkdir client
+          cd client
+          echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-server
+
+      - run: |
+          cd app
+          mkdir server
+          cd server
+          echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-client
+
+      - uses: peter-evans/create-pull-request@9153d834b60caba6d51c9b9510b087acf9f33f83 # v6
+        with:
+          title: latest
+          body:
+          commit-message: latest
+          branch: latest
