@@ -10,13 +10,13 @@
 
         @if (editForm.controls.id.value !== null) {
           <div class="mb-3">
-            <label class="form-label" jhiTranslate="jhipsterApp.country.id" for="field_id">Id</label>
+            <label class="form-label" for="field_id" jhiTranslate="jhipsterApp.country.id">Id</label>
             <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
           </div>
         }
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="jhipsterApp.country.countryName" for="field_countryName">Country Name</label>
+          <label class="form-label" for="field_countryName" jhiTranslate="jhipsterApp.country.countryName">Country Name</label>
           <input
             type="text"
             class="form-control"
@@ -28,7 +28,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" jhiTranslate="jhipsterApp.country.region" for="field_region">Region</label>
+          <label class="form-label" for="field_region" jhiTranslate="jhipsterApp.country.region">Region</label>
           <select
             class="form-control"
             id="field_region"
