@@ -16,7 +16,10 @@ export type EntityArrayResponseType = HttpResponse<ILocation[]>;
 export class LocationService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/locations');
 
-  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(location: NewLocation): Observable<EntityResponseType> {
     return this.http.post<ILocation>(this.resourceUrl, location, { observe: 'response' });
