@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
 
 import { IJobHistory } from '../job-history.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../job-history.test-samples';
@@ -20,7 +20,7 @@ describe('JobHistory Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(JobHistoryService);
@@ -32,7 +32,7 @@ describe('JobHistory Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.body));
+      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(returnedFromService);
@@ -44,7 +44,7 @@ describe('JobHistory Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.create(jobHistory).subscribe(resp => (expectedResult = resp.body));
+      service.create(jobHistory).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'POST' });
       req.flush(returnedFromService);
@@ -56,7 +56,7 @@ describe('JobHistory Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.update(jobHistory).subscribe(resp => (expectedResult = resp.body));
+      service.update(jobHistory).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'PUT' });
       req.flush(returnedFromService);
@@ -68,7 +68,7 @@ describe('JobHistory Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp.body));
+      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'PATCH' });
       req.flush(returnedFromService);
@@ -89,21 +89,17 @@ describe('JobHistory Service', () => {
     });
 
     it('should delete a JobHistory', () => {
-      const expected = true;
+      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe();
 
-      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.ok));
-
-      const req = httpMock.expectOne({ method: 'DELETE' });
-      req.flush({ status: 200 });
-      expect(expectedResult).toBe(expected);
+      const requests = httpMock.match({ method: 'DELETE' });
+      expect(requests.length).toBe(1);
     });
 
     describe('addJobHistoryToCollectionIfMissing', () => {
       it('should add a JobHistory to an empty array', () => {
         const jobHistory: IJobHistory = sampleWithRequiredData;
         expectedResult = service.addJobHistoryToCollectionIfMissing([], jobHistory);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(jobHistory);
+        expect(expectedResult).toEqual([jobHistory]);
       });
 
       it('should not add a JobHistory to an array that contains it', () => {
@@ -137,16 +133,13 @@ describe('JobHistory Service', () => {
         const jobHistory: IJobHistory = sampleWithRequiredData;
         const jobHistory2: IJobHistory = sampleWithPartialData;
         expectedResult = service.addJobHistoryToCollectionIfMissing([], jobHistory, jobHistory2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(jobHistory);
-        expect(expectedResult).toContain(jobHistory2);
+        expect(expectedResult).toEqual([jobHistory, jobHistory2]);
       });
 
       it('should accept null and undefined values', () => {
         const jobHistory: IJobHistory = sampleWithRequiredData;
         expectedResult = service.addJobHistoryToCollectionIfMissing([], null, jobHistory, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(jobHistory);
+        expect(expectedResult).toEqual([jobHistory]);
       });
 
       it('should return initial array if no JobHistory is added', () => {

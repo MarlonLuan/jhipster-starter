@@ -35,7 +35,7 @@ public class RegionResource {
 
     private static final String ENTITY_NAME = "region";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final RegionService regionService;
@@ -136,11 +136,11 @@ public class RegionResource {
     }
 
     /**
-     * {@code GET  /regions} : get all the regions.
+     * {@code GET  /regions} : get all the Regions.
      *
      * @param pageable the pagination information.
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of regions in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Regions in body.
      */
     @GetMapping("")
     public ResponseEntity<List<RegionDTO>> getAllRegions(

@@ -29,10 +29,10 @@ export type JobFormGroup = FormGroup<JobFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class JobFormService {
-  createJobFormGroup(job: JobFormGroupInput = { id: null }): JobFormGroup {
+  createJobFormGroup(job?: JobFormGroupInput): JobFormGroup {
     const jobRawValue = {
       ...this.getFormDefaults(),
-      ...job,
+      ...(job ?? { id: null }),
     };
     return new FormGroup<JobFormGroupContent>({
       id: new FormControl(
@@ -56,12 +56,10 @@ export class JobFormService {
 
   resetForm(form: JobFormGroup, job: JobFormGroupInput): void {
     const jobRawValue = { ...this.getFormDefaults(), ...job };
-    form.reset(
-      {
-        ...jobRawValue,
-        id: { value: jobRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...jobRawValue,
+      id: { value: jobRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): JobFormDefaults {

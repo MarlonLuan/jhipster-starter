@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
 
 import { IRegion } from '../region.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../region.test-samples';
@@ -18,7 +18,7 @@ describe('Region Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(RegionService);
@@ -30,7 +30,7 @@ describe('Region Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.body));
+      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(returnedFromService);
@@ -42,7 +42,7 @@ describe('Region Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.create(region).subscribe(resp => (expectedResult = resp.body));
+      service.create(region).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'POST' });
       req.flush(returnedFromService);
@@ -54,7 +54,7 @@ describe('Region Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.update(region).subscribe(resp => (expectedResult = resp.body));
+      service.update(region).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'PUT' });
       req.flush(returnedFromService);
@@ -66,7 +66,7 @@ describe('Region Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp.body));
+      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp));
 
       const req = httpMock.expectOne({ method: 'PATCH' });
       req.flush(returnedFromService);
@@ -87,21 +87,17 @@ describe('Region Service', () => {
     });
 
     it('should delete a Region', () => {
-      const expected = true;
+      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe();
 
-      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.ok));
-
-      const req = httpMock.expectOne({ method: 'DELETE' });
-      req.flush({ status: 200 });
-      expect(expectedResult).toBe(expected);
+      const requests = httpMock.match({ method: 'DELETE' });
+      expect(requests.length).toBe(1);
     });
 
     describe('addRegionToCollectionIfMissing', () => {
       it('should add a Region to an empty array', () => {
         const region: IRegion = sampleWithRequiredData;
         expectedResult = service.addRegionToCollectionIfMissing([], region);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(region);
+        expect(expectedResult).toEqual([region]);
       });
 
       it('should not add a Region to an array that contains it', () => {
@@ -135,16 +131,13 @@ describe('Region Service', () => {
         const region: IRegion = sampleWithRequiredData;
         const region2: IRegion = sampleWithPartialData;
         expectedResult = service.addRegionToCollectionIfMissing([], region, region2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(region);
-        expect(expectedResult).toContain(region2);
+        expect(expectedResult).toEqual([region, region2]);
       });
 
       it('should accept null and undefined values', () => {
         const region: IRegion = sampleWithRequiredData;
         expectedResult = service.addRegionToCollectionIfMissing([], null, region, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(region);
+        expect(expectedResult).toEqual([region]);
       });
 
       it('should return initial array if no Region is added', () => {

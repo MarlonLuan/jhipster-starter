@@ -1,12 +1,12 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
 
 import dayjs from 'dayjs/esm';
+import { Observable, map } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IJobHistory, NewJobHistory } from '../job-history.model';
 
 export type PartialUpdateJobHistory = Partial<IJobHistory> & Pick<IJobHistory, 'id'>;
@@ -22,52 +22,75 @@ export type NewRestJobHistory = RestOf<NewJobHistory>;
 
 export type PartialUpdateRestJobHistory = RestOf<PartialUpdateJobHistory>;
 
-export type EntityResponseType = HttpResponse<IJobHistory>;
-export type EntityArrayResponseType = HttpResponse<IJobHistory[]>;
+@Injectable()
+export class JobHistoriesService {
+  readonly jobHistoriesParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
+    undefined,
+  );
+  readonly jobHistoriesResource = httpResource<RestJobHistory[]>(() => {
+    const params = this.jobHistoriesParams();
+    if (!params) {
+      return undefined;
+    }
+    return { url: this.resourceUrl, params };
+  });
+  /**
+   * This signal holds the list of jobHistory that have been fetched. It is updated when the jobHistoriesResource emits a new value.
+   * In case of error while fetching the jobHistories, the signal is set to an empty array.
+   */
+  readonly jobHistories = computed(() =>
+    (this.jobHistoriesResource.hasValue() ? this.jobHistoriesResource.value() : []).map(item => this.convertValueFromServer(item)),
+  );
+  protected readonly applicationConfigService = inject(ApplicationConfigService);
+  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/job-histories');
+
+  protected convertValueFromServer(restJobHistory: RestJobHistory): IJobHistory {
+    return {
+      ...restJobHistory,
+      startDate: restJobHistory.startDate ? dayjs(restJobHistory.startDate) : undefined,
+      endDate: restJobHistory.endDate ? dayjs(restJobHistory.endDate) : undefined,
+    };
+  }
+}
 
 @Injectable({ providedIn: 'root' })
-export class JobHistoryService {
+export class JobHistoryService extends JobHistoriesService {
   protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/job-histories');
+  create(jobHistory: NewJobHistory): Observable<IJobHistory> {
+    const copy = this.convertValueFromClient(jobHistory);
+    return this.http.post<RestJobHistory>(this.resourceUrl, copy).pipe(map(res => this.convertResponseFromServer(res)));
+  }
 
-  create(jobHistory: NewJobHistory): Observable<EntityResponseType> {
-    const copy = this.convertDateFromClient(jobHistory);
+  update(jobHistory: IJobHistory): Observable<IJobHistory> {
+    const copy = this.convertValueFromClient(jobHistory);
     return this.http
-      .post<RestJobHistory>(this.resourceUrl, copy, { observe: 'response' })
+      .put<RestJobHistory>(`${this.resourceUrl}/${encodeURIComponent(this.getJobHistoryIdentifier(jobHistory))}`, copy)
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
-  update(jobHistory: IJobHistory): Observable<EntityResponseType> {
-    const copy = this.convertDateFromClient(jobHistory);
+  partialUpdate(jobHistory: PartialUpdateJobHistory): Observable<IJobHistory> {
+    const copy = this.convertValueFromClient(jobHistory);
     return this.http
-      .put<RestJobHistory>(`${this.resourceUrl}/${this.getJobHistoryIdentifier(jobHistory)}`, copy, { observe: 'response' })
+      .patch<RestJobHistory>(`${this.resourceUrl}/${encodeURIComponent(this.getJobHistoryIdentifier(jobHistory))}`, copy)
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
-  partialUpdate(jobHistory: PartialUpdateJobHistory): Observable<EntityResponseType> {
-    const copy = this.convertDateFromClient(jobHistory);
+  find(id: string): Observable<IJobHistory> {
     return this.http
-      .patch<RestJobHistory>(`${this.resourceUrl}/${this.getJobHistoryIdentifier(jobHistory)}`, copy, { observe: 'response' })
+      .get<RestJobHistory>(`${this.resourceUrl}/${encodeURIComponent(id)}`)
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
-  find(id: string): Observable<EntityResponseType> {
-    return this.http
-      .get<RestJobHistory>(`${this.resourceUrl}/${id}`, { observe: 'response' })
-      .pipe(map(res => this.convertResponseFromServer(res)));
-  }
-
-  query(req?: any): Observable<EntityArrayResponseType> {
+  query(req?: any): Observable<HttpResponse<IJobHistory[]>> {
     const options = createRequestOption(req);
     return this.http
       .get<RestJobHistory[]>(this.resourceUrl, { params: options, observe: 'response' })
-      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+      .pipe(map(res => res.clone({ body: this.convertResponseArrayFromServer(res.body!) })));
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  delete(id: string): Observable<undefined> {
+    return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
   getJobHistoryIdentifier(jobHistory: Pick<IJobHistory, 'id'>): string {
@@ -98,7 +121,7 @@ export class JobHistoryService {
     return jobHistoryCollection;
   }
 
-  protected convertDateFromClient<T extends IJobHistory | NewJobHistory | PartialUpdateJobHistory>(jobHistory: T): RestOf<T> {
+  protected convertValueFromClient<T extends IJobHistory | NewJobHistory | PartialUpdateJobHistory>(jobHistory: T): RestOf<T> {
     return {
       ...jobHistory,
       startDate: jobHistory.startDate?.toJSON() ?? null,
@@ -106,23 +129,11 @@ export class JobHistoryService {
     };
   }
 
-  protected convertDateFromServer(restJobHistory: RestJobHistory): IJobHistory {
-    return {
-      ...restJobHistory,
-      startDate: restJobHistory.startDate ? dayjs(restJobHistory.startDate) : undefined,
-      endDate: restJobHistory.endDate ? dayjs(restJobHistory.endDate) : undefined,
-    };
+  protected convertResponseFromServer(res: RestJobHistory): IJobHistory {
+    return this.convertValueFromServer(res);
   }
 
-  protected convertResponseFromServer(res: HttpResponse<RestJobHistory>): HttpResponse<IJobHistory> {
-    return res.clone({
-      body: res.body ? this.convertDateFromServer(res.body) : null,
-    });
-  }
-
-  protected convertResponseArrayFromServer(res: HttpResponse<RestJobHistory[]>): HttpResponse<IJobHistory[]> {
-    return res.clone({
-      body: res.body ? res.body.map(item => this.convertDateFromServer(item)) : null,
-    });
+  protected convertResponseArrayFromServer(res: RestJobHistory[]): IJobHistory[] {
+    return res.map(item => this.convertValueFromServer(item));
   }
 }
