@@ -28,6 +28,7 @@
       "job": "Job",
       "manager": "Manager",
       "department": "Department",
+      "jobHistory": "Job History",
       "help": {
         "firstName": "The firstname attribute."
       }

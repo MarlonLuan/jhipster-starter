@@ -1,21 +1,20 @@
 import { IJob, NewJob } from './job.model';
 
 export const sampleWithRequiredData: IJob = {
-  id: '6970a9f1-2401-404d-95ed-b9946035a427',
+  id: '3f17577a-c1b4-477d-85da-ba09f8f55a88',
 };
 
 export const sampleWithPartialData: IJob = {
-  id: '1199dad7-77be-4985-ba38-4a3b02960552',
-  jobTitle: 'Investor Security Strategist',
-  minSalary: 57238,
-  maxSalary: 62645,
+  id: '67252276-5028-44c6-8933-292efe5facda',
+  jobTitle: 'Internal Configuration Assistant',
+  maxSalary: 15580,
 };
 
 export const sampleWithFullData: IJob = {
-  id: '54e037f9-59f1-435a-bd09-560de2a0e910',
-  jobTitle: 'Investor Brand Designer',
-  minSalary: 50710,
-  maxSalary: 10260,
+  id: '4dfdd60f-7466-42ea-af41-a893fc57e831',
+  jobTitle: 'Legacy Functionality Agent',
+  minSalary: 8606,
+  maxSalary: 14819,
 };
 
 export const sampleWithNewData: NewJob = {

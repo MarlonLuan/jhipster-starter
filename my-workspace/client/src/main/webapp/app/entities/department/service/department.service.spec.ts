@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 import { IDepartment } from '../department.model';
-import { sampleWithRequiredData, sampleWithNewData, sampleWithPartialData, sampleWithFullData } from '../department.test-samples';
+import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../department.test-samples';
 
 import { DepartmentService } from './department.service';
 
@@ -17,7 +18,7 @@ describe('Department Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(DepartmentService);
@@ -37,7 +38,6 @@ describe('Department Service', () => {
     });
 
     it('should create a Department', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const department = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
@@ -155,7 +155,7 @@ describe('Department Service', () => {
     });
 
     describe('compareDepartment', () => {
-      it('Should return true if both entities are null', () => {
+      it('should return true if both entities are null', () => {
         const entity1 = null;
         const entity2 = null;
 
@@ -164,8 +164,8 @@ describe('Department Service', () => {
         expect(compareResult).toEqual(true);
       });
 
-      it('Should return false if one entity is null', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      it('should return false if one entity is null', () => {
+        const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
         const entity2 = null;
 
         const compareResult1 = service.compareDepartment(entity1, entity2);
@@ -175,9 +175,9 @@ describe('Department Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey differs', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+      it('should return false if primaryKey differs', () => {
+        const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
+        const entity2 = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
 
         const compareResult1 = service.compareDepartment(entity1, entity2);
         const compareResult2 = service.compareDepartment(entity2, entity1);
@@ -186,9 +186,9 @@ describe('Department Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey matches', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      it('should return false if primaryKey matches', () => {
+        const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
+        const entity2 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
 
         const compareResult1 = service.compareDepartment(entity1, entity2);
         const compareResult2 = service.compareDepartment(entity2, entity1);

@@ -18,7 +18,8 @@
         "title": "Region"
       },
       "id": "Id",
-      "regionName": "Region Name"
+      "regionName": "Region Name",
+      "country": "Country"
     }
   }
 }
