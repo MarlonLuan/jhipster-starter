@@ -1,7 +1,6 @@
 package com.mycompany.myapp.repository;
 
 import com.mycompany.myapp.domain.User;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.EntityGraph;

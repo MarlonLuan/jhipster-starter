@@ -12,11 +12,11 @@ import com.mycompany.myapp.domain.enumeration.Language;
 import com.mycompany.myapp.repository.JobHistoryRepository;
 import com.mycompany.myapp.service.dto.JobHistoryDTO;
 import com.mycompany.myapp.service.mapper.JobHistoryMapper;
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,7 +185,7 @@ class JobHistoryResourceIT {
         int databaseSizeBeforeUpdate = jobHistoryRepository.findAll().size();
 
         // Update the jobHistory
-        JobHistory updatedJobHistory = jobHistoryRepository.findById(jobHistory.getId()).get();
+        JobHistory updatedJobHistory = jobHistoryRepository.findById(jobHistory.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedJobHistory are not directly saved in db
         em.detach(updatedJobHistory);
         updatedJobHistory.startDate(UPDATED_START_DATE).endDate(UPDATED_END_DATE).language(UPDATED_LANGUAGE);
@@ -293,6 +293,8 @@ class JobHistoryResourceIT {
         JobHistory partialUpdatedJobHistory = new JobHistory();
         partialUpdatedJobHistory.setId(jobHistory.getId());
 
+        partialUpdatedJobHistory.endDate(UPDATED_END_DATE).language(UPDATED_LANGUAGE);
+
         restJobHistoryMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedJobHistory.getId())
@@ -307,8 +309,8 @@ class JobHistoryResourceIT {
         assertThat(jobHistoryList).hasSize(databaseSizeBeforeUpdate);
         JobHistory testJobHistory = jobHistoryList.get(jobHistoryList.size() - 1);
         assertThat(testJobHistory.getStartDate()).isEqualTo(DEFAULT_START_DATE);
-        assertThat(testJobHistory.getEndDate()).isEqualTo(DEFAULT_END_DATE);
-        assertThat(testJobHistory.getLanguage()).isEqualTo(DEFAULT_LANGUAGE);
+        assertThat(testJobHistory.getEndDate()).isEqualTo(UPDATED_END_DATE);
+        assertThat(testJobHistory.getLanguage()).isEqualTo(UPDATED_LANGUAGE);
     }
 
     @Test
