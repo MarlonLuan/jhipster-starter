@@ -11,9 +11,9 @@ import com.mycompany.myapp.domain.Task;
 import com.mycompany.myapp.repository.TaskRepository;
 import com.mycompany.myapp.service.dto.TaskDTO;
 import com.mycompany.myapp.service.mapper.TaskMapper;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,7 +176,7 @@ class TaskResourceIT {
         int databaseSizeBeforeUpdate = taskRepository.findAll().size();
 
         // Update the task
-        Task updatedTask = taskRepository.findById(task.getId()).get();
+        Task updatedTask = taskRepository.findById(task.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedTask are not directly saved in db
         em.detach(updatedTask);
         updatedTask.title(UPDATED_TITLE).description(UPDATED_DESCRIPTION);
@@ -280,7 +280,7 @@ class TaskResourceIT {
         Task partialUpdatedTask = new Task();
         partialUpdatedTask.setId(task.getId());
 
-        partialUpdatedTask.description(UPDATED_DESCRIPTION);
+        partialUpdatedTask.title(UPDATED_TITLE).description(UPDATED_DESCRIPTION);
 
         restTaskMockMvc
             .perform(
@@ -295,7 +295,7 @@ class TaskResourceIT {
         List<Task> taskList = taskRepository.findAll();
         assertThat(taskList).hasSize(databaseSizeBeforeUpdate);
         Task testTask = taskList.get(taskList.size() - 1);
-        assertThat(testTask.getTitle()).isEqualTo(DEFAULT_TITLE);
+        assertThat(testTask.getTitle()).isEqualTo(UPDATED_TITLE);
         assertThat(testTask.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
     }
 
