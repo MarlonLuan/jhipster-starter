@@ -57,7 +57,7 @@ export class EmployeeFormService {
         {
           nonNullable: true,
           validators: [Validators.required],
-        }
+        },
       ),
       firstName: new FormControl(employeeRawValue.firstName),
       lastName: new FormControl(employeeRawValue.lastName),
@@ -81,7 +81,7 @@ export class EmployeeFormService {
       {
         ...employeeRawValue,
         id: { value: employeeRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */
+      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
     );
   }
 
@@ -102,7 +102,7 @@ export class EmployeeFormService {
   }
 
   private convertEmployeeToEmployeeRawValue(
-    employee: IEmployee | (Partial<NewEmployee> & EmployeeFormDefaults)
+    employee: IEmployee | (Partial<NewEmployee> & EmployeeFormDefaults),
   ): EmployeeFormRawValue | PartialWithRequiredKeyOf<NewEmployeeFormRawValue> {
     return {
       ...employee,

@@ -18,8 +18,11 @@ describe('Employee Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'employee', component: EmployeeComponent }]), HttpClientTestingModule],
-      declarations: [EmployeeComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'employee', component: EmployeeComponent }]),
+        HttpClientTestingModule,
+        EmployeeComponent,
+      ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -32,7 +35,7 @@ describe('Employee Management Component', () => {
                 page: '1',
                 size: '1',
                 sort: 'id,desc',
-              })
+              }),
             ),
             snapshot: { queryParams: {} },
           },
@@ -53,8 +56,8 @@ describe('Employee Management Component', () => {
         new HttpResponse({
           body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
           headers,
-        })
-      )
+        }),
+      ),
     );
   });
 
@@ -107,7 +110,7 @@ describe('Employee Management Component', () => {
         queryParams: expect.objectContaining({
           sort: ['name,asc'],
         }),
-      })
+      }),
     );
   });
 });
