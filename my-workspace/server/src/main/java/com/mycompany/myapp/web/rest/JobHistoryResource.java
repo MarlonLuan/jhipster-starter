@@ -30,7 +30,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/job-histories")
 public class JobHistoryResource {
 
-    private static final Logger log = LoggerFactory.getLogger(JobHistoryResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JobHistoryResource.class);
 
     private static final String ENTITY_NAME = "jobHistory";
 
@@ -55,7 +55,7 @@ public class JobHistoryResource {
      */
     @PostMapping("")
     public ResponseEntity<JobHistoryDTO> createJobHistory(@RequestBody JobHistoryDTO jobHistoryDTO) throws URISyntaxException {
-        log.debug("REST request to save JobHistory : {}", jobHistoryDTO);
+        LOG.debug("REST request to save JobHistory : {}", jobHistoryDTO);
         if (jobHistoryDTO.getId() != null) {
             throw new BadRequestAlertException("A new jobHistory cannot already have an ID", ENTITY_NAME, "idexists");
         }
@@ -80,7 +80,7 @@ public class JobHistoryResource {
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody JobHistoryDTO jobHistoryDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update JobHistory : {}, {}", id, jobHistoryDTO);
+        LOG.debug("REST request to update JobHistory : {}, {}", id, jobHistoryDTO);
         if (jobHistoryDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -114,7 +114,7 @@ public class JobHistoryResource {
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody JobHistoryDTO jobHistoryDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update JobHistory partially : {}, {}", id, jobHistoryDTO);
+        LOG.debug("REST request to partial update JobHistory partially : {}, {}", id, jobHistoryDTO);
         if (jobHistoryDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -142,7 +142,7 @@ public class JobHistoryResource {
      */
     @GetMapping("")
     public ResponseEntity<List<JobHistoryDTO>> getAllJobHistories(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        log.debug("REST request to get a page of JobHistories");
+        LOG.debug("REST request to get a page of JobHistories");
         Page<JobHistoryDTO> page = jobHistoryService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -156,7 +156,7 @@ public class JobHistoryResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<JobHistoryDTO> getJobHistory(@PathVariable("id") UUID id) {
-        log.debug("REST request to get JobHistory : {}", id);
+        LOG.debug("REST request to get JobHistory : {}", id);
         Optional<JobHistoryDTO> jobHistoryDTO = jobHistoryService.findOne(id);
         return ResponseUtil.wrapOrNotFound(jobHistoryDTO);
     }
@@ -169,7 +169,7 @@ public class JobHistoryResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteJobHistory(@PathVariable("id") UUID id) {
-        log.debug("REST request to delete JobHistory : {}", id);
+        LOG.debug("REST request to delete JobHistory : {}", id);
         jobHistoryService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ import { IRegion } from 'app/entities/region/region.model';
 import { RegionService } from 'app/entities/region/service/region.service';
 import { ICountry } from '../country.model';
 import { CountryService } from '../service/country.service';
-import { CountryFormService, CountryFormGroup } from './country-form.service';
+import { CountryFormGroup, CountryFormService } from './country-form.service';
 
 @Component({
   standalone: true,
