@@ -1,22 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, input } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
+import SharedModule from 'app/shared/shared.module';
+import { FormatMediumDatetimePipe } from 'app/shared/date';
 import { IJobHistory } from '../job-history.model';
 
 @Component({
   selector: 'jhi-job-history-detail',
   templateUrl: './job-history-detail.component.html',
+  imports: [SharedModule, RouterModule, FormatMediumDatetimePipe],
 })
-export class JobHistoryDetailComponent implements OnInit {
-  jobHistory: IJobHistory | null = null;
-
-  constructor(protected activatedRoute: ActivatedRoute) {}
-
-  ngOnInit(): void {
-    this.activatedRoute.data.subscribe(({ jobHistory }) => {
-      this.jobHistory = jobHistory;
-    });
-  }
+export class JobHistoryDetailComponent {
+  jobHistory = input<IJobHistory | null>(null);
 
   previousState(): void {
     window.history.back();

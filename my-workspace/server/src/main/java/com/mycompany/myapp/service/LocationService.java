@@ -1,6 +1,7 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.LocationDTO;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,13 @@ public interface LocationService {
      * @return the list of entities.
      */
     Page<LocationDTO> findAll(Pageable pageable);
+
+    /**
+     * Get all the LocationDTO where Department is {@code null}.
+     *
+     * @return the {@link List} of entities.
+     */
+    List<LocationDTO> findAllWhereDepartmentIsNull();
 
     /**
      * Get the "id" location.

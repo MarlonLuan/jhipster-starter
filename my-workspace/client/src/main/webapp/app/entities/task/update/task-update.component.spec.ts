@@ -1,14 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of, Subject, from } from 'rxjs';
+import { Subject, from, of } from 'rxjs';
 
-import { TaskFormService } from './task-form.service';
 import { TaskService } from '../service/task.service';
 import { ITask } from '../task.model';
+import { TaskFormService } from './task-form.service';
 
 import { TaskUpdateComponent } from './task-update.component';
 
@@ -21,9 +19,9 @@ describe('Task Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [TaskUpdateComponent],
+      imports: [TaskUpdateComponent],
       providers: [
+        provideHttpClient(),
         FormBuilder,
         {
           provide: ActivatedRoute,
@@ -45,8 +43,8 @@ describe('Task Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should update editForm', () => {
-      const task: ITask = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+    it('should update editForm', () => {
+      const task: ITask = { id: '59358286-4c96-4301-945b-e60ba7cd5403' };
 
       activatedRoute.data = of({ task });
       comp.ngOnInit();
@@ -56,10 +54,10 @@ describe('Task Management Update Component', () => {
   });
 
   describe('save', () => {
-    it('Should call update service on save for existing entity', () => {
+    it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ITask>>();
-      const task = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
       jest.spyOn(taskFormService, 'getTask').mockReturnValue(task);
       jest.spyOn(taskService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -79,10 +77,10 @@ describe('Task Management Update Component', () => {
       expect(comp.isSaving).toEqual(false);
     });
 
-    it('Should call create service on save for new entity', () => {
+    it('should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ITask>>();
-      const task = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
       jest.spyOn(taskFormService, 'getTask').mockReturnValue({ id: null });
       jest.spyOn(taskService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -102,10 +100,10 @@ describe('Task Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
-    it('Should set isSaving to false on error', () => {
+    it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ITask>>();
-      const task = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
       jest.spyOn(taskService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ task });

@@ -1,42 +1,52 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit, inject, signal } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
-import { combineLatest, filter, Observable, switchMap, tap } from 'rxjs';
+import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
+import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ICountry } from '../country.model';
+import SharedModule from 'app/shared/shared.module';
+import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
+import { ItemCountComponent } from 'app/shared/pagination';
+import { FormsModule } from '@angular/forms';
 
 import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'app/config/pagination.constants';
-import { ASC, DESC, SORT, ITEM_DELETED_EVENT, DEFAULT_SORT_DATA } from 'app/config/navigation.constants';
-import { EntityArrayResponseType, CountryService } from '../service/country.service';
+import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
+import { ICountry } from '../country.model';
+import { CountryService, EntityArrayResponseType } from '../service/country.service';
 import { CountryDeleteDialogComponent } from '../delete/country-delete-dialog.component';
 
 @Component({
   selector: 'jhi-country',
   templateUrl: './country.component.html',
+  imports: [RouterModule, FormsModule, SharedModule, SortDirective, SortByDirective, ItemCountComponent],
 })
 export class CountryComponent implements OnInit {
-  countries?: ICountry[];
+  subscription: Subscription | null = null;
+  countries = signal<ICountry[]>([]);
   isLoading = false;
 
-  predicate = 'id';
-  ascending = true;
+  sortState = sortStateSignal({});
 
   itemsPerPage = ITEMS_PER_PAGE;
   totalItems = 0;
   page = 1;
 
-  constructor(
-    protected countryService: CountryService,
-    protected activatedRoute: ActivatedRoute,
-    public router: Router,
-    protected modalService: NgbModal
-  ) {}
+  public readonly router = inject(Router);
+  protected readonly countryService = inject(CountryService);
+  protected readonly activatedRoute = inject(ActivatedRoute);
+  protected readonly sortService = inject(SortService);
+  protected modalService = inject(NgbModal);
+  protected ngZone = inject(NgZone);
 
-  trackId = (_index: number, item: ICountry): string => this.countryService.getCountryIdentifier(item);
+  trackId = (item: ICountry): string => this.countryService.getCountryIdentifier(item);
 
   ngOnInit(): void {
-    this.load();
+    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
+      .pipe(
+        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
+        tap(() => this.load()),
+      )
+      .subscribe();
   }
 
   delete(country: ICountry): void {
@@ -46,50 +56,37 @@ export class CountryComponent implements OnInit {
     modalRef.closed
       .pipe(
         filter(reason => reason === ITEM_DELETED_EVENT),
-        switchMap(() => this.loadFromBackendWithRouteInformations())
+        tap(() => this.load()),
       )
-      .subscribe({
-        next: (res: EntityArrayResponseType) => {
-          this.onResponseSuccess(res);
-        },
-      });
+      .subscribe();
   }
 
   load(): void {
-    this.loadFromBackendWithRouteInformations().subscribe({
+    this.queryBackend().subscribe({
       next: (res: EntityArrayResponseType) => {
         this.onResponseSuccess(res);
       },
     });
   }
 
-  navigateToWithComponentValues(): void {
-    this.handleNavigation(this.page, this.predicate, this.ascending);
+  navigateToWithComponentValues(event: SortState): void {
+    this.handleNavigation(this.page, event);
   }
 
-  navigateToPage(page = this.page): void {
-    this.handleNavigation(page, this.predicate, this.ascending);
-  }
-
-  protected loadFromBackendWithRouteInformations(): Observable<EntityArrayResponseType> {
-    return combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data]).pipe(
-      tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-      switchMap(() => this.queryBackend(this.page, this.predicate, this.ascending))
-    );
+  navigateToPage(page: number): void {
+    this.handleNavigation(page, this.sortState());
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     const page = params.get(PAGE_HEADER);
     this.page = +(page ?? 1);
-    const sort = (params.get(SORT) ?? data[DEFAULT_SORT_DATA]).split(',');
-    this.predicate = sort[0];
-    this.ascending = sort[1] === ASC;
+    this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
   }
 
   protected onResponseSuccess(response: EntityArrayResponseType): void {
     this.fillComponentAttributesFromResponseHeader(response.headers);
     const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
-    this.countries = dataFromBody;
+    this.countries.set(dataFromBody);
   }
 
   protected fillComponentAttributesFromResponseBody(data: ICountry[] | null): ICountry[] {
@@ -100,36 +97,31 @@ export class CountryComponent implements OnInit {
     this.totalItems = Number(headers.get(TOTAL_COUNT_RESPONSE_HEADER));
   }
 
-  protected queryBackend(page?: number, predicate?: string, ascending?: boolean): Observable<EntityArrayResponseType> {
+  protected queryBackend(): Observable<EntityArrayResponseType> {
+    const { page } = this;
+
     this.isLoading = true;
-    const pageToLoad: number = page ?? 1;
-    const queryObject = {
+    const pageToLoad: number = page;
+    const queryObject: any = {
       page: pageToLoad - 1,
       size: this.itemsPerPage,
-      sort: this.getSortQueryParam(predicate, ascending),
+      sort: this.sortService.buildSortParam(this.sortState()),
     };
     return this.countryService.query(queryObject).pipe(tap(() => (this.isLoading = false)));
   }
 
-  protected handleNavigation(page = this.page, predicate?: string, ascending?: boolean): void {
+  protected handleNavigation(page: number, sortState: SortState): void {
     const queryParamsObj = {
       page,
       size: this.itemsPerPage,
-      sort: this.getSortQueryParam(predicate, ascending),
+      sort: this.sortService.buildSortParam(sortState),
     };
 
-    this.router.navigate(['./'], {
-      relativeTo: this.activatedRoute,
-      queryParams: queryParamsObj,
+    this.ngZone.run(() => {
+      this.router.navigate(['./'], {
+        relativeTo: this.activatedRoute,
+        queryParams: queryParamsObj,
+      });
     });
-  }
-
-  protected getSortQueryParam(predicate = this.predicate, ascending = this.ascending): string[] {
-    const ascendingQueryParam = ascending ? ASC : DESC;
-    if (predicate === '') {
-      return [];
-    } else {
-      return [predicate + ',' + ascendingQueryParam];
-    }
   }
 }
