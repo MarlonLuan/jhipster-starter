@@ -60,11 +60,10 @@ public class CountryResource {
         if (countryDTO.getId() != null) {
             throw new BadRequestAlertException("A new country cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        CountryDTO result = countryService.save(countryDTO);
-        return ResponseEntity
-            .created(new URI("/api/countries/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        countryDTO = countryService.save(countryDTO);
+        return ResponseEntity.created(new URI("/api/countries/" + countryDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, countryDTO.getId().toString()))
+            .body(countryDTO);
     }
 
     /**
@@ -94,11 +93,10 @@ public class CountryResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        CountryDTO result = countryService.update(countryDTO);
-        return ResponseEntity
-            .ok()
+        countryDTO = countryService.update(countryDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, countryDTO.getId().toString()))
-            .body(result);
+            .body(countryDTO);
     }
 
     /**
@@ -182,8 +180,7 @@ public class CountryResource {
     public ResponseEntity<Void> deleteCountry(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Country : {}", id);
         countryService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
