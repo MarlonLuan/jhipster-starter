@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpEntity;
@@ -41,8 +40,7 @@ public class CustomClaimConverter implements Converter<Map<String, Object>, Map<
 
     // See https://github.com/jhipster/generator-jhipster/issues/18868
     // We don't use a distributed cache or the user selected cache implementation here on purpose
-    private final Cache<String, ObjectNode> users = Caffeine
-        .newBuilder()
+    private final Cache<String, ObjectNode> users = Caffeine.newBuilder()
         .maximumSize(10_000)
         .expireAfterWrite(Duration.ofHours(1))
         .recordStats()
@@ -64,21 +62,18 @@ public class CustomClaimConverter implements Converter<Map<String, Object>, Map<
             // Retrieve and set the token
             String token = bearerTokenResolver.resolve(((ServletRequestAttributes) attributes).getRequest());
             HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", buildBearer(token));
+            headers.setBearerAuth(token);
 
             // Retrieve user info from OAuth provider if not already loaded
-            ObjectNode user = users.get(
-                claims.get("sub").toString(),
-                s -> {
-                    ResponseEntity<ObjectNode> userInfo = restTemplate.exchange(
-                        registration.getProviderDetails().getUserInfoEndpoint().getUri(),
-                        HttpMethod.GET,
-                        new HttpEntity<String>(headers),
-                        ObjectNode.class
-                    );
-                    return userInfo.getBody();
-                }
-            );
+            ObjectNode user = users.get(claims.get("sub").toString(), s -> {
+                ResponseEntity<ObjectNode> userInfo = restTemplate.exchange(
+                    registration.getProviderDetails().getUserInfoEndpoint().getUri(),
+                    HttpMethod.GET,
+                    new HttpEntity<String>(headers),
+                    ObjectNode.class
+                );
+                return userInfo.getBody();
+            });
 
             // Add custom claims
             if (user != null) {
@@ -101,25 +96,17 @@ public class CustomClaimConverter implements Converter<Map<String, Object>, Map<
                     }
                 }
                 if (user.has("groups")) {
-                    List<String> groups = StreamSupport
-                        .stream(user.get("groups").spliterator(), false)
-                        .map(JsonNode::asText)
-                        .collect(Collectors.toList());
+                    List<String> groups = StreamSupport.stream(user.get("groups").spliterator(), false).map(JsonNode::asText).toList();
                     convertedClaims.put("groups", groups);
                 }
                 if (user.has(SecurityUtils.CLAIMS_NAMESPACE + "roles")) {
-                    List<String> roles = StreamSupport
-                        .stream(user.get(SecurityUtils.CLAIMS_NAMESPACE + "roles").spliterator(), false)
+                    List<String> roles = StreamSupport.stream(user.get(SecurityUtils.CLAIMS_NAMESPACE + "roles").spliterator(), false)
                         .map(JsonNode::asText)
-                        .collect(Collectors.toList());
+                        .toList();
                     convertedClaims.put("roles", roles);
                 }
             }
         }
         return convertedClaims;
-    }
-
-    private String buildBearer(String token) {
-        return "Bearer " + token;
     }
 }
