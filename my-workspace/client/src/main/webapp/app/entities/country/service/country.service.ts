@@ -16,7 +16,10 @@ export type EntityArrayResponseType = HttpResponse<ICountry[]>;
 export class CountryService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/countries');
 
-  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(country: NewCountry): Observable<EntityResponseType> {
     return this.http.post<ICountry>(this.resourceUrl, country, { observe: 'response' });
