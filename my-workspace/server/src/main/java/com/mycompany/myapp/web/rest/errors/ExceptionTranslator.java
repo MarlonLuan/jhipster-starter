@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
-import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.ErrorResponse;
@@ -52,7 +53,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionTranslator.class);
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final Environment env;
@@ -68,6 +69,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         return handleExceptionInternal((Exception) ex, pdCause, buildHeaders(ex), HttpStatusCode.valueOf(pdCause.getStatus()), request);
     }
 
+    @SuppressWarnings("java:S2638")
     @Nullable
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(
@@ -147,7 +149,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     }
 
     private String extractTitleForResponseStatus(Throwable err, int statusCode) {
-        ResponseStatus specialStatus = extractResponseStatus(err);
+        var specialStatus = extractResponseStatus(err);
         return specialStatus == null ? HttpStatus.valueOf(statusCode).getReasonPhrase() : specialStatus.reason();
     }
 
@@ -219,12 +221,12 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     private HttpHeaders buildHeaders(Throwable err) {
         return err instanceof BadRequestAlertException badRequestAlertException
             ? HeaderUtil.createFailureAlert(
-                applicationName,
-                true,
-                badRequestAlertException.getEntityName(),
-                badRequestAlertException.getErrorKey(),
-                badRequestAlertException.getMessage()
-            )
+                  applicationName,
+                  true,
+                  badRequestAlertException.getEntityName(),
+                  badRequestAlertException.getErrorKey(),
+                  badRequestAlertException.getMessage()
+              )
             : null;
     }
 
@@ -242,6 +244,6 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     private boolean containsPackageName(String message) {
         // This list is for sure not complete
-        return StringUtils.containsAny(message, "org.", "java.", "net.", "jakarta.", "javax.", "com.", "io.", "de.", "com.mycompany.myapp");
+        return Strings.CS.containsAny(message, "org.", "java.", "net.", "jakarta.", "javax.", "com.", "io.", "de.", "com.mycompany.myapp");
     }
 }

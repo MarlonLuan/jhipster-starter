@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../region.test-samples';
@@ -8,7 +9,6 @@ describe('Region Form Service', () => {
   let service: RegionFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(RegionFormService);
   });
 
@@ -41,7 +41,7 @@ describe('Region Form Service', () => {
       it('should return NewRegion for default Region initial value', () => {
         const formGroup = service.createRegionFormGroup(sampleWithNewData);
 
-        const region = service.getRegion(formGroup) as any;
+        const region = service.getRegion(formGroup);
 
         expect(region).toMatchObject(sampleWithNewData);
       });
@@ -49,7 +49,7 @@ describe('Region Form Service', () => {
       it('should return NewRegion for empty Region initial value', () => {
         const formGroup = service.createRegionFormGroup();
 
-        const region = service.getRegion(formGroup) as any;
+        const region = service.getRegion(formGroup);
 
         expect(region).toMatchObject({});
       });
@@ -57,7 +57,7 @@ describe('Region Form Service', () => {
       it('should return IRegion', () => {
         const formGroup = service.createRegionFormGroup(sampleWithRequiredData);
 
-        const region = service.getRegion(formGroup) as any;
+        const region = service.getRegion(formGroup);
 
         expect(region).toMatchObject(sampleWithRequiredData);
       });

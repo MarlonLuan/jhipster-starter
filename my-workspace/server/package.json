@@ -4,6 +4,7 @@
   "private": true,
   "description": "Description for jhipster",
   "license": "UNLICENSED",
+  "type": "module",
   "scripts": {
     "app:start": "./mvnw -ntp --batch-mode",
     "app:up": "docker compose -f src/main/docker/app.yml up --wait",
@@ -19,7 +20,7 @@
     "ci:e2e:prepare": "npm run ci:e2e:prepare:docker",
     "ci:e2e:prepare:docker": "npm run services:up --if-present && docker ps -a",
     "preci:e2e:server:start": "npm run services:db:await --if-present && npm run services:others:await --if-present",
-    "ci:e2e:server:start": "java -jar target/e2e.$npm_package_config_packaging --spring.profiles.active=e2e,$npm_package_config_default_environment -Dlogging.level.ROOT=OFF -Dlogging.level.tech.jhipster=OFF -Dlogging.level.com.mycompany.myapp=OFF -Dlogging.level.org.springframework=OFF -Dlogging.level.org.springframework.web=OFF -Dlogging.level.org.springframework.security=OFF --logging.level.org.springframework.web=ERROR",
+    "ci:e2e:server:start": "java -jar target/e2e.$npm_package_config_packaging --spring.profiles.active=e2e,secret-samples,$npm_package_config_default_environment -Dlogging.level.ROOT=OFF -Dlogging.level.tech.jhipster=OFF -Dlogging.level.com.mycompany.myapp=OFF -Dlogging.level.org.springframework=OFF -Dlogging.level.org.springframework.web=OFF -Dlogging.level.org.springframework.security=OFF --logging.level.org.springframework.web=ERROR",
     "ci:e2e:teardown": "npm run ci:e2e:teardown:docker --if-present",
     "ci:e2e:teardown:docker": "docker compose -f src/main/docker/services.yml down -v && docker ps -a",
     "ci:server:await": "echo \"Waiting for server at port $npm_package_config_backend_port to start\" && wait-on -t 360000 http-get://127.0.0.1:$npm_package_config_backend_port/management/health && echo \"Server at port $npm_package_config_backend_port started\"",
@@ -45,15 +46,12 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "8.11.0",
-    "prettier": "3.5.3",
-    "prettier-plugin-java": "2.6.7",
-    "prettier-plugin-packagejson": "2.5.11"
+    "generator-jhipster": "9.0.0",
+    "prettier": "3.8.1",
+    "prettier-plugin-java": "2.8.1",
+    "prettier-plugin-packagejson": "3.0.2"
   },
   "engines": {
-    "node": ">=22.15.0"
-  },
-  "cacheDirectories": [
-    "node_modules"
-  ]
+    "node": ">=24.14.0"
+  }
 }

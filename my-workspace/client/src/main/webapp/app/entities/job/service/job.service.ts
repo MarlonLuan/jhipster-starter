@@ -1,47 +1,61 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IJob, NewJob } from '../job.model';
 
 export type PartialUpdateJob = Partial<IJob> & Pick<IJob, 'id'>;
 
-export type EntityResponseType = HttpResponse<IJob>;
-export type EntityArrayResponseType = HttpResponse<IJob[]>;
+@Injectable()
+export class JobsService {
+  readonly jobsParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(undefined);
+  readonly jobsResource = httpResource<IJob[]>(() => {
+    const params = this.jobsParams();
+    if (!params) {
+      return undefined;
+    }
+    return { url: this.resourceUrl, params };
+  });
+  /**
+   * This signal holds the list of job that have been fetched. It is updated when the jobsResource emits a new value.
+   * In case of error while fetching the jobs, the signal is set to an empty array.
+   */
+  readonly jobs = computed(() => (this.jobsResource.hasValue() ? this.jobsResource.value() : []));
+  protected readonly applicationConfigService = inject(ApplicationConfigService);
+  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/jobs');
+}
 
 @Injectable({ providedIn: 'root' })
-export class JobService {
+export class JobService extends JobsService {
   protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/jobs');
-
-  create(job: NewJob): Observable<EntityResponseType> {
-    return this.http.post<IJob>(this.resourceUrl, job, { observe: 'response' });
+  create(job: NewJob): Observable<IJob> {
+    return this.http.post<IJob>(this.resourceUrl, job);
   }
 
-  update(job: IJob): Observable<EntityResponseType> {
-    return this.http.put<IJob>(`${this.resourceUrl}/${this.getJobIdentifier(job)}`, job, { observe: 'response' });
+  update(job: IJob): Observable<IJob> {
+    return this.http.put<IJob>(`${this.resourceUrl}/${encodeURIComponent(this.getJobIdentifier(job))}`, job);
   }
 
-  partialUpdate(job: PartialUpdateJob): Observable<EntityResponseType> {
-    return this.http.patch<IJob>(`${this.resourceUrl}/${this.getJobIdentifier(job)}`, job, { observe: 'response' });
+  partialUpdate(job: PartialUpdateJob): Observable<IJob> {
+    return this.http.patch<IJob>(`${this.resourceUrl}/${encodeURIComponent(this.getJobIdentifier(job))}`, job);
   }
 
-  find(id: string): Observable<EntityResponseType> {
-    return this.http.get<IJob>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  find(id: string): Observable<IJob> {
+    return this.http.get<IJob>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
-  query(req?: any): Observable<EntityArrayResponseType> {
+  query(req?: any): Observable<HttpResponse<IJob[]>> {
     const options = createRequestOption(req);
     return this.http.get<IJob[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  delete(id: string): Observable<undefined> {
+    return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
   getJobIdentifier(job: Pick<IJob, 'id'>): string {

@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../employee.test-samples';
@@ -8,7 +9,6 @@ describe('Employee Form Service', () => {
   let service: EmployeeFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(EmployeeFormService);
   });
 
@@ -57,7 +57,7 @@ describe('Employee Form Service', () => {
       it('should return NewEmployee for default Employee initial value', () => {
         const formGroup = service.createEmployeeFormGroup(sampleWithNewData);
 
-        const employee = service.getEmployee(formGroup) as any;
+        const employee = service.getEmployee(formGroup);
 
         expect(employee).toMatchObject(sampleWithNewData);
       });
@@ -65,7 +65,7 @@ describe('Employee Form Service', () => {
       it('should return NewEmployee for empty Employee initial value', () => {
         const formGroup = service.createEmployeeFormGroup();
 
-        const employee = service.getEmployee(formGroup) as any;
+        const employee = service.getEmployee(formGroup);
 
         expect(employee).toMatchObject({});
       });
@@ -73,7 +73,7 @@ describe('Employee Form Service', () => {
       it('should return IEmployee', () => {
         const formGroup = service.createEmployeeFormGroup(sampleWithRequiredData);
 
-        const employee = service.getEmployee(formGroup) as any;
+        const employee = service.getEmployee(formGroup);
 
         expect(employee).toMatchObject(sampleWithRequiredData);
       });

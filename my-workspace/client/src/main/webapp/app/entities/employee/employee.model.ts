@@ -1,4 +1,5 @@
 import dayjs from 'dayjs/esm';
+
 import { IDepartment } from 'app/entities/department/department.model';
 
 export interface IEmployee {
