@@ -16,7 +16,10 @@ export type EntityArrayResponseType = HttpResponse<IJob[]>;
 export class JobService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/jobs');
 
-  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(job: NewJob): Observable<EntityResponseType> {
     return this.http.post<IJob>(this.resourceUrl, job, { observe: 'response' });
