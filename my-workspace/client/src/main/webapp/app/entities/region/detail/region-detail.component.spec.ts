@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { RegionDetailComponent } from './region-detail.component';
@@ -8,29 +9,46 @@ describe('Region Management Detail Component', () => {
   let comp: RegionDetailComponent;
   let fixture: ComponentFixture<RegionDetailComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [RegionDetailComponent],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [RegionDetailComponent],
       providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: { data: of({ region: { id: '9fec3727-3421-4967-b213-ba36557ca194' } }) },
-        },
+        provideRouter(
+          [
+            {
+              path: '**',
+              loadComponent: () => import('./region-detail.component').then(m => m.RegionDetailComponent),
+              resolve: { region: () => of({ id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' }) },
+            },
+          ],
+          withComponentInputBinding(),
+        ),
       ],
     })
       .overrideTemplate(RegionDetailComponent, '')
       .compileComponents();
+  });
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(RegionDetailComponent);
     comp = fixture.componentInstance;
   });
 
   describe('OnInit', () => {
-    it('Should load region on init', () => {
-      // WHEN
-      comp.ngOnInit();
+    it('should load region on init', async () => {
+      const harness = await RouterTestingHarness.create();
+      const instance = await harness.navigateByUrl('/', RegionDetailComponent);
 
       // THEN
-      expect(comp.region).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+      expect(instance.region()).toEqual(expect.objectContaining({ id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' }));
+    });
+  });
+
+  describe('PreviousState', () => {
+    it('should navigate to previous state', () => {
+      jest.spyOn(window.history, 'back');
+      comp.previousState();
+      expect(window.history.back).toHaveBeenCalled();
     });
   });
 });
