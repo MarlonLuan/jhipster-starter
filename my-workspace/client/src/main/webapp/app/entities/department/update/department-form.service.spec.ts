@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { sampleWithRequiredData, sampleWithNewData } from '../department.test-samples';
+import { sampleWithNewData, sampleWithRequiredData } from '../department.test-samples';
 
 import { DepartmentFormService } from './department-form.service';
 
@@ -22,7 +22,7 @@ describe('Department Form Service', () => {
             id: expect.any(Object),
             departmentName: expect.any(Object),
             location: expect.any(Object),
-          })
+          }),
         );
       });
 
@@ -34,14 +34,13 @@ describe('Department Form Service', () => {
             id: expect.any(Object),
             departmentName: expect.any(Object),
             location: expect.any(Object),
-          })
+          }),
         );
       });
     });
 
     describe('getDepartment', () => {
       it('should return NewDepartment for default Department initial value', () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createDepartmentFormGroup(sampleWithNewData);
 
         const department = service.getDepartment(formGroup) as any;
