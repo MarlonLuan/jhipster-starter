@@ -16,7 +16,10 @@ export type EntityArrayResponseType = HttpResponse<ITask[]>;
 export class TaskService {
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/tasks');
 
-  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(task: NewTask): Observable<EntityResponseType> {
     return this.http.post<ITask>(this.resourceUrl, task, { observe: 'response' });

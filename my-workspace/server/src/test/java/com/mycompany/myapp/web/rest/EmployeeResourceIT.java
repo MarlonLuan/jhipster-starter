@@ -11,11 +11,11 @@ import com.mycompany.myapp.domain.Employee;
 import com.mycompany.myapp.repository.EmployeeRepository;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
 import com.mycompany.myapp.service.mapper.EmployeeMapper;
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,7 +222,7 @@ class EmployeeResourceIT {
         int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
 
         // Update the employee
-        Employee updatedEmployee = employeeRepository.findById(employee.getId()).get();
+        Employee updatedEmployee = employeeRepository.findById(employee.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedEmployee are not directly saved in db
         em.detach(updatedEmployee);
         updatedEmployee
@@ -341,7 +341,12 @@ class EmployeeResourceIT {
         Employee partialUpdatedEmployee = new Employee();
         partialUpdatedEmployee.setId(employee.getId());
 
-        partialUpdatedEmployee.lastName(UPDATED_LAST_NAME).email(UPDATED_EMAIL).commissionPct(UPDATED_COMMISSION_PCT);
+        partialUpdatedEmployee
+            .firstName(UPDATED_FIRST_NAME)
+            .lastName(UPDATED_LAST_NAME)
+            .email(UPDATED_EMAIL)
+            .phoneNumber(UPDATED_PHONE_NUMBER)
+            .hireDate(UPDATED_HIRE_DATE);
 
         restEmployeeMockMvc
             .perform(
@@ -356,13 +361,13 @@ class EmployeeResourceIT {
         List<Employee> employeeList = employeeRepository.findAll();
         assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
         Employee testEmployee = employeeList.get(employeeList.size() - 1);
-        assertThat(testEmployee.getFirstName()).isEqualTo(DEFAULT_FIRST_NAME);
+        assertThat(testEmployee.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
         assertThat(testEmployee.getLastName()).isEqualTo(UPDATED_LAST_NAME);
         assertThat(testEmployee.getEmail()).isEqualTo(UPDATED_EMAIL);
-        assertThat(testEmployee.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
-        assertThat(testEmployee.getHireDate()).isEqualTo(DEFAULT_HIRE_DATE);
+        assertThat(testEmployee.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
+        assertThat(testEmployee.getHireDate()).isEqualTo(UPDATED_HIRE_DATE);
         assertThat(testEmployee.getSalary()).isEqualTo(DEFAULT_SALARY);
-        assertThat(testEmployee.getCommissionPct()).isEqualTo(UPDATED_COMMISSION_PCT);
+        assertThat(testEmployee.getCommissionPct()).isEqualTo(DEFAULT_COMMISSION_PCT);
     }
 
     @Test
