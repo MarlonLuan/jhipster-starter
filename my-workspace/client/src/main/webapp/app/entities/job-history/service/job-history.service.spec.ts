@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 import { IJobHistory } from '../job-history.model';
-import { sampleWithRequiredData, sampleWithNewData, sampleWithPartialData, sampleWithFullData } from '../job-history.test-samples';
+import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../job-history.test-samples';
 
 import { JobHistoryService, RestJobHistory } from './job-history.service';
 
@@ -19,7 +20,7 @@ describe('JobHistory Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(JobHistoryService);
@@ -39,7 +40,6 @@ describe('JobHistory Service', () => {
     });
 
     it('should create a JobHistory', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const jobHistory = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
@@ -167,7 +167,7 @@ describe('JobHistory Service', () => {
       });
 
       it('Should return false if one entity is null', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
         const entity2 = null;
 
         const compareResult1 = service.compareJobHistory(entity1, entity2);
@@ -178,8 +178,8 @@ describe('JobHistory Service', () => {
       });
 
       it('Should return false if primaryKey differs', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity1 = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
+        const entity2 = { id: '77b493ed-9aef-4d01-8fd4-f257729b9d4d' };
 
         const compareResult1 = service.compareJobHistory(entity1, entity2);
         const compareResult2 = service.compareJobHistory(entity2, entity1);
@@ -189,8 +189,8 @@ describe('JobHistory Service', () => {
       });
 
       it('Should return false if primaryKey matches', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
+        const entity2 = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
 
         const compareResult1 = service.compareJobHistory(entity1, entity2);
         const compareResult2 = service.compareJobHistory(entity2, entity1);
