@@ -1,19 +1,36 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
-import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { combineLatest, filter, Observable, switchMap, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { ICountry } from '../country.model';
+import SharedModule from 'app/shared/shared.module';
+import { SortDirective, SortByDirective } from 'app/shared/sort';
+import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'app/shared/date';
+import { ItemCountComponent } from 'app/shared/pagination';
+import { FormsModule } from '@angular/forms';
 
 import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'app/config/pagination.constants';
 import { ASC, DESC, SORT, ITEM_DELETED_EVENT, DEFAULT_SORT_DATA } from 'app/config/navigation.constants';
+import { ICountry } from '../country.model';
 import { EntityArrayResponseType, CountryService } from '../service/country.service';
 import { CountryDeleteDialogComponent } from '../delete/country-delete-dialog.component';
 
 @Component({
+  standalone: true,
   selector: 'jhi-country',
   templateUrl: './country.component.html',
+  imports: [
+    RouterModule,
+    FormsModule,
+    SharedModule,
+    SortDirective,
+    SortByDirective,
+    DurationPipe,
+    FormatMediumDatetimePipe,
+    FormatMediumDatePipe,
+    ItemCountComponent,
+  ],
 })
 export class CountryComponent implements OnInit {
   countries?: ICountry[];
@@ -30,7 +47,7 @@ export class CountryComponent implements OnInit {
     protected countryService: CountryService,
     protected activatedRoute: ActivatedRoute,
     public router: Router,
-    protected modalService: NgbModal
+    protected modalService: NgbModal,
   ) {}
 
   trackId = (_index: number, item: ICountry): string => this.countryService.getCountryIdentifier(item);
@@ -46,7 +63,7 @@ export class CountryComponent implements OnInit {
     modalRef.closed
       .pipe(
         filter(reason => reason === ITEM_DELETED_EVENT),
-        switchMap(() => this.loadFromBackendWithRouteInformations())
+        switchMap(() => this.loadFromBackendWithRouteInformations()),
       )
       .subscribe({
         next: (res: EntityArrayResponseType) => {
@@ -74,7 +91,7 @@ export class CountryComponent implements OnInit {
   protected loadFromBackendWithRouteInformations(): Observable<EntityArrayResponseType> {
     return combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data]).pipe(
       tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-      switchMap(() => this.queryBackend(this.page, this.predicate, this.ascending))
+      switchMap(() => this.queryBackend(this.page, this.predicate, this.ascending)),
     );
   }
 
@@ -103,7 +120,7 @@ export class CountryComponent implements OnInit {
   protected queryBackend(page?: number, predicate?: string, ascending?: boolean): Observable<EntityArrayResponseType> {
     this.isLoading = true;
     const pageToLoad: number = page ?? 1;
-    const queryObject = {
+    const queryObject: any = {
       page: pageToLoad - 1,
       size: this.itemsPerPage,
       sort: this.getSortQueryParam(predicate, ascending),

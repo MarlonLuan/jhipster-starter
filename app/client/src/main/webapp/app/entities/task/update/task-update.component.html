@@ -8,17 +8,19 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
-          <label class="form-label" jhiTranslate="jhipsterApp.task.id" for="field_id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-        </div>
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" jhiTranslate="jhipsterApp.task.id" for="field_id">Id</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.task.title" for="field_title">Title</label>
           <input type="text" class="form-control" name="title" id="field_title" data-cy="title" formControlName="title" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.task.description" for="field_description">Description</label>
           <input
             type="text"

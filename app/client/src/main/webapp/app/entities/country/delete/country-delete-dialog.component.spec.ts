@@ -18,8 +18,7 @@ describe('Country Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [CountryDeleteDialogComponent],
+      imports: [HttpClientTestingModule, CountryDeleteDialogComponent],
       providers: [NgbActiveModal],
     })
       .overrideTemplate(CountryDeleteDialogComponent, '')
@@ -44,7 +43,7 @@ describe('Country Management Delete Component', () => {
         // THEN
         expect(service.delete).toHaveBeenCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
         expect(mockActiveModal.close).toHaveBeenCalledWith('deleted');
-      })
+      }),
     ));
 
     it('Should not call delete service on clear', () => {
