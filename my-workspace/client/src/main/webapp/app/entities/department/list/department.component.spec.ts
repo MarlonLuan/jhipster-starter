@@ -1,10 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, inject, tick } from '@angular/core/testing';
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
+import { sampleWithRequiredData } from '../department.test-samples';
 import { DepartmentService } from '../service/department.service';
 
 import { DepartmentComponent } from './department.component';
@@ -18,8 +19,7 @@ describe('Department Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'department', component: DepartmentComponent }]), HttpClientTestingModule],
-      declarations: [DepartmentComponent],
+      imports: [HttpClientTestingModule, DepartmentComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -32,9 +32,16 @@ describe('Department Management Component', () => {
                 page: '1',
                 size: '1',
                 sort: 'id,desc',
-              })
+              }),
             ),
-            snapshot: { queryParams: {} },
+            snapshot: {
+              queryParams: {},
+              queryParamMap: jest.requireActual('@angular/router').convertToParamMap({
+                page: '1',
+                size: '1',
+                sort: 'id,desc',
+              }),
+            },
           },
         },
       ],
@@ -47,15 +54,28 @@ describe('Department Management Component', () => {
     service = TestBed.inject(DepartmentService);
     routerNavigateSpy = jest.spyOn(comp.router, 'navigate');
 
-    const headers = new HttpHeaders();
-    jest.spyOn(service, 'query').mockReturnValue(
-      of(
-        new HttpResponse({
-          body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
-          headers,
-        })
+    jest
+      .spyOn(service, 'query')
+      .mockReturnValueOnce(
+        of(
+          new HttpResponse({
+            body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
+            headers: new HttpHeaders({
+              link: '<http://localhost/api/foo?page=1&size=20>; rel="next"',
+            }),
+          }),
+        ),
       )
-    );
+      .mockReturnValueOnce(
+        of(
+          new HttpResponse({
+            body: [{ id: '1361f429-3817-4123-8ee3-fdf8943310b2' }],
+            headers: new HttpHeaders({
+              link: '<http://localhost/api/foo?page=0&size=20>; rel="prev",<http://localhost/api/foo?page=2&size=20>; rel="next"',
+            }),
+          }),
+        ),
+      );
   });
 
   it('Should call load all on init', () => {
@@ -77,6 +97,21 @@ describe('Department Management Component', () => {
     });
   });
 
+  it('should calculate the sort attribute for a non-id attribute', () => {
+    // WHEN
+    comp.navigateToWithComponentValues({ predicate: 'non-existing-column', order: 'asc' });
+
+    // THEN
+    expect(routerNavigateSpy).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        queryParams: expect.objectContaining({
+          sort: ['non-existing-column,asc'],
+        }),
+      }),
+    );
+  });
+
   it('should load a page', () => {
     // WHEN
     comp.navigateToPage(1);
@@ -93,21 +128,50 @@ describe('Department Management Component', () => {
     expect(service.query).toHaveBeenLastCalledWith(expect.objectContaining({ sort: ['id,desc'] }));
   });
 
-  it('should calculate the sort attribute for a non-id attribute', () => {
-    // GIVEN
-    comp.predicate = 'name';
+  describe('delete', () => {
+    let ngbModal: NgbModal;
+    let deleteModalMock: any;
 
-    // WHEN
-    comp.navigateToWithComponentValues();
+    beforeEach(() => {
+      deleteModalMock = { componentInstance: {}, closed: new Subject() };
+      // NgbModal is not a singleton using TestBed.inject.
+      // ngbModal = TestBed.inject(NgbModal);
+      ngbModal = (comp as any).modalService;
+      jest.spyOn(ngbModal, 'open').mockReturnValue(deleteModalMock);
+    });
 
-    // THEN
-    expect(routerNavigateSpy).toHaveBeenLastCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        queryParams: expect.objectContaining({
-          sort: ['name,asc'],
-        }),
-      })
-    );
+    it('on confirm should call load', inject(
+      [],
+      fakeAsync(() => {
+        // GIVEN
+        jest.spyOn(comp, 'load');
+
+        // WHEN
+        comp.delete(sampleWithRequiredData);
+        deleteModalMock.closed.next('deleted');
+        tick();
+
+        // THEN
+        expect(ngbModal.open).toHaveBeenCalled();
+        expect(comp.load).toHaveBeenCalled();
+      }),
+    ));
+
+    it('on dismiss should call load', inject(
+      [],
+      fakeAsync(() => {
+        // GIVEN
+        jest.spyOn(comp, 'load');
+
+        // WHEN
+        comp.delete(sampleWithRequiredData);
+        deleteModalMock.closed.next();
+        tick();
+
+        // THEN
+        expect(ngbModal.open).toHaveBeenCalled();
+        expect(comp.load).not.toHaveBeenCalled();
+      }),
+    ));
   });
 });

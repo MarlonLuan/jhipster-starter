@@ -3,14 +3,13 @@ import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
-import { EmployeeFormService } from './employee-form.service';
-import { EmployeeService } from '../service/employee.service';
-import { IEmployee } from '../employee.model';
 import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
+import { EmployeeService } from '../service/employee.service';
+import { IEmployee } from '../employee.model';
+import { EmployeeFormService } from './employee-form.service';
 
 import { EmployeeUpdateComponent } from './employee-update.component';
 
@@ -24,8 +23,7 @@ describe('Employee Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [EmployeeUpdateComponent],
+      imports: [HttpClientTestingModule, EmployeeUpdateComponent],
       providers: [
         FormBuilder,
         {
@@ -51,10 +49,10 @@ describe('Employee Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Employee query and add missing value', () => {
       const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const manager: IEmployee = { id: '01cbf1bb-cd4a-4879-a29d-36e93f70dc33' };
+      const manager: IEmployee = { id: 'aa3d9ffc-cb8e-47a8-8e42-fd6ca66ad2af' };
       employee.manager = manager;
 
-      const employeeCollection: IEmployee[] = [{ id: 'a641269e-02be-45cc-9b3e-81010e025c8a' }];
+      const employeeCollection: IEmployee[] = [{ id: '7880a3b6-7dc5-41e8-a29d-e6a0941bcfb9' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [manager];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
@@ -66,17 +64,17 @@ describe('Employee Management Update Component', () => {
       expect(employeeService.query).toHaveBeenCalled();
       expect(employeeService.addEmployeeToCollectionIfMissing).toHaveBeenCalledWith(
         employeeCollection,
-        ...additionalEmployees.map(expect.objectContaining)
+        ...additionalEmployees.map(expect.objectContaining),
       );
       expect(comp.employeesSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should call Department query and add missing value', () => {
       const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const department: IDepartment = { id: '5c98514b-0378-47e6-94b7-f3e0d7da936c' };
+      const department: IDepartment = { id: '1215b6fd-4f6d-493f-9614-5e2f38cdafb5' };
       employee.department = department;
 
-      const departmentCollection: IDepartment[] = [{ id: '7921b878-5806-4ce9-a183-59e2910bedb6' }];
+      const departmentCollection: IDepartment[] = [{ id: '0a0d6243-2cf1-4672-be77-2b1743f27a42' }];
       jest.spyOn(departmentService, 'query').mockReturnValue(of(new HttpResponse({ body: departmentCollection })));
       const additionalDepartments = [department];
       const expectedCollection: IDepartment[] = [...additionalDepartments, ...departmentCollection];
@@ -88,16 +86,16 @@ describe('Employee Management Update Component', () => {
       expect(departmentService.query).toHaveBeenCalled();
       expect(departmentService.addDepartmentToCollectionIfMissing).toHaveBeenCalledWith(
         departmentCollection,
-        ...additionalDepartments.map(expect.objectContaining)
+        ...additionalDepartments.map(expect.objectContaining),
       );
       expect(comp.departmentsSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should update editForm', () => {
       const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const manager: IEmployee = { id: '6b1a0c8c-4acb-491f-9653-7db134c2cba3' };
+      const manager: IEmployee = { id: '126f3af0-0890-43bc-843d-372cd21d58c7' };
       employee.manager = manager;
-      const department: IDepartment = { id: 'a65394e3-84e2-4f1a-a2e6-2bb29b0fbd07' };
+      const department: IDepartment = { id: 'af9f1d6d-d545-40d2-b45c-adb7df814bff' };
       employee.department = department;
 
       activatedRoute.data = of({ employee });
