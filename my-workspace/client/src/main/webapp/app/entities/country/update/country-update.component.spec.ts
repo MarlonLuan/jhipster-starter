@@ -3,7 +3,6 @@ import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
 import { IRegion } from 'app/entities/region/region.model';
@@ -24,7 +23,7 @@ describe('Country Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), CountryUpdateComponent],
+      imports: [HttpClientTestingModule, CountryUpdateComponent],
       providers: [
         FormBuilder,
         {
