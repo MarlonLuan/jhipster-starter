@@ -1,9 +1,9 @@
 {
+  "annotations": {
+    "changelogDate": "19700101120203"
+  },
   "applications": ["jhipster"],
-  "changelogDate": "20231014142753",
   "dto": "mapstruct",
-  "embedded": false,
-  "entityTableName": "country",
   "fields": [
     {
       "fieldName": "id",
@@ -14,19 +14,16 @@
       "fieldType": "String"
     }
   ],
-  "fluentMethods": true,
-  "jpaMetamodelFiltering": false,
   "name": "Country",
   "pagination": "pagination",
-  "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "region",
-      "ownerSide": true,
       "relationshipName": "region",
+      "relationshipSide": "left",
       "relationshipType": "one-to-one"
     }
   ],
-  "service": "serviceImpl",
-  "skipClient": true
+  "searchEngine": "no",
+  "service": "serviceImpl"
 }

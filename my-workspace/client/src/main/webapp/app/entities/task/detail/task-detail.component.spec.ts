@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { TaskDetailComponent } from './task-detail.component';
@@ -8,29 +9,46 @@ describe('Task Management Detail Component', () => {
   let comp: TaskDetailComponent;
   let fixture: ComponentFixture<TaskDetailComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [TaskDetailComponent],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [TaskDetailComponent],
       providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: { data: of({ task: { id: '9fec3727-3421-4967-b213-ba36557ca194' } }) },
-        },
+        provideRouter(
+          [
+            {
+              path: '**',
+              component: TaskDetailComponent,
+              resolve: { task: () => of({ id: '9fec3727-3421-4967-b213-ba36557ca194' }) },
+            },
+          ],
+          withComponentInputBinding(),
+        ),
       ],
     })
       .overrideTemplate(TaskDetailComponent, '')
       .compileComponents();
+  });
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(TaskDetailComponent);
     comp = fixture.componentInstance;
   });
 
   describe('OnInit', () => {
-    it('Should load task on init', () => {
-      // WHEN
-      comp.ngOnInit();
+    it('Should load task on init', async () => {
+      const harness = await RouterTestingHarness.create();
+      const instance = await harness.navigateByUrl('/', TaskDetailComponent);
 
       // THEN
-      expect(comp.task).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+      expect(instance.task()).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    });
+  });
+
+  describe('PreviousState', () => {
+    it('Should navigate to previous state', () => {
+      jest.spyOn(window.history, 'back');
+      comp.previousState();
+      expect(window.history.back).toHaveBeenCalled();
     });
   });
 });
