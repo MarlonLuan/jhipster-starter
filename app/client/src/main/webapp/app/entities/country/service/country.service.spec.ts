@@ -37,7 +37,6 @@ describe('Country Service', () => {
     });
 
     it('should create a Country', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const country = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
