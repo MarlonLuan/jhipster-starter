@@ -25,7 +25,7 @@ describe('Job Form Service', () => {
             maxSalary: expect.any(Object),
             tasks: expect.any(Object),
             employee: expect.any(Object),
-          })
+          }),
         );
       });
 
@@ -40,14 +40,13 @@ describe('Job Form Service', () => {
             maxSalary: expect.any(Object),
             tasks: expect.any(Object),
             employee: expect.any(Object),
-          })
+          }),
         );
       });
     });
 
     describe('getJob', () => {
       it('should return NewJob for default Job initial value', () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createJobFormGroup(sampleWithNewData);
 
         const job = service.getJob(formGroup) as any;

@@ -13,10 +13,10 @@ import com.mycompany.myapp.repository.JobRepository;
 import com.mycompany.myapp.service.JobService;
 import com.mycompany.myapp.service.dto.JobDTO;
 import com.mycompany.myapp.service.mapper.JobMapper;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -209,7 +208,7 @@ class JobResourceIT {
         int databaseSizeBeforeUpdate = jobRepository.findAll().size();
 
         // Update the job
-        Job updatedJob = jobRepository.findById(job.getId()).get();
+        Job updatedJob = jobRepository.findById(job.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedJob are not directly saved in db
         em.detach(updatedJob);
         updatedJob.jobTitle(UPDATED_JOB_TITLE).minSalary(UPDATED_MIN_SALARY).maxSalary(UPDATED_MAX_SALARY);
@@ -314,7 +313,7 @@ class JobResourceIT {
         Job partialUpdatedJob = new Job();
         partialUpdatedJob.setId(job.getId());
 
-        partialUpdatedJob.minSalary(UPDATED_MIN_SALARY);
+        partialUpdatedJob.maxSalary(UPDATED_MAX_SALARY);
 
         restJobMockMvc
             .perform(
@@ -330,8 +329,8 @@ class JobResourceIT {
         assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
         Job testJob = jobList.get(jobList.size() - 1);
         assertThat(testJob.getJobTitle()).isEqualTo(DEFAULT_JOB_TITLE);
-        assertThat(testJob.getMinSalary()).isEqualTo(UPDATED_MIN_SALARY);
-        assertThat(testJob.getMaxSalary()).isEqualTo(DEFAULT_MAX_SALARY);
+        assertThat(testJob.getMinSalary()).isEqualTo(DEFAULT_MIN_SALARY);
+        assertThat(testJob.getMaxSalary()).isEqualTo(UPDATED_MAX_SALARY);
     }
 
     @Test
