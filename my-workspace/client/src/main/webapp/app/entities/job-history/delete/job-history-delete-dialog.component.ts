@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -15,10 +15,8 @@ import { JobHistoryService } from '../service/job-history.service';
 export class JobHistoryDeleteDialogComponent {
   jobHistory?: IJobHistory;
 
-  constructor(
-    protected jobHistoryService: JobHistoryService,
-    protected activeModal: NgbActiveModal,
-  ) {}
+  protected jobHistoryService = inject(JobHistoryService);
+  protected activeModal = inject(NgbActiveModal);
 
   cancel(): void {
     this.activeModal.dismiss();
