@@ -1,12 +1,11 @@
 import { HttpResponse } from '@angular/common/http';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
-import { finalize, map } from 'rxjs/operators';
+import { TranslatePipe } from '@ngx-translate/core';
+import { Observable, finalize, map } from 'rxjs';
 
 import { IEmployee } from 'app/entities/employee/employee.model';
 import { EmployeeService } from 'app/entities/employee/service/employee.service';
@@ -20,9 +19,10 @@ import { JobService } from '../service/job.service';
 import { JobFormGroup, JobFormService } from './job-form.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-job-update',
   templateUrl: './job-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class JobUpdate implements OnInit {
   readonly isSaving = signal(false);

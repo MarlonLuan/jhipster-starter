@@ -3,8 +3,8 @@ package com.mycompany.myapp.web.rest.errors;
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +79,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         HttpStatusCode statusCode,
         WebRequest request
     ) {
-        body = body == null ? wrapAndCustomizeProblem((Throwable) ex, (NativeWebRequest) request) : body;
+        body = body == null ? wrapAndCustomizeProblem(ex, (NativeWebRequest) request) : body;
         return super.handleExceptionInternal(ex, body, headers, statusCode, request);
     }
 
@@ -120,7 +120,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         if (problemProperties == null || !problemProperties.containsKey(PATH_KEY)) problem.setProperty(PATH_KEY, getPathValue(request));
 
         if (
-            (err instanceof MethodArgumentNotValidException fieldException) &&
+            err instanceof MethodArgumentNotValidException fieldException &&
             (problemProperties == null || !problemProperties.containsKey(FIELD_ERRORS_KEY))
         ) problem.setProperty(FIELD_ERRORS_KEY, getFieldErrors(fieldException));
 
@@ -168,7 +168,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     }
 
     private ResponseStatus extractResponseStatus(final Throwable throwable) {
-        return Optional.ofNullable(resolveResponseStatus(throwable)).orElse(null);
+        return resolveResponseStatus(throwable);
     }
 
     private ResponseStatus resolveResponseStatus(final Throwable type) {
@@ -177,12 +177,14 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     }
 
     private URI getMappedType(Throwable err) {
-        if (err instanceof MethodArgumentNotValidException) return ErrorConstants.CONSTRAINT_VIOLATION_TYPE;
+        if (
+            err instanceof MethodArgumentNotValidException || err instanceof ConstraintViolationException
+        ) return ErrorConstants.CONSTRAINT_VIOLATION_TYPE;
         return ErrorConstants.DEFAULT_TYPE;
     }
 
     private String getMappedMessageKey(Throwable err) {
-        if (err instanceof MethodArgumentNotValidException) {
+        if (err instanceof MethodArgumentNotValidException || err instanceof ConstraintViolationException) {
             return ErrorConstants.ERR_VALIDATION;
         } else if (err instanceof ConcurrencyFailureException || err.getCause() instanceof ConcurrencyFailureException) {
             return ErrorConstants.ERR_CONCURRENCY_FAILURE;
@@ -191,12 +193,14 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     }
 
     private String getCustomizedTitle(Throwable err) {
-        if (err instanceof MethodArgumentNotValidException) return "Method argument not valid";
+        if (
+            err instanceof MethodArgumentNotValidException || err instanceof ConstraintViolationException
+        ) return "Method argument not valid";
         return null;
     }
 
     private String getCustomizedErrorDetails(Throwable err) {
-        Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
+        Collection<String> activeProfiles = List.of(env.getActiveProfiles());
         if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)) {
             if (err instanceof HttpMessageConversionException) return "Unable to convert http message";
             if (err instanceof DataAccessException) return "Failure during data access";
@@ -210,6 +214,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         if (err instanceof AccessDeniedException) return HttpStatus.FORBIDDEN;
         if (err instanceof ConcurrencyFailureException) return HttpStatus.CONFLICT;
         if (err instanceof BadCredentialsException) return HttpStatus.UNAUTHORIZED;
+        if (err instanceof ConstraintViolationException) return HttpStatus.BAD_REQUEST;
         return null;
     }
 

@@ -31,6 +31,7 @@ export class DepartmentFormService {
       ...this.getFormDefaults(),
       ...(department ?? { id: null }),
     };
+
     return new FormGroup<DepartmentFormGroupContent>({
       id: new FormControl(
         { value: departmentRawValue.id, disabled: true },
@@ -47,7 +48,7 @@ export class DepartmentFormService {
   }
 
   getDepartment(form: DepartmentFormGroup): IDepartment | NewDepartment {
-    return form.getRawValue() as IDepartment | NewDepartment;
+    return form.getRawValue();
   }
 
   resetForm(form: DepartmentFormGroup, department: DepartmentFormGroupInput): void {

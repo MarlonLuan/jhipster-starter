@@ -1,11 +1,10 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { TranslatePipe } from '@ngx-translate/core';
+import { Observable, finalize } from 'rxjs';
 
 import { AlertError } from 'app/shared/alert/alert-error';
 import { TranslateDirective } from 'app/shared/language';
@@ -15,9 +14,10 @@ import { ITask } from '../task.model';
 import { TaskFormGroup, TaskFormService } from './task-form.service';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-task-update',
   templateUrl: './task-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class TaskUpdate implements OnInit {
   readonly isSaving = signal(false);

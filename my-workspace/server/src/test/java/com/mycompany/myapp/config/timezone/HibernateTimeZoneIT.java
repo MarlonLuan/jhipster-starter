@@ -1,6 +1,5 @@
 package com.mycompany.myapp.config.timezone;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mycompany.myapp.IntegrationTest;
@@ -158,7 +157,7 @@ class HibernateTimeZoneIT {
     }
 
     private String generateSqlRequest(String fieldName, long id) {
-        return format("SELECT %s FROM jhi_date_time_wrapper where id=%d", fieldName, id);
+        return "SELECT %s FROM jhi_date_time_wrapper where id=%d".formatted(fieldName, id);
     }
 
     private void assertThatValueFromSqlRowSetIsEqualToExpectedValue(SqlRowSet sqlRowSet, String expectedValue) {

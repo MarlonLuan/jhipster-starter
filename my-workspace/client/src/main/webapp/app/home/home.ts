@@ -1,6 +1,4 @@
-import { Component, inject } from '@angular/core';
-
-import { TranslateModule } from '@ngx-translate/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { LoginService } from 'app/login/login.service';
@@ -8,9 +6,10 @@ import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-home',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.html',
   styleUrl: './home.scss',
-  imports: [TranslateDirective, TranslateModule],
+  imports: [TranslateDirective],
 })
 export default class Home {
   public readonly account = inject(AccountService).account;

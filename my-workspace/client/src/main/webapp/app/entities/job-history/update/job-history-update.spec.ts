@@ -4,7 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { Subject, from, of } from 'rxjs';
 
 import { IDepartment } from 'app/entities/department/department.model';
@@ -31,8 +31,8 @@ describe('JobHistory Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
+        provideTranslateService(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,

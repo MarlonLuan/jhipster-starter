@@ -1,9 +1,8 @@
 import { JsonPipe, KeyValuePipe } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { TranslateDirective } from 'app/shared/language';
 import { SortByDirective, SortDirective, SortService, sortStateSignal } from 'app/shared/sort';
@@ -13,12 +12,13 @@ import { ConfigurationService } from './configuration.service';
 
 @Component({
   selector: 'jhi-configuration',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './configuration.html',
-  imports: [FontAwesomeModule, FormsModule, SortDirective, SortByDirective, KeyValuePipe, JsonPipe, TranslateDirective, TranslateModule],
+  imports: [FontAwesomeModule, FormsModule, SortDirective, SortByDirective, KeyValuePipe, JsonPipe, TranslateDirective],
 })
 export default class Configuration implements OnInit {
   readonly allBeans = signal<Bean[] | undefined>(undefined);
-  readonly beansFilter = signal<string>('');
+  readonly beansFilter = signal('');
   readonly propertySources = signal<PropertySource[]>([]);
   sortState = sortStateSignal({ predicate: 'prefix', order: 'asc' });
   readonly beans = computed(() => {

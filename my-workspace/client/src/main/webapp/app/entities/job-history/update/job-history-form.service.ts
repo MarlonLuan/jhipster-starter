@@ -50,6 +50,7 @@ export class JobHistoryFormService {
       ...this.getFormDefaults(),
       ...(jobHistory ?? { id: null }),
     });
+
     return new FormGroup<JobHistoryFormGroupContent>({
       id: new FormControl(
         { value: jobHistoryRawValue.id, disabled: true },
@@ -68,7 +69,7 @@ export class JobHistoryFormService {
   }
 
   getJobHistory(form: JobHistoryFormGroup): IJobHistory | NewJobHistory {
-    return this.convertJobHistoryRawValueToJobHistory(form.getRawValue() as JobHistoryFormRawValue | NewJobHistoryFormRawValue);
+    return this.convertJobHistoryRawValueToJobHistory(form.getRawValue());
   }
 
   resetForm(form: JobHistoryFormGroup, jobHistory: JobHistoryFormGroupInput): void {

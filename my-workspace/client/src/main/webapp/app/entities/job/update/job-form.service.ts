@@ -34,6 +34,7 @@ export class JobFormService {
       ...this.getFormDefaults(),
       ...(job ?? { id: null }),
     };
+
     return new FormGroup<JobFormGroupContent>({
       id: new FormControl(
         { value: jobRawValue.id, disabled: true },
@@ -51,7 +52,7 @@ export class JobFormService {
   }
 
   getJob(form: JobFormGroup): IJob | NewJob {
-    return form.getRawValue() as IJob | NewJob;
+    return form.getRawValue();
   }
 
   resetForm(form: JobFormGroup, job: JobFormGroupInput): void {
