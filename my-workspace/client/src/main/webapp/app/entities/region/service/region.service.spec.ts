@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 import { IRegion } from '../region.model';
-import { sampleWithRequiredData, sampleWithNewData, sampleWithPartialData, sampleWithFullData } from '../region.test-samples';
+import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../region.test-samples';
 
 import { RegionService } from './region.service';
 
@@ -17,7 +18,7 @@ describe('Region Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(RegionService);
@@ -37,7 +38,6 @@ describe('Region Service', () => {
     });
 
     it('should create a Region', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const region = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
@@ -165,7 +165,7 @@ describe('Region Service', () => {
       });
 
       it('Should return false if one entity is null', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
         const entity2 = null;
 
         const compareResult1 = service.compareRegion(entity1, entity2);
@@ -176,8 +176,8 @@ describe('Region Service', () => {
       });
 
       it('Should return false if primaryKey differs', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity1 = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
+        const entity2 = { id: '08490cb2-dd41-43f2-95f0-554d7eff5216' };
 
         const compareResult1 = service.compareRegion(entity1, entity2);
         const compareResult2 = service.compareRegion(entity2, entity1);
@@ -187,8 +187,8 @@ describe('Region Service', () => {
       });
 
       it('Should return false if primaryKey matches', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
+        const entity2 = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
 
         const compareResult1 = service.compareRegion(entity1, entity2);
         const compareResult2 = service.compareRegion(entity2, entity1);
