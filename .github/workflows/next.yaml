@@ -1,0 +1,58 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 * * * *'
+env:
+  FORCE_COLOR: 2
+jobs:
+  next:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4
+        with:
+          node-version: lts/*
+
+      - run: sudo npm un generator-jhipster -g
+
+      - run: git clone --depth=1 https://github.com/jhipster/generator-jhipster.git
+
+      - run: |
+          cd generator-jhipster
+          npm i -f
+          sudo npm link
+
+      - run: |
+          echo "y" | rm -rf my-workspace
+          mkdir my-workspace
+
+      - run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        id: date
+
+      - run: |
+          cd my-workspace
+          mkdir client
+          cd client
+          sudo date -s "1970-01-01 12:00:00"
+          echo "a" | jhipster jdl ../../jdl/workspace.jdl --skip-git --skip-install --skip-server
+
+      - run: |
+          cd my-workspace
+          mkdir server
+          cd server
+          sudo date -s "1970-01-01 12:00:00"
+          echo "a" | jhipster jdl ../../jdl/workspace.jdl --skip-git --skip-install --skip-client
+
+      - run: echo "y" | sudo rm -rf generator-jhipster
+
+      - run: |
+          sudo date -s "${{ steps.date.outputs.date }}"
+
+      - uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+        with:
+          title: next
+          body:
+          commit-message: next
+          branch: next
+          draft: true
