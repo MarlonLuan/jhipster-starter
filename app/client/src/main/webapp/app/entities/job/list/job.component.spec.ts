@@ -18,8 +18,7 @@ describe('Job Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'job', component: JobComponent }]), HttpClientTestingModule],
-      declarations: [JobComponent],
+      imports: [RouterTestingModule.withRoutes([{ path: 'job', component: JobComponent }]), HttpClientTestingModule, JobComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -32,7 +31,7 @@ describe('Job Management Component', () => {
                 page: '1',
                 size: '1',
                 sort: 'id,desc',
-              })
+              }),
             ),
             snapshot: { queryParams: {} },
           },
@@ -53,8 +52,8 @@ describe('Job Management Component', () => {
         new HttpResponse({
           body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
           headers,
-        })
-      )
+        }),
+      ),
     );
   });
 
@@ -107,7 +106,7 @@ describe('Job Management Component', () => {
         queryParams: expect.objectContaining({
           sort: ['name,asc'],
         }),
-      })
+      }),
     );
   });
 });
