@@ -1,8 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 import { IJobHistory } from '../job-history.model';
-import { sampleWithRequiredData, sampleWithNewData, sampleWithPartialData, sampleWithFullData } from '../job-history.test-samples';
+import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../job-history.test-samples';
 
 import { JobHistoryService, RestJobHistory } from './job-history.service';
 
@@ -19,7 +20,7 @@ describe('JobHistory Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(JobHistoryService);
@@ -39,7 +40,6 @@ describe('JobHistory Service', () => {
     });
 
     it('should create a JobHistory', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const jobHistory = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };

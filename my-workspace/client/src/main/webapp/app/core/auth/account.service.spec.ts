@@ -1,12 +1,11 @@
 jest.mock('app/core/auth/state-storage.service');
 
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
-import { NgxWebstorageModule, SessionStorageService } from 'ngx-webstorage';
 
 import { Account } from 'app/core/auth/account.model';
 import { Authority } from 'app/config/authority.constants';
@@ -27,18 +26,19 @@ function accountWithAuthorities(authorities: string[]): Account {
   };
 }
 
+const mockFn = (value: string | null): jest.Mock<string | null> => jest.fn(() => value);
+
 describe('Account Service', () => {
   let service: AccountService;
   let httpMock: HttpTestingController;
   let mockStorageService: StateStorageService;
   let mockRouter: Router;
   let mockTranslateService: TranslateService;
-  let sessionStorageService: SessionStorageService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), TranslateModule.forRoot(), NgxWebstorageModule.forRoot()],
-      providers: [StateStorageService],
+      imports: [TranslateModule.forRoot()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), StateStorageService],
     });
 
     service = TestBed.inject(AccountService);
@@ -49,7 +49,6 @@ describe('Account Service', () => {
 
     mockTranslateService = TestBed.inject(TranslateService);
     jest.spyOn(mockTranslateService, 'use').mockImplementation(() => of(''));
-    sessionStorageService = TestBed.inject(SessionStorageService);
   });
 
   afterEach(() => {
@@ -118,7 +117,7 @@ describe('Account Service', () => {
     describe('should change the language on authentication if necessary', () => {
       it('should change language if user has not changed language manually', () => {
         // GIVEN
-        sessionStorageService.retrieve = jest.fn(key => (key === 'locale' ? undefined : 'otherSessionStorageValue'));
+        mockStorageService.getLocale = mockFn(null);
 
         // WHEN
         service.identity().subscribe();
@@ -130,7 +129,7 @@ describe('Account Service', () => {
 
       it('should not change language if user has changed language manually', () => {
         // GIVEN
-        sessionStorageService.retrieve = jest.fn(key => (key === 'locale' ? 'sessionLang' : undefined));
+        mockStorageService.getLocale = mockFn('sessionLang');
 
         // WHEN
         service.identity().subscribe();
@@ -144,7 +143,7 @@ describe('Account Service', () => {
     describe('navigateToStoredUrl', () => {
       it('should navigate to the previous stored url post successful authentication', () => {
         // GIVEN
-        mockStorageService.getUrl = jest.fn(() => 'admin/users?page=0');
+        mockStorageService.getUrl = mockFn('admin/users?page=0');
 
         // WHEN
         service.identity().subscribe();
@@ -159,7 +158,7 @@ describe('Account Service', () => {
       it('should not navigate to the previous stored url when authentication fails', () => {
         // WHEN
         service.identity().subscribe();
-        httpMock.expectOne({ method: 'GET' }).error(new ErrorEvent(''));
+        httpMock.expectOne({ method: 'GET' }).error(new ProgressEvent(''));
 
         // THEN
         expect(mockStorageService.getUrl).not.toHaveBeenCalled();
@@ -169,7 +168,7 @@ describe('Account Service', () => {
 
       it('should not navigate to the previous stored url when no such url exists post successful authentication', () => {
         // GIVEN
-        mockStorageService.getUrl = jest.fn(() => null);
+        mockStorageService.getUrl = mockFn(null);
 
         // WHEN
         service.identity().subscribe();

@@ -1,19 +1,18 @@
 import { ITask, NewTask } from './task.model';
 
 export const sampleWithRequiredData: ITask = {
-  id: '6cd369ff-3e50-44dc-bff2-85e0c26ef9ed',
+  id: '0967e5a6-70cd-4242-82c1-b3161b64814c',
 };
 
 export const sampleWithPartialData: ITask = {
-  id: 'c51c0fba-8dba-4c51-b5b3-279bc9af4bf8',
-  title: 'Licensed Account',
-  description: 'Sleek',
+  id: '79944e83-9a34-4ade-b41e-a631525e7c8a',
+  title: 'cook bashfully',
 };
 
 export const sampleWithFullData: ITask = {
-  id: '34411810-297e-4e02-bb64-e2d6d401a6b3',
-  title: 'SDD',
-  description: 'Strategist Springs white',
+  id: 'edc12e7f-dd40-4346-a2af-7aff3f20fa98',
+  title: 'wherever consistency eyebrow',
+  description: 'deeply',
 };
 
 export const sampleWithNewData: NewTask = {
