@@ -10,7 +10,7 @@
     "backend:build-cache": "./mvnw dependency:go-offline -ntp",
     "backend:debug": "./mvnw -Dspring-boot.run.jvmArguments=\"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000\"",
     "backend:doc:test": "./mvnw -ntp javadoc:javadoc --batch-mode",
-    "backend:info": "./mvnw -ntp enforcer:display-info --batch-mode",
+    "backend:info": "./mvnw --version",
     "backend:nohttp:test": "./mvnw -ntp checkstyle:check --batch-mode",
     "backend:start": "./mvnw",
     "backend:unit:test": "./mvnw -ntp verify --batch-mode -Dlogging.level.ROOT=OFF -Dlogging.level.tech.jhipster=OFF -Dlogging.level.com.mycompany.myapp=OFF -Dlogging.level.org.springframework=OFF -Dlogging.level.org.springframework.web=OFF -Dlogging.level.org.springframework.security=OFF",
@@ -46,10 +46,10 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "8.1.0"
+    "generator-jhipster": "8.4.0"
   },
   "engines": {
-    "node": ">=18.18.2"
+    "node": ">=20.12.2"
   },
   "cacheDirectories": [
     "node_modules"
