@@ -1,16 +1,17 @@
 import { IRegion, NewRegion } from './region.model';
 
 export const sampleWithRequiredData: IRegion = {
-  id: '4ac22173-a27f-4cc2-bff5-851da2a397e4',
+  id: 'aa7d632a-9a7a-4274-bb5f-5d63d109ca88',
 };
 
 export const sampleWithPartialData: IRegion = {
-  id: '51ce1af6-5077-4364-990c-ed374684f191',
+  id: 'f9ebc996-da81-498e-a62e-0194a94d5494',
+  regionName: 'yesterday dispense',
 };
 
 export const sampleWithFullData: IRegion = {
-  id: '3319f7aa-2386-44eb-921d-311f32b2c8ca',
-  regionName: 'non-volatile withdrawal Computer',
+  id: 'f347f590-0453-4974-a82f-c0d2aebae169',
+  regionName: 'breakable sophisticated whine',
 };
 
 export const sampleWithNewData: NewRegion = {

@@ -1,20 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import { JobFormService, JobFormGroup } from './job-form.service';
-import { IJob } from '../job.model';
-import { JobService } from '../service/job.service';
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { ITask } from 'app/entities/task/task.model';
 import { TaskService } from 'app/entities/task/service/task.service';
 import { IEmployee } from 'app/entities/employee/employee.model';
 import { EmployeeService } from 'app/entities/employee/service/employee.service';
+import { JobService } from '../service/job.service';
+import { IJob } from '../job.model';
+import { JobFormGroup, JobFormService } from './job-form.service';
 
 @Component({
   selector: 'jhi-job-update',
   templateUrl: './job-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class JobUpdateComponent implements OnInit {
   isSaving = false;
@@ -23,15 +27,14 @@ export class JobUpdateComponent implements OnInit {
   tasksSharedCollection: ITask[] = [];
   employeesSharedCollection: IEmployee[] = [];
 
-  editForm: JobFormGroup = this.jobFormService.createJobFormGroup();
+  protected jobService = inject(JobService);
+  protected jobFormService = inject(JobFormService);
+  protected taskService = inject(TaskService);
+  protected employeeService = inject(EmployeeService);
+  protected activatedRoute = inject(ActivatedRoute);
 
-  constructor(
-    protected jobService: JobService,
-    protected jobFormService: JobFormService,
-    protected taskService: TaskService,
-    protected employeeService: EmployeeService,
-    protected activatedRoute: ActivatedRoute
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  editForm: JobFormGroup = this.jobFormService.createJobFormGroup();
 
   compareTask = (o1: ITask | null, o2: ITask | null): boolean => this.taskService.compareTask(o1, o2);
 
@@ -88,7 +91,7 @@ export class JobUpdateComponent implements OnInit {
     this.tasksSharedCollection = this.taskService.addTaskToCollectionIfMissing<ITask>(this.tasksSharedCollection, ...(job.tasks ?? []));
     this.employeesSharedCollection = this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(
       this.employeesSharedCollection,
-      job.employee
+      job.employee,
     );
   }
 
@@ -103,7 +106,7 @@ export class JobUpdateComponent implements OnInit {
       .query()
       .pipe(map((res: HttpResponse<IEmployee[]>) => res.body ?? []))
       .pipe(
-        map((employees: IEmployee[]) => this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, this.job?.employee))
+        map((employees: IEmployee[]) => this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, this.job?.employee)),
       )
       .subscribe((employees: IEmployee[]) => (this.employeesSharedCollection = employees));
   }
