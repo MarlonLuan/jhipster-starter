@@ -17,7 +17,6 @@ import com.mycompany.myapp.service.dto.JobHistoryDTO;
 import com.mycompany.myapp.service.mapper.JobHistoryMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,10 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
 class JobHistoryResourceIT {
 
     private static final Instant DEFAULT_START_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_START_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final Instant UPDATED_START_DATE = Instant.ofEpochMilli(1703440313582L);
 
     private static final Instant DEFAULT_END_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_END_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final Instant UPDATED_END_DATE = Instant.ofEpochMilli(1703440313582L);
 
     private static final Language DEFAULT_LANGUAGE = Language.FRENCH;
     private static final Language UPDATED_LANGUAGE = Language.ENGLISH;

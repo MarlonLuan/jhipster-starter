@@ -37,17 +37,7 @@
               "src/main/webapp/favicon.ico",
               "src/main/webapp/manifest.webapp",
               "src/main/webapp/robots.txt",
-              "src/main/webapp/swagger-ui",
-              {
-                "glob": "axios.min.js",
-                "input": "node_modules/axios/dist/",
-                "output": "swagger-ui/"
-              },
-              {
-                "glob": "{*.{png,css},swagger-ui-{bundle,standalone-preset}.js}",
-                "input": "node_modules/swagger-ui-dist/",
-                "output": "swagger-ui/"
-              }
+              "src/main/webapp/swagger-ui"
             ],
             "styles": ["src/main/webapp/content/scss/vendor.scss", "src/main/webapp/content/scss/global.scss"],
             "scripts": [],
@@ -116,6 +106,7 @@
             "runnerConfig": true,
             "coverageReporters": ["text", "lcov"],
             "reporters": ["default", ["vitest-sonar-reporter", { "outputFile": "./target/test-results/TESTS-results-sonar-vitest.xml" }]],
+            "watch": false,
             "tsConfig": "tsconfig.spec.json"
           }
         }

@@ -31,6 +31,7 @@ export class CountryFormService {
       ...this.getFormDefaults(),
       ...(country ?? { id: null }),
     };
+
     return new FormGroup<CountryFormGroupContent>({
       id: new FormControl(
         { value: countryRawValue.id, disabled: true },
@@ -45,7 +46,7 @@ export class CountryFormService {
   }
 
   getCountry(form: CountryFormGroup): ICountry | NewCountry {
-    return form.getRawValue() as ICountry | NewCountry;
+    return form.getRawValue();
   }
 
   resetForm(form: CountryFormGroup, country: CountryFormGroupInput): void {

@@ -30,6 +30,7 @@ export class RegionFormService {
       ...this.getFormDefaults(),
       ...(region ?? { id: null }),
     };
+
     return new FormGroup<RegionFormGroupContent>({
       id: new FormControl(
         { value: regionRawValue.id, disabled: true },
@@ -43,7 +44,7 @@ export class RegionFormService {
   }
 
   getRegion(form: RegionFormGroup): IRegion | NewRegion {
-    return form.getRawValue() as IRegion | NewRegion;
+    return form.getRawValue();
   }
 
   resetForm(form: RegionFormGroup, region: RegionFormGroupInput): void {

@@ -31,6 +31,7 @@ export class TaskFormService {
       ...this.getFormDefaults(),
       ...(task ?? { id: null }),
     };
+
     return new FormGroup<TaskFormGroupContent>({
       id: new FormControl(
         { value: taskRawValue.id, disabled: true },
@@ -45,7 +46,7 @@ export class TaskFormService {
   }
 
   getTask(form: TaskFormGroup): ITask | NewTask {
-    return form.getRawValue() as ITask | NewTask;
+    return form.getRawValue();
   }
 
   resetForm(form: TaskFormGroup, task: TaskFormGroupInput): void {

@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService, provideTranslateService } from '@ngx-translate/core';
 
 import TranslateDirective from './translate.directive';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslateDirective],
   template: `<div jhiTranslate="test"></div>`,
 })
@@ -18,7 +19,7 @@ describe('TranslateDirective Tests', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      providers: [provideTranslateService()],
     });
   });
 
