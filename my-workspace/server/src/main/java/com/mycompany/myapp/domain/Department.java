@@ -1,12 +1,12 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
-import javax.validation.constraints.*;
 
 /**
  * A Department.
@@ -27,17 +27,21 @@ public class Department implements Serializable {
     @Column(name = "department_name", nullable = false)
     private String departmentName;
 
-    @JsonIgnoreProperties(value = { "country" }, allowSetters = true)
-    @OneToOne
+    @JsonIgnoreProperties(value = { "country", "department" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Location location;
 
     /**
      * A relationship
      */
-    @OneToMany(mappedBy = "department")
-    @JsonIgnoreProperties(value = { "jobs", "manager", "department" }, allowSetters = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
+    @JsonIgnoreProperties(value = { "jobs", "manager", "department", "jobHistory" }, allowSetters = true)
     private Set<Employee> employees = new HashSet<>();
+
+    @JsonIgnoreProperties(value = { "job", "department", "employee" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "department")
+    private JobHistory jobHistory;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -111,6 +115,25 @@ public class Department implements Serializable {
         return this;
     }
 
+    public JobHistory getJobHistory() {
+        return this.jobHistory;
+    }
+
+    public void setJobHistory(JobHistory jobHistory) {
+        if (this.jobHistory != null) {
+            this.jobHistory.setDepartment(null);
+        }
+        if (jobHistory != null) {
+            jobHistory.setDepartment(this);
+        }
+        this.jobHistory = jobHistory;
+    }
+
+    public Department jobHistory(JobHistory jobHistory) {
+        this.setJobHistory(jobHistory);
+        return this;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -121,7 +144,7 @@ public class Department implements Serializable {
         if (!(o instanceof Department)) {
             return false;
         }
-        return id != null && id.equals(((Department) o).id);
+        return getId() != null && getId().equals(((Department) o).getId());
     }
 
     @Override
