@@ -1,9 +1,10 @@
 {
+  "annotations": {
+    "changelogDate": "19700101120302"
+  },
   "applications": ["jhipster"],
-  "changelogDate": "20231014142729",
+  "documentation": "not an ignored comment",
   "dto": "mapstruct",
-  "embedded": false,
-  "entityTableName": "location",
   "fields": [
     {
       "fieldName": "id",
@@ -26,20 +27,15 @@
       "fieldType": "String"
     }
   ],
-  "fluentMethods": true,
-  "javadoc": "not an ignored comment",
-  "jpaMetamodelFiltering": false,
   "name": "Location",
   "pagination": "pagination",
-  "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "country",
-      "ownerSide": true,
       "relationshipName": "country",
+      "relationshipSide": "left",
       "relationshipType": "one-to-one"
     }
   ],
-  "service": "serviceImpl",
-  "skipServer": true
+  "service": "serviceImpl"
 }

@@ -1,19 +1,21 @@
 package com.mycompany.myapp.web.rest;
 
+import static com.mycompany.myapp.domain.RegionAsserts.*;
+import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Region;
 import com.mycompany.myapp.repository.RegionRepository;
 import com.mycompany.myapp.service.dto.RegionDTO;
 import com.mycompany.myapp.service.mapper.RegionMapper;
-import java.util.List;
+import jakarta.persistence.EntityManager;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,9 @@ class RegionResourceIT {
 
     private static final String ENTITY_API_URL = "/api/regions";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    @Autowired
+    private ObjectMapper om;
 
     @Autowired
     private RegionRepository regionRepository;
@@ -81,23 +86,23 @@ class RegionResourceIT {
     @Test
     @Transactional
     void createRegion() throws Exception {
-        int databaseSizeBeforeCreate = regionRepository.findAll().size();
+        long databaseSizeBeforeCreate = getRepositoryCount();
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
-        restRegionMockMvc
-            .perform(
-                post(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(regionDTO))
-            )
-            .andExpect(status().isCreated());
+        var returnedRegionDTO = om.readValue(
+            restRegionMockMvc
+                .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(regionDTO)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(),
+            RegionDTO.class
+        );
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeCreate + 1);
-        Region testRegion = regionList.get(regionList.size() - 1);
-        assertThat(testRegion.getRegionName()).isEqualTo(DEFAULT_REGION_NAME);
+        assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
+        var returnedRegion = regionMapper.toEntity(returnedRegionDTO);
+        assertRegionUpdatableFieldsEquals(returnedRegion, getPersistedRegion(returnedRegion));
     }
 
     @Test
@@ -107,21 +112,15 @@ class RegionResourceIT {
         regionRepository.saveAndFlush(region);
         RegionDTO regionDTO = regionMapper.toDto(region);
 
-        int databaseSizeBeforeCreate = regionRepository.findAll().size();
+        long databaseSizeBeforeCreate = getRepositoryCount();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restRegionMockMvc
-            .perform(
-                post(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(regionDTO))
-            )
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(regionDTO)))
             .andExpect(status().isBadRequest());
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeCreate);
+        assertSameRepositoryCount(databaseSizeBeforeCreate);
     }
 
     @Test
@@ -167,10 +166,10 @@ class RegionResourceIT {
         // Initialize the database
         regionRepository.saveAndFlush(region);
 
-        int databaseSizeBeforeUpdate = regionRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the region
-        Region updatedRegion = regionRepository.findById(region.getId()).get();
+        Region updatedRegion = regionRepository.findById(region.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedRegion are not directly saved in db
         em.detach(updatedRegion);
         updatedRegion.regionName(UPDATED_REGION_NAME);
@@ -181,21 +180,19 @@ class RegionResourceIT {
                 put(ENTITY_API_URL_ID, regionDTO.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(regionDTO))
+                    .content(om.writeValueAsBytes(regionDTO))
             )
             .andExpect(status().isOk());
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeUpdate);
-        Region testRegion = regionList.get(regionList.size() - 1);
-        assertThat(testRegion.getRegionName()).isEqualTo(UPDATED_REGION_NAME);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertPersistedRegionToMatchAllProperties(updatedRegion);
     }
 
     @Test
     @Transactional
     void putNonExistingRegion() throws Exception {
-        int databaseSizeBeforeUpdate = regionRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         region.setId(UUID.randomUUID());
 
         // Create the Region
@@ -207,19 +204,18 @@ class RegionResourceIT {
                 put(ENTITY_API_URL_ID, regionDTO.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(regionDTO))
+                    .content(om.writeValueAsBytes(regionDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchRegion() throws Exception {
-        int databaseSizeBeforeUpdate = regionRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         region.setId(UUID.randomUUID());
 
         // Create the Region
@@ -231,19 +227,18 @@ class RegionResourceIT {
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(regionDTO))
+                    .content(om.writeValueAsBytes(regionDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamRegion() throws Exception {
-        int databaseSizeBeforeUpdate = regionRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         region.setId(UUID.randomUUID());
 
         // Create the Region
@@ -251,17 +246,11 @@ class RegionResourceIT {
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restRegionMockMvc
-            .perform(
-                put(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(regionDTO))
-            )
+            .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(regionDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
@@ -270,28 +259,25 @@ class RegionResourceIT {
         // Initialize the database
         regionRepository.saveAndFlush(region);
 
-        int databaseSizeBeforeUpdate = regionRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the region using partial update
         Region partialUpdatedRegion = new Region();
         partialUpdatedRegion.setId(region.getId());
-
-        partialUpdatedRegion.regionName(UPDATED_REGION_NAME);
 
         restRegionMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedRegion.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedRegion))
+                    .content(om.writeValueAsBytes(partialUpdatedRegion))
             )
             .andExpect(status().isOk());
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeUpdate);
-        Region testRegion = regionList.get(regionList.size() - 1);
-        assertThat(testRegion.getRegionName()).isEqualTo(UPDATED_REGION_NAME);
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertRegionUpdatableFieldsEquals(createUpdateProxyForBean(partialUpdatedRegion, region), getPersistedRegion(region));
     }
 
     @Test
@@ -300,7 +286,7 @@ class RegionResourceIT {
         // Initialize the database
         regionRepository.saveAndFlush(region);
 
-        int databaseSizeBeforeUpdate = regionRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the region using partial update
         Region partialUpdatedRegion = new Region();
@@ -313,21 +299,20 @@ class RegionResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedRegion.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedRegion))
+                    .content(om.writeValueAsBytes(partialUpdatedRegion))
             )
             .andExpect(status().isOk());
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeUpdate);
-        Region testRegion = regionList.get(regionList.size() - 1);
-        assertThat(testRegion.getRegionName()).isEqualTo(UPDATED_REGION_NAME);
+
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        assertRegionUpdatableFieldsEquals(partialUpdatedRegion, getPersistedRegion(partialUpdatedRegion));
     }
 
     @Test
     @Transactional
     void patchNonExistingRegion() throws Exception {
-        int databaseSizeBeforeUpdate = regionRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         region.setId(UUID.randomUUID());
 
         // Create the Region
@@ -339,19 +324,18 @@ class RegionResourceIT {
                 patch(ENTITY_API_URL_ID, regionDTO.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(regionDTO))
+                    .content(om.writeValueAsBytes(regionDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchRegion() throws Exception {
-        int databaseSizeBeforeUpdate = regionRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         region.setId(UUID.randomUUID());
 
         // Create the Region
@@ -363,19 +347,18 @@ class RegionResourceIT {
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(regionDTO))
+                    .content(om.writeValueAsBytes(regionDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamRegion() throws Exception {
-        int databaseSizeBeforeUpdate = regionRepository.findAll().size();
+        long databaseSizeBeforeUpdate = getRepositoryCount();
         region.setId(UUID.randomUUID());
 
         // Create the Region
@@ -384,16 +367,12 @@ class RegionResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restRegionMockMvc
             .perform(
-                patch(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType("application/merge-patch+json")
-                    .content(TestUtil.convertObjectToJsonBytes(regionDTO))
+                patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(regionDTO))
             )
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Region in the database
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeUpdate);
+        assertSameRepositoryCount(databaseSizeBeforeUpdate);
     }
 
     @Test
@@ -402,7 +381,7 @@ class RegionResourceIT {
         // Initialize the database
         regionRepository.saveAndFlush(region);
 
-        int databaseSizeBeforeDelete = regionRepository.findAll().size();
+        long databaseSizeBeforeDelete = getRepositoryCount();
 
         // Delete the region
         restRegionMockMvc
@@ -410,7 +389,34 @@ class RegionResourceIT {
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
-        List<Region> regionList = regionRepository.findAll();
-        assertThat(regionList).hasSize(databaseSizeBeforeDelete - 1);
+        assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
+    }
+
+    protected long getRepositoryCount() {
+        return regionRepository.count();
+    }
+
+    protected void assertIncrementedRepositoryCount(long countBefore) {
+        assertThat(countBefore + 1).isEqualTo(getRepositoryCount());
+    }
+
+    protected void assertDecrementedRepositoryCount(long countBefore) {
+        assertThat(countBefore - 1).isEqualTo(getRepositoryCount());
+    }
+
+    protected void assertSameRepositoryCount(long countBefore) {
+        assertThat(countBefore).isEqualTo(getRepositoryCount());
+    }
+
+    protected Region getPersistedRegion(Region region) {
+        return regionRepository.findById(region.getId()).orElseThrow();
+    }
+
+    protected void assertPersistedRegionToMatchAllProperties(Region expectedRegion) {
+        assertRegionAllPropertiesEquals(expectedRegion, getPersistedRegion(expectedRegion));
+    }
+
+    protected void assertPersistedRegionToMatchUpdatableProperties(Region expectedRegion) {
+        assertRegionAllUpdatablePropertiesEquals(expectedRegion, getPersistedRegion(expectedRegion));
     }
 }
