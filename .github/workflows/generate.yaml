@@ -1,0 +1,42 @@
+on:
+  schedule:
+    - cron:  '* * * * *'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+
+      - run: git clone --depth=1 https://github.com/jhipster/generator-jhipster.git
+
+      - run: |
+          cd generator-jhipster
+          npm un generator-jhipster
+          sudo npm un generator-jhipster -g
+          npm i
+          sudo npm link
+
+      - run: |
+          echo "y" | rm -R app
+          mkdir app
+
+      - run: |
+          cd app
+          mkdir client
+          cd client
+          echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-server
+
+      - run: |
+          cd app
+          mkdir server
+          cd server
+          echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-client
+
+      - run: echo "y" | rm -R generator-jhipster
+
+      - uses: peter-evans/create-pull-request@v3
