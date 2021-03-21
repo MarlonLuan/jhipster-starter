@@ -1,0 +1,86 @@
+name: Generate
+on:
+  repository_dispatch:
+  schedule:
+    - cron:  '* * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          
+      - name: Setup Java environment
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Install Maven
+        run: |
+          sudo apt install maven
+
+      - name: Check Version
+        run: |
+          echo Node version
+          node -v
+          echo NPM version
+          npm -v
+          git version
+
+      - name: Clone Jhipster
+        run: |
+          git clone --depth=1 https://github.com/jhipster/generator-jhipster.git
+
+      - name: Listar Diretório
+        run: |
+          pwd
+          ls -a
+
+      - name: Install Jhipster
+        run: |
+          cd generator-jhipster
+          npm un generator-jhipster
+          sudo npm un generator-jhipster -g
+          npm i
+          sudo npm link
+
+      - name: Limpar APP Jhipster
+        run: |
+          echo "y" | rm -R app
+          mkdir app
+
+      - name: Gerar Jhipster App Client
+        run: |
+          cd app
+          mkdir client
+          cd client
+          echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-server
+
+      - name: Gerar Jhipster App Server
+        run: |
+          cd app
+          mkdir server
+          cd server
+          echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-client
+
+      - name: Listar Diretório
+        run: |
+          pwd
+          ls -a
+
+      - name: Remove Jhipster
+        run: |
+          echo "y" | rm -R generator-jhipster
+#         echo "y" | rm -R .gitmodules
+
+      # - name: Mover sonar-project.properties
+      #   run: |
+      #     mv sonar-project.properties app/server
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
