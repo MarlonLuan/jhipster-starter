@@ -6,8 +6,8 @@
     <!--
         Added the constraints for entity Employee.
     -->
-    <changeSet id="20210321184551-2" author="jhipster">
-        
+    <changeSet id="20210402204142-2" author="jhipster">
+
         <addForeignKeyConstraint baseColumnNames="manager_id"
                                  baseTableName="employee"
                                  constraintName="fk_employee__manager_id"
@@ -19,6 +19,5 @@
                                  constraintName="fk_employee__department_id"
                                  referencedColumnNames="id"
                                  referencedTableName="department"/>
-
     </changeSet>
 </databaseChangeLog>

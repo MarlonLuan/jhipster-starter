@@ -6,13 +6,12 @@
     <!--
         Added the constraints for entity Location.
     -->
-    <changeSet id="20210321184251-2" author="jhipster">
-        
+    <changeSet id="20210402203842-2" author="jhipster">
+
         <addForeignKeyConstraint baseColumnNames="country_id"
                                  baseTableName="location"
                                  constraintName="fk_location__country_id"
                                  referencedColumnNames="id"
                                  referencedTableName="country"/>
-
     </changeSet>
 </databaseChangeLog>
