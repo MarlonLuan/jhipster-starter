@@ -22,7 +22,7 @@
     "skipClient": false,
     "testFrameworks": [],
     "websocket": false,
-    "jhipsterVersion": "7.0.0",
+    "jhipsterVersion": "7.0.1",
     "skipServer": true,
     "packageFolder": "com/mycompany/myapp",
     "packageName": "com.mycompany.myapp",
@@ -40,7 +40,7 @@
     "otherModules": [],
     "pages": [],
     "nativeLanguage": "en",
-    "creationTimestamp": 1616351903590,
-    "lastLiquibaseTimestamp": 1616352383000
+    "creationTimestamp": 1617395658571,
+    "lastLiquibaseTimestamp": 1617396138000
   }
 }

@@ -6,8 +6,8 @@
     <!--
         Added the constraints for entity JobHistory.
     -->
-    <changeSet id="20210321184751-2" author="jhipster">
-        
+    <changeSet id="20210402204342-2" author="jhipster">
+
         <addForeignKeyConstraint baseColumnNames="job_id"
                                  baseTableName="job_history"
                                  constraintName="fk_job_history__job_id"
@@ -25,6 +25,5 @@
                                  constraintName="fk_job_history__employee_id"
                                  referencedColumnNames="id"
                                  referencedTableName="employee"/>
-
     </changeSet>
 </databaseChangeLog>
