@@ -46,10 +46,10 @@ describe('Component Tests', () => {
     describe('ngOnInit', () => {
       it('Should call Task query and add missing value', () => {
         const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const tasks: ITask[] = [{ id: 'c7d55088-7353-46dd-8065-b733ae783115' }];
+        const tasks: ITask[] = [{ id: 'c1f7e7db-eecc-4ef8-bba5-0ce04f2d2dc0' }];
         job.tasks = tasks;
 
-        const taskCollection: ITask[] = [{ id: '17ac7b43-789d-45cb-a226-48eb8fb8ae81' }];
+        const taskCollection: ITask[] = [{ id: 'bcd57c2c-d07a-4db0-83b1-f71b6f91603b' }];
         spyOn(taskService, 'query').and.returnValue(of(new HttpResponse({ body: taskCollection })));
         const additionalTasks = [...tasks];
         const expectedCollection: ITask[] = [...additionalTasks, ...taskCollection];
@@ -65,10 +65,10 @@ describe('Component Tests', () => {
 
       it('Should call Employee query and add missing value', () => {
         const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const employee: IEmployee = { id: 'b951147f-8cf3-414e-b032-21e8fbe64434' };
+        const employee: IEmployee = { id: '3adb62ca-f233-426e-90b3-233cc0736c90' };
         job.employee = employee;
 
-        const employeeCollection: IEmployee[] = [{ id: '5370a968-65b3-47e9-b086-97dcc9a238e3' }];
+        const employeeCollection: IEmployee[] = [{ id: '9910e512-53a6-420a-92ae-824e9f1b7207' }];
         spyOn(employeeService, 'query').and.returnValue(of(new HttpResponse({ body: employeeCollection })));
         const additionalEmployees = [employee];
         const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
@@ -84,9 +84,9 @@ describe('Component Tests', () => {
 
       it('Should update editForm', () => {
         const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const tasks: ITask = { id: '18344bf9-8eb3-4dfb-a4a7-4d20d540d3f4' };
+        const tasks: ITask = { id: '73de0fe7-8f14-4af4-8c6f-7e32fa49ec7d' };
         job.tasks = [tasks];
-        const employee: IEmployee = { id: '733322d7-faa0-4033-b569-35b09cb20fd5' };
+        const employee: IEmployee = { id: '19865a88-3ae6-432c-a364-a8ab140a093e' };
         job.employee = employee;
 
         activatedRoute.data = of({ job });

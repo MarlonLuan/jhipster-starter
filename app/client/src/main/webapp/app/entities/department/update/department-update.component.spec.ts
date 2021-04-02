@@ -42,10 +42,10 @@ describe('Component Tests', () => {
     describe('ngOnInit', () => {
       it('Should call location query and add missing value', () => {
         const department: IDepartment = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const location: ILocation = { id: 'fed60286-9319-4fc8-8df5-881693835508' };
+        const location: ILocation = { id: 'd9f2eec0-d845-4aec-a5b4-cc4e6923cff2' };
         department.location = location;
 
-        const locationCollection: ILocation[] = [{ id: 'c40b62d1-9777-413f-8e09-0459a3ef19c3' }];
+        const locationCollection: ILocation[] = [{ id: '1184d40e-9235-411e-9923-38abdd0d1cbe' }];
         spyOn(locationService, 'query').and.returnValue(of(new HttpResponse({ body: locationCollection })));
         const expectedCollection: ILocation[] = [location, ...locationCollection];
         spyOn(locationService, 'addLocationToCollectionIfMissing').and.returnValue(expectedCollection);
@@ -60,7 +60,7 @@ describe('Component Tests', () => {
 
       it('Should update editForm', () => {
         const department: IDepartment = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const location: ILocation = { id: '9d161a6c-5219-4b1f-976c-b310613eae1c' };
+        const location: ILocation = { id: 'c0dfc88f-9140-40dd-a6c3-5657d894405d' };
         department.location = location;
 
         activatedRoute.data = of({ department });

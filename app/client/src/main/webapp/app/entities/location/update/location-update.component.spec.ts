@@ -42,10 +42,10 @@ describe('Component Tests', () => {
     describe('ngOnInit', () => {
       it('Should call country query and add missing value', () => {
         const location: ILocation = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const country: ICountry = { id: 'd9f2eec0-d845-4aec-a5b4-cc4e6923cff2' };
+        const country: ICountry = { id: 'e451f8a9-ca1d-4392-8c45-5242a02e2dc0' };
         location.country = country;
 
-        const countryCollection: ICountry[] = [{ id: '1184d40e-9235-411e-9923-38abdd0d1cbe' }];
+        const countryCollection: ICountry[] = [{ id: '5d26045f-eba0-4140-9a10-dab343dff294' }];
         spyOn(countryService, 'query').and.returnValue(of(new HttpResponse({ body: countryCollection })));
         const expectedCollection: ICountry[] = [country, ...countryCollection];
         spyOn(countryService, 'addCountryToCollectionIfMissing').and.returnValue(expectedCollection);
@@ -60,7 +60,7 @@ describe('Component Tests', () => {
 
       it('Should update editForm', () => {
         const location: ILocation = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const country: ICountry = { id: 'c0dfc88f-9140-40dd-a6c3-5657d894405d' };
+        const country: ICountry = { id: '9bd70019-15c5-410a-ad45-8e28c32aceb3' };
         location.country = country;
 
         activatedRoute.data = of({ location });
