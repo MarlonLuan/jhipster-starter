@@ -104,7 +104,7 @@ describe('Service Tests', () => {
       it('should partial update a JobHistory', () => {
         const patchObject = Object.assign(
           {
-            language: 'BBBBBB',
+            endDate: currentDate.format(DATE_TIME_FORMAT),
           },
           new JobHistory()
         );
@@ -193,7 +193,7 @@ describe('Service Tests', () => {
           const jobHistoryArray: IJobHistory[] = [
             { id: '9fec3727-3421-4967-b213-ba36557ca194' },
             { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
-            { id: 'b545de2e-30b6-4a0d-8d4b-d3a24d234137' },
+            { id: 'f43019d0-6a94-4e8a-a9ce-28d0fddb41a1' },
           ];
           const jobHistoryCollection: IJobHistory[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
           expectedResult = service.addJobHistoryToCollectionIfMissing(jobHistoryCollection, ...jobHistoryArray);
@@ -214,6 +214,12 @@ describe('Service Tests', () => {
           expectedResult = service.addJobHistoryToCollectionIfMissing([], null, jobHistory, undefined);
           expect(expectedResult).toHaveLength(1);
           expect(expectedResult).toContain(jobHistory);
+        });
+
+        it('should return initial array if no JobHistory is added', () => {
+          const jobHistoryCollection: IJobHistory[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+          expectedResult = service.addJobHistoryToCollectionIfMissing(jobHistoryCollection, undefined, null);
+          expect(expectedResult).toEqual(jobHistoryCollection);
         });
       });
     });

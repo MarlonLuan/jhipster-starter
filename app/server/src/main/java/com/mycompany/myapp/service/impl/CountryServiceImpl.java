@@ -49,6 +49,7 @@ public class CountryServiceImpl implements CountryService {
             .map(
                 existingCountry -> {
                     countryMapper.partialUpdate(existingCountry, countryDTO);
+
                     return existingCountry;
                 }
             )

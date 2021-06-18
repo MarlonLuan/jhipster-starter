@@ -14,9 +14,9 @@ export type EntityArrayResponseType = HttpResponse<IJobHistory[]>;
 
 @Injectable({ providedIn: 'root' })
 export class JobHistoryService {
-  public resourceUrl = this.applicationConfigService.getEndpointFor('api/job-histories');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/job-histories');
 
-  constructor(protected http: HttpClient, private applicationConfigService: ApplicationConfigService) {}
+  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
   create(jobHistory: IJobHistory): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(jobHistory);

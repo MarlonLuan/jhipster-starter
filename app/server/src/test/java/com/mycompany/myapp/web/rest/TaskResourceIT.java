@@ -280,7 +280,7 @@ class TaskResourceIT {
         Task partialUpdatedTask = new Task();
         partialUpdatedTask.setId(task.getId());
 
-        partialUpdatedTask.title(UPDATED_TITLE).description(UPDATED_DESCRIPTION);
+        partialUpdatedTask.description(UPDATED_DESCRIPTION);
 
         restTaskMockMvc
             .perform(
@@ -295,7 +295,7 @@ class TaskResourceIT {
         List<Task> taskList = taskRepository.findAll();
         assertThat(taskList).hasSize(databaseSizeBeforeUpdate);
         Task testTask = taskList.get(taskList.size() - 1);
-        assertThat(testTask.getTitle()).isEqualTo(UPDATED_TITLE);
+        assertThat(testTask.getTitle()).isEqualTo(DEFAULT_TITLE);
         assertThat(testTask.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
     }
 

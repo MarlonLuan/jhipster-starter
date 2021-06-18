@@ -73,12 +73,7 @@ describe('Service Tests', () => {
       });
 
       it('should partial update a Country', () => {
-        const patchObject = Object.assign(
-          {
-            countryName: 'BBBBBB',
-          },
-          new Country()
-        );
+        const patchObject = Object.assign({}, new Country());
 
         const returnedFromService = Object.assign(patchObject, elemDefault);
 
@@ -150,7 +145,7 @@ describe('Service Tests', () => {
           const countryArray: ICountry[] = [
             { id: '9fec3727-3421-4967-b213-ba36557ca194' },
             { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
-            { id: '67d0ef1e-7576-4c4c-bbb6-04008619f448' },
+            { id: 'd5ff4a5e-6e0f-4182-9a23-162cb62e75fc' },
           ];
           const countryCollection: ICountry[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
           expectedResult = service.addCountryToCollectionIfMissing(countryCollection, ...countryArray);
@@ -171,6 +166,12 @@ describe('Service Tests', () => {
           expectedResult = service.addCountryToCollectionIfMissing([], null, country, undefined);
           expect(expectedResult).toHaveLength(1);
           expect(expectedResult).toContain(country);
+        });
+
+        it('should return initial array if no Country is added', () => {
+          const countryCollection: ICountry[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+          expectedResult = service.addCountryToCollectionIfMissing(countryCollection, undefined, null);
+          expect(expectedResult).toEqual(countryCollection);
         });
       });
     });

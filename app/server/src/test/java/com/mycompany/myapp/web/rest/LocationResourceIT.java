@@ -309,7 +309,7 @@ class LocationResourceIT {
         Location partialUpdatedLocation = new Location();
         partialUpdatedLocation.setId(location.getId());
 
-        partialUpdatedLocation.streetAddress(UPDATED_STREET_ADDRESS).city(UPDATED_CITY);
+        partialUpdatedLocation.streetAddress(UPDATED_STREET_ADDRESS).city(UPDATED_CITY).stateProvince(UPDATED_STATE_PROVINCE);
 
         restLocationMockMvc
             .perform(
@@ -327,7 +327,7 @@ class LocationResourceIT {
         assertThat(testLocation.getStreetAddress()).isEqualTo(UPDATED_STREET_ADDRESS);
         assertThat(testLocation.getPostalCode()).isEqualTo(DEFAULT_POSTAL_CODE);
         assertThat(testLocation.getCity()).isEqualTo(UPDATED_CITY);
-        assertThat(testLocation.getStateProvince()).isEqualTo(DEFAULT_STATE_PROVINCE);
+        assertThat(testLocation.getStateProvince()).isEqualTo(UPDATED_STATE_PROVINCE);
     }
 
     @Test

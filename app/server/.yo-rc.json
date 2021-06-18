@@ -22,7 +22,7 @@
     "skipClient": true,
     "testFrameworks": [],
     "websocket": false,
-    "jhipsterVersion": "7.0.1",
+    "jhipsterVersion": "7.1.0",
     "skipServer": false,
     "packageFolder": "com/mycompany/myapp",
     "packageName": "com.mycompany.myapp",
@@ -33,6 +33,7 @@
     "clientTheme": "none",
     "clientThemeVariant": "",
     "applicationType": "monolith",
+    "applicationIndex": 0,
     "entities": ["Region", "Country", "Location", "Department", "Task", "Employee", "Job", "JobHistory"],
     "skipCheckLengthOfIdentifier": false,
     "skipFakeData": false,
@@ -40,7 +41,7 @@
     "otherModules": [],
     "pages": [],
     "nativeLanguage": "en",
-    "creationTimestamp": 1617395742873,
-    "lastLiquibaseTimestamp": 1617396222000
+    "creationTimestamp": 1624024784761,
+    "lastLiquibaseTimestamp": 1624025264000
   }
 }

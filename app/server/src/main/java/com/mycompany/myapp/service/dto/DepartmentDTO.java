@@ -69,7 +69,7 @@ public class DepartmentDTO implements Serializable {
         return "DepartmentDTO{" +
             "id='" + getId() + "'" +
             ", departmentName='" + getDepartmentName() + "'" +
-            ", location='" + getLocation() + "'" +
+            ", location=" + getLocation() +
             "}";
     }
 }

@@ -82,6 +82,7 @@ describe('Service Tests', () => {
         const patchObject = Object.assign(
           {
             streetAddress: 'BBBBBB',
+            postalCode: 'BBBBBB',
             city: 'BBBBBB',
           },
           new Location()
@@ -160,7 +161,7 @@ describe('Service Tests', () => {
           const locationArray: ILocation[] = [
             { id: '9fec3727-3421-4967-b213-ba36557ca194' },
             { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
-            { id: 'f07c8cab-3a85-4025-ac92-c5830c485ebb' },
+            { id: '870ae565-0101-4a0c-b1b7-be61934c3736' },
           ];
           const locationCollection: ILocation[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
           expectedResult = service.addLocationToCollectionIfMissing(locationCollection, ...locationArray);
@@ -181,6 +182,12 @@ describe('Service Tests', () => {
           expectedResult = service.addLocationToCollectionIfMissing([], null, location, undefined);
           expect(expectedResult).toHaveLength(1);
           expect(expectedResult).toContain(location);
+        });
+
+        it('should return initial array if no Location is added', () => {
+          const locationCollection: ILocation[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+          expectedResult = service.addLocationToCollectionIfMissing(locationCollection, undefined, null);
+          expect(expectedResult).toEqual(locationCollection);
         });
       });
     });

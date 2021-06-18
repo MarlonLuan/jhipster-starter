@@ -10,7 +10,7 @@ import { CountryService } from '../service/country.service';
 export class CountryDeleteDialogComponent {
   country?: ICountry;
 
-  constructor(protected countryService: CountryService, public activeModal: NgbActiveModal) {}
+  constructor(protected countryService: CountryService, protected activeModal: NgbActiveModal) {}
 
   cancel(): void {
     this.activeModal.dismiss();

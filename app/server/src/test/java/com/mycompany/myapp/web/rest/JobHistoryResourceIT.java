@@ -293,8 +293,6 @@ class JobHistoryResourceIT {
         JobHistory partialUpdatedJobHistory = new JobHistory();
         partialUpdatedJobHistory.setId(jobHistory.getId());
 
-        partialUpdatedJobHistory.language(UPDATED_LANGUAGE);
-
         restJobHistoryMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedJobHistory.getId())
@@ -310,7 +308,7 @@ class JobHistoryResourceIT {
         JobHistory testJobHistory = jobHistoryList.get(jobHistoryList.size() - 1);
         assertThat(testJobHistory.getStartDate()).isEqualTo(DEFAULT_START_DATE);
         assertThat(testJobHistory.getEndDate()).isEqualTo(DEFAULT_END_DATE);
-        assertThat(testJobHistory.getLanguage()).isEqualTo(UPDATED_LANGUAGE);
+        assertThat(testJobHistory.getLanguage()).isEqualTo(DEFAULT_LANGUAGE);
     }
 
     @Test

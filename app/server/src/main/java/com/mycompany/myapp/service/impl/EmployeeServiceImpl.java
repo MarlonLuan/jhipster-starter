@@ -49,6 +49,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             .map(
                 existingEmployee -> {
                     employeeMapper.partialUpdate(existingEmployee, employeeDTO);
+
                     return existingEmployee;
                 }
             )

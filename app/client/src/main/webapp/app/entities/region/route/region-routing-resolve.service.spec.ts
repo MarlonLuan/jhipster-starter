@@ -64,7 +64,7 @@ describe('Service Tests', () => {
 
       it('should route to 404 page if data not found in server', () => {
         // GIVEN
-        spyOn(service, 'find').and.returnValue(of(new HttpResponse({ body: null })));
+        jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse({ body: null as unknown as Region })));
         mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
         // WHEN

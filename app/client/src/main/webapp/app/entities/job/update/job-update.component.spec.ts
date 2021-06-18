@@ -46,14 +46,14 @@ describe('Component Tests', () => {
     describe('ngOnInit', () => {
       it('Should call Task query and add missing value', () => {
         const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const tasks: ITask[] = [{ id: 'c1f7e7db-eecc-4ef8-bba5-0ce04f2d2dc0' }];
+        const tasks: ITask[] = [{ id: 'e2e1acc3-9ec5-447c-a291-12013cfe06b8' }];
         job.tasks = tasks;
 
-        const taskCollection: ITask[] = [{ id: 'bcd57c2c-d07a-4db0-83b1-f71b6f91603b' }];
-        spyOn(taskService, 'query').and.returnValue(of(new HttpResponse({ body: taskCollection })));
+        const taskCollection: ITask[] = [{ id: '28ec4d12-3c43-41a0-aef2-139c0d1dae95' }];
+        jest.spyOn(taskService, 'query').mockReturnValue(of(new HttpResponse({ body: taskCollection })));
         const additionalTasks = [...tasks];
         const expectedCollection: ITask[] = [...additionalTasks, ...taskCollection];
-        spyOn(taskService, 'addTaskToCollectionIfMissing').and.returnValue(expectedCollection);
+        jest.spyOn(taskService, 'addTaskToCollectionIfMissing').mockReturnValue(expectedCollection);
 
         activatedRoute.data = of({ job });
         comp.ngOnInit();
@@ -65,14 +65,14 @@ describe('Component Tests', () => {
 
       it('Should call Employee query and add missing value', () => {
         const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const employee: IEmployee = { id: '3adb62ca-f233-426e-90b3-233cc0736c90' };
+        const employee: IEmployee = { id: 'cc381ce0-37da-481c-b93f-59c6b8377b93' };
         job.employee = employee;
 
-        const employeeCollection: IEmployee[] = [{ id: '9910e512-53a6-420a-92ae-824e9f1b7207' }];
-        spyOn(employeeService, 'query').and.returnValue(of(new HttpResponse({ body: employeeCollection })));
+        const employeeCollection: IEmployee[] = [{ id: '7a8cb8b7-0871-4787-878c-f824fc1ad02b' }];
+        jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
         const additionalEmployees = [employee];
         const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
-        spyOn(employeeService, 'addEmployeeToCollectionIfMissing').and.returnValue(expectedCollection);
+        jest.spyOn(employeeService, 'addEmployeeToCollectionIfMissing').mockReturnValue(expectedCollection);
 
         activatedRoute.data = of({ job });
         comp.ngOnInit();
@@ -84,9 +84,9 @@ describe('Component Tests', () => {
 
       it('Should update editForm', () => {
         const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const tasks: ITask = { id: '73de0fe7-8f14-4af4-8c6f-7e32fa49ec7d' };
+        const tasks: ITask = { id: '0e59552b-7478-49d0-b770-a8c547701da7' };
         job.tasks = [tasks];
-        const employee: IEmployee = { id: '19865a88-3ae6-432c-a364-a8ab140a093e' };
+        const employee: IEmployee = { id: '3db2d831-b39e-4611-8df5-d50291065983' };
         job.employee = employee;
 
         activatedRoute.data = of({ job });
@@ -101,10 +101,10 @@ describe('Component Tests', () => {
     describe('save', () => {
       it('Should call update service on save for existing entity', () => {
         // GIVEN
-        const saveSubject = new Subject();
+        const saveSubject = new Subject<HttpResponse<Job>>();
         const job = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        spyOn(jobService, 'update').and.returnValue(saveSubject);
-        spyOn(comp, 'previousState');
+        jest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
+        jest.spyOn(comp, 'previousState');
         activatedRoute.data = of({ job });
         comp.ngOnInit();
 
@@ -122,10 +122,10 @@ describe('Component Tests', () => {
 
       it('Should call create service on save for new entity', () => {
         // GIVEN
-        const saveSubject = new Subject();
+        const saveSubject = new Subject<HttpResponse<Job>>();
         const job = new Job();
-        spyOn(jobService, 'create').and.returnValue(saveSubject);
-        spyOn(comp, 'previousState');
+        jest.spyOn(jobService, 'create').mockReturnValue(saveSubject);
+        jest.spyOn(comp, 'previousState');
         activatedRoute.data = of({ job });
         comp.ngOnInit();
 
@@ -143,10 +143,10 @@ describe('Component Tests', () => {
 
       it('Should set isSaving to false on error', () => {
         // GIVEN
-        const saveSubject = new Subject();
+        const saveSubject = new Subject<HttpResponse<Job>>();
         const job = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        spyOn(jobService, 'update').and.returnValue(saveSubject);
-        spyOn(comp, 'previousState');
+        jest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
+        jest.spyOn(comp, 'previousState');
         activatedRoute.data = of({ job });
         comp.ngOnInit();
 
