@@ -49,6 +49,7 @@ public class JobServiceImpl implements JobService {
             .map(
                 existingJob -> {
                     jobMapper.partialUpdate(existingJob, jobDTO);
+
                     return existingJob;
                 }
             )

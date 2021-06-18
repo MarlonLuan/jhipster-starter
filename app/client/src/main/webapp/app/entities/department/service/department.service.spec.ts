@@ -145,7 +145,7 @@ describe('Service Tests', () => {
           const departmentArray: IDepartment[] = [
             { id: '9fec3727-3421-4967-b213-ba36557ca194' },
             { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
-            { id: '3f7bcbbb-d406-4985-8056-d34c452ae031' },
+            { id: '1a3eb062-70d6-47d3-a6c5-80dd669ccedc' },
           ];
           const departmentCollection: IDepartment[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
           expectedResult = service.addDepartmentToCollectionIfMissing(departmentCollection, ...departmentArray);
@@ -166,6 +166,12 @@ describe('Service Tests', () => {
           expectedResult = service.addDepartmentToCollectionIfMissing([], null, department, undefined);
           expect(expectedResult).toHaveLength(1);
           expect(expectedResult).toContain(department);
+        });
+
+        it('should return initial array if no Department is added', () => {
+          const departmentCollection: IDepartment[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+          expectedResult = service.addDepartmentToCollectionIfMissing(departmentCollection, undefined, null);
+          expect(expectedResult).toEqual(departmentCollection);
         });
       });
     });

@@ -49,6 +49,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             .map(
                 existingDepartment -> {
                     departmentMapper.partialUpdate(existingDepartment, departmentDTO);
+
                     return existingDepartment;
                 }
             )

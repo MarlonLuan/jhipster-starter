@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-
 import { SharedModule } from 'app/shared/shared.module';
 import { TaskComponent } from './list/task.component';
 import { TaskDetailComponent } from './detail/task-detail.component';

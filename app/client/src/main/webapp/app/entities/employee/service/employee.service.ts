@@ -14,9 +14,9 @@ export type EntityArrayResponseType = HttpResponse<IEmployee[]>;
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
-  public resourceUrl = this.applicationConfigService.getEndpointFor('api/employees');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/employees');
 
-  constructor(protected http: HttpClient, private applicationConfigService: ApplicationConfigService) {}
+  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
   create(employee: IEmployee): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(employee);

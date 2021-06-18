@@ -10,7 +10,7 @@ import { JobService } from '../service/job.service';
 export class JobDeleteDialogComponent {
   job?: IJob;
 
-  constructor(protected jobService: JobService, public activeModal: NgbActiveModal) {}
+  constructor(protected jobService: JobService, protected activeModal: NgbActiveModal) {}
 
   cancel(): void {
     this.activeModal.dismiss();

@@ -49,6 +49,7 @@ public class TaskServiceImpl implements TaskService {
             .map(
                 existingTask -> {
                     taskMapper.partialUpdate(existingTask, taskDTO);
+
                     return existingTask;
                 }
             )

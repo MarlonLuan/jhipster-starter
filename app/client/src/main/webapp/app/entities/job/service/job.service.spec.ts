@@ -80,7 +80,7 @@ describe('Service Tests', () => {
         const patchObject = Object.assign(
           {
             jobTitle: 'BBBBBB',
-            minSalary: 1,
+            maxSalary: 1,
           },
           new Job()
         );
@@ -157,7 +157,7 @@ describe('Service Tests', () => {
           const jobArray: IJob[] = [
             { id: '9fec3727-3421-4967-b213-ba36557ca194' },
             { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
-            { id: '5f71dbf9-d246-49c2-a070-5eab7224c0c1' },
+            { id: 'bd218adc-7090-4944-b3cd-6a2f7908d598' },
           ];
           const jobCollection: IJob[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
           expectedResult = service.addJobToCollectionIfMissing(jobCollection, ...jobArray);
@@ -178,6 +178,12 @@ describe('Service Tests', () => {
           expectedResult = service.addJobToCollectionIfMissing([], null, job, undefined);
           expect(expectedResult).toHaveLength(1);
           expect(expectedResult).toContain(job);
+        });
+
+        it('should return initial array if no Job is added', () => {
+          const jobCollection: IJob[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+          expectedResult = service.addJobToCollectionIfMissing(jobCollection, undefined, null);
+          expect(expectedResult).toEqual(jobCollection);
         });
       });
     });

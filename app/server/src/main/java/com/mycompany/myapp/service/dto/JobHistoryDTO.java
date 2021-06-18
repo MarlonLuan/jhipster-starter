@@ -110,9 +110,9 @@ public class JobHistoryDTO implements Serializable {
             ", startDate='" + getStartDate() + "'" +
             ", endDate='" + getEndDate() + "'" +
             ", language='" + getLanguage() + "'" +
-            ", job='" + getJob() + "'" +
-            ", department='" + getDepartment() + "'" +
-            ", employee='" + getEmployee() + "'" +
+            ", job=" + getJob() +
+            ", department=" + getDepartment() +
+            ", employee=" + getEmployee() +
             "}";
     }
 }
