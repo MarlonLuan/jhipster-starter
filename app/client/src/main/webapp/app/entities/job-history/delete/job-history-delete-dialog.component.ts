@@ -10,7 +10,7 @@ import { JobHistoryService } from '../service/job-history.service';
 export class JobHistoryDeleteDialogComponent {
   jobHistory?: IJobHistory;
 
-  constructor(protected jobHistoryService: JobHistoryService, public activeModal: NgbActiveModal) {}
+  constructor(protected jobHistoryService: JobHistoryService, protected activeModal: NgbActiveModal) {}
 
   cancel(): void {
     this.activeModal.dismiss();

@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-
 import { SharedModule } from 'app/shared/shared.module';
 import { JobHistoryComponent } from './list/job-history.component';
 import { JobHistoryDetailComponent } from './detail/job-history-detail.component';

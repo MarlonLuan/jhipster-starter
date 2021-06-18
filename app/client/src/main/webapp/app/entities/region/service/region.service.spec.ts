@@ -145,7 +145,7 @@ describe('Service Tests', () => {
           const regionArray: IRegion[] = [
             { id: '9fec3727-3421-4967-b213-ba36557ca194' },
             { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
-            { id: 'eb007032-5b65-490f-b346-cb4329317c01' },
+            { id: '83f16298-cef4-4fdd-89c0-41d2e11b6f81' },
           ];
           const regionCollection: IRegion[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
           expectedResult = service.addRegionToCollectionIfMissing(regionCollection, ...regionArray);
@@ -166,6 +166,12 @@ describe('Service Tests', () => {
           expectedResult = service.addRegionToCollectionIfMissing([], null, region, undefined);
           expect(expectedResult).toHaveLength(1);
           expect(expectedResult).toContain(region);
+        });
+
+        it('should return initial array if no Region is added', () => {
+          const regionCollection: IRegion[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+          expectedResult = service.addRegionToCollectionIfMissing(regionCollection, undefined, null);
+          expect(expectedResult).toEqual(regionCollection);
         });
       });
     });

@@ -49,6 +49,7 @@ public class JobHistoryServiceImpl implements JobHistoryService {
             .map(
                 existingJobHistory -> {
                     jobHistoryMapper.partialUpdate(existingJobHistory, jobHistoryDTO);
+
                     return existingJobHistory;
                 }
             )

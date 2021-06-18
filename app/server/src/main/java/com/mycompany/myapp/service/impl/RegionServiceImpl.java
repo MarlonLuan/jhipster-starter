@@ -49,6 +49,7 @@ public class RegionServiceImpl implements RegionService {
             .map(
                 existingRegion -> {
                     regionMapper.partialUpdate(existingRegion, regionDTO);
+
                     return existingRegion;
                 }
             )

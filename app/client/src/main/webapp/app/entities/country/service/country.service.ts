@@ -12,9 +12,9 @@ export type EntityArrayResponseType = HttpResponse<ICountry[]>;
 
 @Injectable({ providedIn: 'root' })
 export class CountryService {
-  public resourceUrl = this.applicationConfigService.getEndpointFor('api/countries');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/countries');
 
-  constructor(protected http: HttpClient, private applicationConfigService: ApplicationConfigService) {}
+  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
   create(country: ICountry): Observable<EntityResponseType> {
     return this.http.post<ICountry>(this.resourceUrl, country, { observe: 'response' });

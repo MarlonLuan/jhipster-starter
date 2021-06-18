@@ -10,7 +10,7 @@ import { TaskService } from '../service/task.service';
 export class TaskDeleteDialogComponent {
   task?: ITask;
 
-  constructor(protected taskService: TaskService, public activeModal: NgbActiveModal) {}
+  constructor(protected taskService: TaskService, protected activeModal: NgbActiveModal) {}
 
   cancel(): void {
     this.activeModal.dismiss();

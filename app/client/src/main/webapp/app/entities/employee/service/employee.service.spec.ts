@@ -107,11 +107,12 @@ describe('Service Tests', () => {
       it('should partial update a Employee', () => {
         const patchObject = Object.assign(
           {
-            firstName: 'BBBBBB',
             lastName: 'BBBBBB',
             email: 'BBBBBB',
             phoneNumber: 'BBBBBB',
+            hireDate: currentDate.format(DATE_TIME_FORMAT),
             salary: 1,
+            commissionPct: 1,
           },
           new Employee()
         );
@@ -202,7 +203,7 @@ describe('Service Tests', () => {
           const employeeArray: IEmployee[] = [
             { id: '9fec3727-3421-4967-b213-ba36557ca194' },
             { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
-            { id: 'c96b4a52-4b72-4a18-9512-a691c3fd1049' },
+            { id: 'e9abf8da-19cb-4e0a-bfd5-90bdc5c7ce3e' },
           ];
           const employeeCollection: IEmployee[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
           expectedResult = service.addEmployeeToCollectionIfMissing(employeeCollection, ...employeeArray);
@@ -223,6 +224,12 @@ describe('Service Tests', () => {
           expectedResult = service.addEmployeeToCollectionIfMissing([], null, employee, undefined);
           expect(expectedResult).toHaveLength(1);
           expect(expectedResult).toContain(employee);
+        });
+
+        it('should return initial array if no Employee is added', () => {
+          const employeeCollection: IEmployee[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+          expectedResult = service.addEmployeeToCollectionIfMissing(employeeCollection, undefined, null);
+          expect(expectedResult).toEqual(employeeCollection);
         });
       });
     });

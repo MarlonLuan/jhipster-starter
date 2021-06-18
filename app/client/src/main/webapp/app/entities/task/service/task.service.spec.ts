@@ -75,13 +75,7 @@ describe('Service Tests', () => {
       });
 
       it('should partial update a Task', () => {
-        const patchObject = Object.assign(
-          {
-            title: 'BBBBBB',
-            description: 'BBBBBB',
-          },
-          new Task()
-        );
+        const patchObject = Object.assign({}, new Task());
 
         const returnedFromService = Object.assign(patchObject, elemDefault);
 
@@ -154,7 +148,7 @@ describe('Service Tests', () => {
           const taskArray: ITask[] = [
             { id: '9fec3727-3421-4967-b213-ba36557ca194' },
             { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
-            { id: '5a8135f7-faa2-449e-a920-6f0a0a5429c4' },
+            { id: 'e26fc9c9-e8cc-4b66-85f1-7d1ab2d9db91' },
           ];
           const taskCollection: ITask[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
           expectedResult = service.addTaskToCollectionIfMissing(taskCollection, ...taskArray);
@@ -175,6 +169,12 @@ describe('Service Tests', () => {
           expectedResult = service.addTaskToCollectionIfMissing([], null, task, undefined);
           expect(expectedResult).toHaveLength(1);
           expect(expectedResult).toContain(task);
+        });
+
+        it('should return initial array if no Task is added', () => {
+          const taskCollection: ITask[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+          expectedResult = service.addTaskToCollectionIfMissing(taskCollection, undefined, null);
+          expect(expectedResult).toEqual(taskCollection);
         });
       });
     });

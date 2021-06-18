@@ -49,6 +49,7 @@ public class LocationServiceImpl implements LocationService {
             .map(
                 existingLocation -> {
                     locationMapper.partialUpdate(existingLocation, locationDTO);
+
                     return existingLocation;
                 }
             )

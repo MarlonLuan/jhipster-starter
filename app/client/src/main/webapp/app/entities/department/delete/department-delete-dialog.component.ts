@@ -10,7 +10,7 @@ import { DepartmentService } from '../service/department.service';
 export class DepartmentDeleteDialogComponent {
   department?: IDepartment;
 
-  constructor(protected departmentService: DepartmentService, public activeModal: NgbActiveModal) {}
+  constructor(protected departmentService: DepartmentService, protected activeModal: NgbActiveModal) {}
 
   cancel(): void {
     this.activeModal.dismiss();

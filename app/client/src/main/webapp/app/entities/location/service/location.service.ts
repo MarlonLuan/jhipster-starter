@@ -12,9 +12,9 @@ export type EntityArrayResponseType = HttpResponse<ILocation[]>;
 
 @Injectable({ providedIn: 'root' })
 export class LocationService {
-  public resourceUrl = this.applicationConfigService.getEndpointFor('api/locations');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/locations');
 
-  constructor(protected http: HttpClient, private applicationConfigService: ApplicationConfigService) {}
+  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
   create(location: ILocation): Observable<EntityResponseType> {
     return this.http.post<ILocation>(this.resourceUrl, location, { observe: 'response' });
