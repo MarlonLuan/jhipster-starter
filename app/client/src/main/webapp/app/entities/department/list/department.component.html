@@ -31,7 +31,7 @@
   <div class="table-responsive" id="entities" *ngIf="departments && departments.length > 0">
     <table class="table table-striped" aria-describedby="page-heading">
       <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="loadPage.bind(this)">
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
           <th scope="col" jhiSortBy="id"><span jhiTranslate="jhipsterApp.department.id">Id</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" jhiSortBy="departmentName">
             <span jhiTranslate="jhipsterApp.department.departmentName">Department Name</span> <fa-icon icon="sort"></fa-icon>

@@ -59,6 +59,36 @@ class SecurityUtilsUnitTest {
     }
 
     @Test
+    void testExtractAuthorityFromClaims() {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("groups", Arrays.asList(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER));
+
+        List<GrantedAuthority> expectedAuthorities = Arrays.asList(
+            new SimpleGrantedAuthority(AuthoritiesConstants.ADMIN),
+            new SimpleGrantedAuthority(AuthoritiesConstants.USER)
+        );
+
+        List<GrantedAuthority> authorities = SecurityUtils.extractAuthorityFromClaims(claims);
+
+        assertThat(authorities).isNotNull().isNotEmpty().hasSize(2).containsAll(expectedAuthorities);
+    }
+
+    @Test
+    void testExtractAuthorityFromClaims_NamespacedRoles() {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(SecurityUtils.CLAIMS_NAMESPACE + "roles", Arrays.asList(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER));
+
+        List<GrantedAuthority> expectedAuthorities = Arrays.asList(
+            new SimpleGrantedAuthority(AuthoritiesConstants.ADMIN),
+            new SimpleGrantedAuthority(AuthoritiesConstants.USER)
+        );
+
+        List<GrantedAuthority> authorities = SecurityUtils.extractAuthorityFromClaims(claims);
+
+        assertThat(authorities).isNotNull().isNotEmpty().hasSize(2).containsAll(expectedAuthorities);
+    }
+
+    @Test
     void testIsAuthenticated() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("admin", "admin"));

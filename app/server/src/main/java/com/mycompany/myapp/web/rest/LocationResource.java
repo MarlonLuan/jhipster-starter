@@ -112,7 +112,7 @@ public class LocationResource {
      * or with status {@code 500 (Internal Server Error)} if the locationDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/locations/{id}", consumes = "application/merge-patch+json")
+    @PatchMapping(value = "/locations/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<LocationDTO> partialUpdateLocation(
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody LocationDTO locationDTO

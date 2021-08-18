@@ -1,14 +1,13 @@
 package com.mycompany.myapp.web.rest;
 
-import static com.mycompany.myapp.web.rest.TestUtil.ID_TOKEN;
-import static com.mycompany.myapp.web.rest.TestUtil.authenticationToken;
+import static com.mycompany.myapp.test.util.OAuth2TestUtil.ID_TOKEN;
+import static com.mycompany.myapp.test.util.OAuth2TestUtil.authenticationToken;
+import static com.mycompany.myapp.test.util.OAuth2TestUtil.registerAuthenticationToken;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.mycompany.myapp.IntegrationTest;
-import com.mycompany.myapp.config.TestSecurityConfiguration;
 import com.mycompany.myapp.security.AuthoritiesConstants;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,8 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -36,18 +36,25 @@ class LogoutResourceIT {
     @Autowired
     private WebApplicationContext context;
 
+    @Autowired
+    private OAuth2AuthorizedClientService authorizedClientService;
+
+    @Autowired
+    private ClientRegistration clientRegistration;
+
     private MockMvc restLogoutMockMvc;
 
-    private OidcIdToken idToken;
+    private Map<String, Object> claims;
 
     @BeforeEach
     public void before() throws Exception {
-        Map<String, Object> claims = new HashMap<>();
+        claims = new HashMap<>();
         claims.put("groups", Collections.singletonList(AuthoritiesConstants.USER));
         claims.put("sub", 123);
-        this.idToken = new OidcIdToken(ID_TOKEN, Instant.now(), Instant.now().plusSeconds(60), claims);
 
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken(idToken));
+        SecurityContextHolder
+            .getContext()
+            .setAuthentication(registerAuthenticationToken(authorizedClientService, clientRegistration, authenticationToken(claims)));
         SecurityContextHolderAwareRequestFilter authInjector = new SecurityContextHolderAwareRequestFilter();
         authInjector.afterPropertiesSet();
 

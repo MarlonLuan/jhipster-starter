@@ -11,7 +11,7 @@
     "buildTool": "maven",
     "databaseType": "sql",
     "devDatabaseType": "postgresql",
-    "enableHibernateCache": false,
+    "enableHibernateCache": true,
     "enableSwaggerCodegen": false,
     "enableTranslation": true,
     "jhiPrefix": "jhi",
@@ -41,7 +41,7 @@
     "otherModules": [],
     "pages": [],
     "nativeLanguage": "en",
-    "creationTimestamp": 1624024784761,
-    "lastLiquibaseTimestamp": 1624025264000
+    "creationTimestamp": 1629312849325,
+    "lastLiquibaseTimestamp": 1629313329000
   }
 }

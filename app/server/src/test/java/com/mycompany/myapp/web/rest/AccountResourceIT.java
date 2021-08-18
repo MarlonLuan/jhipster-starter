@@ -1,28 +1,20 @@
 package com.mycompany.myapp.web.rest;
 
-import static com.mycompany.myapp.web.rest.AccountResourceIT.TEST_USER_LOGIN;
+import static com.mycompany.myapp.test.util.OAuth2TestUtil.TEST_USER_LOGIN;
+import static com.mycompany.myapp.test.util.OAuth2TestUtil.registerAuthenticationToken;
+import static com.mycompany.myapp.test.util.OAuth2TestUtil.testAuthenticationToken;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.mycompany.myapp.IntegrationTest;
-import com.mycompany.myapp.config.TestSecurityConfiguration;
 import com.mycompany.myapp.security.AuthoritiesConstants;
-import com.mycompany.myapp.service.UserService;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.test.context.TestSecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,21 +27,21 @@ import org.springframework.transaction.annotation.Transactional;
 @IntegrationTest
 class AccountResourceIT {
 
-    static final String TEST_USER_LOGIN = "test";
-
     @Autowired
     private MockMvc restAccountMockMvc;
+
+    @Autowired
+    OAuth2AuthorizedClientService authorizedClientService;
+
+    @Autowired
+    ClientRegistration clientRegistration;
 
     @Test
     @Transactional
     void testGetExistingAccount() throws Exception {
-        Map<String, Object> userDetails = new HashMap<>();
-        userDetails.put("sub", TEST_USER_LOGIN);
-        userDetails.put("email", "john.doe@jhipster.com");
-        Collection<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(AuthoritiesConstants.ADMIN));
-        OAuth2User user = new DefaultOAuth2User(authorities, userDetails, "sub");
-        OAuth2AuthenticationToken authentication = new OAuth2AuthenticationToken(user, authorities, "oidc");
-        TestSecurityContextHolder.getContext().setAuthentication(authentication);
+        TestSecurityContextHolder
+            .getContext()
+            .setAuthentication(registerAuthenticationToken(authorizedClientService, clientRegistration, testAuthenticationToken()));
 
         restAccountMockMvc
             .perform(get("/api/account").accept(MediaType.APPLICATION_JSON))

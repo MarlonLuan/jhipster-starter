@@ -110,7 +110,7 @@ public class TaskResource {
      * or with status {@code 500 (Internal Server Error)} if the taskDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/tasks/{id}", consumes = "application/merge-patch+json")
+    @PatchMapping(value = "/tasks/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<TaskDTO> partialUpdateTask(
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody TaskDTO taskDTO

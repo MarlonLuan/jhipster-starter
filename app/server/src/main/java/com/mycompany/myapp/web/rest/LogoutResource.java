@@ -32,11 +32,18 @@ public class LogoutResource {
      */
     @PostMapping("/api/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, @AuthenticationPrincipal(expression = "idToken") OidcIdToken idToken) {
-        String logoutUrl = this.registration.getProviderDetails().getConfigurationMetadata().get("end_session_endpoint").toString();
+        String logoutUrl;
+        String issuerUri = this.registration.getProviderDetails().getIssuerUri();
+        if (issuerUri.contains("auth0.com")) {
+            logoutUrl = issuerUri.endsWith("/") ? issuerUri + "v2/logout" : issuerUri + "/v2/logout";
+        } else {
+            logoutUrl = this.registration.getProviderDetails().getConfigurationMetadata().get("end_session_endpoint").toString();
+        }
 
         Map<String, String> logoutDetails = new HashMap<>();
         logoutDetails.put("logoutUrl", logoutUrl);
         logoutDetails.put("idToken", idToken.getTokenValue());
+        logoutDetails.put("clientId", this.registration.getClientId());
         request.getSession().invalidate();
         return ResponseEntity.ok().body(logoutDetails);
     }

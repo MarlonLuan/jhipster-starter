@@ -9,6 +9,7 @@ import com.mycompany.myapp.security.SecurityUtils;
 import com.mycompany.myapp.service.dto.AdminUserDTO;
 import com.mycompany.myapp.service.dto.UserDTO;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -158,6 +159,7 @@ public class UserService {
                 )
                 .collect(Collectors.toSet())
         );
+
         return new AdminUserDTO(syncUserWithIdP(attributes, user));
     }
 
@@ -178,6 +180,8 @@ public class UserService {
         }
         if (details.get("given_name") != null) {
             user.setFirstName((String) details.get("given_name"));
+        } else if (details.get("name") != null) {
+            user.setFirstName((String) details.get("name"));
         }
         if (details.get("family_name") != null) {
             user.setLastName((String) details.get("family_name"));

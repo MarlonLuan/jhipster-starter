@@ -12,6 +12,13 @@
     <name>Jhipster</name>
 
     <repositories>
+        <repository>
+            <id>ossrh-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
         <!-- jhipster-needle-maven-repository -->
     </repositories>
 
@@ -40,10 +47,10 @@
         <profile.tls />
 
         <!-- Dependency versions -->
-        <jhipster-dependencies.version>7.1.0</jhipster-dependencies.version>
+        <jhipster-dependencies.version>7.1.1-SNAPSHOT</jhipster-dependencies.version>
         <!-- The spring-boot version should match the one managed by
         https://mvnrepository.com/artifact/tech.jhipster/jhipster-dependencies/${jhipster-dependencies.version} -->
-        <spring-boot.version>2.4.7</spring-boot.version>
+        <spring-boot.version>2.5.3</spring-boot.version>
         <!-- The hibernate version should match the one managed by
         https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies/${spring-boot.version} -->
         <hibernate.version>5.4.32.Final</hibernate.version>
@@ -52,8 +59,8 @@
         <javassist.version>3.27.0-GA</javassist.version>
         <!-- The liquibase version should match the one managed by
         https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies/${spring-boot.version} -->
-        <liquibase.version>4.3.5</liquibase.version>
-        <liquibase-hibernate5.version>4.3.5</liquibase-hibernate5.version>
+        <liquibase.version>4.4.2</liquibase.version>
+        <liquibase-hibernate5.version>4.4.2</liquibase-hibernate5.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
         <jaxb-runtime.version>2.3.3</jaxb-runtime.version>
         <archunit-junit5.version>0.19.0</archunit-junit5.version>
