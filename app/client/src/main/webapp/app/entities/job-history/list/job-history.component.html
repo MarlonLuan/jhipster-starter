@@ -31,7 +31,7 @@
   <div class="table-responsive" id="entities" *ngIf="jobHistories && jobHistories.length > 0">
     <table class="table table-striped" aria-describedby="page-heading">
       <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="loadPage.bind(this)">
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
           <th scope="col" jhiSortBy="id"><span jhiTranslate="jhipsterApp.jobHistory.id">Id</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" jhiSortBy="startDate">
             <span jhiTranslate="jhipsterApp.jobHistory.startDate">Start Date</span> <fa-icon icon="sort"></fa-icon>

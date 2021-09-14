@@ -19,6 +19,7 @@ public class Department implements Serializable {
 
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private UUID id;
 
     @NotNull
@@ -38,17 +39,18 @@ public class Department implements Serializable {
     private Set<Employee> employees = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
     public UUID getId() {
-        return id;
+        return this.id;
+    }
+
+    public Department id(UUID id) {
+        this.setId(id);
+        return this;
     }
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public Department id(UUID id) {
-        this.id = id;
-        return this;
     }
 
     public String getDepartmentName() {
@@ -56,7 +58,7 @@ public class Department implements Serializable {
     }
 
     public Department departmentName(String departmentName) {
-        this.departmentName = departmentName;
+        this.setDepartmentName(departmentName);
         return this;
     }
 
@@ -68,17 +70,27 @@ public class Department implements Serializable {
         return this.location;
     }
 
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     public Department location(Location location) {
         this.setLocation(location);
         return this;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
     public Set<Employee> getEmployees() {
         return this.employees;
+    }
+
+    public void setEmployees(Set<Employee> employees) {
+        if (this.employees != null) {
+            this.employees.forEach(i -> i.setDepartment(null));
+        }
+        if (employees != null) {
+            employees.forEach(i -> i.setDepartment(this));
+        }
+        this.employees = employees;
     }
 
     public Department employees(Set<Employee> employees) {
@@ -96,16 +108,6 @@ public class Department implements Serializable {
         this.employees.remove(employee);
         employee.setDepartment(null);
         return this;
-    }
-
-    public void setEmployees(Set<Employee> employees) {
-        if (this.employees != null) {
-            this.employees.forEach(i -> i.setDepartment(null));
-        }
-        if (employees != null) {
-            employees.forEach(i -> i.setDepartment(this));
-        }
-        this.employees = employees;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

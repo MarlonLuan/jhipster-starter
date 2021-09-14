@@ -46,13 +46,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return employeeRepository
             .findById(employeeDTO.getId())
-            .map(
-                existingEmployee -> {
-                    employeeMapper.partialUpdate(existingEmployee, employeeDTO);
+            .map(existingEmployee -> {
+                employeeMapper.partialUpdate(existingEmployee, employeeDTO);
 
-                    return existingEmployee;
-                }
-            )
+                return existingEmployee;
+            })
             .map(employeeRepository::save)
             .map(employeeMapper::toDto);
     }

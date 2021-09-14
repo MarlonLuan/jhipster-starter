@@ -15,6 +15,7 @@ public class Country implements Serializable {
 
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private UUID id;
 
     @Column(name = "country_name")
@@ -25,17 +26,18 @@ public class Country implements Serializable {
     private Region region;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
     public UUID getId() {
-        return id;
+        return this.id;
+    }
+
+    public Country id(UUID id) {
+        this.setId(id);
+        return this;
     }
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public Country id(UUID id) {
-        this.id = id;
-        return this;
     }
 
     public String getCountryName() {
@@ -43,7 +45,7 @@ public class Country implements Serializable {
     }
 
     public Country countryName(String countryName) {
-        this.countryName = countryName;
+        this.setCountryName(countryName);
         return this;
     }
 
@@ -55,13 +57,13 @@ public class Country implements Serializable {
         return this.region;
     }
 
+    public void setRegion(Region region) {
+        this.region = region;
+    }
+
     public Country region(Region region) {
         this.setRegion(region);
         return this;
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

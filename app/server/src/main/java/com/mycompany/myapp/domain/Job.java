@@ -18,6 +18,7 @@ public class Job implements Serializable {
 
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private UUID id;
 
     @Column(name = "job_title")
@@ -39,17 +40,18 @@ public class Job implements Serializable {
     private Employee employee;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
     public UUID getId() {
-        return id;
+        return this.id;
+    }
+
+    public Job id(UUID id) {
+        this.setId(id);
+        return this;
     }
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public Job id(UUID id) {
-        this.id = id;
-        return this;
     }
 
     public String getJobTitle() {
@@ -57,7 +59,7 @@ public class Job implements Serializable {
     }
 
     public Job jobTitle(String jobTitle) {
-        this.jobTitle = jobTitle;
+        this.setJobTitle(jobTitle);
         return this;
     }
 
@@ -70,7 +72,7 @@ public class Job implements Serializable {
     }
 
     public Job minSalary(Long minSalary) {
-        this.minSalary = minSalary;
+        this.setMinSalary(minSalary);
         return this;
     }
 
@@ -83,7 +85,7 @@ public class Job implements Serializable {
     }
 
     public Job maxSalary(Long maxSalary) {
-        this.maxSalary = maxSalary;
+        this.setMaxSalary(maxSalary);
         return this;
     }
 
@@ -93,6 +95,10 @@ public class Job implements Serializable {
 
     public Set<Task> getTasks() {
         return this.tasks;
+    }
+
+    public void setTasks(Set<Task> tasks) {
+        this.tasks = tasks;
     }
 
     public Job tasks(Set<Task> tasks) {
@@ -112,21 +118,17 @@ public class Job implements Serializable {
         return this;
     }
 
-    public void setTasks(Set<Task> tasks) {
-        this.tasks = tasks;
-    }
-
     public Employee getEmployee() {
         return this.employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public Job employee(Employee employee) {
         this.setEmployee(employee);
         return this;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
