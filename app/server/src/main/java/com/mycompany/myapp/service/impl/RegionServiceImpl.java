@@ -46,13 +46,11 @@ public class RegionServiceImpl implements RegionService {
 
         return regionRepository
             .findById(regionDTO.getId())
-            .map(
-                existingRegion -> {
-                    regionMapper.partialUpdate(existingRegion, regionDTO);
+            .map(existingRegion -> {
+                regionMapper.partialUpdate(existingRegion, regionDTO);
 
-                    return existingRegion;
-                }
-            )
+                return existingRegion;
+            })
             .map(regionRepository::save)
             .map(regionMapper::toDto);
     }

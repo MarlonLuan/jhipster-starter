@@ -46,13 +46,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         return departmentRepository
             .findById(departmentDTO.getId())
-            .map(
-                existingDepartment -> {
-                    departmentMapper.partialUpdate(existingDepartment, departmentDTO);
+            .map(existingDepartment -> {
+                departmentMapper.partialUpdate(existingDepartment, departmentDTO);
 
-                    return existingDepartment;
-                }
-            )
+                return existingDepartment;
+            })
             .map(departmentRepository::save)
             .map(departmentMapper::toDto);
     }

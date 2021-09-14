@@ -46,13 +46,11 @@ public class JobHistoryServiceImpl implements JobHistoryService {
 
         return jobHistoryRepository
             .findById(jobHistoryDTO.getId())
-            .map(
-                existingJobHistory -> {
-                    jobHistoryMapper.partialUpdate(existingJobHistory, jobHistoryDTO);
+            .map(existingJobHistory -> {
+                jobHistoryMapper.partialUpdate(existingJobHistory, jobHistoryDTO);
 
-                    return existingJobHistory;
-                }
-            )
+                return existingJobHistory;
+            })
             .map(jobHistoryRepository::save)
             .map(jobHistoryMapper::toDto);
     }

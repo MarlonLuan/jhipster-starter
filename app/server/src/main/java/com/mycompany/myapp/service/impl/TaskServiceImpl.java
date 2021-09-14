@@ -46,13 +46,11 @@ public class TaskServiceImpl implements TaskService {
 
         return taskRepository
             .findById(taskDTO.getId())
-            .map(
-                existingTask -> {
-                    taskMapper.partialUpdate(existingTask, taskDTO);
+            .map(existingTask -> {
+                taskMapper.partialUpdate(existingTask, taskDTO);
 
-                    return existingTask;
-                }
-            )
+                return existingTask;
+            })
             .map(taskRepository::save)
             .map(taskMapper::toDto);
     }

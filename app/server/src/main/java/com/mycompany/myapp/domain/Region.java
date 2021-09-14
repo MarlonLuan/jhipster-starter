@@ -15,23 +15,25 @@ public class Region implements Serializable {
 
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private UUID id;
 
     @Column(name = "region_name")
     private String regionName;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
     public UUID getId() {
-        return id;
+        return this.id;
+    }
+
+    public Region id(UUID id) {
+        this.setId(id);
+        return this;
     }
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public Region id(UUID id) {
-        this.id = id;
-        return this;
     }
 
     public String getRegionName() {
@@ -39,7 +41,7 @@ public class Region implements Serializable {
     }
 
     public Region regionName(String regionName) {
-        this.regionName = regionName;
+        this.setRegionName(regionName);
         return this;
     }
 

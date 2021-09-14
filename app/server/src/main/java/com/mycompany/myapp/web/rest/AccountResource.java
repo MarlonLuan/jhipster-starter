@@ -2,7 +2,6 @@ package com.mycompany.myapp.web.rest;
 
 import com.mycompany.myapp.service.UserService;
 import com.mycompany.myapp.service.dto.AdminUserDTO;
-import com.mycompany.myapp.service.dto.UserDTO;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;

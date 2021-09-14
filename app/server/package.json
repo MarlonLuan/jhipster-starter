@@ -11,7 +11,8 @@
     "docker:db:down": "docker-compose -f src/main/docker/postgresql.yml down -v --remove-orphans",
     "docker:keycloak:up": "docker-compose -f src/main/docker/keycloak.yml up -d",
     "docker:keycloak:down": "docker-compose -f src/main/docker/keycloak.yml down -v --remove-orphans",
-    "docker:others:await": "",
+    "docker:app:up": "docker-compose -f src/main/docker/app.yml up -d jhipster-app",
+    "docker:others:await": "echo \"Waiting for keycloak to start\" && wait-on http-get://localhost:9080/auth/realms/jhipster -t 30000 && echo \"keycloak started\" || echo \"keycloak not running, make sure oauth2 server is running\"",
     "predocker:others:up": "",
     "docker:others:up": "npm run docker:keycloak:up",
     "docker:others:down": "npm run docker:keycloak:down",
@@ -26,8 +27,10 @@
     "java:jar": "./mvnw -ntp verify -DskipTests --batch-mode",
     "java:war": "./mvnw -ntp verify -DskipTests --batch-mode -Pwar",
     "java:docker": "./mvnw -ntp verify -DskipTests jib:dockerBuild",
+    "java:docker:arm64": "npm run java:docker -- -Djib-maven-plugin.architecture=arm64",
     "backend:unit:test": "./mvnw -ntp -P-webapp verify --batch-mode -Dlogging.level.ROOT=OFF -Dlogging.level.org.zalando=OFF -Dlogging.level.tech.jhipster=OFF -Dlogging.level.com.mycompany.myapp=OFF -Dlogging.level.org.springframework=OFF -Dlogging.level.org.springframework.web=OFF -Dlogging.level.org.springframework.security=OFF",
     "backend:build-cache": "./mvnw dependency:go-offline",
+    "backend:debug": "./mvnw -Dspring-boot.run.jvmArguments=\"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000\"",
     "java:jar:dev": "npm run java:jar -- -Pdev,webapp",
     "java:jar:prod": "npm run java:jar -- -Pprod",
     "java:war:dev": "npm run java:war -- -Pdev,webapp",
@@ -46,15 +49,13 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "7.1.0",
-    "husky": "4.3.8",
-    "lint-staged": "11.0.0",
-    "prettier": "2.3.1",
-    "prettier-plugin-java": "1.2.0",
+    "generator-jhipster": "7.2.0",
+    "prettier": "2.4.0",
+    "prettier-plugin-java": "1.4.0",
     "prettier-plugin-packagejson": "2.2.11"
   },
   "engines": {
-    "node": ">=14.17.1"
+    "node": ">=14.17.6"
   },
   "cacheDirectories": [
     "node_modules"
