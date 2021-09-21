@@ -1,7 +1,5 @@
-name: Generate
-on:
-  schedule:
-    - cron:  '* * * * *'
+name: Build
+on: workflow_dispatch
 
 jobs:
   build:
@@ -32,10 +30,6 @@ jobs:
           npm -v
           git version
 
-      - name: Clone Jhipster
-        run: |
-          git clone --depth=1 https://github.com/jhipster/generator-jhipster.git
-
       - name: Listar Diretório
         run: |
           pwd
@@ -43,11 +37,7 @@ jobs:
 
       - name: Install Jhipster
         run: |
-          cd generator-jhipster
-          npm un generator-jhipster
-          sudo npm un generator-jhipster -g
-          npm i
-          sudo npm link
+          npm i generator-jhipster -g
 
       - name: Limpar APP Jhipster
         run: |
