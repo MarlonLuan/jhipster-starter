@@ -22,7 +22,9 @@
     "skipClient": false,
     "testFrameworks": [],
     "websocket": false,
-    "jhipsterVersion": "7.1.0",
+    "enableGradleEnterprise": false,
+    "gradleEnterpriseHost": "",
+    "jhipsterVersion": "7.2.0",
     "skipServer": true,
     "packageFolder": "com/mycompany/myapp",
     "packageName": "com.mycompany.myapp",
@@ -41,8 +43,10 @@
     "otherModules": [],
     "pages": [],
     "nativeLanguage": "en",
-    "creationTimestamp": 1624024722709,
+    "creationTimestamp": 1632235179749,
+    "monorepository": true,
+    "skipCommitHook": true,
     "devServerPort": 4200,
-    "lastLiquibaseTimestamp": 1624025202000
+    "lastLiquibaseTimestamp": 1632235659000
   }
 }

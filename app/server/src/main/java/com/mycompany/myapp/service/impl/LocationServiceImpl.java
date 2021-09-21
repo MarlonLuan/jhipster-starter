@@ -46,13 +46,11 @@ public class LocationServiceImpl implements LocationService {
 
         return locationRepository
             .findById(locationDTO.getId())
-            .map(
-                existingLocation -> {
-                    locationMapper.partialUpdate(existingLocation, locationDTO);
+            .map(existingLocation -> {
+                locationMapper.partialUpdate(existingLocation, locationDTO);
 
-                    return existingLocation;
-                }
-            )
+                return existingLocation;
+            })
             .map(locationRepository::save)
             .map(locationMapper::toDto);
     }

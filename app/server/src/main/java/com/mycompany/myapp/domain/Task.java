@@ -18,6 +18,7 @@ public class Task implements Serializable {
 
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private UUID id;
 
     @Column(name = "title")
@@ -31,17 +32,18 @@ public class Task implements Serializable {
     private Set<Job> jobs = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
     public UUID getId() {
-        return id;
+        return this.id;
+    }
+
+    public Task id(UUID id) {
+        this.setId(id);
+        return this;
     }
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public Task id(UUID id) {
-        this.id = id;
-        return this;
     }
 
     public String getTitle() {
@@ -49,7 +51,7 @@ public class Task implements Serializable {
     }
 
     public Task title(String title) {
-        this.title = title;
+        this.setTitle(title);
         return this;
     }
 
@@ -62,7 +64,7 @@ public class Task implements Serializable {
     }
 
     public Task description(String description) {
-        this.description = description;
+        this.setDescription(description);
         return this;
     }
 
@@ -72,6 +74,16 @@ public class Task implements Serializable {
 
     public Set<Job> getJobs() {
         return this.jobs;
+    }
+
+    public void setJobs(Set<Job> jobs) {
+        if (this.jobs != null) {
+            this.jobs.forEach(i -> i.removeTask(this));
+        }
+        if (jobs != null) {
+            jobs.forEach(i -> i.addTask(this));
+        }
+        this.jobs = jobs;
     }
 
     public Task jobs(Set<Job> jobs) {
@@ -89,16 +101,6 @@ public class Task implements Serializable {
         this.jobs.remove(job);
         job.getTasks().remove(this);
         return this;
-    }
-
-    public void setJobs(Set<Job> jobs) {
-        if (this.jobs != null) {
-            this.jobs.forEach(i -> i.removeTask(this));
-        }
-        if (jobs != null) {
-            jobs.forEach(i -> i.addTask(this));
-        }
-        this.jobs = jobs;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

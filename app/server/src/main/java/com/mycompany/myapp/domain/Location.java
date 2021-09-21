@@ -16,6 +16,7 @@ public class Location implements Serializable {
 
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private UUID id;
 
     @Column(name = "street_address")
@@ -36,17 +37,18 @@ public class Location implements Serializable {
     private Country country;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
     public UUID getId() {
-        return id;
+        return this.id;
+    }
+
+    public Location id(UUID id) {
+        this.setId(id);
+        return this;
     }
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public Location id(UUID id) {
-        this.id = id;
-        return this;
     }
 
     public String getStreetAddress() {
@@ -54,7 +56,7 @@ public class Location implements Serializable {
     }
 
     public Location streetAddress(String streetAddress) {
-        this.streetAddress = streetAddress;
+        this.setStreetAddress(streetAddress);
         return this;
     }
 
@@ -67,7 +69,7 @@ public class Location implements Serializable {
     }
 
     public Location postalCode(String postalCode) {
-        this.postalCode = postalCode;
+        this.setPostalCode(postalCode);
         return this;
     }
 
@@ -80,7 +82,7 @@ public class Location implements Serializable {
     }
 
     public Location city(String city) {
-        this.city = city;
+        this.setCity(city);
         return this;
     }
 
@@ -93,7 +95,7 @@ public class Location implements Serializable {
     }
 
     public Location stateProvince(String stateProvince) {
-        this.stateProvince = stateProvince;
+        this.setStateProvince(stateProvince);
         return this;
     }
 
@@ -105,13 +107,13 @@ public class Location implements Serializable {
         return this.country;
     }
 
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
     public Location country(Country country) {
         this.setCountry(country);
         return this;
-    }
-
-    public void setCountry(Country country) {
-        this.country = country;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

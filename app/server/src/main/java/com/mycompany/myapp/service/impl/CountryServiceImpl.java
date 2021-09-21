@@ -46,13 +46,11 @@ public class CountryServiceImpl implements CountryService {
 
         return countryRepository
             .findById(countryDTO.getId())
-            .map(
-                existingCountry -> {
-                    countryMapper.partialUpdate(existingCountry, countryDTO);
+            .map(existingCountry -> {
+                countryMapper.partialUpdate(existingCountry, countryDTO);
 
-                    return existingCountry;
-                }
-            )
+                return existingCountry;
+            })
             .map(countryRepository::save)
             .map(countryMapper::toDto);
     }

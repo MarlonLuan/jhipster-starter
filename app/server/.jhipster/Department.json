@@ -36,5 +36,6 @@
   "readOnly": false,
   "embedded": false,
   "applications": ["jhipster"],
-  "changelogDate": "20210618140344"
+  "skipClient": true,
+  "changelogDate": "20210921144527"
 }

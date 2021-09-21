@@ -18,6 +18,7 @@ public class JobHistory implements Serializable {
 
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private UUID id;
 
     @Column(name = "start_date")
@@ -46,17 +47,18 @@ public class JobHistory implements Serializable {
     private Employee employee;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
     public UUID getId() {
-        return id;
+        return this.id;
+    }
+
+    public JobHistory id(UUID id) {
+        this.setId(id);
+        return this;
     }
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public JobHistory id(UUID id) {
-        this.id = id;
-        return this;
     }
 
     public Instant getStartDate() {
@@ -64,7 +66,7 @@ public class JobHistory implements Serializable {
     }
 
     public JobHistory startDate(Instant startDate) {
-        this.startDate = startDate;
+        this.setStartDate(startDate);
         return this;
     }
 
@@ -77,7 +79,7 @@ public class JobHistory implements Serializable {
     }
 
     public JobHistory endDate(Instant endDate) {
-        this.endDate = endDate;
+        this.setEndDate(endDate);
         return this;
     }
 
@@ -90,7 +92,7 @@ public class JobHistory implements Serializable {
     }
 
     public JobHistory language(Language language) {
-        this.language = language;
+        this.setLanguage(language);
         return this;
     }
 
@@ -102,17 +104,21 @@ public class JobHistory implements Serializable {
         return this.job;
     }
 
+    public void setJob(Job job) {
+        this.job = job;
+    }
+
     public JobHistory job(Job job) {
         this.setJob(job);
         return this;
     }
 
-    public void setJob(Job job) {
-        this.job = job;
-    }
-
     public Department getDepartment() {
         return this.department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     public JobHistory department(Department department) {
@@ -120,21 +126,17 @@ public class JobHistory implements Serializable {
         return this;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
     public Employee getEmployee() {
         return this.employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public JobHistory employee(Employee employee) {
         this.setEmployee(employee);
         return this;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
