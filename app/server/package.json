@@ -11,7 +11,7 @@
     "docker:db:down": "docker-compose -f src/main/docker/postgresql.yml down -v --remove-orphans",
     "docker:keycloak:up": "docker-compose -f src/main/docker/keycloak.yml up -d",
     "docker:keycloak:down": "docker-compose -f src/main/docker/keycloak.yml down -v --remove-orphans",
-    "docker:app:up": "docker-compose -f src/main/docker/app.yml up -d jhipster-app",
+    "docker:app:up": "docker-compose -f src/main/docker/app.yml up -d",
     "docker:others:await": "echo \"Waiting for keycloak to start\" && wait-on http-get://localhost:9080/auth/realms/jhipster -t 30000 && echo \"keycloak started\" || echo \"keycloak not running, make sure oauth2 server is running\"",
     "predocker:others:up": "",
     "docker:others:up": "npm run docker:keycloak:up",
@@ -20,6 +20,7 @@
     "ci:e2e:prepare": "npm run ci:e2e:prepare:docker",
     "ci:e2e:teardown:docker": "npm run docker:db:down --if-present && npm run docker:others:down && docker ps -a",
     "ci:e2e:teardown": "npm run ci:e2e:teardown:docker",
+    "app:start": "./mvnw",
     "backend:info": "./mvnw -ntp enforcer:display-info --batch-mode",
     "backend:doc:test": "./mvnw -ntp javadoc:javadoc --batch-mode",
     "backend:nohttp:test": "./mvnw -ntp checkstyle:check --batch-mode",
@@ -50,9 +51,9 @@
   },
   "devDependencies": {
     "generator-jhipster": "7.2.0",
-    "prettier": "2.4.0",
+    "prettier": "2.4.1",
     "prettier-plugin-java": "1.4.0",
-    "prettier-plugin-packagejson": "2.2.11"
+    "prettier-plugin-packagejson": "2.2.12"
   },
   "engines": {
     "node": ">=14.17.6"
