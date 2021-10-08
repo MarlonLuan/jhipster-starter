@@ -52,5 +52,5 @@
   "embedded": false,
   "applications": ["jhipster"],
   "skipServer": true,
-  "changelogDate": "20210921144739"
+  "changelogDate": "20211008130318"
 }

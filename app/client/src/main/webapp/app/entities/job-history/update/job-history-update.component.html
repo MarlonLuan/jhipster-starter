@@ -47,9 +47,7 @@
           <label class="form-control-label" jhiTranslate="jhipsterApp.jobHistory.language" for="field_language">Language</label>
           <select class="form-control" name="language" formControlName="language" id="field_language" data-cy="language">
             <option [ngValue]="null">{{ 'jhipsterApp.Language.null' | translate }}</option>
-            <option value="FRENCH">{{ 'jhipsterApp.Language.FRENCH' | translate }}</option>
-            <option value="ENGLISH">{{ 'jhipsterApp.Language.ENGLISH' | translate }}</option>
-            <option value="SPANISH">{{ 'jhipsterApp.Language.SPANISH' | translate }}</option>
+            <option *ngFor="let language of languageValues" [value]="language">{{ 'jhipsterApp.Language.' + language | translate }}</option>
           </select>
         </div>
 

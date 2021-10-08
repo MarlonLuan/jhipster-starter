@@ -11,72 +11,70 @@ import { JobHistoryService } from '../service/job-history.service';
 
 import { JobHistoryRoutingResolveService } from './job-history-routing-resolve.service';
 
-describe('Service Tests', () => {
-  describe('JobHistory routing resolve service', () => {
-    let mockRouter: Router;
-    let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
-    let routingResolveService: JobHistoryRoutingResolveService;
-    let service: JobHistoryService;
-    let resultJobHistory: IJobHistory | undefined;
+describe('JobHistory routing resolve service', () => {
+  let mockRouter: Router;
+  let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
+  let routingResolveService: JobHistoryRoutingResolveService;
+  let service: JobHistoryService;
+  let resultJobHistory: IJobHistory | undefined;
 
-    beforeEach(() => {
-      TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule],
-        providers: [Router, ActivatedRouteSnapshot],
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [Router, ActivatedRouteSnapshot],
+    });
+    mockRouter = TestBed.inject(Router);
+    mockActivatedRouteSnapshot = TestBed.inject(ActivatedRouteSnapshot);
+    routingResolveService = TestBed.inject(JobHistoryRoutingResolveService);
+    service = TestBed.inject(JobHistoryService);
+    resultJobHistory = undefined;
+  });
+
+  describe('resolve', () => {
+    it('should return IJobHistory returned by find', () => {
+      // GIVEN
+      service.find = jest.fn(id => of(new HttpResponse({ body: { id } })));
+      mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+
+      // WHEN
+      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
+        resultJobHistory = result;
       });
-      mockRouter = TestBed.inject(Router);
-      mockActivatedRouteSnapshot = TestBed.inject(ActivatedRouteSnapshot);
-      routingResolveService = TestBed.inject(JobHistoryRoutingResolveService);
-      service = TestBed.inject(JobHistoryService);
-      resultJobHistory = undefined;
+
+      // THEN
+      expect(service.find).toBeCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
+      expect(resultJobHistory).toEqual({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
     });
 
-    describe('resolve', () => {
-      it('should return IJobHistory returned by find', () => {
-        // GIVEN
-        service.find = jest.fn(id => of(new HttpResponse({ body: { id } })));
-        mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+    it('should return new IJobHistory if id is not provided', () => {
+      // GIVEN
+      service.find = jest.fn();
+      mockActivatedRouteSnapshot.params = {};
 
-        // WHEN
-        routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
-          resultJobHistory = result;
-        });
-
-        // THEN
-        expect(service.find).toBeCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
-        expect(resultJobHistory).toEqual({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
+      // WHEN
+      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
+        resultJobHistory = result;
       });
 
-      it('should return new IJobHistory if id is not provided', () => {
-        // GIVEN
-        service.find = jest.fn();
-        mockActivatedRouteSnapshot.params = {};
+      // THEN
+      expect(service.find).not.toBeCalled();
+      expect(resultJobHistory).toEqual(new JobHistory());
+    });
 
-        // WHEN
-        routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
-          resultJobHistory = result;
-        });
+    it('should route to 404 page if data not found in server', () => {
+      // GIVEN
+      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse({ body: null as unknown as JobHistory })));
+      mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
-        // THEN
-        expect(service.find).not.toBeCalled();
-        expect(resultJobHistory).toEqual(new JobHistory());
+      // WHEN
+      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
+        resultJobHistory = result;
       });
 
-      it('should route to 404 page if data not found in server', () => {
-        // GIVEN
-        jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse({ body: null as unknown as JobHistory })));
-        mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-
-        // WHEN
-        routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
-          resultJobHistory = result;
-        });
-
-        // THEN
-        expect(service.find).toBeCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
-        expect(resultJobHistory).toEqual(undefined);
-        expect(mockRouter.navigate).toHaveBeenCalledWith(['404']);
-      });
+      // THEN
+      expect(service.find).toBeCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
+      expect(resultJobHistory).toEqual(undefined);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['404']);
     });
   });
 });
