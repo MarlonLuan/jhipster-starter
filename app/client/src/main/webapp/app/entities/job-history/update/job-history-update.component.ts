@@ -16,6 +16,7 @@ import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
 import { IEmployee } from 'app/entities/employee/employee.model';
 import { EmployeeService } from 'app/entities/employee/service/employee.service';
+import { Language } from 'app/entities/enumerations/language.model';
 
 @Component({
   selector: 'jhi-job-history-update',
@@ -23,6 +24,7 @@ import { EmployeeService } from 'app/entities/employee/service/employee.service'
 })
 export class JobHistoryUpdateComponent implements OnInit {
   isSaving = false;
+  languageValues = Object.keys(Language);
 
   jobsCollection: IJob[] = [];
   departmentsCollection: IDepartment[] = [];
