@@ -1,6 +1,6 @@
 package com.mycompany.myapp.service.mapper;
 
-import com.mycompany.myapp.domain.*;
+import com.mycompany.myapp.domain.Employee;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
 import org.mapstruct.*;
 
