@@ -1,6 +1,6 @@
 package com.mycompany.myapp.service.mapper;
 
-import com.mycompany.myapp.domain.*;
+import com.mycompany.myapp.domain.Job;
 import com.mycompany.myapp.service.dto.JobDTO;
 import java.util.Set;
 import org.mapstruct.*;
