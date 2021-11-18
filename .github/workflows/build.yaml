@@ -12,7 +12,7 @@ jobs:
           
       - uses: actions/setup-java@v2
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
 
       - run: sudo apt install maven
@@ -34,9 +34,5 @@ jobs:
           mkdir server
           cd server
           echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-client
-
-      # - name: Mover sonar-project.properties
-      #   run: |
-      #     mv sonar-project.properties app/server
 
       - uses: peter-evans/create-pull-request@v3
