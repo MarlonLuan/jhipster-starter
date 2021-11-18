@@ -1,4 +1,3 @@
-name: Build
 on: workflow_dispatch
 
 jobs:
@@ -7,65 +6,37 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v2
+      - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: lts/*
           
-      - name: Setup Java environment
-        uses: actions/setup-java@v2
+      - uses: actions/setup-java@v2
         with:
           java-version: '11'
           distribution: 'temurin'
 
-      - name: Install Maven
-        run: |
-          sudo apt install maven
+      - run: sudo apt install maven
 
-      - name: Check Version
-        run: |
-          echo Node version
-          node -v
-          echo NPM version
-          npm -v
-          git version
+      - run: npm i generator-jhipster -g
 
-      - name: Listar Diretório
-        run: |
-          pwd
-          ls -a
-
-      - name: Install Jhipster
-        run: |
-          npm i generator-jhipster -g
-
-      - name: Limpar APP Jhipster
-        run: |
+      - run: |
           echo "y" | rm -R app
           mkdir app
 
-      - name: Gerar Jhipster App Client
-        run: |
+      - run: |
           cd app
           mkdir client
           cd client
           echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-server
 
-      - name: Gerar Jhipster App Server
-        run: |
+      - run: |
           cd app
           mkdir server
           cd server
           echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-client
 
-      - name: Listar Diretório
-        run: |
-          pwd
-          ls -a
-
       # - name: Mover sonar-project.properties
       #   run: |
       #     mv sonar-project.properties app/server
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+      - uses: peter-evans/create-pull-request@v3
