@@ -19,13 +19,11 @@
     "messageBroker": false,
     "prodDatabaseType": "postgresql",
     "searchEngine": false,
-    "skipClient": true,
     "testFrameworks": [],
     "websocket": false,
     "enableGradleEnterprise": false,
     "gradleEnterpriseHost": "",
-    "jhipsterVersion": "7.3.1",
-    "skipServer": false,
+    "jhipsterVersion": "7.4.0",
     "packageFolder": "com/mycompany/myapp",
     "packageName": "com.mycompany.myapp",
     "clientPackageManager": "npm",
@@ -37,15 +35,16 @@
     "applicationType": "monolith",
     "applicationIndex": 0,
     "entities": ["Region", "Country", "Location", "Department", "Task", "Employee", "Job", "JobHistory"],
+    "skipClient": true,
     "skipCheckLengthOfIdentifier": false,
     "skipFakeData": false,
     "blueprints": [],
     "otherModules": [],
     "pages": [],
     "nativeLanguage": "en",
-    "creationTimestamp": 1634659371779,
+    "creationTimestamp": 1637341584561,
     "monorepository": true,
     "skipCommitHook": true,
-    "lastLiquibaseTimestamp": 1634659851000
+    "lastLiquibaseTimestamp": 1637342064000
   }
 }

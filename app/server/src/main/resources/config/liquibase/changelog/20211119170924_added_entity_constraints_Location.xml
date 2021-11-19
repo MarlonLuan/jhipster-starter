@@ -2,11 +2,11 @@
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
     <!--
         Added the constraints for entity Location.
     -->
-    <changeSet id="20211019160551-2" author="jhipster">
+    <changeSet id="20211119170924-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="country_id"
                                  baseTableName="location"
