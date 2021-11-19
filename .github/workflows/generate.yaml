@@ -3,7 +3,7 @@ on:
     - cron:  '* * * * *'
 
 jobs:
-  build:
+  generate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
