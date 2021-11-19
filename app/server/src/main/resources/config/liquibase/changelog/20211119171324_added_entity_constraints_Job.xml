@@ -2,11 +2,11 @@
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
     <!--
         Added the constraints for entity Job.
     -->
-    <changeSet id="20211019160951-2" author="jhipster">
+    <changeSet id="20211119171324-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="job_id"
                                  baseTableName="rel_job__task"
