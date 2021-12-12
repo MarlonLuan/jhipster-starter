@@ -23,7 +23,7 @@
     "websocket": false,
     "enableGradleEnterprise": false,
     "gradleEnterpriseHost": "",
-    "jhipsterVersion": "7.4.0",
+    "jhipsterVersion": "7.4.1",
     "packageFolder": "com/mycompany/myapp",
     "packageName": "com.mycompany.myapp",
     "clientPackageManager": "npm",
@@ -42,9 +42,9 @@
     "otherModules": [],
     "pages": [],
     "nativeLanguage": "en",
-    "creationTimestamp": 1637341584561,
+    "creationTimestamp": 1639326924873,
     "monorepository": true,
     "skipCommitHook": true,
-    "lastLiquibaseTimestamp": 1637342064000
+    "lastLiquibaseTimestamp": 1639327404000
   }
 }
