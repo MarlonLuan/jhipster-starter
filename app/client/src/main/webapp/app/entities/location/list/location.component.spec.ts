@@ -1,9 +1,8 @@
-jest.mock('@angular/router');
-
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { LocationService } from '../service/location.service';
@@ -17,10 +16,9 @@ describe('Location Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [RouterTestingModule.withRoutes([{ path: 'location', component: LocationComponent }]), HttpClientTestingModule],
       declarations: [LocationComponent],
       providers: [
-        Router,
         {
           provide: ActivatedRoute,
           useValue: {

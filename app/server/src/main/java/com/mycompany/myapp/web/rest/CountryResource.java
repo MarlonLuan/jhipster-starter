@@ -144,7 +144,7 @@ public class CountryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of countries in body.
      */
     @GetMapping("/countries")
-    public ResponseEntity<List<CountryDTO>> getAllCountries(Pageable pageable) {
+    public ResponseEntity<List<CountryDTO>> getAllCountries(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Countries");
         Page<CountryDTO> page = countryService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);

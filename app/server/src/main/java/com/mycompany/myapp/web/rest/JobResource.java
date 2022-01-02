@@ -142,7 +142,7 @@ public class JobResource {
      */
     @GetMapping("/jobs")
     public ResponseEntity<List<JobDTO>> getAllJobs(
-        Pageable pageable,
+        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
         @RequestParam(required = false, defaultValue = "false") boolean eagerload
     ) {
         log.debug("REST request to get a page of Jobs");

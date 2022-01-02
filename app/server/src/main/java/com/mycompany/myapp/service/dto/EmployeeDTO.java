@@ -1,7 +1,6 @@
 package com.mycompany.myapp.service.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
@@ -10,7 +9,7 @@ import java.util.UUID;
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Employee} entity.
  */
-@ApiModel(description = "The Employee entity.")
+@Schema(description = "The Employee entity.")
 public class EmployeeDTO implements Serializable {
 
     private UUID id;
@@ -18,7 +17,7 @@ public class EmployeeDTO implements Serializable {
     /**
      * The firstname attribute.
      */
-    @ApiModelProperty(value = "The firstname attribute.")
+    @Schema(description = "The firstname attribute.")
     private String firstName;
 
     private String lastName;
