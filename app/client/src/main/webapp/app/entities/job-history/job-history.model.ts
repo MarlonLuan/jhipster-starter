@@ -1,4 +1,4 @@
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs/esm';
 import { IJob } from 'app/entities/job/job.model';
 import { IDepartment } from 'app/entities/department/department.model';
 import { IEmployee } from 'app/entities/employee/employee.model';

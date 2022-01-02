@@ -1,6 +1,6 @@
 package com.mycompany.myapp.service.dto;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;

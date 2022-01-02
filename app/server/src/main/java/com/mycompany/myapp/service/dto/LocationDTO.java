@@ -1,6 +1,6 @@
 package com.mycompany.myapp.service.dto;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import java.util.UUID;
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Location} entity.
  */
-@ApiModel(description = "not an ignored comment")
+@Schema(description = "not an ignored comment")
 public class LocationDTO implements Serializable {
 
     private UUID id;

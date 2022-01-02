@@ -41,16 +41,16 @@ export class DepartmentComponent implements OnInit {
         size: this.itemsPerPage,
         sort: this.sort(),
       })
-      .subscribe(
-        (res: HttpResponse<IDepartment[]>) => {
+      .subscribe({
+        next: (res: HttpResponse<IDepartment[]>) => {
           this.isLoading = false;
           this.onSuccess(res.body, res.headers, pageToLoad, !dontNavigate);
         },
-        () => {
+        error: () => {
           this.isLoading = false;
           this.onError();
-        }
-      );
+        },
+      });
   }
 
   ngOnInit(): void {

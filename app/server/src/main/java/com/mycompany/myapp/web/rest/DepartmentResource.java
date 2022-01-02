@@ -146,7 +146,7 @@ public class DepartmentResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of departments in body.
      */
     @GetMapping("/departments")
-    public ResponseEntity<List<DepartmentDTO>> getAllDepartments(Pageable pageable) {
+    public ResponseEntity<List<DepartmentDTO>> getAllDepartments(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Departments");
         Page<DepartmentDTO> page = departmentService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
