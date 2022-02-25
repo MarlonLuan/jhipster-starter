@@ -1,5 +1,9 @@
 {
-  "name": "Department",
+  "applications": ["jhipster"],
+  "changelogDate": "20220225220203",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "department",
   "fields": [
     {
       "fieldName": "id",
@@ -11,31 +15,27 @@
       "fieldValidateRules": ["required"]
     }
   ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Department",
+  "pagination": "pagination",
+  "readOnly": false,
   "relationships": [
     {
-      "relationshipType": "one-to-one",
       "otherEntityName": "location",
       "otherEntityRelationshipName": "department",
+      "ownerSide": true,
       "relationshipName": "location",
-      "ownerSide": true
+      "relationshipType": "one-to-one"
     },
     {
-      "relationshipType": "one-to-many",
+      "javadoc": "A relationship",
       "otherEntityName": "employee",
       "otherEntityRelationshipName": "department",
-      "javadoc": "A relationship",
-      "relationshipName": "employee"
+      "relationshipName": "employee",
+      "relationshipType": "one-to-many"
     }
   ],
-  "entityTableName": "department",
-  "dto": "mapstruct",
-  "pagination": "pagination",
   "service": "serviceImpl",
-  "jpaMetamodelFiltering": false,
-  "fluentMethods": true,
-  "readOnly": false,
-  "embedded": false,
-  "applications": ["jhipster"],
-  "skipServer": true,
-  "changelogDate": "20220102113009"
+  "skipServer": true
 }

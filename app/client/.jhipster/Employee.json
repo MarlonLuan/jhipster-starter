@@ -1,5 +1,9 @@
 {
-  "name": "Employee",
+  "applications": ["jhipster"],
+  "changelogDate": "20220225220403",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "employee",
   "fields": [
     {
       "fieldName": "id",
@@ -35,37 +39,33 @@
       "fieldType": "Long"
     }
   ],
+  "fluentMethods": true,
+  "javadoc": "The Employee entity.",
+  "jpaMetamodelFiltering": false,
+  "name": "Employee",
+  "pagination": "pagination",
+  "readOnly": false,
   "relationships": [
     {
-      "relationshipType": "one-to-many",
       "otherEntityName": "job",
       "otherEntityRelationshipName": "employee",
-      "relationshipName": "job"
+      "relationshipName": "job",
+      "relationshipType": "one-to-many"
     },
     {
-      "relationshipType": "many-to-one",
       "otherEntityName": "employee",
       "otherEntityRelationshipName": "employee",
-      "relationshipName": "manager"
+      "relationshipName": "manager",
+      "relationshipType": "many-to-one"
     },
     {
-      "relationshipType": "many-to-one",
+      "javadoc": "Another side of the same relationship",
       "otherEntityName": "department",
       "otherEntityRelationshipName": "employee",
-      "javadoc": "Another side of the same relationship",
-      "relationshipName": "department"
+      "relationshipName": "department",
+      "relationshipType": "many-to-one"
     }
   ],
-  "javadoc": "The Employee entity.",
-  "entityTableName": "employee",
-  "dto": "mapstruct",
-  "pagination": "pagination",
   "service": "serviceImpl",
-  "jpaMetamodelFiltering": false,
-  "fluentMethods": true,
-  "readOnly": false,
-  "embedded": false,
-  "applications": ["jhipster"],
-  "skipServer": true,
-  "changelogDate": "20220102113209"
+  "skipServer": true
 }

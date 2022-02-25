@@ -1,5 +1,9 @@
 {
-  "name": "Region",
+  "applications": ["jhipster"],
+  "changelogDate": "20220225215903",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "region",
   "fields": [
     {
       "fieldName": "id",
@@ -10,16 +14,12 @@
       "fieldType": "String"
     }
   ],
-  "relationships": [],
-  "entityTableName": "region",
-  "dto": "mapstruct",
-  "pagination": "pagination",
-  "service": "serviceImpl",
-  "jpaMetamodelFiltering": false,
   "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Region",
+  "pagination": "pagination",
   "readOnly": false,
-  "embedded": false,
-  "applications": ["jhipster"],
-  "skipServer": true,
-  "changelogDate": "20220102112709"
+  "relationships": [],
+  "service": "serviceImpl",
+  "skipServer": true
 }
