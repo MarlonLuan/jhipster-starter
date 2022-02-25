@@ -1,5 +1,9 @@
 {
-  "name": "Job",
+  "applications": ["jhipster"],
+  "changelogDate": "20220225215353",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "job",
   "fields": [
     {
       "fieldName": "id",
@@ -18,31 +22,27 @@
       "fieldType": "Long"
     }
   ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Job",
+  "pagination": "pagination",
+  "readOnly": false,
   "relationships": [
     {
-      "relationshipType": "many-to-many",
+      "otherEntityField": "title",
       "otherEntityName": "task",
       "otherEntityRelationshipName": "job",
+      "ownerSide": true,
       "relationshipName": "task",
-      "otherEntityField": "title",
-      "ownerSide": true
+      "relationshipType": "many-to-many"
     },
     {
-      "relationshipType": "many-to-one",
       "otherEntityName": "employee",
       "otherEntityRelationshipName": "job",
-      "relationshipName": "employee"
+      "relationshipName": "employee",
+      "relationshipType": "many-to-one"
     }
   ],
-  "entityTableName": "job",
-  "dto": "mapstruct",
-  "pagination": "pagination",
   "service": "serviceImpl",
-  "jpaMetamodelFiltering": false,
-  "fluentMethods": true,
-  "readOnly": false,
-  "embedded": false,
-  "applications": ["jhipster"],
-  "skipClient": true,
-  "changelogDate": "20220102113437"
+  "skipClient": true
 }

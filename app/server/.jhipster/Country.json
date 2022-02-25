@@ -1,5 +1,9 @@
 {
-  "name": "Country",
+  "applications": ["jhipster"],
+  "changelogDate": "20220225214853",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "country",
   "fields": [
     {
       "fieldName": "id",
@@ -10,24 +14,20 @@
       "fieldType": "String"
     }
   ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Country",
+  "pagination": "pagination",
+  "readOnly": false,
   "relationships": [
     {
-      "relationshipType": "one-to-one",
       "otherEntityName": "region",
       "otherEntityRelationshipName": "country",
+      "ownerSide": true,
       "relationshipName": "region",
-      "ownerSide": true
+      "relationshipType": "one-to-one"
     }
   ],
-  "entityTableName": "country",
-  "dto": "mapstruct",
-  "pagination": "pagination",
   "service": "serviceImpl",
-  "jpaMetamodelFiltering": false,
-  "fluentMethods": true,
-  "readOnly": false,
-  "embedded": false,
-  "applications": ["jhipster"],
-  "skipClient": true,
-  "changelogDate": "20220102112937"
+  "skipClient": true
 }

@@ -1,5 +1,9 @@
 {
-  "name": "JobHistory",
+  "applications": ["jhipster"],
+  "changelogDate": "20220225215453",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "job_history",
   "fields": [
     {
       "fieldName": "id",
@@ -19,38 +23,34 @@
       "fieldValues": "FRENCH,ENGLISH,SPANISH"
     }
   ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "JobHistory",
+  "pagination": "pagination",
+  "readOnly": false,
   "relationships": [
     {
-      "relationshipType": "one-to-one",
       "otherEntityName": "job",
       "otherEntityRelationshipName": "jobHistory",
+      "ownerSide": true,
       "relationshipName": "job",
-      "ownerSide": true
+      "relationshipType": "one-to-one"
     },
     {
-      "relationshipType": "one-to-one",
       "otherEntityName": "department",
       "otherEntityRelationshipName": "jobHistory",
+      "ownerSide": true,
       "relationshipName": "department",
-      "ownerSide": true
+      "relationshipType": "one-to-one"
     },
     {
-      "relationshipType": "one-to-one",
       "otherEntityName": "employee",
       "otherEntityRelationshipName": "jobHistory",
+      "ownerSide": true,
       "relationshipName": "employee",
-      "ownerSide": true
+      "relationshipType": "one-to-one"
     }
   ],
-  "entityTableName": "job_history",
-  "dto": "mapstruct",
-  "pagination": "pagination",
   "service": "serviceImpl",
-  "jpaMetamodelFiltering": false,
-  "fluentMethods": true,
-  "readOnly": false,
-  "embedded": false,
-  "applications": ["jhipster"],
-  "skipClient": true,
-  "changelogDate": "20220102113537"
+  "skipClient": true
 }

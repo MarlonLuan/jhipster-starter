@@ -3,7 +3,7 @@
     <span jhiTranslate="jhipsterApp.job.home.title">Jobs</span>
 
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info mr-2" (click)="loadPage()" [disabled]="isLoading">
+      <button class="btn btn-info me-2" (click)="loadPage()" [disabled]="isLoading">
         <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
         <span jhiTranslate="jhipsterApp.job.home.refreshListLabel">Refresh List</span>
       </button>
@@ -61,7 +61,7 @@
               <a [routerLink]="['/employee', job.employee?.id, 'view']">{{ job.employee?.id }}</a>
             </div>
           </td>
-          <td class="text-right">
+          <td class="text-end">
             <div class="btn-group">
               <button type="submit" [routerLink]="['/job', job.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
                 <fa-icon icon="eye"></fa-icon>
@@ -85,11 +85,11 @@
   </div>
 
   <div *ngIf="jobs && jobs.length > 0">
-    <div class="row justify-content-center">
+    <div class="d-flex justify-content-center">
       <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
     </div>
 
-    <div class="row justify-content-center">
+    <div class="d-flex justify-content-center">
       <ngb-pagination
         [collectionSize]="totalItems"
         [(page)]="ngbPaginationPage"
