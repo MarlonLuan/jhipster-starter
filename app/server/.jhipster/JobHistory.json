@@ -1,0 +1,56 @@
+{
+  "applications": ["jhipster"],
+  "changelogDate": "20220320184230",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "job_history",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "UUID"
+    },
+    {
+      "fieldName": "startDate",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "endDate",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "language",
+      "fieldType": "Language",
+      "fieldValues": "FRENCH,ENGLISH,SPANISH"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "JobHistory",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "job",
+      "otherEntityRelationshipName": "jobHistory",
+      "ownerSide": true,
+      "relationshipName": "job",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "department",
+      "otherEntityRelationshipName": "jobHistory",
+      "ownerSide": true,
+      "relationshipName": "department",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "employee",
+      "otherEntityRelationshipName": "jobHistory",
+      "ownerSide": true,
+      "relationshipName": "employee",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "service": "serviceImpl",
+  "skipClient": true
+}
