@@ -2,7 +2,7 @@
 version: '3.8'
 services:
   jhipster-postgresql:
-    image: postgres:14.1
+    image: postgres:14.2
     # volumes:
     #   - ~/volumes/jhipster/jhipster/postgresql/:/var/lib/postgresql/data/
     environment:
