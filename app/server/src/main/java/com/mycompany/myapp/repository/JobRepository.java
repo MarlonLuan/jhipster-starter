@@ -14,13 +14,16 @@ import org.springframework.stereotype.Repository;
  * Spring Data SQL repository for the Job entity.
  */
 @Repository
-public interface JobRepository extends JpaRepository<Job, UUID> {
-    @Query(value = "select distinct job from Job job left join fetch job.tasks", countQuery = "select count(distinct job) from Job job")
-    Page<Job> findAllWithEagerRelationships(Pageable pageable);
+public interface JobRepository extends JobRepositoryWithBagRelationships, JpaRepository<Job, UUID> {
+    default Optional<Job> findOneWithEagerRelationships(UUID id) {
+        return this.fetchBagRelationships(this.findById(id));
+    }
 
-    @Query("select distinct job from Job job left join fetch job.tasks")
-    List<Job> findAllWithEagerRelationships();
+    default List<Job> findAllWithEagerRelationships() {
+        return this.fetchBagRelationships(this.findAll());
+    }
 
-    @Query("select job from Job job left join fetch job.tasks where job.id =:id")
-    Optional<Job> findOneWithEagerRelationships(@Param("id") UUID id);
+    default Page<Job> findAllWithEagerRelationships(Pageable pageable) {
+        return this.fetchBagRelationships(this.findAll(pageable));
+    }
 }

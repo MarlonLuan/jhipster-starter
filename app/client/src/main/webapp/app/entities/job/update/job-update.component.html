@@ -1,4 +1,4 @@
-<div class="row justify-content-center">
+<div class="d-flex justify-content-center">
   <div class="col-8">
     <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2 id="jhi-job-heading" data-cy="JobCreateUpdateHeading" jhiTranslate="jhipsterApp.job.home.createOrEditLabel">
@@ -8,27 +8,27 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="form-group" [hidden]="editForm.get('id')!.value == null">
-          <label class="form-control-label" jhiTranslate="jhipsterApp.job.id" for="field_id">Id</label>
+        <div class="row mb-3" [hidden]="editForm.get('id')!.value == null">
+          <label class="form-label" jhiTranslate="jhipsterApp.job.id" for="field_id">Id</label>
           <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
 
-        <div class="form-group">
-          <label class="form-control-label" jhiTranslate="jhipsterApp.job.jobTitle" for="field_jobTitle">Job Title</label>
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="jhipsterApp.job.jobTitle" for="field_jobTitle">Job Title</label>
           <input type="text" class="form-control" name="jobTitle" id="field_jobTitle" data-cy="jobTitle" formControlName="jobTitle" />
         </div>
 
-        <div class="form-group">
-          <label class="form-control-label" jhiTranslate="jhipsterApp.job.minSalary" for="field_minSalary">Min Salary</label>
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="jhipsterApp.job.minSalary" for="field_minSalary">Min Salary</label>
           <input type="number" class="form-control" name="minSalary" id="field_minSalary" data-cy="minSalary" formControlName="minSalary" />
         </div>
 
-        <div class="form-group">
-          <label class="form-control-label" jhiTranslate="jhipsterApp.job.maxSalary" for="field_maxSalary">Max Salary</label>
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="jhipsterApp.job.maxSalary" for="field_maxSalary">Max Salary</label>
           <input type="number" class="form-control" name="maxSalary" id="field_maxSalary" data-cy="maxSalary" formControlName="maxSalary" />
         </div>
 
-        <div class="form-group">
+        <div class="row mb-3">
           <label jhiTranslate="jhipsterApp.job.task" for="field_tasks">Task</label>
           <select class="form-control" id="field_tasks" data-cy="task" multiple name="tasks" formControlName="tasks">
             <option
@@ -40,8 +40,8 @@
           </select>
         </div>
 
-        <div class="form-group">
-          <label class="form-control-label" jhiTranslate="jhipsterApp.job.employee" for="field_employee">Employee</label>
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="jhipsterApp.job.employee" for="field_employee">Employee</label>
           <select class="form-control" id="field_employee" data-cy="employee" name="employee" formControlName="employee">
             <option [ngValue]="null"></option>
             <option

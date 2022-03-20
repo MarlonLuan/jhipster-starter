@@ -4,14 +4,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
     <!--
-        Added the constraints for entity Department.
+        Added the constraints for entity Country.
     -->
-    <changeSet id="20220225220320-2" author="jhipster">
+    <changeSet id="20220320161908-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="location_id"
-                                 baseTableName="department"
-                                 constraintName="fk_department__location_id"
+        <addForeignKeyConstraint baseColumnNames="region_id"
+                                 baseTableName="country"
+                                 constraintName="fk_country__region_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="location"/>
+                                 referencedTableName="region"/>
     </changeSet>
 </databaseChangeLog>
