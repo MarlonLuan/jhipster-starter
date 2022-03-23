@@ -92,7 +92,7 @@ public class JobResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        JobDTO result = jobService.save(jobDTO);
+        JobDTO result = jobService.update(jobDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, jobDTO.getId().toString()))

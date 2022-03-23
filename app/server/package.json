@@ -22,9 +22,9 @@
     "ci:e2e:teardown": "npm run ci:e2e:teardown:docker",
     "ci:e2e:teardown:docker": "npm run docker:db:down --if-present && npm run docker:others:down && docker ps -a",
     "docker:app:up": "docker-compose -f src/main/docker/app.yml up -d",
-    "docker:db:down": "docker-compose -f src/main/docker/postgresql.yml down -v --remove-orphans",
+    "docker:db:down": "docker-compose -f src/main/docker/postgresql.yml down -v",
     "docker:db:up": "docker-compose -f src/main/docker/postgresql.yml up -d",
-    "docker:keycloak:down": "docker-compose -f src/main/docker/keycloak.yml down -v --remove-orphans",
+    "docker:keycloak:down": "docker-compose -f src/main/docker/keycloak.yml down -v",
     "docker:keycloak:up": "docker-compose -f src/main/docker/keycloak.yml up -d",
     "docker:others:await": "echo \"Waiting for keycloak to start\" && wait-on -t 180000 http-get://localhost:9080/auth/realms/jhipster && echo \"keycloak started\" || echo \"keycloak not running, make sure oauth2 server is running\"",
     "docker:others:down": "npm run docker:keycloak:down",
@@ -50,9 +50,9 @@
   },
   "devDependencies": {
     "generator-jhipster": "7.7.0",
-    "prettier": "2.5.1",
+    "prettier": "2.6.0",
     "prettier-plugin-java": "1.6.1",
-    "prettier-plugin-packagejson": "2.2.15"
+    "prettier-plugin-packagejson": "2.2.16"
   },
   "engines": {
     "node": ">=16.14.0"

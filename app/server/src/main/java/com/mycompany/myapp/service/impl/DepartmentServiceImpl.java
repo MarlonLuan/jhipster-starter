@@ -41,6 +41,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    public DepartmentDTO update(DepartmentDTO departmentDTO) {
+        log.debug("Request to save Department : {}", departmentDTO);
+        Department department = departmentMapper.toEntity(departmentDTO);
+        department = departmentRepository.save(department);
+        return departmentMapper.toDto(department);
+    }
+
+    @Override
     public Optional<DepartmentDTO> partialUpdate(DepartmentDTO departmentDTO) {
         log.debug("Request to partially update Department : {}", departmentDTO);
 

@@ -41,6 +41,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public TaskDTO update(TaskDTO taskDTO) {
+        log.debug("Request to save Task : {}", taskDTO);
+        Task task = taskMapper.toEntity(taskDTO);
+        task = taskRepository.save(task);
+        return taskMapper.toDto(task);
+    }
+
+    @Override
     public Optional<TaskDTO> partialUpdate(TaskDTO taskDTO) {
         log.debug("Request to partially update Task : {}", taskDTO);
 

@@ -19,6 +19,14 @@ public interface JobService {
     JobDTO save(JobDTO jobDTO);
 
     /**
+     * Updates a job.
+     *
+     * @param jobDTO the entity to update.
+     * @return the persisted entity.
+     */
+    JobDTO update(JobDTO jobDTO);
+
+    /**
      * Partially updates a job.
      *
      * @param jobDTO the entity to update partially.

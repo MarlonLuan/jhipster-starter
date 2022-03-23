@@ -19,6 +19,14 @@ public interface EmployeeService {
     EmployeeDTO save(EmployeeDTO employeeDTO);
 
     /**
+     * Updates a employee.
+     *
+     * @param employeeDTO the entity to update.
+     * @return the persisted entity.
+     */
+    EmployeeDTO update(EmployeeDTO employeeDTO);
+
+    /**
      * Partially updates a employee.
      *
      * @param employeeDTO the entity to update partially.

@@ -92,7 +92,7 @@ public class TaskResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        TaskDTO result = taskService.save(taskDTO);
+        TaskDTO result = taskService.update(taskDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, taskDTO.getId().toString()))

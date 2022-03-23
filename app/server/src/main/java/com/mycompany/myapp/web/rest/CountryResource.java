@@ -94,7 +94,7 @@ public class CountryResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        CountryDTO result = countryService.save(countryDTO);
+        CountryDTO result = countryService.update(countryDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, countryDTO.getId().toString()))

@@ -94,7 +94,7 @@ public class LocationResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        LocationDTO result = locationService.save(locationDTO);
+        LocationDTO result = locationService.update(locationDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, locationDTO.getId().toString()))

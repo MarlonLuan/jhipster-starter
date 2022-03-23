@@ -41,6 +41,14 @@ public class JobHistoryServiceImpl implements JobHistoryService {
     }
 
     @Override
+    public JobHistoryDTO update(JobHistoryDTO jobHistoryDTO) {
+        log.debug("Request to save JobHistory : {}", jobHistoryDTO);
+        JobHistory jobHistory = jobHistoryMapper.toEntity(jobHistoryDTO);
+        jobHistory = jobHistoryRepository.save(jobHistory);
+        return jobHistoryMapper.toDto(jobHistory);
+    }
+
+    @Override
     public Optional<JobHistoryDTO> partialUpdate(JobHistoryDTO jobHistoryDTO) {
         log.debug("Request to partially update JobHistory : {}", jobHistoryDTO);
 

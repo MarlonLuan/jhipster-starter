@@ -94,7 +94,7 @@ public class JobHistoryResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        JobHistoryDTO result = jobHistoryService.save(jobHistoryDTO);
+        JobHistoryDTO result = jobHistoryService.update(jobHistoryDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, jobHistoryDTO.getId().toString()))

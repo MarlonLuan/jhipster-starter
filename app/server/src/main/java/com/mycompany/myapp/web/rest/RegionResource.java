@@ -94,7 +94,7 @@ public class RegionResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        RegionDTO result = regionService.save(regionDTO);
+        RegionDTO result = regionService.update(regionDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, regionDTO.getId().toString()))

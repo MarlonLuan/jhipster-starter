@@ -19,6 +19,14 @@ public interface DepartmentService {
     DepartmentDTO save(DepartmentDTO departmentDTO);
 
     /**
+     * Updates a department.
+     *
+     * @param departmentDTO the entity to update.
+     * @return the persisted entity.
+     */
+    DepartmentDTO update(DepartmentDTO departmentDTO);
+
+    /**
      * Partially updates a department.
      *
      * @param departmentDTO the entity to update partially.
