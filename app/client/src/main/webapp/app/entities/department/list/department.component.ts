@@ -57,7 +57,7 @@ export class DepartmentComponent implements OnInit {
     this.handleNavigation();
   }
 
-  trackId(index: number, item: IDepartment): string {
+  trackId(_index: number, item: IDepartment): string {
     return item.id!;
   }
 

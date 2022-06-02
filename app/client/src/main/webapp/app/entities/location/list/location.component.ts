@@ -57,7 +57,7 @@ export class LocationComponent implements OnInit {
     this.handleNavigation();
   }
 
-  trackId(index: number, item: ILocation): string {
+  trackId(_index: number, item: ILocation): string {
     return item.id!;
   }
 

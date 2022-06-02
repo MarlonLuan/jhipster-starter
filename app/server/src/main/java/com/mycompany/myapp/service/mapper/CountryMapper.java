@@ -1,19 +1,21 @@
 package com.mycompany.myapp.service.mapper;
 
 import com.mycompany.myapp.domain.Country;
+import com.mycompany.myapp.domain.Region;
 import com.mycompany.myapp.service.dto.CountryDTO;
+import com.mycompany.myapp.service.dto.RegionDTO;
 import org.mapstruct.*;
 
 /**
  * Mapper for the entity {@link Country} and its DTO {@link CountryDTO}.
  */
-@Mapper(componentModel = "spring", uses = { RegionMapper.class })
+@Mapper(componentModel = "spring")
 public interface CountryMapper extends EntityMapper<CountryDTO, Country> {
-    @Mapping(target = "region", source = "region", qualifiedByName = "id")
+    @Mapping(target = "region", source = "region", qualifiedByName = "regionId")
     CountryDTO toDto(Country s);
 
-    @Named("id")
+    @Named("regionId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
-    CountryDTO toDtoId(Country country);
+    RegionDTO toDtoRegionId(Region region);
 }

@@ -19,6 +19,14 @@ public interface CountryService {
     CountryDTO save(CountryDTO countryDTO);
 
     /**
+     * Updates a country.
+     *
+     * @param countryDTO the entity to update.
+     * @return the persisted entity.
+     */
+    CountryDTO update(CountryDTO countryDTO);
+
+    /**
      * Partially updates a country.
      *
      * @param countryDTO the entity to update partially.

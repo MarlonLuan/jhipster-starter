@@ -54,7 +54,7 @@ export class DepartmentUpdateComponent implements OnInit {
     }
   }
 
-  trackLocationById(index: number, item: ILocation): string {
+  trackLocationById(_index: number, item: ILocation): string {
     return item.id!;
   }
 

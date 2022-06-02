@@ -41,6 +41,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public EmployeeDTO update(EmployeeDTO employeeDTO) {
+        log.debug("Request to save Employee : {}", employeeDTO);
+        Employee employee = employeeMapper.toEntity(employeeDTO);
+        employee = employeeRepository.save(employee);
+        return employeeMapper.toDto(employee);
+    }
+
+    @Override
     public Optional<EmployeeDTO> partialUpdate(EmployeeDTO employeeDTO) {
         log.debug("Request to partially update Employee : {}", employeeDTO);
 

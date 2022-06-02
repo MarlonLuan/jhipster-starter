@@ -19,6 +19,14 @@ public interface LocationService {
     LocationDTO save(LocationDTO locationDTO);
 
     /**
+     * Updates a location.
+     *
+     * @param locationDTO the entity to update.
+     * @return the persisted entity.
+     */
+    LocationDTO update(LocationDTO locationDTO);
+
+    /**
      * Partially updates a location.
      *
      * @param locationDTO the entity to update partially.

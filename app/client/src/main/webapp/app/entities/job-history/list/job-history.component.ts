@@ -57,7 +57,7 @@ export class JobHistoryComponent implements OnInit {
     this.handleNavigation();
   }
 
-  trackId(index: number, item: IJobHistory): string {
+  trackId(_index: number, item: IJobHistory): string {
     return item.id!;
   }
 

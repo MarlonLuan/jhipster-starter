@@ -94,7 +94,7 @@ public class EmployeeResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        EmployeeDTO result = employeeService.save(employeeDTO);
+        EmployeeDTO result = employeeService.update(employeeDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, employeeDTO.getId().toString()))

@@ -96,7 +96,7 @@ public class DepartmentResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        DepartmentDTO result = departmentService.save(departmentDTO);
+        DepartmentDTO result = departmentService.update(departmentDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, departmentDTO.getId().toString()))

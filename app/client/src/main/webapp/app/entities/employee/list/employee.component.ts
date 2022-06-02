@@ -57,7 +57,7 @@ export class EmployeeComponent implements OnInit {
     this.handleNavigation();
   }
 
-  trackId(index: number, item: IEmployee): string {
+  trackId(_index: number, item: IEmployee): string {
     return item.id!;
   }
 

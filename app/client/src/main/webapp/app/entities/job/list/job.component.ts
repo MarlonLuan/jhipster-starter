@@ -57,7 +57,7 @@ export class JobComponent implements OnInit {
     this.handleNavigation();
   }
 
-  trackId(index: number, item: IJob): string {
+  trackId(_index: number, item: IJob): string {
     return item.id!;
   }
 

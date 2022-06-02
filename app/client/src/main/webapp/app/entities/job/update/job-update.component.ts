@@ -61,11 +61,11 @@ export class JobUpdateComponent implements OnInit {
     }
   }
 
-  trackTaskById(index: number, item: ITask): string {
+  trackTaskById(_index: number, item: ITask): string {
     return item.id!;
   }
 
-  trackEmployeeById(index: number, item: IEmployee): string {
+  trackEmployeeById(_index: number, item: IEmployee): string {
     return item.id!;
   }
 

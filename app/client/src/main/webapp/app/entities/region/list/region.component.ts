@@ -57,7 +57,7 @@ export class RegionComponent implements OnInit {
     this.handleNavigation();
   }
 
-  trackId(index: number, item: IRegion): string {
+  trackId(_index: number, item: IRegion): string {
     return item.id!;
   }
 

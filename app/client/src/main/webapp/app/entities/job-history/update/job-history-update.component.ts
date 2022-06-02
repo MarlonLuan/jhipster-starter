@@ -77,15 +77,15 @@ export class JobHistoryUpdateComponent implements OnInit {
     }
   }
 
-  trackJobById(index: number, item: IJob): string {
+  trackJobById(_index: number, item: IJob): string {
     return item.id!;
   }
 
-  trackDepartmentById(index: number, item: IDepartment): string {
+  trackDepartmentById(_index: number, item: IDepartment): string {
     return item.id!;
   }
 
-  trackEmployeeById(index: number, item: IEmployee): string {
+  trackEmployeeById(_index: number, item: IEmployee): string {
     return item.id!;
   }
 

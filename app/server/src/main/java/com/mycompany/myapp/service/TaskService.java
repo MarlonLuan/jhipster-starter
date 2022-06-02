@@ -19,6 +19,14 @@ public interface TaskService {
     TaskDTO save(TaskDTO taskDTO);
 
     /**
+     * Updates a task.
+     *
+     * @param taskDTO the entity to update.
+     * @return the persisted entity.
+     */
+    TaskDTO update(TaskDTO taskDTO);
+
+    /**
      * Partially updates a task.
      *
      * @param taskDTO the entity to update partially.

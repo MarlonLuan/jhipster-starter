@@ -19,6 +19,14 @@ public interface RegionService {
     RegionDTO save(RegionDTO regionDTO);
 
     /**
+     * Updates a region.
+     *
+     * @param regionDTO the entity to update.
+     * @return the persisted entity.
+     */
+    RegionDTO update(RegionDTO regionDTO);
+
+    /**
      * Partially updates a region.
      *
      * @param regionDTO the entity to update partially.

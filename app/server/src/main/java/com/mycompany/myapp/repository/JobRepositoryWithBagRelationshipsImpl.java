@@ -1,12 +1,13 @@
 package com.mycompany.myapp.repository;
 
 import com.mycompany.myapp.domain.Job;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.hibernate.annotations.QueryHints;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
@@ -15,7 +16,7 @@ import org.springframework.data.domain.PageImpl;
  */
 public class JobRepositoryWithBagRelationshipsImpl implements JobRepositoryWithBagRelationships {
 
-    @Autowired
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Override
@@ -30,7 +31,7 @@ public class JobRepositoryWithBagRelationshipsImpl implements JobRepositoryWithB
 
     @Override
     public List<Job> fetchBagRelationships(List<Job> jobs) {
-        return Optional.of(jobs).map(this::fetchTasks).get();
+        return Optional.of(jobs).map(this::fetchTasks).orElse(Collections.emptyList());
     }
 
     Job fetchTasks(Job result) {

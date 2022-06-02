@@ -57,7 +57,7 @@ export class CountryComponent implements OnInit {
     this.handleNavigation();
   }
 
-  trackId(index: number, item: ICountry): string {
+  trackId(_index: number, item: ICountry): string {
     return item.id!;
   }
 

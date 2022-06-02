@@ -57,7 +57,7 @@ export class LocationUpdateComponent implements OnInit {
     }
   }
 
-  trackCountryById(index: number, item: ICountry): string {
+  trackCountryById(_index: number, item: ICountry): string {
     return item.id!;
   }
 

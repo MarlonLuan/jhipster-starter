@@ -54,7 +54,7 @@ export class CountryUpdateComponent implements OnInit {
     }
   }
 
-  trackRegionById(index: number, item: IRegion): string {
+  trackRegionById(_index: number, item: IRegion): string {
     return item.id!;
   }
 

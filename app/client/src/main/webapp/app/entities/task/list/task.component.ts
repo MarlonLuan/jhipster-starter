@@ -57,7 +57,7 @@ export class TaskComponent implements OnInit {
     this.handleNavigation();
   }
 
-  trackId(index: number, item: ITask): string {
+  trackId(_index: number, item: ITask): string {
     return item.id!;
   }
 

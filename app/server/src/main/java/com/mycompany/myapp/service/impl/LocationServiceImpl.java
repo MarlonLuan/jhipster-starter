@@ -41,6 +41,14 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    public LocationDTO update(LocationDTO locationDTO) {
+        log.debug("Request to save Location : {}", locationDTO);
+        Location location = locationMapper.toEntity(locationDTO);
+        location = locationRepository.save(location);
+        return locationMapper.toDto(location);
+    }
+
+    @Override
     public Optional<LocationDTO> partialUpdate(LocationDTO locationDTO) {
         log.debug("Request to partially update Location : {}", locationDTO);
 

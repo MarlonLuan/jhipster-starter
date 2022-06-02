@@ -19,6 +19,14 @@ public interface JobHistoryService {
     JobHistoryDTO save(JobHistoryDTO jobHistoryDTO);
 
     /**
+     * Updates a jobHistory.
+     *
+     * @param jobHistoryDTO the entity to update.
+     * @return the persisted entity.
+     */
+    JobHistoryDTO update(JobHistoryDTO jobHistoryDTO);
+
+    /**
      * Partially updates a jobHistory.
      *
      * @param jobHistoryDTO the entity to update partially.
