@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ITask } from '../task.model';
 import { TaskService } from '../service/task.service';
+import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
 
 @Component({
   templateUrl: './task-delete-dialog.component.html',
@@ -18,7 +19,7 @@ export class TaskDeleteDialogComponent {
 
   confirmDelete(id: string): void {
     this.taskService.delete(id).subscribe(() => {
-      this.activeModal.close('deleted');
+      this.activeModal.close(ITEM_DELETED_EVENT);
     });
   }
 }

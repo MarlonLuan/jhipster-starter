@@ -6,13 +6,14 @@ import { RegionComponent } from '../list/region.component';
 import { RegionDetailComponent } from '../detail/region-detail.component';
 import { RegionUpdateComponent } from '../update/region-update.component';
 import { RegionRoutingResolveService } from './region-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
 
 const regionRoute: Routes = [
   {
     path: '',
     component: RegionComponent,
     data: {
-      defaultSort: 'id,asc',
+      defaultSort: 'id,' + ASC,
     },
     canActivate: [UserRouteAccessService],
   },

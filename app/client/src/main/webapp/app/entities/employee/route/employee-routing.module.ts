@@ -6,13 +6,14 @@ import { EmployeeComponent } from '../list/employee.component';
 import { EmployeeDetailComponent } from '../detail/employee-detail.component';
 import { EmployeeUpdateComponent } from '../update/employee-update.component';
 import { EmployeeRoutingResolveService } from './employee-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
 
 const employeeRoute: Routes = [
   {
     path: '',
     component: EmployeeComponent,
     data: {
-      defaultSort: 'id,asc',
+      defaultSort: 'id,' + ASC,
     },
     canActivate: [UserRouteAccessService],
   },

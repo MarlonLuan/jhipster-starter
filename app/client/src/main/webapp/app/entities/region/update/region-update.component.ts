@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
-import { IRegion, Region } from '../region.model';
+import { RegionFormService, RegionFormGroup } from './region-form.service';
+import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
 
 @Component({
@@ -14,17 +14,22 @@ import { RegionService } from '../service/region.service';
 })
 export class RegionUpdateComponent implements OnInit {
   isSaving = false;
+  region: IRegion | null = null;
 
-  editForm = this.fb.group({
-    id: [],
-    regionName: [],
-  });
+  editForm: RegionFormGroup = this.regionFormService.createRegionFormGroup();
 
-  constructor(protected regionService: RegionService, protected activatedRoute: ActivatedRoute, protected fb: FormBuilder) {}
+  constructor(
+    protected regionService: RegionService,
+    protected regionFormService: RegionFormService,
+    protected activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ region }) => {
-      this.updateForm(region);
+      this.region = region;
+      if (region) {
+        this.updateForm(region);
+      }
     });
   }
 
@@ -34,8 +39,8 @@ export class RegionUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
-    const region = this.createFromForm();
-    if (region.id !== undefined) {
+    const region = this.regionFormService.getRegion(this.editForm);
+    if (region.id !== null) {
       this.subscribeToSaveResponse(this.regionService.update(region));
     } else {
       this.subscribeToSaveResponse(this.regionService.create(region));
@@ -62,17 +67,7 @@ export class RegionUpdateComponent implements OnInit {
   }
 
   protected updateForm(region: IRegion): void {
-    this.editForm.patchValue({
-      id: region.id,
-      regionName: region.regionName,
-    });
-  }
-
-  protected createFromForm(): IRegion {
-    return {
-      ...new Region(),
-      id: this.editForm.get(['id'])!.value,
-      regionName: this.editForm.get(['regionName'])!.value,
-    };
+    this.region = region;
+    this.regionFormService.resetForm(this.editForm, region);
   }
 }

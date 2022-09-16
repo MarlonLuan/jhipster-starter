@@ -169,7 +169,7 @@ class TaskResourceIT {
 
     @Test
     @Transactional
-    void putNewTask() throws Exception {
+    void putExistingTask() throws Exception {
         // Initialize the database
         taskRepository.saveAndFlush(task);
 

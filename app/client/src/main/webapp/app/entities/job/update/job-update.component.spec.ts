@@ -6,8 +6,9 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
+import { JobFormService } from './job-form.service';
 import { JobService } from '../service/job.service';
-import { IJob, Job } from '../job.model';
+import { IJob } from '../job.model';
 import { ITask } from 'app/entities/task/task.model';
 import { TaskService } from 'app/entities/task/service/task.service';
 import { IEmployee } from 'app/entities/employee/employee.model';
@@ -19,6 +20,7 @@ describe('Job Management Update Component', () => {
   let comp: JobUpdateComponent;
   let fixture: ComponentFixture<JobUpdateComponent>;
   let activatedRoute: ActivatedRoute;
+  let jobFormService: JobFormService;
   let jobService: JobService;
   let taskService: TaskService;
   let employeeService: EmployeeService;
@@ -42,6 +44,7 @@ describe('Job Management Update Component', () => {
 
     fixture = TestBed.createComponent(JobUpdateComponent);
     activatedRoute = TestBed.inject(ActivatedRoute);
+    jobFormService = TestBed.inject(JobFormService);
     jobService = TestBed.inject(JobService);
     taskService = TestBed.inject(TaskService);
     employeeService = TestBed.inject(EmployeeService);
@@ -65,7 +68,10 @@ describe('Job Management Update Component', () => {
       comp.ngOnInit();
 
       expect(taskService.query).toHaveBeenCalled();
-      expect(taskService.addTaskToCollectionIfMissing).toHaveBeenCalledWith(taskCollection, ...additionalTasks);
+      expect(taskService.addTaskToCollectionIfMissing).toHaveBeenCalledWith(
+        taskCollection,
+        ...additionalTasks.map(expect.objectContaining)
+      );
       expect(comp.tasksSharedCollection).toEqual(expectedCollection);
     });
 
@@ -84,31 +90,35 @@ describe('Job Management Update Component', () => {
       comp.ngOnInit();
 
       expect(employeeService.query).toHaveBeenCalled();
-      expect(employeeService.addEmployeeToCollectionIfMissing).toHaveBeenCalledWith(employeeCollection, ...additionalEmployees);
+      expect(employeeService.addEmployeeToCollectionIfMissing).toHaveBeenCalledWith(
+        employeeCollection,
+        ...additionalEmployees.map(expect.objectContaining)
+      );
       expect(comp.employeesSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should update editForm', () => {
       const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const tasks: ITask = { id: '0e59552b-7478-49d0-b770-a8c547701da7' };
-      job.tasks = [tasks];
+      const task: ITask = { id: '0e59552b-7478-49d0-b770-a8c547701da7' };
+      job.tasks = [task];
       const employee: IEmployee = { id: '3db2d831-b39e-4611-8df5-d50291065983' };
       job.employee = employee;
 
       activatedRoute.data = of({ job });
       comp.ngOnInit();
 
-      expect(comp.editForm.value).toEqual(expect.objectContaining(job));
-      expect(comp.tasksSharedCollection).toContain(tasks);
+      expect(comp.tasksSharedCollection).toContain(task);
       expect(comp.employeesSharedCollection).toContain(employee);
+      expect(comp.job).toEqual(job);
     });
   });
 
   describe('save', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Job>>();
+      const saveSubject = new Subject<HttpResponse<IJob>>();
       const job = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      jest.spyOn(jobFormService, 'getJob').mockReturnValue(job);
       jest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ job });
@@ -121,18 +131,20 @@ describe('Job Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
+      expect(jobFormService.getJob).toHaveBeenCalled();
       expect(comp.previousState).toHaveBeenCalled();
-      expect(jobService.update).toHaveBeenCalledWith(job);
+      expect(jobService.update).toHaveBeenCalledWith(expect.objectContaining(job));
       expect(comp.isSaving).toEqual(false);
     });
 
     it('Should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Job>>();
-      const job = new Job();
+      const saveSubject = new Subject<HttpResponse<IJob>>();
+      const job = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      jest.spyOn(jobFormService, 'getJob').mockReturnValue({ id: null });
       jest.spyOn(jobService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
-      activatedRoute.data = of({ job });
+      activatedRoute.data = of({ job: null });
       comp.ngOnInit();
 
       // WHEN
@@ -142,14 +154,15 @@ describe('Job Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
-      expect(jobService.create).toHaveBeenCalledWith(job);
+      expect(jobFormService.getJob).toHaveBeenCalled();
+      expect(jobService.create).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
 
     it('Should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Job>>();
+      const saveSubject = new Subject<HttpResponse<IJob>>();
       const job = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
       jest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -162,54 +175,30 @@ describe('Job Management Update Component', () => {
       saveSubject.error('This is an error!');
 
       // THEN
-      expect(jobService.update).toHaveBeenCalledWith(job);
+      expect(jobService.update).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });
   });
 
-  describe('Tracking relationships identifiers', () => {
-    describe('trackTaskById', () => {
-      it('Should return tracked Task primary key', () => {
+  describe('Compare relationships', () => {
+    describe('compareTask', () => {
+      it('Should forward to taskService', () => {
         const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const trackResult = comp.trackTaskById(0, entity);
-        expect(trackResult).toEqual(entity.id);
+        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        jest.spyOn(taskService, 'compareTask');
+        comp.compareTask(entity, entity2);
+        expect(taskService.compareTask).toHaveBeenCalledWith(entity, entity2);
       });
     });
 
-    describe('trackEmployeeById', () => {
-      it('Should return tracked Employee primary key', () => {
+    describe('compareEmployee', () => {
+      it('Should forward to employeeService', () => {
         const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const trackResult = comp.trackEmployeeById(0, entity);
-        expect(trackResult).toEqual(entity.id);
-      });
-    });
-  });
-
-  describe('Getting selected relationships', () => {
-    describe('getSelectedTask', () => {
-      it('Should return option if no Task is selected', () => {
-        const option = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const result = comp.getSelectedTask(option);
-        expect(result === option).toEqual(true);
-      });
-
-      it('Should return selected Task for according option', () => {
-        const option = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const selected = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const selected2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const result = comp.getSelectedTask(option, [selected2, selected]);
-        expect(result === selected).toEqual(true);
-        expect(result === selected2).toEqual(false);
-        expect(result === option).toEqual(false);
-      });
-
-      it('Should return option if this Task is not selected', () => {
-        const option = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const selected = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-        const result = comp.getSelectedTask(option, [selected]);
-        expect(result === option).toEqual(true);
-        expect(result === selected).toEqual(false);
+        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        jest.spyOn(employeeService, 'compareEmployee');
+        comp.compareEmployee(entity, entity2);
+        expect(employeeService.compareEmployee).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

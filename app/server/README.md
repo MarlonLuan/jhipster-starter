@@ -1,12 +1,12 @@
 # jhipster
 
-This application was generated using JHipster 7.8.1, you can find documentation and help at [https://www.jhipster.tech](https://www.jhipster.tech).
+This application was generated using JHipster 7.9.3, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v7.9.3](https://www.jhipster.tech/documentation-archive/v7.9.3).
 
 ## Project Structure
 
 Node is required for generation and recommended for development. `package.json` is always generated for a better development experience with prettier, commit hooks, scripts and so on.
 
-In the project root, JHipster generates configuration files for tools like git, prettier, eslint, husk, and others that are well known and you can find references in the web.
+In the project root, JHipster generates configuration files for tools like git, prettier, eslint, husky, and others that are well known and you can find references in the web.
 
 `/src/*` structure follows default Java structure.
 
@@ -32,7 +32,7 @@ For further instructions on how to develop with JHipster, have a look at [Using 
 JHipster Control Center can help you manage and control your application(s). You can start a local control center server (accessible on http://localhost:7419) with:
 
 ```
-docker-compose -f src/main/docker/jhipster-control-center.yml up
+docker compose -f src/main/docker/jhipster-control-center.yml up
 ```
 
 ### OAuth 2.0 / OpenID Connect
@@ -42,7 +42,7 @@ Congratulations! You've selected an excellent way to secure your JHipster applic
 To log in to your app, you'll need to have [Keycloak](https://keycloak.org) up and running. The JHipster Team has created a Docker container for you that has the default users and roles. Start Keycloak using the following command.
 
 ```
-docker-compose -f src/main/docker/keycloak.yml up
+docker compose -f src/main/docker/keycloak.yml up
 ```
 
 The security settings in `src/main/resources/config/application.yml` are configured for this image.
@@ -55,13 +55,21 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: http://localhost:9080/auth/realms/jhipster
+            issuer-uri: http://localhost:9080/realms/jhipster
         registration:
           oidc:
             client-id: web_app
             client-secret: web_app
             scope: openid,profile,email
 ```
+
+Some of Keycloak configuration is now done in build time and the other part before running the app, here is the [list](https://www.keycloak.org/server/all-config) of all build and configuration options.
+
+Before moving to production, please make sure to follow this [guide](https://www.keycloak.org/server/configuration) for better security and performance.
+
+Also, you should never use `start-dev` nor `KC_DB=dev-file` in production.
+
+When using Kubernetes, importing should be done using init-containers (with a volume when using `db=dev-file`).
 
 ### Okta
 
@@ -208,7 +216,7 @@ For more information, refer to the [Running tests page][].
 Sonar is used to analyse code quality. You can start a local Sonar server (accessible on http://localhost:9001) with:
 
 ```
-docker-compose -f src/main/docker/sonar.yml up -d
+docker compose -f src/main/docker/sonar.yml up -d
 ```
 
 Note: we have turned off authentication in [src/main/docker/sonar.yml](src/main/docker/sonar.yml) for out of the box experience while trying out SonarQube, for real use cases turn it back on.
@@ -236,27 +244,35 @@ You can use Docker to improve your JHipster development experience. A number of 
 For example, to start a postgresql database in a docker container, run:
 
 ```
-docker-compose -f src/main/docker/postgresql.yml up -d
+docker compose -f src/main/docker/postgresql.yml up -d
 ```
 
 To stop it and remove the container, run:
 
 ```
-docker-compose -f src/main/docker/postgresql.yml down
+docker compose -f src/main/docker/postgresql.yml down
 ```
 
 You can also fully dockerize your application and all the services that it depends on.
 To achieve this, first build a docker image of your app by running:
 
 ```
-./mvnw -Pprod verify jib:dockerBuild
+npm run java:docker
+```
+
+Or build a arm64 docker image when using an arm64 processor os like MacOS with M1 processor family running:
+
+```
+npm run java:docker:arm64
 ```
 
 Then run:
 
 ```
-docker-compose -f src/main/docker/app.yml up -d
+docker compose -f src/main/docker/app.yml up -d
 ```
+
+When running Docker Desktop on MacOS Big Sur or later, consider enabling experimental `Use the new Virtualization framework` for better processing performance ([disk access performance is worse](https://github.com/docker/roadmap/issues/7)).
 
 For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the docker-compose sub-generator (`jhipster docker-compose`), which is able to generate docker configurations for one or several JHipster applications.
 
@@ -265,12 +281,12 @@ For more information refer to [Using Docker and Docker-Compose][], this page als
 To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
 
 [jhipster homepage and latest documentation]: https://www.jhipster.tech
-[jhipster 7.8.1 archive]: https://www.jhipster.tech
-[using jhipster in development]: https://www.jhipster.tech/development/
-[using docker and docker-compose]: https://www.jhipster.tech/docker-compose
-[using jhipster in production]: https://www.jhipster.tech/production/
-[running tests page]: https://www.jhipster.tech/running-tests/
-[code quality page]: https://www.jhipster.tech/code-quality/
-[setting up continuous integration]: https://www.jhipster.tech/setting-up-ci/
+[jhipster 7.9.3 archive]: https://www.jhipster.tech/documentation-archive/v7.9.3
+[using jhipster in development]: https://www.jhipster.tech/documentation-archive/v7.9.3/development/
+[using docker and docker-compose]: https://www.jhipster.tech/documentation-archive/v7.9.3/docker-compose
+[using jhipster in production]: https://www.jhipster.tech/documentation-archive/v7.9.3/production/
+[running tests page]: https://www.jhipster.tech/documentation-archive/v7.9.3/running-tests/
+[code quality page]: https://www.jhipster.tech/documentation-archive/v7.9.3/code-quality/
+[setting up continuous integration]: https://www.jhipster.tech/documentation-archive/v7.9.3/setting-up-ci/
 [node.js]: https://nodejs.org/
 [npm]: https://www.npmjs.com/

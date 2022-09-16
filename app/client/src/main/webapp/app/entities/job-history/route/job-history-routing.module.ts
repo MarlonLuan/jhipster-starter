@@ -6,13 +6,14 @@ import { JobHistoryComponent } from '../list/job-history.component';
 import { JobHistoryDetailComponent } from '../detail/job-history-detail.component';
 import { JobHistoryUpdateComponent } from '../update/job-history-update.component';
 import { JobHistoryRoutingResolveService } from './job-history-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
 
 const jobHistoryRoute: Routes = [
   {
     path: '',
     component: JobHistoryComponent,
     data: {
-      defaultSort: 'id,asc',
+      defaultSort: 'id,' + ASC,
     },
     canActivate: [UserRouteAccessService],
   },

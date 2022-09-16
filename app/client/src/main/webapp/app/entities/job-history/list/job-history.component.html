@@ -3,9 +3,9 @@
     <span jhiTranslate="jhipsterApp.jobHistory.home.title">Job Histories</span>
 
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="loadPage()" [disabled]="isLoading">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
-        <span jhiTranslate="jhipsterApp.jobHistory.home.refreshListLabel">Refresh List</span>
+        <span jhiTranslate="jhipsterApp.jobHistory.home.refreshListLabel">Refresh list</span>
       </button>
 
       <button
@@ -25,29 +25,54 @@
   <jhi-alert></jhi-alert>
 
   <div class="alert alert-warning" id="no-result" *ngIf="jobHistories?.length === 0">
-    <span jhiTranslate="jhipsterApp.jobHistory.home.notFound">No jobHistories found</span>
+    <span jhiTranslate="jhipsterApp.jobHistory.home.notFound">No Job Histories found</span>
   </div>
 
-  <div class="table-responsive" id="entities" *ngIf="jobHistories && jobHistories.length > 0">
+  <div class="table-responsive table-entities" id="entities" *ngIf="jobHistories && jobHistories.length > 0">
     <table class="table table-striped" aria-describedby="page-heading">
       <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
-          <th scope="col" jhiSortBy="id"><span jhiTranslate="jhipsterApp.jobHistory.id">Id</span> <fa-icon icon="sort"></fa-icon></th>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <th scope="col" jhiSortBy="id">
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.jobHistory.id">Id</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col" jhiSortBy="startDate">
-            <span jhiTranslate="jhipsterApp.jobHistory.startDate">Start Date</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.jobHistory.startDate">Start Date</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="endDate">
-            <span jhiTranslate="jhipsterApp.jobHistory.endDate">End Date</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.jobHistory.endDate">End Date</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="language">
-            <span jhiTranslate="jhipsterApp.jobHistory.language">Language</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.jobHistory.language">Language</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
-          <th scope="col" jhiSortBy="job.id"><span jhiTranslate="jhipsterApp.jobHistory.job">Job</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="job.id">
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.jobHistory.job">Job</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col" jhiSortBy="department.id">
-            <span jhiTranslate="jhipsterApp.jobHistory.department">Department</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.jobHistory.department">Department</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="employee.id">
-            <span jhiTranslate="jhipsterApp.jobHistory.employee">Employee</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.jobHistory.employee">Employee</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col"></th>
         </tr>
@@ -62,17 +87,17 @@
           <td jhiTranslate="{{ 'jhipsterApp.Language.' + jobHistory.language }}">{{ jobHistory.language }}</td>
           <td>
             <div *ngIf="jobHistory.job">
-              <a [routerLink]="['/job', jobHistory.job?.id, 'view']">{{ jobHistory.job?.id }}</a>
+              <a [routerLink]="['/job', jobHistory.job.id, 'view']">{{ jobHistory.job.id }}</a>
             </div>
           </td>
           <td>
             <div *ngIf="jobHistory.department">
-              <a [routerLink]="['/department', jobHistory.department?.id, 'view']">{{ jobHistory.department?.id }}</a>
+              <a [routerLink]="['/department', jobHistory.department.id, 'view']">{{ jobHistory.department.id }}</a>
             </div>
           </td>
           <td>
             <div *ngIf="jobHistory.employee">
-              <a [routerLink]="['/employee', jobHistory.employee?.id, 'view']">{{ jobHistory.employee?.id }}</a>
+              <a [routerLink]="['/employee', jobHistory.employee.id, 'view']">{{ jobHistory.employee.id }}</a>
             </div>
           </td>
           <td class="text-end">
@@ -116,12 +141,12 @@
     <div class="d-flex justify-content-center">
       <ngb-pagination
         [collectionSize]="totalItems"
-        [(page)]="ngbPaginationPage"
+        [page]="page"
         [pageSize]="itemsPerPage"
         [maxSize]="5"
         [rotate]="true"
         [boundaryLinks]="true"
-        (pageChange)="loadPage($event)"
+        (pageChange)="navigateToPage($event)"
       ></ngb-pagination>
     </div>
   </div>

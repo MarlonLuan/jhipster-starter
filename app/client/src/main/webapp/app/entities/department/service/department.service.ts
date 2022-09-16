@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { IDepartment, getDepartmentIdentifier } from '../department.model';
+import { IDepartment, NewDepartment } from '../department.model';
+
+export type PartialUpdateDepartment = Partial<IDepartment> & Pick<IDepartment, 'id'>;
 
 export type EntityResponseType = HttpResponse<IDepartment>;
 export type EntityArrayResponseType = HttpResponse<IDepartment[]>;
@@ -16,18 +18,18 @@ export class DepartmentService {
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
-  create(department: IDepartment): Observable<EntityResponseType> {
+  create(department: NewDepartment): Observable<EntityResponseType> {
     return this.http.post<IDepartment>(this.resourceUrl, department, { observe: 'response' });
   }
 
   update(department: IDepartment): Observable<EntityResponseType> {
-    return this.http.put<IDepartment>(`${this.resourceUrl}/${getDepartmentIdentifier(department) as string}`, department, {
+    return this.http.put<IDepartment>(`${this.resourceUrl}/${this.getDepartmentIdentifier(department)}`, department, {
       observe: 'response',
     });
   }
 
-  partialUpdate(department: IDepartment): Observable<EntityResponseType> {
-    return this.http.patch<IDepartment>(`${this.resourceUrl}/${getDepartmentIdentifier(department) as string}`, department, {
+  partialUpdate(department: PartialUpdateDepartment): Observable<EntityResponseType> {
+    return this.http.patch<IDepartment>(`${this.resourceUrl}/${this.getDepartmentIdentifier(department)}`, department, {
       observe: 'response',
     });
   }
@@ -45,16 +47,24 @@ export class DepartmentService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  addDepartmentToCollectionIfMissing(
-    departmentCollection: IDepartment[],
-    ...departmentsToCheck: (IDepartment | null | undefined)[]
-  ): IDepartment[] {
-    const departments: IDepartment[] = departmentsToCheck.filter(isPresent);
+  getDepartmentIdentifier(department: Pick<IDepartment, 'id'>): string {
+    return department.id;
+  }
+
+  compareDepartment(o1: Pick<IDepartment, 'id'> | null, o2: Pick<IDepartment, 'id'> | null): boolean {
+    return o1 && o2 ? this.getDepartmentIdentifier(o1) === this.getDepartmentIdentifier(o2) : o1 === o2;
+  }
+
+  addDepartmentToCollectionIfMissing<Type extends Pick<IDepartment, 'id'>>(
+    departmentCollection: Type[],
+    ...departmentsToCheck: (Type | null | undefined)[]
+  ): Type[] {
+    const departments: Type[] = departmentsToCheck.filter(isPresent);
     if (departments.length > 0) {
-      const departmentCollectionIdentifiers = departmentCollection.map(departmentItem => getDepartmentIdentifier(departmentItem)!);
+      const departmentCollectionIdentifiers = departmentCollection.map(departmentItem => this.getDepartmentIdentifier(departmentItem)!);
       const departmentsToAdd = departments.filter(departmentItem => {
-        const departmentIdentifier = getDepartmentIdentifier(departmentItem);
-        if (departmentIdentifier == null || departmentCollectionIdentifiers.includes(departmentIdentifier)) {
+        const departmentIdentifier = this.getDepartmentIdentifier(departmentItem);
+        if (departmentCollectionIdentifiers.includes(departmentIdentifier)) {
           return false;
         }
         departmentCollectionIdentifiers.push(departmentIdentifier);

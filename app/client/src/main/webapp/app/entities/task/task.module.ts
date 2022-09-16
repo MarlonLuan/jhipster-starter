@@ -9,6 +9,5 @@ import { TaskRoutingModule } from './route/task-routing.module';
 @NgModule({
   imports: [SharedModule, TaskRoutingModule],
   declarations: [TaskComponent, TaskDetailComponent, TaskUpdateComponent, TaskDeleteDialogComponent],
-  entryComponents: [TaskDeleteDialogComponent],
 })
 export class TaskModule {}

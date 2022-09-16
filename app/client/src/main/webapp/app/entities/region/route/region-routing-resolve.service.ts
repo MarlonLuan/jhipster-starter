@@ -4,18 +4,18 @@ import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { IRegion, Region } from '../region.model';
+import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
 
 @Injectable({ providedIn: 'root' })
-export class RegionRoutingResolveService implements Resolve<IRegion> {
+export class RegionRoutingResolveService implements Resolve<IRegion | null> {
   constructor(protected service: RegionService, protected router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<IRegion> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot): Observable<IRegion | null | never> {
     const id = route.params['id'];
     if (id) {
       return this.service.find(id).pipe(
-        mergeMap((region: HttpResponse<Region>) => {
+        mergeMap((region: HttpResponse<IRegion>) => {
           if (region.body) {
             return of(region.body);
           } else {
@@ -25,6 +25,6 @@ export class RegionRoutingResolveService implements Resolve<IRegion> {
         })
       );
     }
-    return of(new Region());
+    return of(null);
   }
 }

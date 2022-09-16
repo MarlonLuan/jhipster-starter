@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import { IDepartment, Department } from '../department.model';
+import { DepartmentFormService, DepartmentFormGroup } from './department-form.service';
+import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
 import { ILocation } from 'app/entities/location/location.model';
 import { LocationService } from 'app/entities/location/service/location.service';
@@ -16,25 +16,27 @@ import { LocationService } from 'app/entities/location/service/location.service'
 })
 export class DepartmentUpdateComponent implements OnInit {
   isSaving = false;
+  department: IDepartment | null = null;
 
-  locationsCollection: ILocation[] = [];
+  locationsSharedCollection: ILocation[] = [];
 
-  editForm = this.fb.group({
-    id: [],
-    departmentName: [null, [Validators.required]],
-    location: [],
-  });
+  editForm: DepartmentFormGroup = this.departmentFormService.createDepartmentFormGroup();
 
   constructor(
     protected departmentService: DepartmentService,
+    protected departmentFormService: DepartmentFormService,
     protected locationService: LocationService,
-    protected activatedRoute: ActivatedRoute,
-    protected fb: FormBuilder
+    protected activatedRoute: ActivatedRoute
   ) {}
+
+  compareLocation = (o1: ILocation | null, o2: ILocation | null): boolean => this.locationService.compareLocation(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ department }) => {
-      this.updateForm(department);
+      this.department = department;
+      if (department) {
+        this.updateForm(department);
+      }
 
       this.loadRelationshipsOptions();
     });
@@ -46,16 +48,12 @@ export class DepartmentUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
-    const department = this.createFromForm();
-    if (department.id !== undefined) {
+    const department = this.departmentFormService.getDepartment(this.editForm);
+    if (department.id !== null) {
       this.subscribeToSaveResponse(this.departmentService.update(department));
     } else {
       this.subscribeToSaveResponse(this.departmentService.create(department));
     }
-  }
-
-  trackLocationById(_index: number, item: ILocation): string {
-    return item.id!;
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IDepartment>>): void {
@@ -78,33 +76,24 @@ export class DepartmentUpdateComponent implements OnInit {
   }
 
   protected updateForm(department: IDepartment): void {
-    this.editForm.patchValue({
-      id: department.id,
-      departmentName: department.departmentName,
-      location: department.location,
-    });
+    this.department = department;
+    this.departmentFormService.resetForm(this.editForm, department);
 
-    this.locationsCollection = this.locationService.addLocationToCollectionIfMissing(this.locationsCollection, department.location);
+    this.locationsSharedCollection = this.locationService.addLocationToCollectionIfMissing<ILocation>(
+      this.locationsSharedCollection,
+      department.location
+    );
   }
 
   protected loadRelationshipsOptions(): void {
     this.locationService
-      .query({ filter: 'department-is-null' })
+      .query()
       .pipe(map((res: HttpResponse<ILocation[]>) => res.body ?? []))
       .pipe(
         map((locations: ILocation[]) =>
-          this.locationService.addLocationToCollectionIfMissing(locations, this.editForm.get('location')!.value)
+          this.locationService.addLocationToCollectionIfMissing<ILocation>(locations, this.department?.location)
         )
       )
-      .subscribe((locations: ILocation[]) => (this.locationsCollection = locations));
-  }
-
-  protected createFromForm(): IDepartment {
-    return {
-      ...new Department(),
-      id: this.editForm.get(['id'])!.value,
-      departmentName: this.editForm.get(['departmentName'])!.value,
-      location: this.editForm.get(['location'])!.value,
-    };
+      .subscribe((locations: ILocation[]) => (this.locationsSharedCollection = locations));
   }
 }

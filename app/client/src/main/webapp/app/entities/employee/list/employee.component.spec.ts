@@ -8,11 +8,13 @@ import { of } from 'rxjs';
 import { EmployeeService } from '../service/employee.service';
 
 import { EmployeeComponent } from './employee.component';
+import SpyInstance = jest.SpyInstance;
 
 describe('Employee Management Component', () => {
   let comp: EmployeeComponent;
   let fixture: ComponentFixture<EmployeeComponent>;
   let service: EmployeeService;
+  let routerNavigateSpy: SpyInstance<Promise<boolean>>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -32,6 +34,7 @@ describe('Employee Management Component', () => {
                 sort: 'id,desc',
               })
             ),
+            snapshot: { queryParams: {} },
           },
         },
       ],
@@ -42,6 +45,7 @@ describe('Employee Management Component', () => {
     fixture = TestBed.createComponent(EmployeeComponent);
     comp = fixture.componentInstance;
     service = TestBed.inject(EmployeeService);
+    routerNavigateSpy = jest.spyOn(comp.router, 'navigate');
 
     const headers = new HttpHeaders();
     jest.spyOn(service, 'query').mockReturnValue(
@@ -63,13 +67,22 @@ describe('Employee Management Component', () => {
     expect(comp.employees?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
   });
 
+  describe('trackId', () => {
+    it('Should forward to employeeService', () => {
+      const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      jest.spyOn(service, 'getEmployeeIdentifier');
+      const id = comp.trackId(0, entity);
+      expect(service.getEmployeeIdentifier).toHaveBeenCalledWith(entity);
+      expect(id).toBe(entity.id);
+    });
+  });
+
   it('should load a page', () => {
     // WHEN
-    comp.loadPage(1);
+    comp.navigateToPage(1);
 
     // THEN
-    expect(service.query).toHaveBeenCalled();
-    expect(comp.employees?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    expect(routerNavigateSpy).toHaveBeenCalled();
   });
 
   it('should calculate the sort attribute for an id', () => {
@@ -77,20 +90,24 @@ describe('Employee Management Component', () => {
     comp.ngOnInit();
 
     // THEN
-    expect(service.query).toHaveBeenCalledWith(expect.objectContaining({ sort: ['id,desc'] }));
+    expect(service.query).toHaveBeenLastCalledWith(expect.objectContaining({ sort: ['id,desc'] }));
   });
 
   it('should calculate the sort attribute for a non-id attribute', () => {
-    // INIT
-    comp.ngOnInit();
-
     // GIVEN
     comp.predicate = 'name';
 
     // WHEN
-    comp.loadPage(1);
+    comp.navigateToWithComponentValues();
 
     // THEN
-    expect(service.query).toHaveBeenLastCalledWith(expect.objectContaining({ sort: ['name,desc', 'id'] }));
+    expect(routerNavigateSpy).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        queryParams: expect.objectContaining({
+          sort: ['name,asc'],
+        }),
+      })
+    );
   });
 });

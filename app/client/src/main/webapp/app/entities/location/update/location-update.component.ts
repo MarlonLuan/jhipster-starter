@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import { ILocation, Location } from '../location.model';
+import { LocationFormService, LocationFormGroup } from './location-form.service';
+import { ILocation } from '../location.model';
 import { LocationService } from '../service/location.service';
 import { ICountry } from 'app/entities/country/country.model';
 import { CountryService } from 'app/entities/country/service/country.service';
@@ -16,28 +16,27 @@ import { CountryService } from 'app/entities/country/service/country.service';
 })
 export class LocationUpdateComponent implements OnInit {
   isSaving = false;
+  location: ILocation | null = null;
 
-  countriesCollection: ICountry[] = [];
+  countriesSharedCollection: ICountry[] = [];
 
-  editForm = this.fb.group({
-    id: [],
-    streetAddress: [],
-    postalCode: [],
-    city: [],
-    stateProvince: [],
-    country: [],
-  });
+  editForm: LocationFormGroup = this.locationFormService.createLocationFormGroup();
 
   constructor(
     protected locationService: LocationService,
+    protected locationFormService: LocationFormService,
     protected countryService: CountryService,
-    protected activatedRoute: ActivatedRoute,
-    protected fb: FormBuilder
+    protected activatedRoute: ActivatedRoute
   ) {}
+
+  compareCountry = (o1: ICountry | null, o2: ICountry | null): boolean => this.countryService.compareCountry(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ location }) => {
-      this.updateForm(location);
+      this.location = location;
+      if (location) {
+        this.updateForm(location);
+      }
 
       this.loadRelationshipsOptions();
     });
@@ -49,16 +48,12 @@ export class LocationUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
-    const location = this.createFromForm();
-    if (location.id !== undefined) {
+    const location = this.locationFormService.getLocation(this.editForm);
+    if (location.id !== null) {
       this.subscribeToSaveResponse(this.locationService.update(location));
     } else {
       this.subscribeToSaveResponse(this.locationService.create(location));
     }
-  }
-
-  trackCountryById(_index: number, item: ICountry): string {
-    return item.id!;
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<ILocation>>): void {
@@ -81,37 +76,22 @@ export class LocationUpdateComponent implements OnInit {
   }
 
   protected updateForm(location: ILocation): void {
-    this.editForm.patchValue({
-      id: location.id,
-      streetAddress: location.streetAddress,
-      postalCode: location.postalCode,
-      city: location.city,
-      stateProvince: location.stateProvince,
-      country: location.country,
-    });
+    this.location = location;
+    this.locationFormService.resetForm(this.editForm, location);
 
-    this.countriesCollection = this.countryService.addCountryToCollectionIfMissing(this.countriesCollection, location.country);
+    this.countriesSharedCollection = this.countryService.addCountryToCollectionIfMissing<ICountry>(
+      this.countriesSharedCollection,
+      location.country
+    );
   }
 
   protected loadRelationshipsOptions(): void {
     this.countryService
-      .query({ filter: 'location-is-null' })
+      .query()
       .pipe(map((res: HttpResponse<ICountry[]>) => res.body ?? []))
       .pipe(
-        map((countries: ICountry[]) => this.countryService.addCountryToCollectionIfMissing(countries, this.editForm.get('country')!.value))
+        map((countries: ICountry[]) => this.countryService.addCountryToCollectionIfMissing<ICountry>(countries, this.location?.country))
       )
-      .subscribe((countries: ICountry[]) => (this.countriesCollection = countries));
-  }
-
-  protected createFromForm(): ILocation {
-    return {
-      ...new Location(),
-      id: this.editForm.get(['id'])!.value,
-      streetAddress: this.editForm.get(['streetAddress'])!.value,
-      postalCode: this.editForm.get(['postalCode'])!.value,
-      city: this.editForm.get(['city'])!.value,
-      stateProvince: this.editForm.get(['stateProvince'])!.value,
-      country: this.editForm.get(['country'])!.value,
-    };
+      .subscribe((countries: ICountry[]) => (this.countriesSharedCollection = countries));
   }
 }

@@ -9,6 +9,5 @@ import { RegionRoutingModule } from './route/region-routing.module';
 @NgModule({
   imports: [SharedModule, RegionRoutingModule],
   declarations: [RegionComponent, RegionDetailComponent, RegionUpdateComponent, RegionDeleteDialogComponent],
-  entryComponents: [RegionDeleteDialogComponent],
 })
 export class RegionModule {}

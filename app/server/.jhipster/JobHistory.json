@@ -1,6 +1,6 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20220602192657",
+  "changelogDate": "20220916150659",
   "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "job_history",
@@ -31,21 +31,18 @@
   "relationships": [
     {
       "otherEntityName": "job",
-      "otherEntityRelationshipName": "jobHistory",
       "ownerSide": true,
       "relationshipName": "job",
       "relationshipType": "one-to-one"
     },
     {
       "otherEntityName": "department",
-      "otherEntityRelationshipName": "jobHistory",
       "ownerSide": true,
       "relationshipName": "department",
       "relationshipType": "one-to-one"
     },
     {
       "otherEntityName": "employee",
-      "otherEntityRelationshipName": "jobHistory",
       "ownerSide": true,
       "relationshipName": "employee",
       "relationshipType": "one-to-one"

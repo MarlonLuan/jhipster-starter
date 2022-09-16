@@ -10,6 +10,7 @@ import java.util.UUID;
  * A DTO for the {@link com.mycompany.myapp.domain.Employee} entity.
  */
 @Schema(description = "The Employee entity.")
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class EmployeeDTO implements Serializable {
 
     private UUID id;

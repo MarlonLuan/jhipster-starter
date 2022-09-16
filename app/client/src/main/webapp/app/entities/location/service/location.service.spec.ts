@@ -1,14 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
-import { ILocation, Location } from '../location.model';
+import { ILocation } from '../location.model';
+import { sampleWithRequiredData, sampleWithNewData, sampleWithPartialData, sampleWithFullData } from '../location.test-samples';
 
 import { LocationService } from './location.service';
+
+const requireRestSample: ILocation = {
+  ...sampleWithRequiredData,
+};
 
 describe('Location Service', () => {
   let service: LocationService;
   let httpMock: HttpTestingController;
-  let elemDefault: ILocation;
   let expectedResult: ILocation | ILocation[] | boolean | null;
 
   beforeEach(() => {
@@ -18,38 +22,27 @@ describe('Location Service', () => {
     expectedResult = null;
     service = TestBed.inject(LocationService);
     httpMock = TestBed.inject(HttpTestingController);
-
-    elemDefault = {
-      id: 'AAAAAAA',
-      streetAddress: 'AAAAAAA',
-      postalCode: 'AAAAAAA',
-      city: 'AAAAAAA',
-      stateProvince: 'AAAAAAA',
-    };
   });
 
   describe('Service methods', () => {
     it('should find an element', () => {
-      const returnedFromService = Object.assign({}, elemDefault);
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
       service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(returnedFromService);
-      expect(expectedResult).toMatchObject(elemDefault);
+      expect(expectedResult).toMatchObject(expected);
     });
 
     it('should create a Location', () => {
-      const returnedFromService = Object.assign(
-        {
-          id: 'ID',
-        },
-        elemDefault
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const location = { ...sampleWithNewData };
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
-      const expected = Object.assign({}, returnedFromService);
-
-      service.create(new Location()).subscribe(resp => (expectedResult = resp.body));
+      service.create(location).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'POST' });
       req.flush(returnedFromService);
@@ -57,20 +50,11 @@ describe('Location Service', () => {
     });
 
     it('should update a Location', () => {
-      const returnedFromService = Object.assign(
-        {
-          id: 'BBBBBB',
-          streetAddress: 'BBBBBB',
-          postalCode: 'BBBBBB',
-          city: 'BBBBBB',
-          stateProvince: 'BBBBBB',
-        },
-        elemDefault
-      );
+      const location = { ...sampleWithRequiredData };
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
-      const expected = Object.assign({}, returnedFromService);
-
-      service.update(expected).subscribe(resp => (expectedResult = resp.body));
+      service.update(location).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'PUT' });
       req.flush(returnedFromService);
@@ -78,18 +62,9 @@ describe('Location Service', () => {
     });
 
     it('should partial update a Location', () => {
-      const patchObject = Object.assign(
-        {
-          streetAddress: 'BBBBBB',
-          postalCode: 'BBBBBB',
-          city: 'BBBBBB',
-        },
-        new Location()
-      );
-
-      const returnedFromService = Object.assign(patchObject, elemDefault);
-
-      const expected = Object.assign({}, returnedFromService);
+      const patchObject = { ...sampleWithPartialData };
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
       service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp.body));
 
@@ -99,77 +74,66 @@ describe('Location Service', () => {
     });
 
     it('should return a list of Location', () => {
-      const returnedFromService = Object.assign(
-        {
-          id: 'BBBBBB',
-          streetAddress: 'BBBBBB',
-          postalCode: 'BBBBBB',
-          city: 'BBBBBB',
-          stateProvince: 'BBBBBB',
-        },
-        elemDefault
-      );
+      const returnedFromService = { ...requireRestSample };
 
-      const expected = Object.assign({}, returnedFromService);
+      const expected = { ...sampleWithRequiredData };
 
       service.query().subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
       httpMock.verify();
-      expect(expectedResult).toContainEqual(expected);
+      expect(expectedResult).toMatchObject([expected]);
     });
 
     it('should delete a Location', () => {
+      const expected = true;
+
       service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.ok));
 
       const req = httpMock.expectOne({ method: 'DELETE' });
       req.flush({ status: 200 });
-      expect(expectedResult);
+      expect(expectedResult).toBe(expected);
     });
 
     describe('addLocationToCollectionIfMissing', () => {
       it('should add a Location to an empty array', () => {
-        const location: ILocation = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const location: ILocation = sampleWithRequiredData;
         expectedResult = service.addLocationToCollectionIfMissing([], location);
         expect(expectedResult).toHaveLength(1);
         expect(expectedResult).toContain(location);
       });
 
       it('should not add a Location to an array that contains it', () => {
-        const location: ILocation = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const location: ILocation = sampleWithRequiredData;
         const locationCollection: ILocation[] = [
           {
             ...location,
           },
-          { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
+          sampleWithPartialData,
         ];
         expectedResult = service.addLocationToCollectionIfMissing(locationCollection, location);
         expect(expectedResult).toHaveLength(2);
       });
 
       it("should add a Location to an array that doesn't contain it", () => {
-        const location: ILocation = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const locationCollection: ILocation[] = [{ id: '1361f429-3817-4123-8ee3-fdf8943310b2' }];
+        const location: ILocation = sampleWithRequiredData;
+        const locationCollection: ILocation[] = [sampleWithPartialData];
         expectedResult = service.addLocationToCollectionIfMissing(locationCollection, location);
         expect(expectedResult).toHaveLength(2);
         expect(expectedResult).toContain(location);
       });
 
       it('should add only unique Location to an array', () => {
-        const locationArray: ILocation[] = [
-          { id: '9fec3727-3421-4967-b213-ba36557ca194' },
-          { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
-          { id: '870ae565-0101-4a0c-b1b7-be61934c3736' },
-        ];
-        const locationCollection: ILocation[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+        const locationArray: ILocation[] = [sampleWithRequiredData, sampleWithPartialData, sampleWithFullData];
+        const locationCollection: ILocation[] = [sampleWithRequiredData];
         expectedResult = service.addLocationToCollectionIfMissing(locationCollection, ...locationArray);
         expect(expectedResult).toHaveLength(3);
       });
 
       it('should accept varargs', () => {
-        const location: ILocation = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const location2: ILocation = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const location: ILocation = sampleWithRequiredData;
+        const location2: ILocation = sampleWithPartialData;
         expectedResult = service.addLocationToCollectionIfMissing([], location, location2);
         expect(expectedResult).toHaveLength(2);
         expect(expectedResult).toContain(location);
@@ -177,16 +141,60 @@ describe('Location Service', () => {
       });
 
       it('should accept null and undefined values', () => {
-        const location: ILocation = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const location: ILocation = sampleWithRequiredData;
         expectedResult = service.addLocationToCollectionIfMissing([], null, location, undefined);
         expect(expectedResult).toHaveLength(1);
         expect(expectedResult).toContain(location);
       });
 
       it('should return initial array if no Location is added', () => {
-        const locationCollection: ILocation[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+        const locationCollection: ILocation[] = [sampleWithRequiredData];
         expectedResult = service.addLocationToCollectionIfMissing(locationCollection, undefined, null);
         expect(expectedResult).toEqual(locationCollection);
+      });
+    });
+
+    describe('compareLocation', () => {
+      it('Should return true if both entities are null', () => {
+        const entity1 = null;
+        const entity2 = null;
+
+        const compareResult = service.compareLocation(entity1, entity2);
+
+        expect(compareResult).toEqual(true);
+      });
+
+      it('Should return false if one entity is null', () => {
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = null;
+
+        const compareResult1 = service.compareLocation(entity1, entity2);
+        const compareResult2 = service.compareLocation(entity2, entity1);
+
+        expect(compareResult1).toEqual(false);
+        expect(compareResult2).toEqual(false);
+      });
+
+      it('Should return false if primaryKey differs', () => {
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+
+        const compareResult1 = service.compareLocation(entity1, entity2);
+        const compareResult2 = service.compareLocation(entity2, entity1);
+
+        expect(compareResult1).toEqual(false);
+        expect(compareResult2).toEqual(false);
+      });
+
+      it('Should return false if primaryKey matches', () => {
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+
+        const compareResult1 = service.compareLocation(entity1, entity2);
+        const compareResult2 = service.compareLocation(entity2, entity1);
+
+        expect(compareResult1).toEqual(true);
+        expect(compareResult2).toEqual(true);
       });
     });
   });

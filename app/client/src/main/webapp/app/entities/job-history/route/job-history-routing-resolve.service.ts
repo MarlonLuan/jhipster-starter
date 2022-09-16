@@ -4,18 +4,18 @@ import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { IJobHistory, JobHistory } from '../job-history.model';
+import { IJobHistory } from '../job-history.model';
 import { JobHistoryService } from '../service/job-history.service';
 
 @Injectable({ providedIn: 'root' })
-export class JobHistoryRoutingResolveService implements Resolve<IJobHistory> {
+export class JobHistoryRoutingResolveService implements Resolve<IJobHistory | null> {
   constructor(protected service: JobHistoryService, protected router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<IJobHistory> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot): Observable<IJobHistory | null | never> {
     const id = route.params['id'];
     if (id) {
       return this.service.find(id).pipe(
-        mergeMap((jobHistory: HttpResponse<JobHistory>) => {
+        mergeMap((jobHistory: HttpResponse<IJobHistory>) => {
           if (jobHistory.body) {
             return of(jobHistory.body);
           } else {
@@ -25,6 +25,6 @@ export class JobHistoryRoutingResolveService implements Resolve<IJobHistory> {
         })
       );
     }
-    return of(new JobHistory());
+    return of(null);
   }
 }

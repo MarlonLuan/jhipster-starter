@@ -9,6 +9,5 @@ import { LocationRoutingModule } from './route/location-routing.module';
 @NgModule({
   imports: [SharedModule, LocationRoutingModule],
   declarations: [LocationComponent, LocationDetailComponent, LocationUpdateComponent, LocationDeleteDialogComponent],
-  entryComponents: [LocationDeleteDialogComponent],
 })
 export class LocationModule {}

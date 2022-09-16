@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import { ICountry, Country } from '../country.model';
+import { CountryFormService, CountryFormGroup } from './country-form.service';
+import { ICountry } from '../country.model';
 import { CountryService } from '../service/country.service';
 import { IRegion } from 'app/entities/region/region.model';
 import { RegionService } from 'app/entities/region/service/region.service';
@@ -16,25 +16,27 @@ import { RegionService } from 'app/entities/region/service/region.service';
 })
 export class CountryUpdateComponent implements OnInit {
   isSaving = false;
+  country: ICountry | null = null;
 
-  regionsCollection: IRegion[] = [];
+  regionsSharedCollection: IRegion[] = [];
 
-  editForm = this.fb.group({
-    id: [],
-    countryName: [],
-    region: [],
-  });
+  editForm: CountryFormGroup = this.countryFormService.createCountryFormGroup();
 
   constructor(
     protected countryService: CountryService,
+    protected countryFormService: CountryFormService,
     protected regionService: RegionService,
-    protected activatedRoute: ActivatedRoute,
-    protected fb: FormBuilder
+    protected activatedRoute: ActivatedRoute
   ) {}
+
+  compareRegion = (o1: IRegion | null, o2: IRegion | null): boolean => this.regionService.compareRegion(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ country }) => {
-      this.updateForm(country);
+      this.country = country;
+      if (country) {
+        this.updateForm(country);
+      }
 
       this.loadRelationshipsOptions();
     });
@@ -46,16 +48,12 @@ export class CountryUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
-    const country = this.createFromForm();
-    if (country.id !== undefined) {
+    const country = this.countryFormService.getCountry(this.editForm);
+    if (country.id !== null) {
       this.subscribeToSaveResponse(this.countryService.update(country));
     } else {
       this.subscribeToSaveResponse(this.countryService.create(country));
     }
-  }
-
-  trackRegionById(_index: number, item: IRegion): string {
-    return item.id!;
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<ICountry>>): void {
@@ -78,29 +76,17 @@ export class CountryUpdateComponent implements OnInit {
   }
 
   protected updateForm(country: ICountry): void {
-    this.editForm.patchValue({
-      id: country.id,
-      countryName: country.countryName,
-      region: country.region,
-    });
+    this.country = country;
+    this.countryFormService.resetForm(this.editForm, country);
 
-    this.regionsCollection = this.regionService.addRegionToCollectionIfMissing(this.regionsCollection, country.region);
+    this.regionsSharedCollection = this.regionService.addRegionToCollectionIfMissing<IRegion>(this.regionsSharedCollection, country.region);
   }
 
   protected loadRelationshipsOptions(): void {
     this.regionService
-      .query({ filter: 'country-is-null' })
+      .query()
       .pipe(map((res: HttpResponse<IRegion[]>) => res.body ?? []))
-      .pipe(map((regions: IRegion[]) => this.regionService.addRegionToCollectionIfMissing(regions, this.editForm.get('region')!.value)))
-      .subscribe((regions: IRegion[]) => (this.regionsCollection = regions));
-  }
-
-  protected createFromForm(): ICountry {
-    return {
-      ...new Country(),
-      id: this.editForm.get(['id'])!.value,
-      countryName: this.editForm.get(['countryName'])!.value,
-      region: this.editForm.get(['region'])!.value,
-    };
+      .pipe(map((regions: IRegion[]) => this.regionService.addRegionToCollectionIfMissing<IRegion>(regions, this.country?.region)))
+      .subscribe((regions: IRegion[]) => (this.regionsSharedCollection = regions));
   }
 }

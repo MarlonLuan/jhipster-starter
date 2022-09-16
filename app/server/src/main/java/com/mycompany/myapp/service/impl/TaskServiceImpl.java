@@ -42,7 +42,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDTO update(TaskDTO taskDTO) {
-        log.debug("Request to save Task : {}", taskDTO);
+        log.debug("Request to update Task : {}", taskDTO);
         Task task = taskMapper.toEntity(taskDTO);
         task = taskRepository.save(task);
         return taskMapper.toDto(task);

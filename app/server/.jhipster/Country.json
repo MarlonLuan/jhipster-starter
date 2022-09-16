@@ -1,6 +1,6 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20220602192057",
+  "changelogDate": "20220916150059",
   "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "country",
@@ -22,7 +22,6 @@
   "relationships": [
     {
       "otherEntityName": "region",
-      "otherEntityRelationshipName": "country",
       "ownerSide": true,
       "relationshipName": "region",
       "relationshipType": "one-to-one"

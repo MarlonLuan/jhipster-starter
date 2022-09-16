@@ -163,7 +163,7 @@ class RegionResourceIT {
 
     @Test
     @Transactional
-    void putNewRegion() throws Exception {
+    void putExistingRegion() throws Exception {
         // Initialize the database
         regionRepository.saveAndFlush(region);
 

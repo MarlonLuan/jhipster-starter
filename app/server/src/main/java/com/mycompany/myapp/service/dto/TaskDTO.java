@@ -9,6 +9,7 @@ import java.util.UUID;
  * A DTO for the {@link com.mycompany.myapp.domain.Task} entity.
  */
 @Schema(description = "Task entity.\n@author The JHipster team.")
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class TaskDTO implements Serializable {
 
     private UUID id;
