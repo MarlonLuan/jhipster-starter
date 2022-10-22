@@ -12,6 +12,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "job_history")
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class JobHistory implements Serializable {
 
     private static final long serialVersionUID = 1L;

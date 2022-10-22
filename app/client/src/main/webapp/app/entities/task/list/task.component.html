@@ -3,9 +3,9 @@
     <span jhiTranslate="jhipsterApp.task.home.title">Tasks</span>
 
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="loadPage()" [disabled]="isLoading">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
-        <span jhiTranslate="jhipsterApp.task.home.refreshListLabel">Refresh List</span>
+        <span jhiTranslate="jhipsterApp.task.home.refreshListLabel">Refresh list</span>
       </button>
 
       <button
@@ -25,17 +25,30 @@
   <jhi-alert></jhi-alert>
 
   <div class="alert alert-warning" id="no-result" *ngIf="tasks?.length === 0">
-    <span jhiTranslate="jhipsterApp.task.home.notFound">No tasks found</span>
+    <span jhiTranslate="jhipsterApp.task.home.notFound">No Tasks found</span>
   </div>
 
-  <div class="table-responsive" id="entities" *ngIf="tasks && tasks.length > 0">
+  <div class="table-responsive table-entities" id="entities" *ngIf="tasks && tasks.length > 0">
     <table class="table table-striped" aria-describedby="page-heading">
       <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
-          <th scope="col" jhiSortBy="id"><span jhiTranslate="jhipsterApp.task.id">Id</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" jhiSortBy="title"><span jhiTranslate="jhipsterApp.task.title">Title</span> <fa-icon icon="sort"></fa-icon></th>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <th scope="col" jhiSortBy="id">
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.task.id">Id</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="title">
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.task.title">Title</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col" jhiSortBy="description">
-            <span jhiTranslate="jhipsterApp.task.description">Description</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.task.description">Description</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col"></th>
         </tr>
@@ -78,12 +91,12 @@
     <div class="d-flex justify-content-center">
       <ngb-pagination
         [collectionSize]="totalItems"
-        [(page)]="ngbPaginationPage"
+        [page]="page"
         [pageSize]="itemsPerPage"
         [maxSize]="5"
         [rotate]="true"
         [boundaryLinks]="true"
-        (pageChange)="loadPage($event)"
+        (pageChange)="navigateToPage($event)"
       ></ngb-pagination>
     </div>
   </div>

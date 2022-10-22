@@ -163,7 +163,7 @@ class CountryResourceIT {
 
     @Test
     @Transactional
-    void putNewCountry() throws Exception {
+    void putExistingCountry() throws Exception {
         // Initialize the database
         countryRepository.saveAndFlush(country);
 

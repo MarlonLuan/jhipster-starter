@@ -7,7 +7,19 @@ import dayjs from 'dayjs/esm';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { IEmployee, getEmployeeIdentifier } from '../employee.model';
+import { IEmployee, NewEmployee } from '../employee.model';
+
+export type PartialUpdateEmployee = Partial<IEmployee> & Pick<IEmployee, 'id'>;
+
+type RestOf<T extends IEmployee | NewEmployee> = Omit<T, 'hireDate'> & {
+  hireDate?: string | null;
+};
+
+export type RestEmployee = RestOf<IEmployee>;
+
+export type NewRestEmployee = RestOf<NewEmployee>;
+
+export type PartialUpdateRestEmployee = RestOf<PartialUpdateEmployee>;
 
 export type EntityResponseType = HttpResponse<IEmployee>;
 export type EntityArrayResponseType = HttpResponse<IEmployee[]>;
@@ -18,51 +30,62 @@ export class EmployeeService {
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
-  create(employee: IEmployee): Observable<EntityResponseType> {
+  create(employee: NewEmployee): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(employee);
     return this.http
-      .post<IEmployee>(this.resourceUrl, copy, { observe: 'response' })
-      .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+      .post<RestEmployee>(this.resourceUrl, copy, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   update(employee: IEmployee): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(employee);
     return this.http
-      .put<IEmployee>(`${this.resourceUrl}/${getEmployeeIdentifier(employee) as string}`, copy, { observe: 'response' })
-      .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+      .put<RestEmployee>(`${this.resourceUrl}/${this.getEmployeeIdentifier(employee)}`, copy, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
-  partialUpdate(employee: IEmployee): Observable<EntityResponseType> {
+  partialUpdate(employee: PartialUpdateEmployee): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(employee);
     return this.http
-      .patch<IEmployee>(`${this.resourceUrl}/${getEmployeeIdentifier(employee) as string}`, copy, { observe: 'response' })
-      .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+      .patch<RestEmployee>(`${this.resourceUrl}/${this.getEmployeeIdentifier(employee)}`, copy, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   find(id: string): Observable<EntityResponseType> {
     return this.http
-      .get<IEmployee>(`${this.resourceUrl}/${id}`, { observe: 'response' })
-      .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+      .get<RestEmployee>(`${this.resourceUrl}/${id}`, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http
-      .get<IEmployee[]>(this.resourceUrl, { params: options, observe: 'response' })
-      .pipe(map((res: EntityArrayResponseType) => this.convertDateArrayFromServer(res)));
+      .get<RestEmployee[]>(this.resourceUrl, { params: options, observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
   delete(id: string): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  addEmployeeToCollectionIfMissing(employeeCollection: IEmployee[], ...employeesToCheck: (IEmployee | null | undefined)[]): IEmployee[] {
-    const employees: IEmployee[] = employeesToCheck.filter(isPresent);
+  getEmployeeIdentifier(employee: Pick<IEmployee, 'id'>): string {
+    return employee.id;
+  }
+
+  compareEmployee(o1: Pick<IEmployee, 'id'> | null, o2: Pick<IEmployee, 'id'> | null): boolean {
+    return o1 && o2 ? this.getEmployeeIdentifier(o1) === this.getEmployeeIdentifier(o2) : o1 === o2;
+  }
+
+  addEmployeeToCollectionIfMissing<Type extends Pick<IEmployee, 'id'>>(
+    employeeCollection: Type[],
+    ...employeesToCheck: (Type | null | undefined)[]
+  ): Type[] {
+    const employees: Type[] = employeesToCheck.filter(isPresent);
     if (employees.length > 0) {
-      const employeeCollectionIdentifiers = employeeCollection.map(employeeItem => getEmployeeIdentifier(employeeItem)!);
+      const employeeCollectionIdentifiers = employeeCollection.map(employeeItem => this.getEmployeeIdentifier(employeeItem)!);
       const employeesToAdd = employees.filter(employeeItem => {
-        const employeeIdentifier = getEmployeeIdentifier(employeeItem);
-        if (employeeIdentifier == null || employeeCollectionIdentifiers.includes(employeeIdentifier)) {
+        const employeeIdentifier = this.getEmployeeIdentifier(employeeItem);
+        if (employeeCollectionIdentifiers.includes(employeeIdentifier)) {
           return false;
         }
         employeeCollectionIdentifiers.push(employeeIdentifier);
@@ -73,25 +96,29 @@ export class EmployeeService {
     return employeeCollection;
   }
 
-  protected convertDateFromClient(employee: IEmployee): IEmployee {
-    return Object.assign({}, employee, {
-      hireDate: employee.hireDate?.isValid() ? employee.hireDate.toJSON() : undefined,
+  protected convertDateFromClient<T extends IEmployee | NewEmployee | PartialUpdateEmployee>(employee: T): RestOf<T> {
+    return {
+      ...employee,
+      hireDate: employee.hireDate?.toJSON() ?? null,
+    };
+  }
+
+  protected convertDateFromServer(restEmployee: RestEmployee): IEmployee {
+    return {
+      ...restEmployee,
+      hireDate: restEmployee.hireDate ? dayjs(restEmployee.hireDate) : undefined,
+    };
+  }
+
+  protected convertResponseFromServer(res: HttpResponse<RestEmployee>): HttpResponse<IEmployee> {
+    return res.clone({
+      body: res.body ? this.convertDateFromServer(res.body) : null,
     });
   }
 
-  protected convertDateFromServer(res: EntityResponseType): EntityResponseType {
-    if (res.body) {
-      res.body.hireDate = res.body.hireDate ? dayjs(res.body.hireDate) : undefined;
-    }
-    return res;
-  }
-
-  protected convertDateArrayFromServer(res: EntityArrayResponseType): EntityArrayResponseType {
-    if (res.body) {
-      res.body.forEach((employee: IEmployee) => {
-        employee.hireDate = employee.hireDate ? dayjs(employee.hireDate) : undefined;
-      });
-    }
-    return res;
+  protected convertResponseArrayFromServer(res: HttpResponse<RestEmployee[]>): HttpResponse<IEmployee[]> {
+    return res.clone({
+      body: res.body ? res.body.map(item => this.convertDateFromServer(item)) : null,
+    });
   }
 }

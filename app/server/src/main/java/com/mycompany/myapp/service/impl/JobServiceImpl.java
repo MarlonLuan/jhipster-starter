@@ -42,7 +42,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public JobDTO update(JobDTO jobDTO) {
-        log.debug("Request to save Job : {}", jobDTO);
+        log.debug("Request to update Job : {}", jobDTO);
         Job job = jobMapper.toEntity(jobDTO);
         job = jobRepository.save(job);
         return jobMapper.toDto(job);

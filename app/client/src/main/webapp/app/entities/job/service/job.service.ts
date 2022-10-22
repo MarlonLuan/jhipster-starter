@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { IJob, getJobIdentifier } from '../job.model';
+import { IJob, NewJob } from '../job.model';
+
+export type PartialUpdateJob = Partial<IJob> & Pick<IJob, 'id'>;
 
 export type EntityResponseType = HttpResponse<IJob>;
 export type EntityArrayResponseType = HttpResponse<IJob[]>;
@@ -16,16 +18,16 @@ export class JobService {
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
-  create(job: IJob): Observable<EntityResponseType> {
+  create(job: NewJob): Observable<EntityResponseType> {
     return this.http.post<IJob>(this.resourceUrl, job, { observe: 'response' });
   }
 
   update(job: IJob): Observable<EntityResponseType> {
-    return this.http.put<IJob>(`${this.resourceUrl}/${getJobIdentifier(job) as string}`, job, { observe: 'response' });
+    return this.http.put<IJob>(`${this.resourceUrl}/${this.getJobIdentifier(job)}`, job, { observe: 'response' });
   }
 
-  partialUpdate(job: IJob): Observable<EntityResponseType> {
-    return this.http.patch<IJob>(`${this.resourceUrl}/${getJobIdentifier(job) as string}`, job, { observe: 'response' });
+  partialUpdate(job: PartialUpdateJob): Observable<EntityResponseType> {
+    return this.http.patch<IJob>(`${this.resourceUrl}/${this.getJobIdentifier(job)}`, job, { observe: 'response' });
   }
 
   find(id: string): Observable<EntityResponseType> {
@@ -41,13 +43,21 @@ export class JobService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  addJobToCollectionIfMissing(jobCollection: IJob[], ...jobsToCheck: (IJob | null | undefined)[]): IJob[] {
-    const jobs: IJob[] = jobsToCheck.filter(isPresent);
+  getJobIdentifier(job: Pick<IJob, 'id'>): string {
+    return job.id;
+  }
+
+  compareJob(o1: Pick<IJob, 'id'> | null, o2: Pick<IJob, 'id'> | null): boolean {
+    return o1 && o2 ? this.getJobIdentifier(o1) === this.getJobIdentifier(o2) : o1 === o2;
+  }
+
+  addJobToCollectionIfMissing<Type extends Pick<IJob, 'id'>>(jobCollection: Type[], ...jobsToCheck: (Type | null | undefined)[]): Type[] {
+    const jobs: Type[] = jobsToCheck.filter(isPresent);
     if (jobs.length > 0) {
-      const jobCollectionIdentifiers = jobCollection.map(jobItem => getJobIdentifier(jobItem)!);
+      const jobCollectionIdentifiers = jobCollection.map(jobItem => this.getJobIdentifier(jobItem)!);
       const jobsToAdd = jobs.filter(jobItem => {
-        const jobIdentifier = getJobIdentifier(jobItem);
-        if (jobIdentifier == null || jobCollectionIdentifiers.includes(jobIdentifier)) {
+        const jobIdentifier = this.getJobIdentifier(jobItem);
+        if (jobCollectionIdentifiers.includes(jobIdentifier)) {
           return false;
         }
         jobCollectionIdentifiers.push(jobIdentifier);

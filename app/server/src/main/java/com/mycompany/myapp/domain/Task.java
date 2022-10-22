@@ -12,6 +12,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "task")
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class Task implements Serializable {
 
     private static final long serialVersionUID = 1L;

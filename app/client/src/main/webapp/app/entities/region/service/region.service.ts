@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { IRegion, getRegionIdentifier } from '../region.model';
+import { IRegion, NewRegion } from '../region.model';
+
+export type PartialUpdateRegion = Partial<IRegion> & Pick<IRegion, 'id'>;
 
 export type EntityResponseType = HttpResponse<IRegion>;
 export type EntityArrayResponseType = HttpResponse<IRegion[]>;
@@ -16,16 +18,16 @@ export class RegionService {
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
-  create(region: IRegion): Observable<EntityResponseType> {
+  create(region: NewRegion): Observable<EntityResponseType> {
     return this.http.post<IRegion>(this.resourceUrl, region, { observe: 'response' });
   }
 
   update(region: IRegion): Observable<EntityResponseType> {
-    return this.http.put<IRegion>(`${this.resourceUrl}/${getRegionIdentifier(region) as string}`, region, { observe: 'response' });
+    return this.http.put<IRegion>(`${this.resourceUrl}/${this.getRegionIdentifier(region)}`, region, { observe: 'response' });
   }
 
-  partialUpdate(region: IRegion): Observable<EntityResponseType> {
-    return this.http.patch<IRegion>(`${this.resourceUrl}/${getRegionIdentifier(region) as string}`, region, { observe: 'response' });
+  partialUpdate(region: PartialUpdateRegion): Observable<EntityResponseType> {
+    return this.http.patch<IRegion>(`${this.resourceUrl}/${this.getRegionIdentifier(region)}`, region, { observe: 'response' });
   }
 
   find(id: string): Observable<EntityResponseType> {
@@ -41,13 +43,24 @@ export class RegionService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  addRegionToCollectionIfMissing(regionCollection: IRegion[], ...regionsToCheck: (IRegion | null | undefined)[]): IRegion[] {
-    const regions: IRegion[] = regionsToCheck.filter(isPresent);
+  getRegionIdentifier(region: Pick<IRegion, 'id'>): string {
+    return region.id;
+  }
+
+  compareRegion(o1: Pick<IRegion, 'id'> | null, o2: Pick<IRegion, 'id'> | null): boolean {
+    return o1 && o2 ? this.getRegionIdentifier(o1) === this.getRegionIdentifier(o2) : o1 === o2;
+  }
+
+  addRegionToCollectionIfMissing<Type extends Pick<IRegion, 'id'>>(
+    regionCollection: Type[],
+    ...regionsToCheck: (Type | null | undefined)[]
+  ): Type[] {
+    const regions: Type[] = regionsToCheck.filter(isPresent);
     if (regions.length > 0) {
-      const regionCollectionIdentifiers = regionCollection.map(regionItem => getRegionIdentifier(regionItem)!);
+      const regionCollectionIdentifiers = regionCollection.map(regionItem => this.getRegionIdentifier(regionItem)!);
       const regionsToAdd = regions.filter(regionItem => {
-        const regionIdentifier = getRegionIdentifier(regionItem);
-        if (regionIdentifier == null || regionCollectionIdentifiers.includes(regionIdentifier)) {
+        const regionIdentifier = this.getRegionIdentifier(regionItem);
+        if (regionCollectionIdentifiers.includes(regionIdentifier)) {
           return false;
         }
         regionCollectionIdentifiers.push(regionIdentifier);

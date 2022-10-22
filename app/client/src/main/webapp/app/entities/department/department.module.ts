@@ -9,6 +9,5 @@ import { DepartmentRoutingModule } from './route/department-routing.module';
 @NgModule({
   imports: [SharedModule, DepartmentRoutingModule],
   declarations: [DepartmentComponent, DepartmentDetailComponent, DepartmentUpdateComponent, DepartmentDeleteDialogComponent],
-  entryComponents: [DepartmentDeleteDialogComponent],
 })
 export class DepartmentModule {}

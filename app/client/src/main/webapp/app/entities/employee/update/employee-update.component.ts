@@ -1,14 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import dayjs from 'dayjs/esm';
-import { DATE_TIME_FORMAT } from 'app/config/input.constants';
-
-import { IEmployee, Employee } from '../employee.model';
+import { EmployeeFormService, EmployeeFormGroup } from './employee-form.service';
+import { IEmployee } from '../employee.model';
 import { EmployeeService } from '../service/employee.service';
 import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
@@ -19,38 +16,30 @@ import { DepartmentService } from 'app/entities/department/service/department.se
 })
 export class EmployeeUpdateComponent implements OnInit {
   isSaving = false;
+  employee: IEmployee | null = null;
 
   employeesSharedCollection: IEmployee[] = [];
   departmentsSharedCollection: IDepartment[] = [];
 
-  editForm = this.fb.group({
-    id: [],
-    firstName: [],
-    lastName: [],
-    email: [],
-    phoneNumber: [],
-    hireDate: [],
-    salary: [],
-    commissionPct: [],
-    manager: [],
-    department: [],
-  });
+  editForm: EmployeeFormGroup = this.employeeFormService.createEmployeeFormGroup();
 
   constructor(
     protected employeeService: EmployeeService,
+    protected employeeFormService: EmployeeFormService,
     protected departmentService: DepartmentService,
-    protected activatedRoute: ActivatedRoute,
-    protected fb: FormBuilder
+    protected activatedRoute: ActivatedRoute
   ) {}
+
+  compareEmployee = (o1: IEmployee | null, o2: IEmployee | null): boolean => this.employeeService.compareEmployee(o1, o2);
+
+  compareDepartment = (o1: IDepartment | null, o2: IDepartment | null): boolean => this.departmentService.compareDepartment(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ employee }) => {
-      if (employee.id === undefined) {
-        const today = dayjs().startOf('day');
-        employee.hireDate = today;
+      this.employee = employee;
+      if (employee) {
+        this.updateForm(employee);
       }
-
-      this.updateForm(employee);
 
       this.loadRelationshipsOptions();
     });
@@ -62,20 +51,12 @@ export class EmployeeUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
-    const employee = this.createFromForm();
-    if (employee.id !== undefined) {
+    const employee = this.employeeFormService.getEmployee(this.editForm);
+    if (employee.id !== null) {
       this.subscribeToSaveResponse(this.employeeService.update(employee));
     } else {
       this.subscribeToSaveResponse(this.employeeService.create(employee));
     }
-  }
-
-  trackEmployeeById(_index: number, item: IEmployee): string {
-    return item.id!;
-  }
-
-  trackDepartmentById(_index: number, item: IDepartment): string {
-    return item.id!;
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IEmployee>>): void {
@@ -98,24 +79,14 @@ export class EmployeeUpdateComponent implements OnInit {
   }
 
   protected updateForm(employee: IEmployee): void {
-    this.editForm.patchValue({
-      id: employee.id,
-      firstName: employee.firstName,
-      lastName: employee.lastName,
-      email: employee.email,
-      phoneNumber: employee.phoneNumber,
-      hireDate: employee.hireDate ? employee.hireDate.format(DATE_TIME_FORMAT) : null,
-      salary: employee.salary,
-      commissionPct: employee.commissionPct,
-      manager: employee.manager,
-      department: employee.department,
-    });
+    this.employee = employee;
+    this.employeeFormService.resetForm(this.editForm, employee);
 
-    this.employeesSharedCollection = this.employeeService.addEmployeeToCollectionIfMissing(
+    this.employeesSharedCollection = this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(
       this.employeesSharedCollection,
       employee.manager
     );
-    this.departmentsSharedCollection = this.departmentService.addDepartmentToCollectionIfMissing(
+    this.departmentsSharedCollection = this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(
       this.departmentsSharedCollection,
       employee.department
     );
@@ -126,9 +97,7 @@ export class EmployeeUpdateComponent implements OnInit {
       .query()
       .pipe(map((res: HttpResponse<IEmployee[]>) => res.body ?? []))
       .pipe(
-        map((employees: IEmployee[]) =>
-          this.employeeService.addEmployeeToCollectionIfMissing(employees, this.editForm.get('manager')!.value)
-        )
+        map((employees: IEmployee[]) => this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, this.employee?.manager))
       )
       .subscribe((employees: IEmployee[]) => (this.employeesSharedCollection = employees));
 
@@ -137,25 +106,9 @@ export class EmployeeUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<IDepartment[]>) => res.body ?? []))
       .pipe(
         map((departments: IDepartment[]) =>
-          this.departmentService.addDepartmentToCollectionIfMissing(departments, this.editForm.get('department')!.value)
+          this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(departments, this.employee?.department)
         )
       )
       .subscribe((departments: IDepartment[]) => (this.departmentsSharedCollection = departments));
-  }
-
-  protected createFromForm(): IEmployee {
-    return {
-      ...new Employee(),
-      id: this.editForm.get(['id'])!.value,
-      firstName: this.editForm.get(['firstName'])!.value,
-      lastName: this.editForm.get(['lastName'])!.value,
-      email: this.editForm.get(['email'])!.value,
-      phoneNumber: this.editForm.get(['phoneNumber'])!.value,
-      hireDate: this.editForm.get(['hireDate'])!.value ? dayjs(this.editForm.get(['hireDate'])!.value, DATE_TIME_FORMAT) : undefined,
-      salary: this.editForm.get(['salary'])!.value,
-      commissionPct: this.editForm.get(['commissionPct'])!.value,
-      manager: this.editForm.get(['manager'])!.value,
-      department: this.editForm.get(['department'])!.value,
-    };
   }
 }

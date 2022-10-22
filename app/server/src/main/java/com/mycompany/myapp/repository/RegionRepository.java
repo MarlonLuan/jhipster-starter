@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
 /**
- * Spring Data SQL repository for the Region entity.
+ * Spring Data JPA repository for the Region entity.
  */
 @SuppressWarnings("unused")
 @Repository

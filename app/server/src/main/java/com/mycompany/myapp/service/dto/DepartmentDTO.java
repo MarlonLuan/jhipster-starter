@@ -9,6 +9,7 @@ import javax.validation.constraints.*;
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Department} entity.
  */
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class DepartmentDTO implements Serializable {
 
     private UUID id;

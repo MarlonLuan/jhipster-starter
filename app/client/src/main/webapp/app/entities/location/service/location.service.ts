@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { ILocation, getLocationIdentifier } from '../location.model';
+import { ILocation, NewLocation } from '../location.model';
+
+export type PartialUpdateLocation = Partial<ILocation> & Pick<ILocation, 'id'>;
 
 export type EntityResponseType = HttpResponse<ILocation>;
 export type EntityArrayResponseType = HttpResponse<ILocation[]>;
@@ -16,18 +18,16 @@ export class LocationService {
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
-  create(location: ILocation): Observable<EntityResponseType> {
+  create(location: NewLocation): Observable<EntityResponseType> {
     return this.http.post<ILocation>(this.resourceUrl, location, { observe: 'response' });
   }
 
   update(location: ILocation): Observable<EntityResponseType> {
-    return this.http.put<ILocation>(`${this.resourceUrl}/${getLocationIdentifier(location) as string}`, location, { observe: 'response' });
+    return this.http.put<ILocation>(`${this.resourceUrl}/${this.getLocationIdentifier(location)}`, location, { observe: 'response' });
   }
 
-  partialUpdate(location: ILocation): Observable<EntityResponseType> {
-    return this.http.patch<ILocation>(`${this.resourceUrl}/${getLocationIdentifier(location) as string}`, location, {
-      observe: 'response',
-    });
+  partialUpdate(location: PartialUpdateLocation): Observable<EntityResponseType> {
+    return this.http.patch<ILocation>(`${this.resourceUrl}/${this.getLocationIdentifier(location)}`, location, { observe: 'response' });
   }
 
   find(id: string): Observable<EntityResponseType> {
@@ -43,13 +43,24 @@ export class LocationService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  addLocationToCollectionIfMissing(locationCollection: ILocation[], ...locationsToCheck: (ILocation | null | undefined)[]): ILocation[] {
-    const locations: ILocation[] = locationsToCheck.filter(isPresent);
+  getLocationIdentifier(location: Pick<ILocation, 'id'>): string {
+    return location.id;
+  }
+
+  compareLocation(o1: Pick<ILocation, 'id'> | null, o2: Pick<ILocation, 'id'> | null): boolean {
+    return o1 && o2 ? this.getLocationIdentifier(o1) === this.getLocationIdentifier(o2) : o1 === o2;
+  }
+
+  addLocationToCollectionIfMissing<Type extends Pick<ILocation, 'id'>>(
+    locationCollection: Type[],
+    ...locationsToCheck: (Type | null | undefined)[]
+  ): Type[] {
+    const locations: Type[] = locationsToCheck.filter(isPresent);
     if (locations.length > 0) {
-      const locationCollectionIdentifiers = locationCollection.map(locationItem => getLocationIdentifier(locationItem)!);
+      const locationCollectionIdentifiers = locationCollection.map(locationItem => this.getLocationIdentifier(locationItem)!);
       const locationsToAdd = locations.filter(locationItem => {
-        const locationIdentifier = getLocationIdentifier(locationItem);
-        if (locationIdentifier == null || locationCollectionIdentifiers.includes(locationIdentifier)) {
+        const locationIdentifier = this.getLocationIdentifier(locationItem);
+        if (locationCollectionIdentifiers.includes(locationIdentifier)) {
           return false;
         }
         locationCollectionIdentifiers.push(locationIdentifier);

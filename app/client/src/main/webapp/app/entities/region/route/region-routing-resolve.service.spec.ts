@@ -5,7 +5,7 @@ import { ActivatedRouteSnapshot, ActivatedRoute, Router, convertToParamMap } fro
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { IRegion, Region } from '../region.model';
+import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
 
 import { RegionRoutingResolveService } from './region-routing-resolve.service';
@@ -15,7 +15,7 @@ describe('Region routing resolve service', () => {
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
   let routingResolveService: RegionRoutingResolveService;
   let service: RegionService;
-  let resultRegion: IRegion | undefined;
+  let resultRegion: IRegion | null | undefined;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -55,7 +55,7 @@ describe('Region routing resolve service', () => {
       expect(resultRegion).toEqual({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
     });
 
-    it('should return new IRegion if id is not provided', () => {
+    it('should return null if id is not provided', () => {
       // GIVEN
       service.find = jest.fn();
       mockActivatedRouteSnapshot.params = {};
@@ -67,12 +67,12 @@ describe('Region routing resolve service', () => {
 
       // THEN
       expect(service.find).not.toBeCalled();
-      expect(resultRegion).toEqual(new Region());
+      expect(resultRegion).toEqual(null);
     });
 
     it('should route to 404 page if data not found in server', () => {
       // GIVEN
-      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse({ body: null as unknown as Region })));
+      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse<IRegion>({ body: null })));
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN

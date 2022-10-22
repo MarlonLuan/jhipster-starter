@@ -7,9 +7,8 @@
 
   <div class="modal-body">
     <jhi-alert-error></jhi-alert-error>
-
     <p id="jhi-delete-task-heading" jhiTranslate="jhipsterApp.task.delete.question" [translateValues]="{ id: task.id }">
-      Are you sure you want to delete this Task?
+      Are you sure you want to delete Task {{ task.id }}?
     </p>
   </div>
 

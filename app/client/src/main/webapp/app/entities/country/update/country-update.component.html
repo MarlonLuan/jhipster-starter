@@ -8,7 +8,7 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="row mb-3" [hidden]="editForm.get('id')!.value == null">
+        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
           <label class="form-label" jhiTranslate="jhipsterApp.country.id" for="field_id">Id</label>
           <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
@@ -27,14 +27,16 @@
 
         <div class="row mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.country.region" for="field_region">Region</label>
-          <select class="form-control" id="field_region" data-cy="region" name="region" formControlName="region">
+          <select
+            class="form-control"
+            id="field_region"
+            data-cy="region"
+            name="region"
+            formControlName="region"
+            [compareWith]="compareRegion"
+          >
             <option [ngValue]="null"></option>
-            <option
-              [ngValue]="regionOption.id === editForm.get('region')!.value?.id ? editForm.get('region')!.value : regionOption"
-              *ngFor="let regionOption of regionsCollection; trackBy: trackRegionById"
-            >
-              {{ regionOption.id }}
-            </option>
+            <option [ngValue]="regionOption" *ngFor="let regionOption of regionsSharedCollection">{{ regionOption.id }}</option>
           </select>
         </div>
       </div>

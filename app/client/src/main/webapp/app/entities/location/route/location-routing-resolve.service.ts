@@ -4,18 +4,18 @@ import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { ILocation, Location } from '../location.model';
+import { ILocation } from '../location.model';
 import { LocationService } from '../service/location.service';
 
 @Injectable({ providedIn: 'root' })
-export class LocationRoutingResolveService implements Resolve<ILocation> {
+export class LocationRoutingResolveService implements Resolve<ILocation | null> {
   constructor(protected service: LocationService, protected router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<ILocation> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot): Observable<ILocation | null | never> {
     const id = route.params['id'];
     if (id) {
       return this.service.find(id).pipe(
-        mergeMap((location: HttpResponse<Location>) => {
+        mergeMap((location: HttpResponse<ILocation>) => {
           if (location.body) {
             return of(location.body);
           } else {
@@ -25,6 +25,6 @@ export class LocationRoutingResolveService implements Resolve<ILocation> {
         })
       );
     }
-    return of(new Location());
+    return of(null);
   }
 }

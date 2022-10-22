@@ -42,7 +42,7 @@ public class RegionServiceImpl implements RegionService {
 
     @Override
     public RegionDTO update(RegionDTO regionDTO) {
-        log.debug("Request to save Region : {}", regionDTO);
+        log.debug("Request to update Region : {}", regionDTO);
         Region region = regionMapper.toEntity(regionDTO);
         region = regionRepository.save(region);
         return regionMapper.toDto(region);
