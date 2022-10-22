@@ -9,6 +9,7 @@ import java.util.UUID;
  * A DTO for the {@link com.mycompany.myapp.domain.Location} entity.
  */
 @Schema(description = "not an ignored comment")
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class LocationDTO implements Serializable {
 
     private UUID id;

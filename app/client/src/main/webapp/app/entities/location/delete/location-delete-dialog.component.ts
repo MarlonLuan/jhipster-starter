@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ILocation } from '../location.model';
 import { LocationService } from '../service/location.service';
+import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
 
 @Component({
   templateUrl: './location-delete-dialog.component.html',
@@ -18,7 +19,7 @@ export class LocationDeleteDialogComponent {
 
   confirmDelete(id: string): void {
     this.locationService.delete(id).subscribe(() => {
-      this.activeModal.close('deleted');
+      this.activeModal.close(ITEM_DELETED_EVENT);
     });
   }
 }

@@ -4,18 +4,18 @@ import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { IEmployee, Employee } from '../employee.model';
+import { IEmployee } from '../employee.model';
 import { EmployeeService } from '../service/employee.service';
 
 @Injectable({ providedIn: 'root' })
-export class EmployeeRoutingResolveService implements Resolve<IEmployee> {
+export class EmployeeRoutingResolveService implements Resolve<IEmployee | null> {
   constructor(protected service: EmployeeService, protected router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<IEmployee> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot): Observable<IEmployee | null | never> {
     const id = route.params['id'];
     if (id) {
       return this.service.find(id).pipe(
-        mergeMap((employee: HttpResponse<Employee>) => {
+        mergeMap((employee: HttpResponse<IEmployee>) => {
           if (employee.body) {
             return of(employee.body);
           } else {
@@ -25,6 +25,6 @@ export class EmployeeRoutingResolveService implements Resolve<IEmployee> {
         })
       );
     }
-    return of(new Employee());
+    return of(null);
   }
 }

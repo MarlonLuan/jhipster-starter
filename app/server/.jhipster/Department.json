@@ -1,6 +1,6 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20220602192257",
+  "changelogDate": "20221022162504",
   "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "department",
@@ -23,7 +23,6 @@
   "relationships": [
     {
       "otherEntityName": "location",
-      "otherEntityRelationshipName": "department",
       "ownerSide": true,
       "relationshipName": "location",
       "relationshipType": "one-to-one"

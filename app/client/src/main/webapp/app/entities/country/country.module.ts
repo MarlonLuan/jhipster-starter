@@ -9,6 +9,5 @@ import { CountryRoutingModule } from './route/country-routing.module';
 @NgModule({
   imports: [SharedModule, CountryRoutingModule],
   declarations: [CountryComponent, CountryDetailComponent, CountryUpdateComponent, CountryDeleteDialogComponent],
-  entryComponents: [CountryDeleteDialogComponent],
 })
 export class CountryModule {}

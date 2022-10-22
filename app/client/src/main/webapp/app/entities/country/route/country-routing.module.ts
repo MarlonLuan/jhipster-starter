@@ -6,13 +6,14 @@ import { CountryComponent } from '../list/country.component';
 import { CountryDetailComponent } from '../detail/country-detail.component';
 import { CountryUpdateComponent } from '../update/country-update.component';
 import { CountryRoutingResolveService } from './country-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
 
 const countryRoute: Routes = [
   {
     path: '',
     component: CountryComponent,
     data: {
-      defaultSort: 'id,asc',
+      defaultSort: 'id,' + ASC,
     },
     canActivate: [UserRouteAccessService],
   },

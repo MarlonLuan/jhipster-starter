@@ -2,9 +2,11 @@ package com.mycompany.myapp.repository;
 
 import com.mycompany.myapp.domain.Job;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.hibernate.annotations.QueryHints;
@@ -43,10 +45,14 @@ public class JobRepositoryWithBagRelationshipsImpl implements JobRepositoryWithB
     }
 
     List<Job> fetchTasks(List<Job> jobs) {
-        return entityManager
+        HashMap<Object, Integer> order = new HashMap<>();
+        IntStream.range(0, jobs.size()).forEach(index -> order.put(jobs.get(index).getId(), index));
+        List<Job> result = entityManager
             .createQuery("select distinct job from Job job left join fetch job.tasks where job in :jobs", Job.class)
             .setParameter("jobs", jobs)
             .setHint(QueryHints.PASS_DISTINCT_THROUGH, false)
             .getResultList();
+        Collections.sort(result, (o1, o2) -> Integer.compare(order.get(o1.getId()), order.get(o2.getId())));
+        return result;
     }
 }

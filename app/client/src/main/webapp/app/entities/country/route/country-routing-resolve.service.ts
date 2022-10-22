@@ -4,18 +4,18 @@ import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { ICountry, Country } from '../country.model';
+import { ICountry } from '../country.model';
 import { CountryService } from '../service/country.service';
 
 @Injectable({ providedIn: 'root' })
-export class CountryRoutingResolveService implements Resolve<ICountry> {
+export class CountryRoutingResolveService implements Resolve<ICountry | null> {
   constructor(protected service: CountryService, protected router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<ICountry> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot): Observable<ICountry | null | never> {
     const id = route.params['id'];
     if (id) {
       return this.service.find(id).pipe(
-        mergeMap((country: HttpResponse<Country>) => {
+        mergeMap((country: HttpResponse<ICountry>) => {
           if (country.body) {
             return of(country.body);
           } else {
@@ -25,6 +25,6 @@ export class CountryRoutingResolveService implements Resolve<ICountry> {
         })
       );
     }
-    return of(new Country());
+    return of(null);
   }
 }

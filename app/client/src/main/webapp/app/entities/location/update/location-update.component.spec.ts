@@ -6,8 +6,9 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
+import { LocationFormService } from './location-form.service';
 import { LocationService } from '../service/location.service';
-import { ILocation, Location } from '../location.model';
+import { ILocation } from '../location.model';
 import { ICountry } from 'app/entities/country/country.model';
 import { CountryService } from 'app/entities/country/service/country.service';
 
@@ -17,6 +18,7 @@ describe('Location Management Update Component', () => {
   let comp: LocationUpdateComponent;
   let fixture: ComponentFixture<LocationUpdateComponent>;
   let activatedRoute: ActivatedRoute;
+  let locationFormService: LocationFormService;
   let locationService: LocationService;
   let countryService: CountryService;
 
@@ -39,6 +41,7 @@ describe('Location Management Update Component', () => {
 
     fixture = TestBed.createComponent(LocationUpdateComponent);
     activatedRoute = TestBed.inject(ActivatedRoute);
+    locationFormService = TestBed.inject(LocationFormService);
     locationService = TestBed.inject(LocationService);
     countryService = TestBed.inject(CountryService);
 
@@ -46,22 +49,26 @@ describe('Location Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call country query and add missing value', () => {
+    it('Should call Country query and add missing value', () => {
       const location: ILocation = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
       const country: ICountry = { id: '1dc3931a-f7f3-4e64-a0fc-036e2b1b4be0' };
       location.country = country;
 
       const countryCollection: ICountry[] = [{ id: '0623b3cc-a3d9-4adb-9023-2538b6114a5d' }];
       jest.spyOn(countryService, 'query').mockReturnValue(of(new HttpResponse({ body: countryCollection })));
-      const expectedCollection: ICountry[] = [country, ...countryCollection];
+      const additionalCountries = [country];
+      const expectedCollection: ICountry[] = [...additionalCountries, ...countryCollection];
       jest.spyOn(countryService, 'addCountryToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ location });
       comp.ngOnInit();
 
       expect(countryService.query).toHaveBeenCalled();
-      expect(countryService.addCountryToCollectionIfMissing).toHaveBeenCalledWith(countryCollection, country);
-      expect(comp.countriesCollection).toEqual(expectedCollection);
+      expect(countryService.addCountryToCollectionIfMissing).toHaveBeenCalledWith(
+        countryCollection,
+        ...additionalCountries.map(expect.objectContaining)
+      );
+      expect(comp.countriesSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should update editForm', () => {
@@ -72,16 +79,17 @@ describe('Location Management Update Component', () => {
       activatedRoute.data = of({ location });
       comp.ngOnInit();
 
-      expect(comp.editForm.value).toEqual(expect.objectContaining(location));
-      expect(comp.countriesCollection).toContain(country);
+      expect(comp.countriesSharedCollection).toContain(country);
+      expect(comp.location).toEqual(location);
     });
   });
 
   describe('save', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Location>>();
+      const saveSubject = new Subject<HttpResponse<ILocation>>();
       const location = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      jest.spyOn(locationFormService, 'getLocation').mockReturnValue(location);
       jest.spyOn(locationService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ location });
@@ -94,18 +102,20 @@ describe('Location Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
+      expect(locationFormService.getLocation).toHaveBeenCalled();
       expect(comp.previousState).toHaveBeenCalled();
-      expect(locationService.update).toHaveBeenCalledWith(location);
+      expect(locationService.update).toHaveBeenCalledWith(expect.objectContaining(location));
       expect(comp.isSaving).toEqual(false);
     });
 
     it('Should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Location>>();
-      const location = new Location();
+      const saveSubject = new Subject<HttpResponse<ILocation>>();
+      const location = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      jest.spyOn(locationFormService, 'getLocation').mockReturnValue({ id: null });
       jest.spyOn(locationService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
-      activatedRoute.data = of({ location });
+      activatedRoute.data = of({ location: null });
       comp.ngOnInit();
 
       // WHEN
@@ -115,14 +125,15 @@ describe('Location Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
-      expect(locationService.create).toHaveBeenCalledWith(location);
+      expect(locationFormService.getLocation).toHaveBeenCalled();
+      expect(locationService.create).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
 
     it('Should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Location>>();
+      const saveSubject = new Subject<HttpResponse<ILocation>>();
       const location = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
       jest.spyOn(locationService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -135,18 +146,20 @@ describe('Location Management Update Component', () => {
       saveSubject.error('This is an error!');
 
       // THEN
-      expect(locationService.update).toHaveBeenCalledWith(location);
+      expect(locationService.update).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });
   });
 
-  describe('Tracking relationships identifiers', () => {
-    describe('trackCountryById', () => {
-      it('Should return tracked Country primary key', () => {
+  describe('Compare relationships', () => {
+    describe('compareCountry', () => {
+      it('Should forward to countryService', () => {
         const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const trackResult = comp.trackCountryById(0, entity);
-        expect(trackResult).toEqual(entity.id);
+        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        jest.spyOn(countryService, 'compareCountry');
+        comp.compareCountry(entity, entity2);
+        expect(countryService.compareCountry).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

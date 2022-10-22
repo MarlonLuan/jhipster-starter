@@ -3,9 +3,9 @@
     <span jhiTranslate="jhipsterApp.employee.home.title">Employees</span>
 
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="loadPage()" [disabled]="isLoading">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
-        <span jhiTranslate="jhipsterApp.employee.home.refreshListLabel">Refresh List</span>
+        <span jhiTranslate="jhipsterApp.employee.home.refreshListLabel">Refresh list</span>
       </button>
 
       <button
@@ -25,40 +25,72 @@
   <jhi-alert></jhi-alert>
 
   <div class="alert alert-warning" id="no-result" *ngIf="employees?.length === 0">
-    <span jhiTranslate="jhipsterApp.employee.home.notFound">No employees found</span>
+    <span jhiTranslate="jhipsterApp.employee.home.notFound">No Employees found</span>
   </div>
 
-  <div class="table-responsive" id="entities" *ngIf="employees && employees.length > 0">
+  <div class="table-responsive table-entities" id="entities" *ngIf="employees && employees.length > 0">
     <table class="table table-striped" aria-describedby="page-heading">
       <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
-          <th scope="col" jhiSortBy="id"><span jhiTranslate="jhipsterApp.employee.id">Id</span> <fa-icon icon="sort"></fa-icon></th>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <th scope="col" jhiSortBy="id">
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.employee.id">Id</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col" jhiSortBy="firstName">
-            <span jhiTranslate="jhipsterApp.employee.firstName">First Name</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.employee.firstName">First Name</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="lastName">
-            <span jhiTranslate="jhipsterApp.employee.lastName">Last Name</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.employee.lastName">Last Name</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="email">
-            <span jhiTranslate="jhipsterApp.employee.email">Email</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.employee.email">Email</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="phoneNumber">
-            <span jhiTranslate="jhipsterApp.employee.phoneNumber">Phone Number</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.employee.phoneNumber">Phone Number</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="hireDate">
-            <span jhiTranslate="jhipsterApp.employee.hireDate">Hire Date</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.employee.hireDate">Hire Date</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="salary">
-            <span jhiTranslate="jhipsterApp.employee.salary">Salary</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.employee.salary">Salary</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="commissionPct">
-            <span jhiTranslate="jhipsterApp.employee.commissionPct">Commission Pct</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.employee.commissionPct">Commission Pct</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="manager.id">
-            <span jhiTranslate="jhipsterApp.employee.manager">Manager</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.employee.manager">Manager</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="department.id">
-            <span jhiTranslate="jhipsterApp.employee.department">Department</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.employee.department">Department</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col"></th>
         </tr>
@@ -77,12 +109,12 @@
           <td>{{ employee.commissionPct }}</td>
           <td>
             <div *ngIf="employee.manager">
-              <a [routerLink]="['/employee', employee.manager?.id, 'view']">{{ employee.manager?.id }}</a>
+              <a [routerLink]="['/employee', employee.manager.id, 'view']">{{ employee.manager.id }}</a>
             </div>
           </td>
           <td>
             <div *ngIf="employee.department">
-              <a [routerLink]="['/department', employee.department?.id, 'view']">{{ employee.department?.id }}</a>
+              <a [routerLink]="['/department', employee.department.id, 'view']">{{ employee.department.id }}</a>
             </div>
           </td>
           <td class="text-end">
@@ -126,12 +158,12 @@
     <div class="d-flex justify-content-center">
       <ngb-pagination
         [collectionSize]="totalItems"
-        [(page)]="ngbPaginationPage"
+        [page]="page"
         [pageSize]="itemsPerPage"
         [maxSize]="5"
         [rotate]="true"
         [boundaryLinks]="true"
-        (pageChange)="loadPage($event)"
+        (pageChange)="navigateToPage($event)"
       ></ngb-pagination>
     </div>
   </div>

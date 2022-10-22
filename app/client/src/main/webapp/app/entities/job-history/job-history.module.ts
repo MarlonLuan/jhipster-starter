@@ -9,6 +9,5 @@ import { JobHistoryRoutingModule } from './route/job-history-routing.module';
 @NgModule({
   imports: [SharedModule, JobHistoryRoutingModule],
   declarations: [JobHistoryComponent, JobHistoryDetailComponent, JobHistoryUpdateComponent, JobHistoryDeleteDialogComponent],
-  entryComponents: [JobHistoryDeleteDialogComponent],
 })
 export class JobHistoryModule {}

@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
+import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
 
 @Component({
   templateUrl: './region-delete-dialog.component.html',
@@ -18,7 +19,7 @@ export class RegionDeleteDialogComponent {
 
   confirmDelete(id: string): void {
     this.regionService.delete(id).subscribe(() => {
-      this.activeModal.close('deleted');
+      this.activeModal.close(ITEM_DELETED_EVENT);
     });
   }
 }

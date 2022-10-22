@@ -6,13 +6,14 @@ import { DepartmentComponent } from '../list/department.component';
 import { DepartmentDetailComponent } from '../detail/department-detail.component';
 import { DepartmentUpdateComponent } from '../update/department-update.component';
 import { DepartmentRoutingResolveService } from './department-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
 
 const departmentRoute: Routes = [
   {
     path: '',
     component: DepartmentComponent,
     data: {
-      defaultSort: 'id,asc',
+      defaultSort: 'id,' + ASC,
     },
     canActivate: [UserRouteAccessService],
   },

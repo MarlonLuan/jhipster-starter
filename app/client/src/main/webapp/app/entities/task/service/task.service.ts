@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { ITask, getTaskIdentifier } from '../task.model';
+import { ITask, NewTask } from '../task.model';
+
+export type PartialUpdateTask = Partial<ITask> & Pick<ITask, 'id'>;
 
 export type EntityResponseType = HttpResponse<ITask>;
 export type EntityArrayResponseType = HttpResponse<ITask[]>;
@@ -16,16 +18,16 @@ export class TaskService {
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
-  create(task: ITask): Observable<EntityResponseType> {
+  create(task: NewTask): Observable<EntityResponseType> {
     return this.http.post<ITask>(this.resourceUrl, task, { observe: 'response' });
   }
 
   update(task: ITask): Observable<EntityResponseType> {
-    return this.http.put<ITask>(`${this.resourceUrl}/${getTaskIdentifier(task) as string}`, task, { observe: 'response' });
+    return this.http.put<ITask>(`${this.resourceUrl}/${this.getTaskIdentifier(task)}`, task, { observe: 'response' });
   }
 
-  partialUpdate(task: ITask): Observable<EntityResponseType> {
-    return this.http.patch<ITask>(`${this.resourceUrl}/${getTaskIdentifier(task) as string}`, task, { observe: 'response' });
+  partialUpdate(task: PartialUpdateTask): Observable<EntityResponseType> {
+    return this.http.patch<ITask>(`${this.resourceUrl}/${this.getTaskIdentifier(task)}`, task, { observe: 'response' });
   }
 
   find(id: string): Observable<EntityResponseType> {
@@ -41,13 +43,24 @@ export class TaskService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  addTaskToCollectionIfMissing(taskCollection: ITask[], ...tasksToCheck: (ITask | null | undefined)[]): ITask[] {
-    const tasks: ITask[] = tasksToCheck.filter(isPresent);
+  getTaskIdentifier(task: Pick<ITask, 'id'>): string {
+    return task.id;
+  }
+
+  compareTask(o1: Pick<ITask, 'id'> | null, o2: Pick<ITask, 'id'> | null): boolean {
+    return o1 && o2 ? this.getTaskIdentifier(o1) === this.getTaskIdentifier(o2) : o1 === o2;
+  }
+
+  addTaskToCollectionIfMissing<Type extends Pick<ITask, 'id'>>(
+    taskCollection: Type[],
+    ...tasksToCheck: (Type | null | undefined)[]
+  ): Type[] {
+    const tasks: Type[] = tasksToCheck.filter(isPresent);
     if (tasks.length > 0) {
-      const taskCollectionIdentifiers = taskCollection.map(taskItem => getTaskIdentifier(taskItem)!);
+      const taskCollectionIdentifiers = taskCollection.map(taskItem => this.getTaskIdentifier(taskItem)!);
       const tasksToAdd = tasks.filter(taskItem => {
-        const taskIdentifier = getTaskIdentifier(taskItem);
-        if (taskIdentifier == null || taskCollectionIdentifiers.includes(taskIdentifier)) {
+        const taskIdentifier = this.getTaskIdentifier(taskItem);
+        if (taskCollectionIdentifiers.includes(taskIdentifier)) {
           return false;
         }
         taskCollectionIdentifiers.push(taskIdentifier);

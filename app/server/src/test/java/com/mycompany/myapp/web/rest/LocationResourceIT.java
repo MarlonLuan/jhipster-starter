@@ -189,7 +189,7 @@ class LocationResourceIT {
 
     @Test
     @Transactional
-    void putNewLocation() throws Exception {
+    void putExistingLocation() throws Exception {
         // Initialize the database
         locationRepository.saveAndFlush(location);
 

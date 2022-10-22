@@ -24,9 +24,10 @@
     "docker:app:up": "docker-compose -f src/main/docker/app.yml up -d",
     "docker:db:down": "docker-compose -f src/main/docker/postgresql.yml down -v",
     "docker:db:up": "docker-compose -f src/main/docker/postgresql.yml up -d",
+    "docker:keycloak:await": "echo \"Waiting for keycloak to start\" && wait-on -t 180000 http-get://localhost:9080/realms/jhipster && echo \"keycloak started\" || echo \"keycloak not running, make sure oauth2 server is running\"",
     "docker:keycloak:down": "docker-compose -f src/main/docker/keycloak.yml down -v",
     "docker:keycloak:up": "docker-compose -f src/main/docker/keycloak.yml up -d",
-    "docker:others:await": "echo \"Waiting for keycloak to start\" && wait-on -t 180000 http-get://localhost:9080/auth/realms/jhipster && echo \"keycloak started\" || echo \"keycloak not running, make sure oauth2 server is running\"",
+    "docker:others:await": "npm run docker:keycloak:await",
     "docker:others:down": "npm run docker:keycloak:down",
     "predocker:others:up": "",
     "docker:others:up": "npm run docker:keycloak:up",
@@ -40,8 +41,8 @@
     "java:war": "./mvnw -ntp verify -DskipTests --batch-mode -Pwar",
     "java:war:dev": "npm run java:war -- -Pdev,webapp",
     "java:war:prod": "npm run java:war -- -Pprod",
-    "prettier:check": "prettier --check \"{,src/**/}*.{md,json,yml,html,java}\"",
-    "prettier:format": "prettier --write \"{,src/**/}*.{md,json,yml,html,java}\""
+    "prettier:check": "prettier --check \"{,src/**/,.blueprint/**/}*.{md,json,yml,html,java}\"",
+    "prettier:format": "prettier --write \"{,src/**/,.blueprint/**/}*.{md,json,yml,html,java}\""
   },
   "config": {
     "backend_port": "8080",
@@ -49,13 +50,13 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "7.8.1",
-    "prettier": "2.6.2",
-    "prettier-plugin-java": "1.6.1",
-    "prettier-plugin-packagejson": "2.2.17"
+    "generator-jhipster": "7.9.3",
+    "prettier": "2.7.1",
+    "prettier-plugin-java": "1.6.2",
+    "prettier-plugin-packagejson": "2.2.18"
   },
   "engines": {
-    "node": ">=16.14.0"
+    "node": ">=16.17.0"
   },
   "cacheDirectories": [
     "node_modules"

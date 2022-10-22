@@ -7,6 +7,7 @@ import java.util.UUID;
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Region} entity.
  */
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class RegionDTO implements Serializable {
 
     private UUID id;

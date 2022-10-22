@@ -29,14 +29,14 @@
         <dt><span jhiTranslate="jhipsterApp.job.task">Task</span></dt>
         <dd>
           <span *ngFor="let task of job.tasks; let last = last">
-            <a [routerLink]="['/task', task?.id, 'view']">{{ task.title }}</a
+            <a [routerLink]="['/task', task.id, 'view']">{{ task.title }}</a
             >{{ last ? '' : ', ' }}
           </span>
         </dd>
         <dt><span jhiTranslate="jhipsterApp.job.employee">Employee</span></dt>
         <dd>
           <div *ngIf="job.employee">
-            <a [routerLink]="['/employee', job.employee?.id, 'view']">{{ job.employee?.id }}</a>
+            <a [routerLink]="['/employee', job.employee.id, 'view']">{{ job.employee.id }}</a>
           </div>
         </dd>
       </dl>

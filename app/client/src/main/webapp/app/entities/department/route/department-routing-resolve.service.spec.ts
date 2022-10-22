@@ -5,7 +5,7 @@ import { ActivatedRouteSnapshot, ActivatedRoute, Router, convertToParamMap } fro
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { IDepartment, Department } from '../department.model';
+import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
 
 import { DepartmentRoutingResolveService } from './department-routing-resolve.service';
@@ -15,7 +15,7 @@ describe('Department routing resolve service', () => {
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
   let routingResolveService: DepartmentRoutingResolveService;
   let service: DepartmentService;
-  let resultDepartment: IDepartment | undefined;
+  let resultDepartment: IDepartment | null | undefined;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -55,7 +55,7 @@ describe('Department routing resolve service', () => {
       expect(resultDepartment).toEqual({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
     });
 
-    it('should return new IDepartment if id is not provided', () => {
+    it('should return null if id is not provided', () => {
       // GIVEN
       service.find = jest.fn();
       mockActivatedRouteSnapshot.params = {};
@@ -67,12 +67,12 @@ describe('Department routing resolve service', () => {
 
       // THEN
       expect(service.find).not.toBeCalled();
-      expect(resultDepartment).toEqual(new Department());
+      expect(resultDepartment).toEqual(null);
     });
 
     it('should route to 404 page if data not found in server', () => {
       // GIVEN
-      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse({ body: null as unknown as Department })));
+      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse<IDepartment>({ body: null })));
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN

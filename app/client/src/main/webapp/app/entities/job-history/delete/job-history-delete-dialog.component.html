@@ -7,9 +7,8 @@
 
   <div class="modal-body">
     <jhi-alert-error></jhi-alert-error>
-
     <p id="jhi-delete-jobHistory-heading" jhiTranslate="jhipsterApp.jobHistory.delete.question" [translateValues]="{ id: jobHistory.id }">
-      Are you sure you want to delete this Job History?
+      Are you sure you want to delete Job History {{ jobHistory.id }}?
     </p>
   </div>
 

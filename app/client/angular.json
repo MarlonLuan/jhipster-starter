@@ -98,7 +98,6 @@
       }
     }
   },
-  "defaultProject": "jhipster",
   "cli": {
     "cache": {
       "enabled": true,

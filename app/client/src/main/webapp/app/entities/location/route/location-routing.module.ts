@@ -6,13 +6,14 @@ import { LocationComponent } from '../list/location.component';
 import { LocationDetailComponent } from '../detail/location-detail.component';
 import { LocationUpdateComponent } from '../update/location-update.component';
 import { LocationRoutingResolveService } from './location-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
 
 const locationRoute: Routes = [
   {
     path: '',
     component: LocationComponent,
     data: {
-      defaultSort: 'id,asc',
+      defaultSort: 'id,' + ASC,
     },
     canActivate: [UserRouteAccessService],
   },

@@ -5,7 +5,7 @@ import { ActivatedRouteSnapshot, ActivatedRoute, Router, convertToParamMap } fro
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { ITask, Task } from '../task.model';
+import { ITask } from '../task.model';
 import { TaskService } from '../service/task.service';
 
 import { TaskRoutingResolveService } from './task-routing-resolve.service';
@@ -15,7 +15,7 @@ describe('Task routing resolve service', () => {
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
   let routingResolveService: TaskRoutingResolveService;
   let service: TaskService;
-  let resultTask: ITask | undefined;
+  let resultTask: ITask | null | undefined;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -55,7 +55,7 @@ describe('Task routing resolve service', () => {
       expect(resultTask).toEqual({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
     });
 
-    it('should return new ITask if id is not provided', () => {
+    it('should return null if id is not provided', () => {
       // GIVEN
       service.find = jest.fn();
       mockActivatedRouteSnapshot.params = {};
@@ -67,12 +67,12 @@ describe('Task routing resolve service', () => {
 
       // THEN
       expect(service.find).not.toBeCalled();
-      expect(resultTask).toEqual(new Task());
+      expect(resultTask).toEqual(null);
     });
 
     it('should route to 404 page if data not found in server', () => {
       // GIVEN
-      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse({ body: null as unknown as Task })));
+      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse<ITask>({ body: null })));
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN

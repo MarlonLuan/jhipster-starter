@@ -3,9 +3,9 @@
     <span jhiTranslate="jhipsterApp.location.home.title">Locations</span>
 
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="loadPage()" [disabled]="isLoading">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
-        <span jhiTranslate="jhipsterApp.location.home.refreshListLabel">Refresh List</span>
+        <span jhiTranslate="jhipsterApp.location.home.refreshListLabel">Refresh list</span>
       </button>
 
       <button
@@ -25,26 +25,48 @@
   <jhi-alert></jhi-alert>
 
   <div class="alert alert-warning" id="no-result" *ngIf="locations?.length === 0">
-    <span jhiTranslate="jhipsterApp.location.home.notFound">No locations found</span>
+    <span jhiTranslate="jhipsterApp.location.home.notFound">No Locations found</span>
   </div>
 
-  <div class="table-responsive" id="entities" *ngIf="locations && locations.length > 0">
+  <div class="table-responsive table-entities" id="entities" *ngIf="locations && locations.length > 0">
     <table class="table table-striped" aria-describedby="page-heading">
       <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
-          <th scope="col" jhiSortBy="id"><span jhiTranslate="jhipsterApp.location.id">Id</span> <fa-icon icon="sort"></fa-icon></th>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <th scope="col" jhiSortBy="id">
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.location.id">Id</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col" jhiSortBy="streetAddress">
-            <span jhiTranslate="jhipsterApp.location.streetAddress">Street Address</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.location.streetAddress">Street Address</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="postalCode">
-            <span jhiTranslate="jhipsterApp.location.postalCode">Postal Code</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.location.postalCode">Postal Code</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
-          <th scope="col" jhiSortBy="city"><span jhiTranslate="jhipsterApp.location.city">City</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="city">
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.location.city">City</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col" jhiSortBy="stateProvince">
-            <span jhiTranslate="jhipsterApp.location.stateProvince">State Province</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.location.stateProvince">State Province</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col" jhiSortBy="country.id">
-            <span jhiTranslate="jhipsterApp.location.country">Country</span> <fa-icon icon="sort"></fa-icon>
+            <div class="d-flex">
+              <span jhiTranslate="jhipsterApp.location.country">Country</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
           </th>
           <th scope="col"></th>
         </tr>
@@ -60,7 +82,7 @@
           <td>{{ location.stateProvince }}</td>
           <td>
             <div *ngIf="location.country">
-              <a [routerLink]="['/country', location.country?.id, 'view']">{{ location.country?.id }}</a>
+              <a [routerLink]="['/country', location.country.id, 'view']">{{ location.country.id }}</a>
             </div>
           </td>
           <td class="text-end">
@@ -104,12 +126,12 @@
     <div class="d-flex justify-content-center">
       <ngb-pagination
         [collectionSize]="totalItems"
-        [(page)]="ngbPaginationPage"
+        [page]="page"
         [pageSize]="itemsPerPage"
         [maxSize]="5"
         [rotate]="true"
         [boundaryLinks]="true"
-        (pageChange)="loadPage($event)"
+        (pageChange)="navigateToPage($event)"
       ></ngb-pagination>
     </div>
   </div>

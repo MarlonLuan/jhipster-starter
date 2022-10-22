@@ -9,6 +9,5 @@ import { EmployeeRoutingModule } from './route/employee-routing.module';
 @NgModule({
   imports: [SharedModule, EmployeeRoutingModule],
   declarations: [EmployeeComponent, EmployeeDetailComponent, EmployeeUpdateComponent, EmployeeDeleteDialogComponent],
-  entryComponents: [EmployeeDeleteDialogComponent],
 })
 export class EmployeeModule {}

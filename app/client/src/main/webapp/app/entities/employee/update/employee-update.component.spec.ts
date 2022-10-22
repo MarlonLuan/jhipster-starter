@@ -6,8 +6,9 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
+import { EmployeeFormService } from './employee-form.service';
 import { EmployeeService } from '../service/employee.service';
-import { IEmployee, Employee } from '../employee.model';
+import { IEmployee } from '../employee.model';
 import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
 
@@ -17,6 +18,7 @@ describe('Employee Management Update Component', () => {
   let comp: EmployeeUpdateComponent;
   let fixture: ComponentFixture<EmployeeUpdateComponent>;
   let activatedRoute: ActivatedRoute;
+  let employeeFormService: EmployeeFormService;
   let employeeService: EmployeeService;
   let departmentService: DepartmentService;
 
@@ -39,6 +41,7 @@ describe('Employee Management Update Component', () => {
 
     fixture = TestBed.createComponent(EmployeeUpdateComponent);
     activatedRoute = TestBed.inject(ActivatedRoute);
+    employeeFormService = TestBed.inject(EmployeeFormService);
     employeeService = TestBed.inject(EmployeeService);
     departmentService = TestBed.inject(DepartmentService);
 
@@ -61,7 +64,10 @@ describe('Employee Management Update Component', () => {
       comp.ngOnInit();
 
       expect(employeeService.query).toHaveBeenCalled();
-      expect(employeeService.addEmployeeToCollectionIfMissing).toHaveBeenCalledWith(employeeCollection, ...additionalEmployees);
+      expect(employeeService.addEmployeeToCollectionIfMissing).toHaveBeenCalledWith(
+        employeeCollection,
+        ...additionalEmployees.map(expect.objectContaining)
+      );
       expect(comp.employeesSharedCollection).toEqual(expectedCollection);
     });
 
@@ -80,7 +86,10 @@ describe('Employee Management Update Component', () => {
       comp.ngOnInit();
 
       expect(departmentService.query).toHaveBeenCalled();
-      expect(departmentService.addDepartmentToCollectionIfMissing).toHaveBeenCalledWith(departmentCollection, ...additionalDepartments);
+      expect(departmentService.addDepartmentToCollectionIfMissing).toHaveBeenCalledWith(
+        departmentCollection,
+        ...additionalDepartments.map(expect.objectContaining)
+      );
       expect(comp.departmentsSharedCollection).toEqual(expectedCollection);
     });
 
@@ -94,17 +103,18 @@ describe('Employee Management Update Component', () => {
       activatedRoute.data = of({ employee });
       comp.ngOnInit();
 
-      expect(comp.editForm.value).toEqual(expect.objectContaining(employee));
       expect(comp.employeesSharedCollection).toContain(manager);
       expect(comp.departmentsSharedCollection).toContain(department);
+      expect(comp.employee).toEqual(employee);
     });
   });
 
   describe('save', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Employee>>();
+      const saveSubject = new Subject<HttpResponse<IEmployee>>();
       const employee = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      jest.spyOn(employeeFormService, 'getEmployee').mockReturnValue(employee);
       jest.spyOn(employeeService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ employee });
@@ -117,18 +127,20 @@ describe('Employee Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
+      expect(employeeFormService.getEmployee).toHaveBeenCalled();
       expect(comp.previousState).toHaveBeenCalled();
-      expect(employeeService.update).toHaveBeenCalledWith(employee);
+      expect(employeeService.update).toHaveBeenCalledWith(expect.objectContaining(employee));
       expect(comp.isSaving).toEqual(false);
     });
 
     it('Should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Employee>>();
-      const employee = new Employee();
+      const saveSubject = new Subject<HttpResponse<IEmployee>>();
+      const employee = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      jest.spyOn(employeeFormService, 'getEmployee').mockReturnValue({ id: null });
       jest.spyOn(employeeService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
-      activatedRoute.data = of({ employee });
+      activatedRoute.data = of({ employee: null });
       comp.ngOnInit();
 
       // WHEN
@@ -138,14 +150,15 @@ describe('Employee Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
-      expect(employeeService.create).toHaveBeenCalledWith(employee);
+      expect(employeeFormService.getEmployee).toHaveBeenCalled();
+      expect(employeeService.create).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
 
     it('Should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Employee>>();
+      const saveSubject = new Subject<HttpResponse<IEmployee>>();
       const employee = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
       jest.spyOn(employeeService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -158,26 +171,30 @@ describe('Employee Management Update Component', () => {
       saveSubject.error('This is an error!');
 
       // THEN
-      expect(employeeService.update).toHaveBeenCalledWith(employee);
+      expect(employeeService.update).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });
   });
 
-  describe('Tracking relationships identifiers', () => {
-    describe('trackEmployeeById', () => {
-      it('Should return tracked Employee primary key', () => {
+  describe('Compare relationships', () => {
+    describe('compareEmployee', () => {
+      it('Should forward to employeeService', () => {
         const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const trackResult = comp.trackEmployeeById(0, entity);
-        expect(trackResult).toEqual(entity.id);
+        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        jest.spyOn(employeeService, 'compareEmployee');
+        comp.compareEmployee(entity, entity2);
+        expect(employeeService.compareEmployee).toHaveBeenCalledWith(entity, entity2);
       });
     });
 
-    describe('trackDepartmentById', () => {
-      it('Should return tracked Department primary key', () => {
+    describe('compareDepartment', () => {
+      it('Should forward to departmentService', () => {
         const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const trackResult = comp.trackDepartmentById(0, entity);
-        expect(trackResult).toEqual(entity.id);
+        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        jest.spyOn(departmentService, 'compareDepartment');
+        comp.compareDepartment(entity, entity2);
+        expect(departmentService.compareDepartment).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

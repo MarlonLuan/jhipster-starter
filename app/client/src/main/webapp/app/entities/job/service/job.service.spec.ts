@@ -1,14 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
-import { IJob, Job } from '../job.model';
+import { IJob } from '../job.model';
+import { sampleWithRequiredData, sampleWithNewData, sampleWithPartialData, sampleWithFullData } from '../job.test-samples';
 
 import { JobService } from './job.service';
+
+const requireRestSample: IJob = {
+  ...sampleWithRequiredData,
+};
 
 describe('Job Service', () => {
   let service: JobService;
   let httpMock: HttpTestingController;
-  let elemDefault: IJob;
   let expectedResult: IJob | IJob[] | boolean | null;
 
   beforeEach(() => {
@@ -18,37 +22,27 @@ describe('Job Service', () => {
     expectedResult = null;
     service = TestBed.inject(JobService);
     httpMock = TestBed.inject(HttpTestingController);
-
-    elemDefault = {
-      id: 'AAAAAAA',
-      jobTitle: 'AAAAAAA',
-      minSalary: 0,
-      maxSalary: 0,
-    };
   });
 
   describe('Service methods', () => {
     it('should find an element', () => {
-      const returnedFromService = Object.assign({}, elemDefault);
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
       service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(returnedFromService);
-      expect(expectedResult).toMatchObject(elemDefault);
+      expect(expectedResult).toMatchObject(expected);
     });
 
     it('should create a Job', () => {
-      const returnedFromService = Object.assign(
-        {
-          id: 'ID',
-        },
-        elemDefault
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const job = { ...sampleWithNewData };
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
-      const expected = Object.assign({}, returnedFromService);
-
-      service.create(new Job()).subscribe(resp => (expectedResult = resp.body));
+      service.create(job).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'POST' });
       req.flush(returnedFromService);
@@ -56,19 +50,11 @@ describe('Job Service', () => {
     });
 
     it('should update a Job', () => {
-      const returnedFromService = Object.assign(
-        {
-          id: 'BBBBBB',
-          jobTitle: 'BBBBBB',
-          minSalary: 1,
-          maxSalary: 1,
-        },
-        elemDefault
-      );
+      const job = { ...sampleWithRequiredData };
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
-      const expected = Object.assign({}, returnedFromService);
-
-      service.update(expected).subscribe(resp => (expectedResult = resp.body));
+      service.update(job).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'PUT' });
       req.flush(returnedFromService);
@@ -76,17 +62,9 @@ describe('Job Service', () => {
     });
 
     it('should partial update a Job', () => {
-      const patchObject = Object.assign(
-        {
-          jobTitle: 'BBBBBB',
-          maxSalary: 1,
-        },
-        new Job()
-      );
-
-      const returnedFromService = Object.assign(patchObject, elemDefault);
-
-      const expected = Object.assign({}, returnedFromService);
+      const patchObject = { ...sampleWithPartialData };
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
       service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp.body));
 
@@ -96,76 +74,66 @@ describe('Job Service', () => {
     });
 
     it('should return a list of Job', () => {
-      const returnedFromService = Object.assign(
-        {
-          id: 'BBBBBB',
-          jobTitle: 'BBBBBB',
-          minSalary: 1,
-          maxSalary: 1,
-        },
-        elemDefault
-      );
+      const returnedFromService = { ...requireRestSample };
 
-      const expected = Object.assign({}, returnedFromService);
+      const expected = { ...sampleWithRequiredData };
 
       service.query().subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
       httpMock.verify();
-      expect(expectedResult).toContainEqual(expected);
+      expect(expectedResult).toMatchObject([expected]);
     });
 
     it('should delete a Job', () => {
+      const expected = true;
+
       service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.ok));
 
       const req = httpMock.expectOne({ method: 'DELETE' });
       req.flush({ status: 200 });
-      expect(expectedResult);
+      expect(expectedResult).toBe(expected);
     });
 
     describe('addJobToCollectionIfMissing', () => {
       it('should add a Job to an empty array', () => {
-        const job: IJob = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const job: IJob = sampleWithRequiredData;
         expectedResult = service.addJobToCollectionIfMissing([], job);
         expect(expectedResult).toHaveLength(1);
         expect(expectedResult).toContain(job);
       });
 
       it('should not add a Job to an array that contains it', () => {
-        const job: IJob = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const job: IJob = sampleWithRequiredData;
         const jobCollection: IJob[] = [
           {
             ...job,
           },
-          { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
+          sampleWithPartialData,
         ];
         expectedResult = service.addJobToCollectionIfMissing(jobCollection, job);
         expect(expectedResult).toHaveLength(2);
       });
 
       it("should add a Job to an array that doesn't contain it", () => {
-        const job: IJob = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const jobCollection: IJob[] = [{ id: '1361f429-3817-4123-8ee3-fdf8943310b2' }];
+        const job: IJob = sampleWithRequiredData;
+        const jobCollection: IJob[] = [sampleWithPartialData];
         expectedResult = service.addJobToCollectionIfMissing(jobCollection, job);
         expect(expectedResult).toHaveLength(2);
         expect(expectedResult).toContain(job);
       });
 
       it('should add only unique Job to an array', () => {
-        const jobArray: IJob[] = [
-          { id: '9fec3727-3421-4967-b213-ba36557ca194' },
-          { id: '1361f429-3817-4123-8ee3-fdf8943310b2' },
-          { id: 'bd218adc-7090-4944-b3cd-6a2f7908d598' },
-        ];
-        const jobCollection: IJob[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+        const jobArray: IJob[] = [sampleWithRequiredData, sampleWithPartialData, sampleWithFullData];
+        const jobCollection: IJob[] = [sampleWithRequiredData];
         expectedResult = service.addJobToCollectionIfMissing(jobCollection, ...jobArray);
         expect(expectedResult).toHaveLength(3);
       });
 
       it('should accept varargs', () => {
-        const job: IJob = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const job2: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const job: IJob = sampleWithRequiredData;
+        const job2: IJob = sampleWithPartialData;
         expectedResult = service.addJobToCollectionIfMissing([], job, job2);
         expect(expectedResult).toHaveLength(2);
         expect(expectedResult).toContain(job);
@@ -173,16 +141,60 @@ describe('Job Service', () => {
       });
 
       it('should accept null and undefined values', () => {
-        const job: IJob = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const job: IJob = sampleWithRequiredData;
         expectedResult = service.addJobToCollectionIfMissing([], null, job, undefined);
         expect(expectedResult).toHaveLength(1);
         expect(expectedResult).toContain(job);
       });
 
       it('should return initial array if no Job is added', () => {
-        const jobCollection: IJob[] = [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }];
+        const jobCollection: IJob[] = [sampleWithRequiredData];
         expectedResult = service.addJobToCollectionIfMissing(jobCollection, undefined, null);
         expect(expectedResult).toEqual(jobCollection);
+      });
+    });
+
+    describe('compareJob', () => {
+      it('Should return true if both entities are null', () => {
+        const entity1 = null;
+        const entity2 = null;
+
+        const compareResult = service.compareJob(entity1, entity2);
+
+        expect(compareResult).toEqual(true);
+      });
+
+      it('Should return false if one entity is null', () => {
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = null;
+
+        const compareResult1 = service.compareJob(entity1, entity2);
+        const compareResult2 = service.compareJob(entity2, entity1);
+
+        expect(compareResult1).toEqual(false);
+        expect(compareResult2).toEqual(false);
+      });
+
+      it('Should return false if primaryKey differs', () => {
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+
+        const compareResult1 = service.compareJob(entity1, entity2);
+        const compareResult2 = service.compareJob(entity2, entity1);
+
+        expect(compareResult1).toEqual(false);
+        expect(compareResult2).toEqual(false);
+      });
+
+      it('Should return false if primaryKey matches', () => {
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+
+        const compareResult1 = service.compareJob(entity1, entity2);
+        const compareResult2 = service.compareJob(entity2, entity1);
+
+        expect(compareResult1).toEqual(true);
+        expect(compareResult2).toEqual(true);
       });
     });
   });

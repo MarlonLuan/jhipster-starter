@@ -4,18 +4,18 @@ import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { ITask, Task } from '../task.model';
+import { ITask } from '../task.model';
 import { TaskService } from '../service/task.service';
 
 @Injectable({ providedIn: 'root' })
-export class TaskRoutingResolveService implements Resolve<ITask> {
+export class TaskRoutingResolveService implements Resolve<ITask | null> {
   constructor(protected service: TaskService, protected router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<ITask> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot): Observable<ITask | null | never> {
     const id = route.params['id'];
     if (id) {
       return this.service.find(id).pipe(
-        mergeMap((task: HttpResponse<Task>) => {
+        mergeMap((task: HttpResponse<ITask>) => {
           if (task.body) {
             return of(task.body);
           } else {
@@ -25,6 +25,6 @@ export class TaskRoutingResolveService implements Resolve<ITask> {
         })
       );
     }
-    return of(new Task());
+    return of(null);
   }
 }

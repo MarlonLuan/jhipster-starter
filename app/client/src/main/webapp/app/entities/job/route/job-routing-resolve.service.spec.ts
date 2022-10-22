@@ -5,7 +5,7 @@ import { ActivatedRouteSnapshot, ActivatedRoute, Router, convertToParamMap } fro
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { IJob, Job } from '../job.model';
+import { IJob } from '../job.model';
 import { JobService } from '../service/job.service';
 
 import { JobRoutingResolveService } from './job-routing-resolve.service';
@@ -15,7 +15,7 @@ describe('Job routing resolve service', () => {
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
   let routingResolveService: JobRoutingResolveService;
   let service: JobService;
-  let resultJob: IJob | undefined;
+  let resultJob: IJob | null | undefined;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -55,7 +55,7 @@ describe('Job routing resolve service', () => {
       expect(resultJob).toEqual({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
     });
 
-    it('should return new IJob if id is not provided', () => {
+    it('should return null if id is not provided', () => {
       // GIVEN
       service.find = jest.fn();
       mockActivatedRouteSnapshot.params = {};
@@ -67,12 +67,12 @@ describe('Job routing resolve service', () => {
 
       // THEN
       expect(service.find).not.toBeCalled();
-      expect(resultJob).toEqual(new Job());
+      expect(resultJob).toEqual(null);
     });
 
     it('should route to 404 page if data not found in server', () => {
       // GIVEN
-      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse({ body: null as unknown as Job })));
+      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse<IJob>({ body: null })));
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN

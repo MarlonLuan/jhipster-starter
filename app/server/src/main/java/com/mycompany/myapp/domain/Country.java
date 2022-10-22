@@ -9,6 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "country")
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class Country implements Serializable {
 
     private static final long serialVersionUID = 1L;
