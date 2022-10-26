@@ -18,7 +18,7 @@ export const sampleWithFullData: IEmployee = {
   lastName: 'Miller',
   email: 'Terrell.Pouros86@yahoo.com',
   phoneNumber: 'metrics Loan Brand',
-  hireDate: dayjs('2022-10-22T04:53'),
+  hireDate: dayjs('2022-10-26T00:09'),
   salary: 14616,
   commissionPct: 17603,
 };
