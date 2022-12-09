@@ -10,14 +10,14 @@ export const sampleWithRequiredData: IJobHistory = {
 
 export const sampleWithPartialData: IJobHistory = {
   id: '36427201-76e4-4885-a171-5926c59a55f5',
-  startDate: dayjs('2022-10-22T16:06'),
-  endDate: dayjs('2022-10-22T01:33'),
+  startDate: dayjs('2022-10-26T11:23'),
+  endDate: dayjs('2022-10-25T20:50'),
 };
 
 export const sampleWithFullData: IJobHistory = {
   id: '641c82ec-f1c8-4416-9eab-abdf71b06628',
-  startDate: dayjs('2022-10-21T16:59'),
-  endDate: dayjs('2022-10-22T00:51'),
+  startDate: dayjs('2022-10-25T12:16'),
+  endDate: dayjs('2022-10-25T20:07'),
   language: Language['ENGLISH'],
 };
 
