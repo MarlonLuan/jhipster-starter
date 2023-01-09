@@ -1,0 +1,32 @@
+{
+  "applications": ["jhipster"],
+  "changelogDate": "20230109154757",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "country",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "UUID"
+    },
+    {
+      "fieldName": "countryName",
+      "fieldType": "String"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": false,
+  "name": "Country",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "region",
+      "ownerSide": true,
+      "relationshipName": "region",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "service": "serviceImpl",
+  "skipServer": true
+}
