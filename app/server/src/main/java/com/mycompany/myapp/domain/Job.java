@@ -1,11 +1,11 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * A Job.
@@ -31,12 +31,12 @@ public class Job implements Serializable {
     @Column(name = "max_salary")
     private Long maxSalary;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "rel_job__task", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "task_id"))
     @JsonIgnoreProperties(value = { "jobs" }, allowSetters = true)
     private Set<Task> tasks = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "jobs", "manager", "department" }, allowSetters = true)
     private Employee employee;
 

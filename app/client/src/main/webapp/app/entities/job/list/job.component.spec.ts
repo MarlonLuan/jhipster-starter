@@ -18,8 +18,7 @@ describe('Job Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'job', component: JobComponent }]), HttpClientTestingModule],
-      declarations: [JobComponent],
+      imports: [RouterTestingModule.withRoutes([{ path: 'job', component: JobComponent }]), HttpClientTestingModule, JobComponent],
       providers: [
         {
           provide: ActivatedRoute,

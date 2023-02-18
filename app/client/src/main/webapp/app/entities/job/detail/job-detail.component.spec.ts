@@ -10,7 +10,7 @@ describe('Job Management Detail Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [JobDetailComponent],
+      imports: [JobDetailComponent],
       providers: [
         {
           provide: ActivatedRoute,

@@ -10,7 +10,7 @@ describe('Location Management Detail Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [LocationDetailComponent],
+      imports: [LocationDetailComponent],
       providers: [
         {
           provide: ActivatedRoute,

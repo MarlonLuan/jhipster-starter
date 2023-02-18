@@ -1,12 +1,12 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
-import javax.validation.constraints.*;
 
 /**
  * A Department.
@@ -28,14 +28,14 @@ public class Department implements Serializable {
     private String departmentName;
 
     @JsonIgnoreProperties(value = { "country" }, allowSetters = true)
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Location location;
 
     /**
      * A relationship
      */
-    @OneToMany(mappedBy = "department")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
     @JsonIgnoreProperties(value = { "jobs", "manager", "department" }, allowSetters = true)
     private Set<Employee> employees = new HashSet<>();
 

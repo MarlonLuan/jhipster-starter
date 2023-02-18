@@ -4,6 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { DepartmentFormService, DepartmentFormGroup } from './department-form.service';
 import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
@@ -11,8 +14,10 @@ import { ILocation } from 'app/entities/location/location.model';
 import { LocationService } from 'app/entities/location/service/location.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-department-update',
   templateUrl: './department-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class DepartmentUpdateComponent implements OnInit {
   isSaving = false;

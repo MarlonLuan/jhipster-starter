@@ -10,7 +10,7 @@ describe('Department Management Detail Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DepartmentDetailComponent],
+      imports: [DepartmentDetailComponent],
       providers: [
         {
           provide: ActivatedRoute,

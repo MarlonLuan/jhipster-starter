@@ -30,8 +30,7 @@ describe('JobHistory Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [JobHistoryUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), JobHistoryUpdateComponent],
       providers: [
         FormBuilder,
         {
@@ -59,10 +58,10 @@ describe('JobHistory Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Job query and add missing value', () => {
       const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const job: IJob = { id: '6cfbfe91-3f81-414a-aff8-e953d43c06dc' };
+      const job: IJob = { id: 'ee204a3a-22e8-41af-820c-504685422ddf' };
       jobHistory.job = job;
 
-      const jobCollection: IJob[] = [{ id: '85dfa6f0-10bb-4738-aebb-e4fe837d158a' }];
+      const jobCollection: IJob[] = [{ id: '1c451fad-20c0-4290-9e95-898b280f57b0' }];
       jest.spyOn(jobService, 'query').mockReturnValue(of(new HttpResponse({ body: jobCollection })));
       const additionalJobs = [job];
       const expectedCollection: IJob[] = [...additionalJobs, ...jobCollection];
@@ -78,10 +77,10 @@ describe('JobHistory Management Update Component', () => {
 
     it('Should call Department query and add missing value', () => {
       const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const department: IDepartment = { id: '126ff2e2-c8a8-4df6-b63c-0948695a7b20' };
+      const department: IDepartment = { id: '9f1d6dd5-450d-4245-8adb-7df814bfffd6' };
       jobHistory.department = department;
 
-      const departmentCollection: IDepartment[] = [{ id: '65e6a084-2348-43b5-b4df-4629043f55ae' }];
+      const departmentCollection: IDepartment[] = [{ id: '56358cfe-0d27-4835-b639-cc3c9a066c72' }];
       jest.spyOn(departmentService, 'query').mockReturnValue(of(new HttpResponse({ body: departmentCollection })));
       const additionalDepartments = [department];
       const expectedCollection: IDepartment[] = [...additionalDepartments, ...departmentCollection];
@@ -100,10 +99,10 @@ describe('JobHistory Management Update Component', () => {
 
     it('Should call Employee query and add missing value', () => {
       const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const employee: IEmployee = { id: 'fee2d000-df73-4566-85b7-94b2159aa534' };
+      const employee: IEmployee = { id: '4f4915c5-1012-4308-9015-4f38e8150b8c' };
       jobHistory.employee = employee;
 
-      const employeeCollection: IEmployee[] = [{ id: 'dffaa473-32f6-4a0e-91b6-96cc8cea597a' }];
+      const employeeCollection: IEmployee[] = [{ id: '475970b2-d984-4224-a70b-025e49830c4e' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [employee];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
@@ -122,11 +121,11 @@ describe('JobHistory Management Update Component', () => {
 
     it('Should update editForm', () => {
       const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const job: IJob = { id: 'ac0c32f9-abbf-402f-b3e4-a608907d90b3' };
+      const job: IJob = { id: '7dd156f8-f8e4-4fb9-bca1-4e4b7ad83249' };
       jobHistory.job = job;
-      const department: IDepartment = { id: '5523a808-d95c-4dce-b48f-5599f31602cb' };
+      const department: IDepartment = { id: '9f6ba1de-5279-43e3-a7b7-f1f1faf9fbb7' };
       jobHistory.department = department;
-      const employee: IEmployee = { id: 'a91f3692-9ba1-41f9-bf2b-26fb24694e5e' };
+      const employee: IEmployee = { id: '68a1fdd7-e992-4c09-b43f-5de4cdf99caa' };
       jobHistory.employee = employee;
 
       activatedRoute.data = of({ jobHistory });

@@ -18,8 +18,11 @@ describe('Employee Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'employee', component: EmployeeComponent }]), HttpClientTestingModule],
-      declarations: [EmployeeComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'employee', component: EmployeeComponent }]),
+        HttpClientTestingModule,
+        EmployeeComponent,
+      ],
       providers: [
         {
           provide: ActivatedRoute,

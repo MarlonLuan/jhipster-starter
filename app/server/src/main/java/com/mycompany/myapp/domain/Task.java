@@ -1,11 +1,11 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * Task entity.\n@author The JHipster team.
@@ -28,7 +28,7 @@ public class Task implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany(mappedBy = "tasks")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tasks")
     @JsonIgnoreProperties(value = { "tasks", "employee" }, allowSetters = true)
     private Set<Job> jobs = new HashSet<>();
 

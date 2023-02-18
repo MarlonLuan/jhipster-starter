@@ -18,8 +18,11 @@ describe('JobHistory Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'job-history', component: JobHistoryComponent }]), HttpClientTestingModule],
-      declarations: [JobHistoryComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'job-history', component: JobHistoryComponent }]),
+        HttpClientTestingModule,
+        JobHistoryComponent,
+      ],
       providers: [
         {
           provide: ActivatedRoute,

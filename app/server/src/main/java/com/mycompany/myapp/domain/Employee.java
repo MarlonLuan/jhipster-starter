@@ -1,12 +1,12 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * The Employee entity.
@@ -47,18 +47,18 @@ public class Employee implements Serializable {
     @Column(name = "commission_pct")
     private Long commissionPct;
 
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "employee")
     @JsonIgnoreProperties(value = { "tasks", "employee" }, allowSetters = true)
     private Set<Job> jobs = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "jobs", "manager", "department" }, allowSetters = true)
     private Employee manager;
 
     /**
      * Another side of the same relationship
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "location", "employees" }, allowSetters = true)
     private Department department;
 

@@ -4,6 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { JobHistoryFormService, JobHistoryFormGroup } from './job-history-form.service';
 import { IJobHistory } from '../job-history.model';
 import { JobHistoryService } from '../service/job-history.service';
@@ -16,8 +19,10 @@ import { EmployeeService } from 'app/entities/employee/service/employee.service'
 import { Language } from 'app/entities/enumerations/language.model';
 
 @Component({
+  standalone: true,
   selector: 'jhi-job-history-update',
   templateUrl: './job-history-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class JobHistoryUpdateComponent implements OnInit {
   isSaving = false;

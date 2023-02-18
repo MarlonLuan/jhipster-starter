@@ -1,9 +1,9 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * not an ignored comment
@@ -33,7 +33,7 @@ public class Location implements Serializable {
     private String stateProvince;
 
     @JsonIgnoreProperties(value = { "region" }, allowSetters = true)
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Country country;
 

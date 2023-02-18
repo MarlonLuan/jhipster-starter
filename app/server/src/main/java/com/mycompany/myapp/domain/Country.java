@@ -1,8 +1,8 @@
 package com.mycompany.myapp.domain;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * A Country.
@@ -22,7 +22,7 @@ public class Country implements Serializable {
     @Column(name = "country_name")
     private String countryName;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Region region;
 

@@ -2,10 +2,10 @@ package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mycompany.myapp.domain.enumeration.Language;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * A JobHistory.
@@ -33,17 +33,17 @@ public class JobHistory implements Serializable {
     private Language language;
 
     @JsonIgnoreProperties(value = { "tasks", "employee" }, allowSetters = true)
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Job job;
 
     @JsonIgnoreProperties(value = { "location", "employees" }, allowSetters = true)
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Department department;
 
     @JsonIgnoreProperties(value = { "jobs", "manager", "department" }, allowSetters = true)
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Employee employee;
 

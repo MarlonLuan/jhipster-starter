@@ -18,8 +18,11 @@ describe('Country Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'country', component: CountryComponent }]), HttpClientTestingModule],
-      declarations: [CountryComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'country', component: CountryComponent }]),
+        HttpClientTestingModule,
+        CountryComponent,
+      ],
       providers: [
         {
           provide: ActivatedRoute,

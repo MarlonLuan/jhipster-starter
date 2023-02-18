@@ -4,6 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { LocationFormService, LocationFormGroup } from './location-form.service';
 import { ILocation } from '../location.model';
 import { LocationService } from '../service/location.service';
@@ -11,8 +14,10 @@ import { ICountry } from 'app/entities/country/country.model';
 import { CountryService } from 'app/entities/country/service/country.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-location-update',
   templateUrl: './location-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class LocationUpdateComponent implements OnInit {
   isSaving = false;

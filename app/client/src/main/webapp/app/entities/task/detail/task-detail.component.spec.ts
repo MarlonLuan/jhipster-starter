@@ -10,7 +10,7 @@ describe('Task Management Detail Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TaskDetailComponent],
+      imports: [TaskDetailComponent],
       providers: [
         {
           provide: ActivatedRoute,

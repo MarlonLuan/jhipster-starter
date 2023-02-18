@@ -1,8 +1,8 @@
 package com.mycompany.myapp.domain;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * A Region.

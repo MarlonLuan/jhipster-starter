@@ -1,19 +1,19 @@
 import { ITask, NewTask } from './task.model';
 
 export const sampleWithRequiredData: ITask = {
-  id: '6cd369ff-3e50-44dc-bff2-85e0c26ef9ed',
+  id: '099b6577-e459-4ae6-8770-fc9de254d222',
 };
 
 export const sampleWithPartialData: ITask = {
-  id: 'c51c0fba-8dba-4c51-b5b3-279bc9af4bf8',
-  title: 'Licensed Account',
-  description: 'Sleek',
+  id: '21bb33a1-76d1-49b8-a647-8c1444c1282c',
+  title: 'Cotton RSS',
+  description: 'Communications scalable frictionless',
 };
 
 export const sampleWithFullData: ITask = {
-  id: '34411810-297e-4e02-bb64-e2d6d401a6b3',
-  title: 'SDD',
-  description: 'Strategist Springs white',
+  id: 'ec82389b-a23b-440a-bd9e-a4610e6a16c3',
+  title: 'Northeast',
+  description: 'Diesel group',
 };
 
 export const sampleWithNewData: NewTask = {
