@@ -21,8 +21,7 @@ describe('Region Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [RegionUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), RegionUpdateComponent],
       providers: [
         FormBuilder,
         {

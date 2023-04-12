@@ -13,7 +13,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { LoginService } from 'app/login/login.service';
 
-import { NavbarComponent } from './navbar.component';
+import NavbarComponent from './navbar.component';
 
 describe('Navbar Component', () => {
   let comp: NavbarComponent;
@@ -33,8 +33,13 @@ describe('Navbar Component', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), TranslateModule.forRoot(), NgxWebstorageModule.forRoot()],
-      declarations: [NavbarComponent],
+      imports: [
+        NavbarComponent,
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([]),
+        TranslateModule.forRoot(),
+        NgxWebstorageModule.forRoot(),
+      ],
       providers: [LoginService],
     })
       .overrideTemplate(NavbarComponent, '')

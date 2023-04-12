@@ -1,19 +1,20 @@
 import { ILocation, NewLocation } from './location.model';
 
 export const sampleWithRequiredData: ILocation = {
-  id: 'e0df5e1a-be08-465b-acc9-eb918c1e21ed',
+  id: 'c1720011-f6c0-4cac-ad52-8c2220506dcd',
 };
 
 export const sampleWithPartialData: ILocation = {
-  id: '905dc622-49b2-4006-b140-b1a55724e58d',
+  id: 'be14192e-bb63-45fb-afa2-2fbaedbc013e',
+  city: 'Fort Dellaville',
 };
 
 export const sampleWithFullData: ILocation = {
-  id: 'ffc7cefd-2e70-402b-aad3-0f7dcc0f2bd8',
-  streetAddress: 'Savings',
-  postalCode: '1080p Analyst Shoes',
-  city: 'Lake Yazminchester',
-  stateProvince: 'silver hack Tactics',
+  id: 'b6bd073a-8981-4f52-8c3c-47ee03a66c3a',
+  streetAddress: 'Robust Coupe Intranet',
+  postalCode: 'than scarily',
+  city: 'Santa Rosa',
+  stateProvince: 'collaborative parallelism over',
 };
 
 export const sampleWithNewData: NewLocation = {
