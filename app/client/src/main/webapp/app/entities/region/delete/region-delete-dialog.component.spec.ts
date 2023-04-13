@@ -18,8 +18,7 @@ describe('Region Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [RegionDeleteDialogComponent],
+      imports: [HttpClientTestingModule, RegionDeleteDialogComponent],
       providers: [NgbActiveModal],
     })
       .overrideTemplate(RegionDeleteDialogComponent, '')

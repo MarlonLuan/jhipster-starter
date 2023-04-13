@@ -1,0 +1,45 @@
+import { Routes } from '@angular/router';
+
+import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { RegionComponent } from './list/region.component';
+import { RegionDetailComponent } from './detail/region-detail.component';
+import { RegionUpdateComponent } from './update/region-update.component';
+import { RegionRoutingResolveService } from './route/region-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
+
+const regionRoute: Routes = [
+  {
+    path: '',
+    component: RegionComponent,
+    data: {
+      defaultSort: 'id,' + ASC,
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: ':id/view',
+    component: RegionDetailComponent,
+    resolve: {
+      region: RegionRoutingResolveService,
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'new',
+    component: RegionUpdateComponent,
+    resolve: {
+      region: RegionRoutingResolveService,
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: ':id/edit',
+    component: RegionUpdateComponent,
+    resolve: {
+      region: RegionRoutingResolveService,
+    },
+    canActivate: [UserRouteAccessService],
+  },
+];
+
+export default regionRoute;

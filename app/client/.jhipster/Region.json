@@ -1,6 +1,6 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20230109171621",
+  "changelogDate": "20230413082528",
   "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "region",
@@ -20,6 +20,5 @@
   "pagination": "pagination",
   "readOnly": false,
   "relationships": [],
-  "service": "serviceImpl",
-  "skipServer": true
+  "service": "serviceImpl"
 }

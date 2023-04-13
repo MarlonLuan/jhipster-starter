@@ -1,6 +1,6 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20230109172021",
+  "changelogDate": "20230413082928",
   "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "task",
@@ -33,6 +33,5 @@
       "relationshipType": "many-to-many"
     }
   ],
-  "service": "serviceImpl",
-  "skipServer": true
+  "service": "serviceImpl"
 }

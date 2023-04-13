@@ -27,8 +27,7 @@ describe('Job Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [JobUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), JobUpdateComponent],
       providers: [
         FormBuilder,
         {
@@ -55,10 +54,10 @@ describe('Job Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Task query and add missing value', () => {
       const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const tasks: ITask[] = [{ id: 'e2e1acc3-9ec5-447c-a291-12013cfe06b8' }];
+      const tasks: ITask[] = [{ id: 'e174cb86-afea-4517-947a-719c1bf2abe6' }];
       job.tasks = tasks;
 
-      const taskCollection: ITask[] = [{ id: '28ec4d12-3c43-41a0-aef2-139c0d1dae95' }];
+      const taskCollection: ITask[] = [{ id: '4cd3af56-f07e-48df-8e19-2be57bf8d4dc' }];
       jest.spyOn(taskService, 'query').mockReturnValue(of(new HttpResponse({ body: taskCollection })));
       const additionalTasks = [...tasks];
       const expectedCollection: ITask[] = [...additionalTasks, ...taskCollection];
@@ -77,10 +76,10 @@ describe('Job Management Update Component', () => {
 
     it('Should call Employee query and add missing value', () => {
       const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const employee: IEmployee = { id: 'cc381ce0-37da-481c-b93f-59c6b8377b93' };
+      const employee: IEmployee = { id: '8c737ea6-b3ac-4200-9d79-4ddfafd23744' };
       job.employee = employee;
 
-      const employeeCollection: IEmployee[] = [{ id: '7a8cb8b7-0871-4787-878c-f824fc1ad02b' }];
+      const employeeCollection: IEmployee[] = [{ id: '703e22a5-e439-44ca-964c-c6e42e2e3067' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [employee];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
@@ -99,9 +98,9 @@ describe('Job Management Update Component', () => {
 
     it('Should update editForm', () => {
       const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const task: ITask = { id: '0e59552b-7478-49d0-b770-a8c547701da7' };
+      const task: ITask = { id: '4a08334d-632f-4abf-978a-2f5f537f42d0' };
       job.tasks = [task];
-      const employee: IEmployee = { id: '3db2d831-b39e-4611-8df5-d50291065983' };
+      const employee: IEmployee = { id: '9ab37a74-c41b-40bf-80e1-7a4ab73f484b' };
       job.employee = employee;
 
       activatedRoute.data = of({ job });

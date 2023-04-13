@@ -1,6 +1,7 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.JobDTO;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,13 @@ public interface JobService {
      * @return the list of entities.
      */
     Page<JobDTO> findAll(Pageable pageable);
+
+    /**
+     * Get all the JobDTO where JobHistory is {@code null}.
+     *
+     * @return the {@link List} of entities.
+     */
+    List<JobDTO> findAllWhereJobHistoryIsNull();
 
     /**
      * Get all the jobs with eager load of many-to-many relationships.

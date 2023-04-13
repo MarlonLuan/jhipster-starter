@@ -10,7 +10,7 @@ describe('JobHistory Management Detail Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [JobHistoryDetailComponent],
+      imports: [JobHistoryDetailComponent],
       providers: [
         {
           provide: ActivatedRoute,

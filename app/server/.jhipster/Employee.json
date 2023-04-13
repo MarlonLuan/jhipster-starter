@@ -1,6 +1,6 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20230109172235",
+  "changelogDate": "20230413083136",
   "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "employee",
@@ -60,11 +60,10 @@
     {
       "javadoc": "Another side of the same relationship",
       "otherEntityName": "department",
-      "otherEntityRelationshipName": "employee",
       "relationshipName": "department",
       "relationshipType": "many-to-one"
     }
   ],
-  "service": "serviceImpl",
-  "skipClient": true
+  "searchEngine": "no",
+  "service": "serviceImpl"
 }

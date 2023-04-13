@@ -18,8 +18,7 @@ describe('JobHistory Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [JobHistoryDeleteDialogComponent],
+      imports: [HttpClientTestingModule, JobHistoryDeleteDialogComponent],
       providers: [NgbActiveModal],
     })
       .overrideTemplate(JobHistoryDeleteDialogComponent, '')
