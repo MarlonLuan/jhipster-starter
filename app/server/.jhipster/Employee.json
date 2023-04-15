@@ -1,6 +1,6 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20230109172235",
+  "changelogDate": "20230415113047",
   "dto": "mapstruct",
   "embedded": false,
   "entityTableName": "employee",
