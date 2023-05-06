@@ -4,25 +4,25 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <!--
-        Added the constraints for entity JobHistory.
+        Added the constraints for entity Job.
     -->
-    <changeSet id="20230415114538-2" author="jhipster">
+    <changeSet id="20230506142134-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="job_id"
-                                 baseTableName="job_history"
-                                 constraintName="fk_job_history__job_id"
+                                 baseTableName="rel_job__task"
+                                 constraintName="fk_rel_job__task__job_id"
                                  referencedColumnNames="id"
                                  referencedTableName="job"/>
 
-        <addForeignKeyConstraint baseColumnNames="department_id"
-                                 baseTableName="job_history"
-                                 constraintName="fk_job_history__department_id"
+        <addForeignKeyConstraint baseColumnNames="task_id"
+                                 baseTableName="rel_job__task"
+                                 constraintName="fk_rel_job__task__task_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="department"/>
+                                 referencedTableName="task"/>
 
         <addForeignKeyConstraint baseColumnNames="employee_id"
-                                 baseTableName="job_history"
-                                 constraintName="fk_job_history__employee_id"
+                                 baseTableName="job"
+                                 constraintName="fk_job__employee_id"
                                  referencedColumnNames="id"
                                  referencedTableName="employee"/>
     </changeSet>
