@@ -10,7 +10,7 @@ describe('Country Management Detail Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CountryDetailComponent],
+      imports: [CountryDetailComponent],
       providers: [
         {
           provide: ActivatedRoute,

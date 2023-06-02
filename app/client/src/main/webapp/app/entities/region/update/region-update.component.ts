@@ -4,13 +4,18 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { RegionFormService, RegionFormGroup } from './region-form.service';
 import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-region-update',
   templateUrl: './region-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class RegionUpdateComponent implements OnInit {
   isSaving = false;

@@ -1,8 +1,7 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20230506142034",
+  "changelogDate": "20230602203144",
   "dto": "mapstruct",
-  "embedded": false,
   "entityTableName": "employee",
   "fields": [
     {
@@ -39,12 +38,9 @@
       "fieldType": "Long"
     }
   ],
-  "fluentMethods": true,
   "javadoc": "The Employee entity.",
-  "jpaMetamodelFiltering": false,
   "name": "Employee",
   "pagination": "pagination",
-  "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "job",
@@ -60,11 +56,10 @@
     {
       "javadoc": "Another side of the same relationship",
       "otherEntityName": "department",
-      "otherEntityRelationshipName": "employee",
       "relationshipName": "department",
       "relationshipType": "many-to-one"
     }
   ],
-  "service": "serviceImpl",
-  "skipClient": true
+  "searchEngine": "no",
+  "service": "serviceImpl"
 }

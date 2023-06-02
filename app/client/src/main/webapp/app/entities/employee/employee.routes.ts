@@ -1,0 +1,45 @@
+import { Routes } from '@angular/router';
+
+import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { EmployeeComponent } from './list/employee.component';
+import { EmployeeDetailComponent } from './detail/employee-detail.component';
+import { EmployeeUpdateComponent } from './update/employee-update.component';
+import { EmployeeRoutingResolveService } from './route/employee-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
+
+const employeeRoute: Routes = [
+  {
+    path: '',
+    component: EmployeeComponent,
+    data: {
+      defaultSort: 'id,' + ASC,
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: ':id/view',
+    component: EmployeeDetailComponent,
+    resolve: {
+      employee: EmployeeRoutingResolveService,
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'new',
+    component: EmployeeUpdateComponent,
+    resolve: {
+      employee: EmployeeRoutingResolveService,
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: ':id/edit',
+    component: EmployeeUpdateComponent,
+    resolve: {
+      employee: EmployeeRoutingResolveService,
+    },
+    canActivate: [UserRouteAccessService],
+  },
+];
+
+export default employeeRoute;

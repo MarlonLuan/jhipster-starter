@@ -18,8 +18,7 @@ describe('Region Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'region', component: RegionComponent }]), HttpClientTestingModule],
-      declarations: [RegionComponent],
+      imports: [RouterTestingModule.withRoutes([{ path: 'region', component: RegionComponent }]), HttpClientTestingModule, RegionComponent],
       providers: [
         {
           provide: ActivatedRoute,

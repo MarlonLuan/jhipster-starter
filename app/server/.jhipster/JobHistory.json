@@ -1,8 +1,7 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20230506142234",
+  "changelogDate": "20230602203146",
   "dto": "mapstruct",
-  "embedded": false,
   "entityTableName": "job_history",
   "fields": [
     {
@@ -23,11 +22,8 @@
       "fieldValues": "FRENCH,ENGLISH,SPANISH"
     }
   ],
-  "fluentMethods": true,
-  "jpaMetamodelFiltering": false,
   "name": "JobHistory",
   "pagination": "pagination",
-  "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "job",
@@ -48,6 +44,6 @@
       "relationshipType": "one-to-one"
     }
   ],
-  "service": "serviceImpl",
-  "skipClient": true
+  "searchEngine": "no",
+  "service": "serviceImpl"
 }

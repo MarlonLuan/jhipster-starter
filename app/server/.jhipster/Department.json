@@ -1,8 +1,7 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20230506141834",
+  "changelogDate": "20230602203142",
   "dto": "mapstruct",
-  "embedded": false,
   "entityTableName": "department",
   "fields": [
     {
@@ -15,11 +14,8 @@
       "fieldValidateRules": ["required"]
     }
   ],
-  "fluentMethods": true,
-  "jpaMetamodelFiltering": false,
   "name": "Department",
   "pagination": "pagination",
-  "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "location",
@@ -35,6 +31,6 @@
       "relationshipType": "one-to-many"
     }
   ],
-  "service": "serviceImpl",
-  "skipClient": true
+  "searchEngine": "no",
+  "service": "serviceImpl"
 }

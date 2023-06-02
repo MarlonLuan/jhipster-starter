@@ -1,22 +1,22 @@
 import { IDepartment, NewDepartment } from './department.model';
 
 export const sampleWithRequiredData: IDepartment = {
-  id: '684b861b-2c15-4402-a277-318933fd4b5b',
-  departmentName: 'digital user-centric',
+  id: 'ba015a18-f470-41e0-8cb8-cf97424358e4',
+  departmentName: 'RAM throughput Agent',
 };
 
 export const sampleWithPartialData: IDepartment = {
-  id: 'e56701eb-35f7-402c-b477-4fe4f434215b',
-  departmentName: 'Hill Dynamic RSS',
+  id: 'c342a8e3-828c-44ad-8689-7bd4b8566453',
+  departmentName: 'Nakfa schemas',
 };
 
 export const sampleWithFullData: IDepartment = {
-  id: 'b33fb7e9-8a28-4196-af19-2444a0201fd6',
-  departmentName: 'cross-media Mississippi',
+  id: '9190f477-d3f9-4cc7-abb8-cb562198ee6e',
+  departmentName: 'Principal input indeed',
 };
 
 export const sampleWithNewData: NewDepartment = {
-  departmentName: 'Investor',
+  departmentName: 'Savings Bicycle excepting',
   id: null,
 };
 

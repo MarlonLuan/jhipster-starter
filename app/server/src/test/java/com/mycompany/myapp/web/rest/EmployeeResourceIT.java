@@ -11,11 +11,11 @@ import com.mycompany.myapp.domain.Employee;
 import com.mycompany.myapp.repository.EmployeeRepository;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
 import com.mycompany.myapp.service.mapper.EmployeeMapper;
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -341,7 +341,7 @@ class EmployeeResourceIT {
         Employee partialUpdatedEmployee = new Employee();
         partialUpdatedEmployee.setId(employee.getId());
 
-        partialUpdatedEmployee.lastName(UPDATED_LAST_NAME).email(UPDATED_EMAIL).commissionPct(UPDATED_COMMISSION_PCT);
+        partialUpdatedEmployee.salary(UPDATED_SALARY).commissionPct(UPDATED_COMMISSION_PCT);
 
         restEmployeeMockMvc
             .perform(
@@ -357,11 +357,11 @@ class EmployeeResourceIT {
         assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
         Employee testEmployee = employeeList.get(employeeList.size() - 1);
         assertThat(testEmployee.getFirstName()).isEqualTo(DEFAULT_FIRST_NAME);
-        assertThat(testEmployee.getLastName()).isEqualTo(UPDATED_LAST_NAME);
-        assertThat(testEmployee.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testEmployee.getLastName()).isEqualTo(DEFAULT_LAST_NAME);
+        assertThat(testEmployee.getEmail()).isEqualTo(DEFAULT_EMAIL);
         assertThat(testEmployee.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
         assertThat(testEmployee.getHireDate()).isEqualTo(DEFAULT_HIRE_DATE);
-        assertThat(testEmployee.getSalary()).isEqualTo(DEFAULT_SALARY);
+        assertThat(testEmployee.getSalary()).isEqualTo(UPDATED_SALARY);
         assertThat(testEmployee.getCommissionPct()).isEqualTo(UPDATED_COMMISSION_PCT);
     }
 
