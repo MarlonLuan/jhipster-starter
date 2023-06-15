@@ -18,8 +18,7 @@ describe('Task Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'task', component: TaskComponent }]), HttpClientTestingModule],
-      declarations: [TaskComponent],
+      imports: [RouterTestingModule.withRoutes([{ path: 'task', component: TaskComponent }]), HttpClientTestingModule, TaskComponent],
       providers: [
         {
           provide: ActivatedRoute,

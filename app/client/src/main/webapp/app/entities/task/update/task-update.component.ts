@@ -4,13 +4,18 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { TaskFormService, TaskFormGroup } from './task-form.service';
 import { ITask } from '../task.model';
 import { TaskService } from '../service/task.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-task-update',
   templateUrl: './task-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class TaskUpdateComponent implements OnInit {
   isSaving = false;

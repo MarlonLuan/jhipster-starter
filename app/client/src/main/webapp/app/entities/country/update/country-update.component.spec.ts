@@ -24,8 +24,7 @@ describe('Country Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [CountryUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), CountryUpdateComponent],
       providers: [
         FormBuilder,
         {
@@ -49,37 +48,33 @@ describe('Country Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call Region query and add missing value', () => {
+    it('Should call region query and add missing value', () => {
       const country: ICountry = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const region: IRegion = { id: 'c9a07aaf-b018-4454-9c14-72750ed4f9a6' };
+      const region: IRegion = { id: 'ac8ebc9a-14f5-4cab-aafa-f54741b615f2' };
       country.region = region;
 
-      const regionCollection: IRegion[] = [{ id: '8dd721ae-9167-4dc2-9412-27f29f791f3e' }];
+      const regionCollection: IRegion[] = [{ id: '16707ba7-fbad-4bfc-9d8d-f5ba7c8ff0b1' }];
       jest.spyOn(regionService, 'query').mockReturnValue(of(new HttpResponse({ body: regionCollection })));
-      const additionalRegions = [region];
-      const expectedCollection: IRegion[] = [...additionalRegions, ...regionCollection];
+      const expectedCollection: IRegion[] = [region, ...regionCollection];
       jest.spyOn(regionService, 'addRegionToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ country });
       comp.ngOnInit();
 
       expect(regionService.query).toHaveBeenCalled();
-      expect(regionService.addRegionToCollectionIfMissing).toHaveBeenCalledWith(
-        regionCollection,
-        ...additionalRegions.map(expect.objectContaining)
-      );
-      expect(comp.regionsSharedCollection).toEqual(expectedCollection);
+      expect(regionService.addRegionToCollectionIfMissing).toHaveBeenCalledWith(regionCollection, region);
+      expect(comp.regionsCollection).toEqual(expectedCollection);
     });
 
     it('Should update editForm', () => {
       const country: ICountry = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const region: IRegion = { id: 'ab35acef-89da-4285-9f5e-26037da67825' };
+      const region: IRegion = { id: '71aa37cd-e1d6-4645-aa0e-b8070085b11b' };
       country.region = region;
 
       activatedRoute.data = of({ country });
       comp.ngOnInit();
 
-      expect(comp.regionsSharedCollection).toContain(region);
+      expect(comp.regionsCollection).toContain(region);
       expect(comp.country).toEqual(country);
     });
   });

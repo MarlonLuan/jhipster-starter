@@ -11,9 +11,9 @@ import com.mycompany.myapp.domain.Task;
 import com.mycompany.myapp.repository.TaskRepository;
 import com.mycompany.myapp.service.dto.TaskDTO;
 import com.mycompany.myapp.service.mapper.TaskMapper;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -280,8 +280,6 @@ class TaskResourceIT {
         Task partialUpdatedTask = new Task();
         partialUpdatedTask.setId(task.getId());
 
-        partialUpdatedTask.description(UPDATED_DESCRIPTION);
-
         restTaskMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedTask.getId())
@@ -296,7 +294,7 @@ class TaskResourceIT {
         assertThat(taskList).hasSize(databaseSizeBeforeUpdate);
         Task testTask = taskList.get(taskList.size() - 1);
         assertThat(testTask.getTitle()).isEqualTo(DEFAULT_TITLE);
-        assertThat(testTask.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
+        assertThat(testTask.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
     }
 
     @Test

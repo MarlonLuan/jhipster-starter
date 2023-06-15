@@ -18,8 +18,7 @@ describe('Location Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [LocationDeleteDialogComponent],
+      imports: [HttpClientTestingModule, LocationDeleteDialogComponent],
       providers: [NgbActiveModal],
     })
       .overrideTemplate(LocationDeleteDialogComponent, '')

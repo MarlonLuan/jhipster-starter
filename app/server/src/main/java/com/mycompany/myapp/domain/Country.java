@@ -1,8 +1,9 @@
 package com.mycompany.myapp.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * A Country.
@@ -22,9 +23,14 @@ public class Country implements Serializable {
     @Column(name = "country_name")
     private String countryName;
 
-    @OneToOne
+    @JsonIgnoreProperties(value = { "country" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Region region;
+
+    @JsonIgnoreProperties(value = { "country", "department" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "country")
+    private Location location;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -64,6 +70,25 @@ public class Country implements Serializable {
 
     public Country region(Region region) {
         this.setRegion(region);
+        return this;
+    }
+
+    public Location getLocation() {
+        return this.location;
+    }
+
+    public void setLocation(Location location) {
+        if (this.location != null) {
+            this.location.setCountry(null);
+        }
+        if (location != null) {
+            location.setCountry(this);
+        }
+        this.location = location;
+    }
+
+    public Country location(Location location) {
+        this.setLocation(location);
         return this;
     }
 
