@@ -4,6 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { DepartmentFormService, DepartmentFormGroup } from './department-form.service';
 import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
@@ -11,14 +14,16 @@ import { ILocation } from 'app/entities/location/location.model';
 import { LocationService } from 'app/entities/location/service/location.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-department-update',
   templateUrl: './department-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class DepartmentUpdateComponent implements OnInit {
   isSaving = false;
   department: IDepartment | null = null;
 
-  locationsSharedCollection: ILocation[] = [];
+  locationsCollection: ILocation[] = [];
 
   editForm: DepartmentFormGroup = this.departmentFormService.createDepartmentFormGroup();
 
@@ -79,21 +84,21 @@ export class DepartmentUpdateComponent implements OnInit {
     this.department = department;
     this.departmentFormService.resetForm(this.editForm, department);
 
-    this.locationsSharedCollection = this.locationService.addLocationToCollectionIfMissing<ILocation>(
-      this.locationsSharedCollection,
+    this.locationsCollection = this.locationService.addLocationToCollectionIfMissing<ILocation>(
+      this.locationsCollection,
       department.location
     );
   }
 
   protected loadRelationshipsOptions(): void {
     this.locationService
-      .query()
+      .query({ filter: 'department-is-null' })
       .pipe(map((res: HttpResponse<ILocation[]>) => res.body ?? []))
       .pipe(
         map((locations: ILocation[]) =>
           this.locationService.addLocationToCollectionIfMissing<ILocation>(locations, this.department?.location)
         )
       )
-      .subscribe((locations: ILocation[]) => (this.locationsSharedCollection = locations));
+      .subscribe((locations: ILocation[]) => (this.locationsCollection = locations));
   }
 }

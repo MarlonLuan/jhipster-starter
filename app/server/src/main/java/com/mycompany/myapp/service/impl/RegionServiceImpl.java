@@ -5,8 +5,12 @@ import com.mycompany.myapp.repository.RegionRepository;
 import com.mycompany.myapp.service.RegionService;
 import com.mycompany.myapp.service.dto.RegionDTO;
 import com.mycompany.myapp.service.mapper.RegionMapper;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -68,6 +72,20 @@ public class RegionServiceImpl implements RegionService {
     public Page<RegionDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Regions");
         return regionRepository.findAll(pageable).map(regionMapper::toDto);
+    }
+
+    /**
+     *  Get all the regions where Country is {@code null}.
+     *  @return the list of entities.
+     */
+    @Transactional(readOnly = true)
+    public List<RegionDTO> findAllWhereCountryIsNull() {
+        log.debug("Request to get all regions where Country is null");
+        return StreamSupport
+            .stream(regionRepository.findAll().spliterator(), false)
+            .filter(region -> region.getCountry() == null)
+            .map(regionMapper::toDto)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override

@@ -4,6 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { JobHistoryFormService, JobHistoryFormGroup } from './job-history-form.service';
 import { IJobHistory } from '../job-history.model';
 import { JobHistoryService } from '../service/job-history.service';
@@ -16,17 +19,19 @@ import { EmployeeService } from 'app/entities/employee/service/employee.service'
 import { Language } from 'app/entities/enumerations/language.model';
 
 @Component({
+  standalone: true,
   selector: 'jhi-job-history-update',
   templateUrl: './job-history-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class JobHistoryUpdateComponent implements OnInit {
   isSaving = false;
   jobHistory: IJobHistory | null = null;
   languageValues = Object.keys(Language);
 
-  jobsSharedCollection: IJob[] = [];
-  departmentsSharedCollection: IDepartment[] = [];
-  employeesSharedCollection: IEmployee[] = [];
+  jobsCollection: IJob[] = [];
+  departmentsCollection: IDepartment[] = [];
+  employeesCollection: IEmployee[] = [];
 
   editForm: JobHistoryFormGroup = this.jobHistoryFormService.createJobHistoryFormGroup();
 
@@ -93,42 +98,42 @@ export class JobHistoryUpdateComponent implements OnInit {
     this.jobHistory = jobHistory;
     this.jobHistoryFormService.resetForm(this.editForm, jobHistory);
 
-    this.jobsSharedCollection = this.jobService.addJobToCollectionIfMissing<IJob>(this.jobsSharedCollection, jobHistory.job);
-    this.departmentsSharedCollection = this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(
-      this.departmentsSharedCollection,
+    this.jobsCollection = this.jobService.addJobToCollectionIfMissing<IJob>(this.jobsCollection, jobHistory.job);
+    this.departmentsCollection = this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(
+      this.departmentsCollection,
       jobHistory.department
     );
-    this.employeesSharedCollection = this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(
-      this.employeesSharedCollection,
+    this.employeesCollection = this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(
+      this.employeesCollection,
       jobHistory.employee
     );
   }
 
   protected loadRelationshipsOptions(): void {
     this.jobService
-      .query()
+      .query({ filter: 'jobhistory-is-null' })
       .pipe(map((res: HttpResponse<IJob[]>) => res.body ?? []))
       .pipe(map((jobs: IJob[]) => this.jobService.addJobToCollectionIfMissing<IJob>(jobs, this.jobHistory?.job)))
-      .subscribe((jobs: IJob[]) => (this.jobsSharedCollection = jobs));
+      .subscribe((jobs: IJob[]) => (this.jobsCollection = jobs));
 
     this.departmentService
-      .query()
+      .query({ filter: 'jobhistory-is-null' })
       .pipe(map((res: HttpResponse<IDepartment[]>) => res.body ?? []))
       .pipe(
         map((departments: IDepartment[]) =>
           this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(departments, this.jobHistory?.department)
         )
       )
-      .subscribe((departments: IDepartment[]) => (this.departmentsSharedCollection = departments));
+      .subscribe((departments: IDepartment[]) => (this.departmentsCollection = departments));
 
     this.employeeService
-      .query()
+      .query({ filter: 'jobhistory-is-null' })
       .pipe(map((res: HttpResponse<IEmployee[]>) => res.body ?? []))
       .pipe(
         map((employees: IEmployee[]) =>
           this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, this.jobHistory?.employee)
         )
       )
-      .subscribe((employees: IEmployee[]) => (this.employeesSharedCollection = employees));
+      .subscribe((employees: IEmployee[]) => (this.employeesCollection = employees));
   }
 }

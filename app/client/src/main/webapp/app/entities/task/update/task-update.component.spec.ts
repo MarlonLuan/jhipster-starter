@@ -21,8 +21,7 @@ describe('Task Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [TaskUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), TaskUpdateComponent],
       providers: [
         FormBuilder,
         {

@@ -5,8 +5,12 @@ import com.mycompany.myapp.repository.EmployeeRepository;
 import com.mycompany.myapp.service.EmployeeService;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
 import com.mycompany.myapp.service.mapper.EmployeeMapper;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -68,6 +72,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Page<EmployeeDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Employees");
         return employeeRepository.findAll(pageable).map(employeeMapper::toDto);
+    }
+
+    /**
+     *  Get all the employees where JobHistory is {@code null}.
+     *  @return the list of entities.
+     */
+    @Transactional(readOnly = true)
+    public List<EmployeeDTO> findAllWhereJobHistoryIsNull() {
+        log.debug("Request to get all employees where JobHistory is null");
+        return StreamSupport
+            .stream(employeeRepository.findAll().spliterator(), false)
+            .filter(employee -> employee.getJobHistory() == null)
+            .map(employeeMapper::toDto)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override

@@ -18,8 +18,11 @@ describe('Location Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'location', component: LocationComponent }]), HttpClientTestingModule],
-      declarations: [LocationComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'location', component: LocationComponent }]),
+        HttpClientTestingModule,
+        LocationComponent,
+      ],
       providers: [
         {
           provide: ActivatedRoute,

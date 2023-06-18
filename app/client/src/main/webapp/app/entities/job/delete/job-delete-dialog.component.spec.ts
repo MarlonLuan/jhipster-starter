@@ -18,8 +18,7 @@ describe('Job Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [JobDeleteDialogComponent],
+      imports: [HttpClientTestingModule, JobDeleteDialogComponent],
       providers: [NgbActiveModal],
     })
       .overrideTemplate(JobDeleteDialogComponent, '')

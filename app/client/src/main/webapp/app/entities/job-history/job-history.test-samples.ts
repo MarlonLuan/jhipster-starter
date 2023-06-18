@@ -5,20 +5,21 @@ import { Language } from 'app/entities/enumerations/language.model';
 import { IJobHistory, NewJobHistory } from './job-history.model';
 
 export const sampleWithRequiredData: IJobHistory = {
-  id: 'f5e3cfb1-cf3d-4bcf-90ee-f9d5ac3f0fbf',
+  id: '5140dff9-ab49-4882-82ba-3a3b175e037a',
 };
 
 export const sampleWithPartialData: IJobHistory = {
-  id: '36427201-76e4-4885-a171-5926c59a55f5',
-  startDate: dayjs('2023-05-06T13:59'),
-  endDate: dayjs('2023-05-05T23:26'),
+  id: '5c4fa0e6-76b5-42d6-bccd-f6511a9cba44',
+  startDate: dayjs('2023-06-18T10:33'),
+  endDate: dayjs('2023-06-18T00:13'),
+  language: 'FRENCH',
 };
 
 export const sampleWithFullData: IJobHistory = {
-  id: '641c82ec-f1c8-4416-9eab-abdf71b06628',
-  startDate: dayjs('2023-05-05T14:52'),
-  endDate: dayjs('2023-05-05T22:44'),
-  language: Language['ENGLISH'],
+  id: '595da028-da3f-4049-9a69-4e3f35e8b7f1',
+  startDate: dayjs('2023-06-18T05:11'),
+  endDate: dayjs('2023-06-17T21:39'),
+  language: 'SPANISH',
 };
 
 export const sampleWithNewData: NewJobHistory = {
