@@ -11,9 +11,9 @@ import com.mycompany.myapp.domain.Location;
 import com.mycompany.myapp.repository.LocationRepository;
 import com.mycompany.myapp.service.dto.LocationDTO;
 import com.mycompany.myapp.service.mapper.LocationMapper;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,7 +196,7 @@ class LocationResourceIT {
         int databaseSizeBeforeUpdate = locationRepository.findAll().size();
 
         // Update the location
-        Location updatedLocation = locationRepository.findById(location.getId()).get();
+        Location updatedLocation = locationRepository.findById(location.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedLocation are not directly saved in db
         em.detach(updatedLocation);
         updatedLocation
@@ -309,7 +309,7 @@ class LocationResourceIT {
         Location partialUpdatedLocation = new Location();
         partialUpdatedLocation.setId(location.getId());
 
-        partialUpdatedLocation.streetAddress(UPDATED_STREET_ADDRESS).city(UPDATED_CITY).stateProvince(UPDATED_STATE_PROVINCE);
+        partialUpdatedLocation.streetAddress(UPDATED_STREET_ADDRESS).postalCode(UPDATED_POSTAL_CODE).city(UPDATED_CITY);
 
         restLocationMockMvc
             .perform(
@@ -325,9 +325,9 @@ class LocationResourceIT {
         assertThat(locationList).hasSize(databaseSizeBeforeUpdate);
         Location testLocation = locationList.get(locationList.size() - 1);
         assertThat(testLocation.getStreetAddress()).isEqualTo(UPDATED_STREET_ADDRESS);
-        assertThat(testLocation.getPostalCode()).isEqualTo(DEFAULT_POSTAL_CODE);
+        assertThat(testLocation.getPostalCode()).isEqualTo(UPDATED_POSTAL_CODE);
         assertThat(testLocation.getCity()).isEqualTo(UPDATED_CITY);
-        assertThat(testLocation.getStateProvince()).isEqualTo(UPDATED_STATE_PROVINCE);
+        assertThat(testLocation.getStateProvince()).isEqualTo(DEFAULT_STATE_PROVINCE);
     }
 
     @Test

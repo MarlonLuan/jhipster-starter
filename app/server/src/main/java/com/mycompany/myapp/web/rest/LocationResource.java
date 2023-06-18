@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -141,10 +142,18 @@ public class LocationResource {
      * {@code GET  /locations} : get all the locations.
      *
      * @param pageable the pagination information.
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of locations in body.
      */
     @GetMapping("/locations")
-    public ResponseEntity<List<LocationDTO>> getAllLocations(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<LocationDTO>> getAllLocations(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String filter
+    ) {
+        if ("department-is-null".equals(filter)) {
+            log.debug("REST request to get all Locations where department is null");
+            return new ResponseEntity<>(locationService.findAllWhereDepartmentIsNull(), HttpStatus.OK);
+        }
         log.debug("REST request to get a page of Locations");
         Page<LocationDTO> page = locationService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);

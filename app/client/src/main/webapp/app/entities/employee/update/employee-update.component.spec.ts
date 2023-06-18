@@ -24,8 +24,7 @@ describe('Employee Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [EmployeeUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), EmployeeUpdateComponent],
       providers: [
         FormBuilder,
         {
@@ -51,10 +50,10 @@ describe('Employee Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Employee query and add missing value', () => {
       const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const manager: IEmployee = { id: '01cbf1bb-cd4a-4879-a29d-36e93f70dc33' };
+      const manager: IEmployee = { id: 'f5abaa3d-9ffc-4cb8-a7a8-e42fd6ca66ad' };
       employee.manager = manager;
 
-      const employeeCollection: IEmployee[] = [{ id: 'a641269e-02be-45cc-9b3e-81010e025c8a' }];
+      const employeeCollection: IEmployee[] = [{ id: '2af27880-a3b6-47dc-91e8-29de6a0941bc' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [manager];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
@@ -73,10 +72,10 @@ describe('Employee Management Update Component', () => {
 
     it('Should call Department query and add missing value', () => {
       const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const department: IDepartment = { id: '5c98514b-0378-47e6-94b7-f3e0d7da936c' };
+      const department: IDepartment = { id: 'a553efe4-5ab2-49d5-afe2-932ff6ed5012' };
       employee.department = department;
 
-      const departmentCollection: IDepartment[] = [{ id: '7921b878-5806-4ce9-a183-59e2910bedb6' }];
+      const departmentCollection: IDepartment[] = [{ id: '15b6fd4f-6d93-4f61-85e2-f38cdafb540a' }];
       jest.spyOn(departmentService, 'query').mockReturnValue(of(new HttpResponse({ body: departmentCollection })));
       const additionalDepartments = [department];
       const expectedCollection: IDepartment[] = [...additionalDepartments, ...departmentCollection];
@@ -95,9 +94,9 @@ describe('Employee Management Update Component', () => {
 
     it('Should update editForm', () => {
       const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const manager: IEmployee = { id: '6b1a0c8c-4acb-491f-9653-7db134c2cba3' };
+      const manager: IEmployee = { id: 'fb9a126f-3af0-4089-83bc-43d372cd21d5' };
       employee.manager = manager;
-      const department: IDepartment = { id: 'a65394e3-84e2-4f1a-a2e6-2bb29b0fbd07' };
+      const department: IDepartment = { id: '0d62432c-f167-42e7-b2b1-743f27a42daf' };
       employee.department = department;
 
       activatedRoute.data = of({ employee });

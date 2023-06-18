@@ -18,8 +18,11 @@ describe('Department Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'department', component: DepartmentComponent }]), HttpClientTestingModule],
-      declarations: [DepartmentComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'department', component: DepartmentComponent }]),
+        HttpClientTestingModule,
+        DepartmentComponent,
+      ],
       providers: [
         {
           provide: ActivatedRoute,

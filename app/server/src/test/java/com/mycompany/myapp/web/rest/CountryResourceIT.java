@@ -11,9 +11,9 @@ import com.mycompany.myapp.domain.Country;
 import com.mycompany.myapp.repository.CountryRepository;
 import com.mycompany.myapp.service.dto.CountryDTO;
 import com.mycompany.myapp.service.mapper.CountryMapper;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,7 +170,7 @@ class CountryResourceIT {
         int databaseSizeBeforeUpdate = countryRepository.findAll().size();
 
         // Update the country
-        Country updatedCountry = countryRepository.findById(country.getId()).get();
+        Country updatedCountry = countryRepository.findById(country.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedCountry are not directly saved in db
         em.detach(updatedCountry);
         updatedCountry.countryName(UPDATED_COUNTRY_NAME);
