@@ -5,8 +5,12 @@ import com.mycompany.myapp.repository.LocationRepository;
 import com.mycompany.myapp.service.LocationService;
 import com.mycompany.myapp.service.dto.LocationDTO;
 import com.mycompany.myapp.service.mapper.LocationMapper;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -68,6 +72,20 @@ public class LocationServiceImpl implements LocationService {
     public Page<LocationDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Locations");
         return locationRepository.findAll(pageable).map(locationMapper::toDto);
+    }
+
+    /**
+     *  Get all the locations where Department is {@code null}.
+     *  @return the list of entities.
+     */
+    @Transactional(readOnly = true)
+    public List<LocationDTO> findAllWhereDepartmentIsNull() {
+        log.debug("Request to get all locations where Department is null");
+        return StreamSupport
+            .stream(locationRepository.findAll().spliterator(), false)
+            .filter(location -> location.getDepartment() == null)
+            .map(locationMapper::toDto)
+            .collect(Collectors.toCollection(LinkedList::new));
     }
 
     @Override

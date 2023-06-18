@@ -18,8 +18,7 @@ describe('Country Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [CountryDeleteDialogComponent],
+      imports: [HttpClientTestingModule, CountryDeleteDialogComponent],
       providers: [NgbActiveModal],
     })
       .overrideTemplate(CountryDeleteDialogComponent, '')

@@ -1,8 +1,9 @@
 package com.mycompany.myapp.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * A Region.
@@ -21,6 +22,10 @@ public class Region implements Serializable {
 
     @Column(name = "region_name")
     private String regionName;
+
+    @JsonIgnoreProperties(value = { "region", "location" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "region")
+    private Country country;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -48,6 +53,25 @@ public class Region implements Serializable {
 
     public void setRegionName(String regionName) {
         this.regionName = regionName;
+    }
+
+    public Country getCountry() {
+        return this.country;
+    }
+
+    public void setCountry(Country country) {
+        if (this.country != null) {
+            this.country.setRegion(null);
+        }
+        if (country != null) {
+            country.setRegion(this);
+        }
+        this.country = country;
+    }
+
+    public Region country(Country country) {
+        this.setCountry(country);
+        return this;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
