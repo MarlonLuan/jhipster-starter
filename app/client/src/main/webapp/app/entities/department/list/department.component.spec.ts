@@ -18,8 +18,11 @@ describe('Department Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'department', component: DepartmentComponent }]), HttpClientTestingModule],
-      declarations: [DepartmentComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'department', component: DepartmentComponent }]),
+        HttpClientTestingModule,
+        DepartmentComponent,
+      ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -51,7 +54,7 @@ describe('Department Management Component', () => {
     jest.spyOn(service, 'query').mockReturnValue(
       of(
         new HttpResponse({
-          body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
+          body: [{ id: 123 }],
           headers,
         })
       )
@@ -64,12 +67,12 @@ describe('Department Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.departments?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    expect(comp.departments?.[0]).toEqual(expect.objectContaining({ id: 123 }));
   });
 
   describe('trackId', () => {
     it('Should forward to departmentService', () => {
-      const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const entity = { id: 123 };
       jest.spyOn(service, 'getDepartmentIdentifier');
       const id = comp.trackId(0, entity);
       expect(service.getDepartmentIdentifier).toHaveBeenCalledWith(entity);

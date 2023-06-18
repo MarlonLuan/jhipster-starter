@@ -1,8 +1,8 @@
 package com.mycompany.myapp.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * A Country.
@@ -15,29 +15,35 @@ public class Country implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
-    private UUID id;
+    private Long id;
 
     @Column(name = "country_name")
     private String countryName;
 
-    @OneToOne
+    @JsonIgnoreProperties(value = { "country" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Region region;
 
+    @JsonIgnoreProperties(value = { "country", "department" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "country")
+    private Location location;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public Country id(UUID id) {
+    public Country id(Long id) {
         this.setId(id);
         return this;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -64,6 +70,25 @@ public class Country implements Serializable {
 
     public Country region(Region region) {
         this.setRegion(region);
+        return this;
+    }
+
+    public Location getLocation() {
+        return this.location;
+    }
+
+    public void setLocation(Location location) {
+        if (this.location != null) {
+            this.location.setCountry(null);
+        }
+        if (location != null) {
+            location.setCountry(this);
+        }
+        this.location = location;
+    }
+
+    public Country location(Location location) {
+        this.setLocation(location);
         return this;
     }
 

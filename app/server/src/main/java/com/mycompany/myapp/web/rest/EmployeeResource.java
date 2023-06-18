@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,7 +79,7 @@ public class EmployeeResource {
      */
     @PutMapping("/employees/{id}")
     public ResponseEntity<EmployeeDTO> updateEmployee(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @RequestBody EmployeeDTO employeeDTO
     ) throws URISyntaxException {
         log.debug("REST request to update Employee : {}, {}", id, employeeDTO);
@@ -114,7 +114,7 @@ public class EmployeeResource {
      */
     @PatchMapping(value = "/employees/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<EmployeeDTO> partialUpdateEmployee(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @RequestBody EmployeeDTO employeeDTO
     ) throws URISyntaxException {
         log.debug("REST request to partial update Employee partially : {}, {}", id, employeeDTO);
@@ -141,10 +141,18 @@ public class EmployeeResource {
      * {@code GET  /employees} : get all the employees.
      *
      * @param pageable the pagination information.
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of employees in body.
      */
     @GetMapping("/employees")
-    public ResponseEntity<List<EmployeeDTO>> getAllEmployees(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<EmployeeDTO>> getAllEmployees(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String filter
+    ) {
+        if ("jobhistory-is-null".equals(filter)) {
+            log.debug("REST request to get all Employees where jobHistory is null");
+            return new ResponseEntity<>(employeeService.findAllWhereJobHistoryIsNull(), HttpStatus.OK);
+        }
         log.debug("REST request to get a page of Employees");
         Page<EmployeeDTO> page = employeeService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -158,7 +166,7 @@ public class EmployeeResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the employeeDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/employees/{id}")
-    public ResponseEntity<EmployeeDTO> getEmployee(@PathVariable UUID id) {
+    public ResponseEntity<EmployeeDTO> getEmployee(@PathVariable Long id) {
         log.debug("REST request to get Employee : {}", id);
         Optional<EmployeeDTO> employeeDTO = employeeService.findOne(id);
         return ResponseUtil.wrapOrNotFound(employeeDTO);
@@ -171,7 +179,7 @@ public class EmployeeResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/employees/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         log.debug("REST request to delete Employee : {}", id);
         employeeService.delete(id);
         return ResponseEntity

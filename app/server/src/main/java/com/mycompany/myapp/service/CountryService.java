@@ -1,8 +1,8 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.CountryDTO;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -43,17 +43,24 @@ public interface CountryService {
     Page<CountryDTO> findAll(Pageable pageable);
 
     /**
+     * Get all the CountryDTO where Location is {@code null}.
+     *
+     * @return the {@link List} of entities.
+     */
+    List<CountryDTO> findAllWhereLocationIsNull();
+
+    /**
      * Get the "id" country.
      *
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<CountryDTO> findOne(UUID id);
+    Optional<CountryDTO> findOne(Long id);
 
     /**
      * Delete the "id" country.
      *
      * @param id the id of the entity.
      */
-    void delete(UUID id);
+    void delete(Long id);
 }

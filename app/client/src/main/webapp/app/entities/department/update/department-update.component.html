@@ -8,12 +8,12 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
-          <label class="form-label" jhiTranslate="jhipsterApp.department.id" for="field_id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.department.departmentName" for="field_departmentName">Department Name</label>
           <input
             type="text"
@@ -38,7 +38,7 @@
           </div>
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.department.location" for="field_location">Location</label>
           <select
             class="form-control"
@@ -49,7 +49,7 @@
             [compareWith]="compareLocation"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="locationOption" *ngFor="let locationOption of locationsSharedCollection">{{ locationOption.id }}</option>
+            <option [ngValue]="locationOption" *ngFor="let locationOption of locationsCollection">{{ locationOption.id }}</option>
           </select>
         </div>
       </div>

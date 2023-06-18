@@ -9,7 +9,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,7 +78,7 @@ public class JobHistoryResource {
      */
     @PutMapping("/job-histories/{id}")
     public ResponseEntity<JobHistoryDTO> updateJobHistory(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @RequestBody JobHistoryDTO jobHistoryDTO
     ) throws URISyntaxException {
         log.debug("REST request to update JobHistory : {}, {}", id, jobHistoryDTO);
@@ -114,7 +113,7 @@ public class JobHistoryResource {
      */
     @PatchMapping(value = "/job-histories/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<JobHistoryDTO> partialUpdateJobHistory(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @RequestBody JobHistoryDTO jobHistoryDTO
     ) throws URISyntaxException {
         log.debug("REST request to partial update JobHistory partially : {}, {}", id, jobHistoryDTO);
@@ -144,7 +143,7 @@ public class JobHistoryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of jobHistories in body.
      */
     @GetMapping("/job-histories")
-    public ResponseEntity<List<JobHistoryDTO>> getAllJobHistories(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<JobHistoryDTO>> getAllJobHistories(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of JobHistories");
         Page<JobHistoryDTO> page = jobHistoryService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -158,7 +157,7 @@ public class JobHistoryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the jobHistoryDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/job-histories/{id}")
-    public ResponseEntity<JobHistoryDTO> getJobHistory(@PathVariable UUID id) {
+    public ResponseEntity<JobHistoryDTO> getJobHistory(@PathVariable Long id) {
         log.debug("REST request to get JobHistory : {}", id);
         Optional<JobHistoryDTO> jobHistoryDTO = jobHistoryService.findOne(id);
         return ResponseUtil.wrapOrNotFound(jobHistoryDTO);
@@ -171,7 +170,7 @@ public class JobHistoryResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/job-histories/{id}")
-    public ResponseEntity<Void> deleteJobHistory(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteJobHistory(@PathVariable Long id) {
         log.debug("REST request to delete JobHistory : {}", id);
         jobHistoryService.delete(id);
         return ResponseEntity

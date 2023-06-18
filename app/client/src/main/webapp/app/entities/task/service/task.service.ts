@@ -30,7 +30,7 @@ export class TaskService {
     return this.http.patch<ITask>(`${this.resourceUrl}/${this.getTaskIdentifier(task)}`, task, { observe: 'response' });
   }
 
-  find(id: string): Observable<EntityResponseType> {
+  find(id: number): Observable<EntityResponseType> {
     return this.http.get<ITask>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
@@ -39,11 +39,11 @@ export class TaskService {
     return this.http.get<ITask[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
+  delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  getTaskIdentifier(task: Pick<ITask, 'id'>): string {
+  getTaskIdentifier(task: Pick<ITask, 'id'>): number {
     return task.id;
   }
 

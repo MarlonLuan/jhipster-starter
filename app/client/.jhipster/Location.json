@@ -1,14 +1,9 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20230506141548",
+  "changelogDate": "20230618173003",
   "dto": "mapstruct",
-  "embedded": false,
   "entityTableName": "location",
   "fields": [
-    {
-      "fieldName": "id",
-      "fieldType": "UUID"
-    },
     {
       "fieldName": "streetAddress",
       "fieldType": "String"
@@ -26,20 +21,16 @@
       "fieldType": "String"
     }
   ],
-  "fluentMethods": true,
   "javadoc": "not an ignored comment",
-  "jpaMetamodelFiltering": false,
   "name": "Location",
   "pagination": "pagination",
-  "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "country",
-      "ownerSide": true,
       "relationshipName": "country",
+      "relationshipSide": "left",
       "relationshipType": "one-to-one"
     }
   ],
-  "service": "serviceImpl",
-  "skipServer": true
+  "service": "serviceImpl"
 }

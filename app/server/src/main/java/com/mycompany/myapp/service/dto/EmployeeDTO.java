@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Employee} entity.
@@ -13,7 +12,7 @@ import java.util.UUID;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class EmployeeDTO implements Serializable {
 
-    private UUID id;
+    private Long id;
 
     /**
      * The firstname attribute.
@@ -37,11 +36,11 @@ public class EmployeeDTO implements Serializable {
 
     private DepartmentDTO department;
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -142,7 +141,7 @@ public class EmployeeDTO implements Serializable {
     @Override
     public String toString() {
         return "EmployeeDTO{" +
-            "id='" + getId() + "'" +
+            "id=" + getId() +
             ", firstName='" + getFirstName() + "'" +
             ", lastName='" + getLastName() + "'" +
             ", email='" + getEmail() + "'" +

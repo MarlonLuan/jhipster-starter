@@ -2,10 +2,9 @@ package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mycompany.myapp.domain.enumeration.Language;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * A JobHistory.
@@ -18,9 +17,10 @@ public class JobHistory implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
-    private UUID id;
+    private Long id;
 
     @Column(name = "start_date")
     private Instant startDate;
@@ -32,33 +32,33 @@ public class JobHistory implements Serializable {
     @Column(name = "language")
     private Language language;
 
-    @JsonIgnoreProperties(value = { "tasks", "employee" }, allowSetters = true)
-    @OneToOne
+    @JsonIgnoreProperties(value = { "tasks", "employee", "jobHistory" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Job job;
 
-    @JsonIgnoreProperties(value = { "location", "employees" }, allowSetters = true)
-    @OneToOne
+    @JsonIgnoreProperties(value = { "location", "employees", "jobHistory" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Department department;
 
-    @JsonIgnoreProperties(value = { "jobs", "manager", "department" }, allowSetters = true)
-    @OneToOne
+    @JsonIgnoreProperties(value = { "jobs", "manager", "department", "jobHistory" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Employee employee;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public JobHistory id(UUID id) {
+    public JobHistory id(Long id) {
         this.setId(id);
         return this;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

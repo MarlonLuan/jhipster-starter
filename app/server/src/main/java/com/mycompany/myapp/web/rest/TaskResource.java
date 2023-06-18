@@ -9,7 +9,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,7 +77,7 @@ public class TaskResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/tasks/{id}")
-    public ResponseEntity<TaskDTO> updateTask(@PathVariable(value = "id", required = false) final UUID id, @RequestBody TaskDTO taskDTO)
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable(value = "id", required = false) final Long id, @RequestBody TaskDTO taskDTO)
         throws URISyntaxException {
         log.debug("REST request to update Task : {}, {}", id, taskDTO);
         if (taskDTO.getId() == null) {
@@ -112,7 +111,7 @@ public class TaskResource {
      */
     @PatchMapping(value = "/tasks/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<TaskDTO> partialUpdateTask(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @RequestBody TaskDTO taskDTO
     ) throws URISyntaxException {
         log.debug("REST request to partial update Task partially : {}, {}", id, taskDTO);
@@ -142,7 +141,7 @@ public class TaskResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of tasks in body.
      */
     @GetMapping("/tasks")
-    public ResponseEntity<List<TaskDTO>> getAllTasks(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<TaskDTO>> getAllTasks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Tasks");
         Page<TaskDTO> page = taskService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -156,7 +155,7 @@ public class TaskResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the taskDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/tasks/{id}")
-    public ResponseEntity<TaskDTO> getTask(@PathVariable UUID id) {
+    public ResponseEntity<TaskDTO> getTask(@PathVariable Long id) {
         log.debug("REST request to get Task : {}", id);
         Optional<TaskDTO> taskDTO = taskService.findOne(id);
         return ResponseUtil.wrapOrNotFound(taskDTO);
@@ -169,7 +168,7 @@ public class TaskResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/tasks/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         log.debug("REST request to delete Task : {}", id);
         taskService.delete(id);
         return ResponseEntity

@@ -4,7 +4,6 @@ import com.mycompany.myapp.domain.enumeration.Language;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.JobHistory} entity.
@@ -12,7 +11,7 @@ import java.util.UUID;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class JobHistoryDTO implements Serializable {
 
-    private UUID id;
+    private Long id;
 
     private Instant startDate;
 
@@ -26,11 +25,11 @@ public class JobHistoryDTO implements Serializable {
 
     private EmployeeDTO employee;
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -107,7 +106,7 @@ public class JobHistoryDTO implements Serializable {
     @Override
     public String toString() {
         return "JobHistoryDTO{" +
-            "id='" + getId() + "'" +
+            "id=" + getId() +
             ", startDate='" + getStartDate() + "'" +
             ", endDate='" + getEndDate() + "'" +
             ", language='" + getLanguage() + "'" +

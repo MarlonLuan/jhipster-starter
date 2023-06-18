@@ -18,8 +18,7 @@ describe('Job Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'job', component: JobComponent }]), HttpClientTestingModule],
-      declarations: [JobComponent],
+      imports: [RouterTestingModule.withRoutes([{ path: 'job', component: JobComponent }]), HttpClientTestingModule, JobComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -51,7 +50,7 @@ describe('Job Management Component', () => {
     jest.spyOn(service, 'query').mockReturnValue(
       of(
         new HttpResponse({
-          body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
+          body: [{ id: 123 }],
           headers,
         })
       )
@@ -64,12 +63,12 @@ describe('Job Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.jobs?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    expect(comp.jobs?.[0]).toEqual(expect.objectContaining({ id: 123 }));
   });
 
   describe('trackId', () => {
     it('Should forward to jobService', () => {
-      const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const entity = { id: 123 };
       jest.spyOn(service, 'getJobIdentifier');
       const id = comp.trackId(0, entity);
       expect(service.getJobIdentifier).toHaveBeenCalledWith(entity);

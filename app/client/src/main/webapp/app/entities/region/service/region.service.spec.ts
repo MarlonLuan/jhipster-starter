@@ -29,7 +29,7 @@ describe('Region Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.body));
+      service.find(123).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(returnedFromService);
@@ -89,7 +89,7 @@ describe('Region Service', () => {
     it('should delete a Region', () => {
       const expected = true;
 
-      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.ok));
+      service.delete(123).subscribe(resp => (expectedResult = resp.ok));
 
       const req = httpMock.expectOne({ method: 'DELETE' });
       req.flush({ status: 200 });
@@ -165,7 +165,7 @@ describe('Region Service', () => {
       });
 
       it('Should return false if one entity is null', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: 123 };
         const entity2 = null;
 
         const compareResult1 = service.compareRegion(entity1, entity2);
@@ -176,8 +176,8 @@ describe('Region Service', () => {
       });
 
       it('Should return false if primaryKey differs', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity1 = { id: 123 };
+        const entity2 = { id: 456 };
 
         const compareResult1 = service.compareRegion(entity1, entity2);
         const compareResult2 = service.compareRegion(entity2, entity1);
@@ -187,8 +187,8 @@ describe('Region Service', () => {
       });
 
       it('Should return false if primaryKey matches', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: 123 };
+        const entity2 = { id: 123 };
 
         const compareResult1 = service.compareRegion(entity1, entity2);
         const compareResult2 = service.compareRegion(entity2, entity1);

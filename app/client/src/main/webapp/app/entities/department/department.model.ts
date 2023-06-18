@@ -1,7 +1,7 @@
 import { ILocation } from 'app/entities/location/location.model';
 
 export interface IDepartment {
-  id: string;
+  id: number;
   departmentName?: string | null;
   location?: Pick<ILocation, 'id'> | null;
 }

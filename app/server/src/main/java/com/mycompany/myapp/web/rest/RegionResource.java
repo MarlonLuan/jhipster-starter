@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,7 +79,7 @@ public class RegionResource {
      */
     @PutMapping("/regions/{id}")
     public ResponseEntity<RegionDTO> updateRegion(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @RequestBody RegionDTO regionDTO
     ) throws URISyntaxException {
         log.debug("REST request to update Region : {}, {}", id, regionDTO);
@@ -114,7 +114,7 @@ public class RegionResource {
      */
     @PatchMapping(value = "/regions/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<RegionDTO> partialUpdateRegion(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @RequestBody RegionDTO regionDTO
     ) throws URISyntaxException {
         log.debug("REST request to partial update Region partially : {}, {}", id, regionDTO);
@@ -141,10 +141,18 @@ public class RegionResource {
      * {@code GET  /regions} : get all the regions.
      *
      * @param pageable the pagination information.
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of regions in body.
      */
     @GetMapping("/regions")
-    public ResponseEntity<List<RegionDTO>> getAllRegions(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<RegionDTO>> getAllRegions(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String filter
+    ) {
+        if ("country-is-null".equals(filter)) {
+            log.debug("REST request to get all Regions where country is null");
+            return new ResponseEntity<>(regionService.findAllWhereCountryIsNull(), HttpStatus.OK);
+        }
         log.debug("REST request to get a page of Regions");
         Page<RegionDTO> page = regionService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -158,7 +166,7 @@ public class RegionResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the regionDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/regions/{id}")
-    public ResponseEntity<RegionDTO> getRegion(@PathVariable UUID id) {
+    public ResponseEntity<RegionDTO> getRegion(@PathVariable Long id) {
         log.debug("REST request to get Region : {}", id);
         Optional<RegionDTO> regionDTO = regionService.findOne(id);
         return ResponseUtil.wrapOrNotFound(regionDTO);
@@ -171,7 +179,7 @@ public class RegionResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/regions/{id}")
-    public ResponseEntity<Void> deleteRegion(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteRegion(@PathVariable Long id) {
         log.debug("REST request to delete Region : {}", id);
         regionService.delete(id);
         return ResponseEntity

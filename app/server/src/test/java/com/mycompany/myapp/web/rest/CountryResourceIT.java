@@ -11,9 +11,10 @@ import com.mycompany.myapp.domain.Country;
 import com.mycompany.myapp.repository.CountryRepository;
 import com.mycompany.myapp.service.dto.CountryDTO;
 import com.mycompany.myapp.service.mapper.CountryMapper;
+import jakarta.persistence.EntityManager;
 import java.util.List;
-import java.util.UUID;
-import javax.persistence.EntityManager;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ class CountryResourceIT {
 
     private static final String ENTITY_API_URL = "/api/countries";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private CountryRepository countryRepository;
@@ -104,7 +108,7 @@ class CountryResourceIT {
     @Transactional
     void createCountryWithExistingId() throws Exception {
         // Create the Country with an existing ID
-        countryRepository.saveAndFlush(country);
+        country.setId(1L);
         CountryDTO countryDTO = countryMapper.toDto(country);
 
         int databaseSizeBeforeCreate = countryRepository.findAll().size();
@@ -135,7 +139,7 @@ class CountryResourceIT {
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(country.getId().toString())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(country.getId().intValue())))
             .andExpect(jsonPath("$.[*].countryName").value(hasItem(DEFAULT_COUNTRY_NAME)));
     }
 
@@ -150,7 +154,7 @@ class CountryResourceIT {
             .perform(get(ENTITY_API_URL_ID, country.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(country.getId().toString()))
+            .andExpect(jsonPath("$.id").value(country.getId().intValue()))
             .andExpect(jsonPath("$.countryName").value(DEFAULT_COUNTRY_NAME));
     }
 
@@ -158,7 +162,7 @@ class CountryResourceIT {
     @Transactional
     void getNonExistingCountry() throws Exception {
         // Get the country
-        restCountryMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
+        restCountryMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -196,7 +200,7 @@ class CountryResourceIT {
     @Transactional
     void putNonExistingCountry() throws Exception {
         int databaseSizeBeforeUpdate = countryRepository.findAll().size();
-        country.setId(UUID.randomUUID());
+        country.setId(count.incrementAndGet());
 
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
@@ -220,7 +224,7 @@ class CountryResourceIT {
     @Transactional
     void putWithIdMismatchCountry() throws Exception {
         int databaseSizeBeforeUpdate = countryRepository.findAll().size();
-        country.setId(UUID.randomUUID());
+        country.setId(count.incrementAndGet());
 
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
@@ -228,7 +232,7 @@ class CountryResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restCountryMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, UUID.randomUUID())
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(countryDTO))
@@ -244,7 +248,7 @@ class CountryResourceIT {
     @Transactional
     void putWithMissingIdPathParamCountry() throws Exception {
         int databaseSizeBeforeUpdate = countryRepository.findAll().size();
-        country.setId(UUID.randomUUID());
+        country.setId(count.incrementAndGet());
 
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
@@ -328,7 +332,7 @@ class CountryResourceIT {
     @Transactional
     void patchNonExistingCountry() throws Exception {
         int databaseSizeBeforeUpdate = countryRepository.findAll().size();
-        country.setId(UUID.randomUUID());
+        country.setId(count.incrementAndGet());
 
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
@@ -352,7 +356,7 @@ class CountryResourceIT {
     @Transactional
     void patchWithIdMismatchCountry() throws Exception {
         int databaseSizeBeforeUpdate = countryRepository.findAll().size();
-        country.setId(UUID.randomUUID());
+        country.setId(count.incrementAndGet());
 
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
@@ -360,7 +364,7 @@ class CountryResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restCountryMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, UUID.randomUUID())
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(countryDTO))
@@ -376,7 +380,7 @@ class CountryResourceIT {
     @Transactional
     void patchWithMissingIdPathParamCountry() throws Exception {
         int databaseSizeBeforeUpdate = countryRepository.findAll().size();
-        country.setId(UUID.randomUUID());
+        country.setId(count.incrementAndGet());
 
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
@@ -406,7 +410,7 @@ class CountryResourceIT {
 
         // Delete the country
         restCountryMockMvc
-            .perform(delete(ENTITY_API_URL_ID, country.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, country.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

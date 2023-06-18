@@ -27,8 +27,7 @@ describe('Job Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [JobUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), JobUpdateComponent],
       providers: [
         FormBuilder,
         {
@@ -54,11 +53,11 @@ describe('Job Management Update Component', () => {
 
   describe('ngOnInit', () => {
     it('Should call Task query and add missing value', () => {
-      const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const tasks: ITask[] = [{ id: 'e2e1acc3-9ec5-447c-a291-12013cfe06b8' }];
+      const job: IJob = { id: 456 };
+      const tasks: ITask[] = [{ id: 30553 }];
       job.tasks = tasks;
 
-      const taskCollection: ITask[] = [{ id: '28ec4d12-3c43-41a0-aef2-139c0d1dae95' }];
+      const taskCollection: ITask[] = [{ id: 87480 }];
       jest.spyOn(taskService, 'query').mockReturnValue(of(new HttpResponse({ body: taskCollection })));
       const additionalTasks = [...tasks];
       const expectedCollection: ITask[] = [...additionalTasks, ...taskCollection];
@@ -76,11 +75,11 @@ describe('Job Management Update Component', () => {
     });
 
     it('Should call Employee query and add missing value', () => {
-      const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const employee: IEmployee = { id: 'cc381ce0-37da-481c-b93f-59c6b8377b93' };
+      const job: IJob = { id: 456 };
+      const employee: IEmployee = { id: 47398 };
       job.employee = employee;
 
-      const employeeCollection: IEmployee[] = [{ id: '7a8cb8b7-0871-4787-878c-f824fc1ad02b' }];
+      const employeeCollection: IEmployee[] = [{ id: 66114 }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [employee];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
@@ -98,10 +97,10 @@ describe('Job Management Update Component', () => {
     });
 
     it('Should update editForm', () => {
-      const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const task: ITask = { id: '0e59552b-7478-49d0-b770-a8c547701da7' };
+      const job: IJob = { id: 456 };
+      const task: ITask = { id: 12524 };
       job.tasks = [task];
-      const employee: IEmployee = { id: '3db2d831-b39e-4611-8df5-d50291065983' };
+      const employee: IEmployee = { id: 5343 };
       job.employee = employee;
 
       activatedRoute.data = of({ job });
@@ -117,7 +116,7 @@ describe('Job Management Update Component', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IJob>>();
-      const job = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const job = { id: 123 };
       jest.spyOn(jobFormService, 'getJob').mockReturnValue(job);
       jest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -140,7 +139,7 @@ describe('Job Management Update Component', () => {
     it('Should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IJob>>();
-      const job = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const job = { id: 123 };
       jest.spyOn(jobFormService, 'getJob').mockReturnValue({ id: null });
       jest.spyOn(jobService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -163,7 +162,7 @@ describe('Job Management Update Component', () => {
     it('Should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IJob>>();
-      const job = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const job = { id: 123 };
       jest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ job });
@@ -184,8 +183,8 @@ describe('Job Management Update Component', () => {
   describe('Compare relationships', () => {
     describe('compareTask', () => {
       it('Should forward to taskService', () => {
-        const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
         jest.spyOn(taskService, 'compareTask');
         comp.compareTask(entity, entity2);
         expect(taskService.compareTask).toHaveBeenCalledWith(entity, entity2);
@@ -194,8 +193,8 @@ describe('Job Management Update Component', () => {
 
     describe('compareEmployee', () => {
       it('Should forward to employeeService', () => {
-        const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity = { id: 123 };
+        const entity2 = { id: 456 };
         jest.spyOn(employeeService, 'compareEmployee');
         comp.compareEmployee(entity, entity2);
         expect(employeeService.compareEmployee).toHaveBeenCalledWith(entity, entity2);

@@ -1,10 +1,9 @@
 package com.mycompany.myapp.service.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
-import javax.validation.constraints.*;
 
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Department} entity.
@@ -12,18 +11,18 @@ import javax.validation.constraints.*;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class DepartmentDTO implements Serializable {
 
-    private UUID id;
+    private Long id;
 
     @NotNull
     private String departmentName;
 
     private LocationDTO location;
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -68,7 +67,7 @@ public class DepartmentDTO implements Serializable {
     @Override
     public String toString() {
         return "DepartmentDTO{" +
-            "id='" + getId() + "'" +
+            "id=" + getId() +
             ", departmentName='" + getDepartmentName() + "'" +
             ", location=" + getLocation() +
             "}";

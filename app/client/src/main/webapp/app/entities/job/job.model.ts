@@ -2,7 +2,7 @@ import { ITask } from 'app/entities/task/task.model';
 import { IEmployee } from 'app/entities/employee/employee.model';
 
 export interface IJob {
-  id: string;
+  id: number;
   jobTitle?: string | null;
   minSalary?: number | null;
   maxSalary?: number | null;

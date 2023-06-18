@@ -8,27 +8,27 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
-          <label class="form-label" jhiTranslate="jhipsterApp.job.id" for="field_id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.job.jobTitle" for="field_jobTitle">Job Title</label>
           <input type="text" class="form-control" name="jobTitle" id="field_jobTitle" data-cy="jobTitle" formControlName="jobTitle" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.job.minSalary" for="field_minSalary">Min Salary</label>
           <input type="number" class="form-control" name="minSalary" id="field_minSalary" data-cy="minSalary" formControlName="minSalary" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.job.maxSalary" for="field_maxSalary">Max Salary</label>
           <input type="number" class="form-control" name="maxSalary" id="field_maxSalary" data-cy="maxSalary" formControlName="maxSalary" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label jhiTranslate="jhipsterApp.job.task" for="field_tasks">Task</label>
           <select
             class="form-control"
@@ -43,7 +43,7 @@
           </select>
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.job.employee" for="field_employee">Employee</label>
           <select
             class="form-control"

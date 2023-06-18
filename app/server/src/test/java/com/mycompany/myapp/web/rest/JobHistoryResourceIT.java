@@ -12,11 +12,12 @@ import com.mycompany.myapp.domain.enumeration.Language;
 import com.mycompany.myapp.repository.JobHistoryRepository;
 import com.mycompany.myapp.service.dto.JobHistoryDTO;
 import com.mycompany.myapp.service.mapper.JobHistoryMapper;
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
-import javax.persistence.EntityManager;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ class JobHistoryResourceIT {
 
     private static final String ENTITY_API_URL = "/api/job-histories";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private JobHistoryRepository jobHistoryRepository;
@@ -115,7 +119,7 @@ class JobHistoryResourceIT {
     @Transactional
     void createJobHistoryWithExistingId() throws Exception {
         // Create the JobHistory with an existing ID
-        jobHistoryRepository.saveAndFlush(jobHistory);
+        jobHistory.setId(1L);
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
 
         int databaseSizeBeforeCreate = jobHistoryRepository.findAll().size();
@@ -146,7 +150,7 @@ class JobHistoryResourceIT {
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(jobHistory.getId().toString())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(jobHistory.getId().intValue())))
             .andExpect(jsonPath("$.[*].startDate").value(hasItem(DEFAULT_START_DATE.toString())))
             .andExpect(jsonPath("$.[*].endDate").value(hasItem(DEFAULT_END_DATE.toString())))
             .andExpect(jsonPath("$.[*].language").value(hasItem(DEFAULT_LANGUAGE.toString())));
@@ -163,7 +167,7 @@ class JobHistoryResourceIT {
             .perform(get(ENTITY_API_URL_ID, jobHistory.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(jobHistory.getId().toString()))
+            .andExpect(jsonPath("$.id").value(jobHistory.getId().intValue()))
             .andExpect(jsonPath("$.startDate").value(DEFAULT_START_DATE.toString()))
             .andExpect(jsonPath("$.endDate").value(DEFAULT_END_DATE.toString()))
             .andExpect(jsonPath("$.language").value(DEFAULT_LANGUAGE.toString()));
@@ -173,7 +177,7 @@ class JobHistoryResourceIT {
     @Transactional
     void getNonExistingJobHistory() throws Exception {
         // Get the jobHistory
-        restJobHistoryMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
+        restJobHistoryMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -213,7 +217,7 @@ class JobHistoryResourceIT {
     @Transactional
     void putNonExistingJobHistory() throws Exception {
         int databaseSizeBeforeUpdate = jobHistoryRepository.findAll().size();
-        jobHistory.setId(UUID.randomUUID());
+        jobHistory.setId(count.incrementAndGet());
 
         // Create the JobHistory
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
@@ -237,7 +241,7 @@ class JobHistoryResourceIT {
     @Transactional
     void putWithIdMismatchJobHistory() throws Exception {
         int databaseSizeBeforeUpdate = jobHistoryRepository.findAll().size();
-        jobHistory.setId(UUID.randomUUID());
+        jobHistory.setId(count.incrementAndGet());
 
         // Create the JobHistory
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
@@ -245,7 +249,7 @@ class JobHistoryResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobHistoryMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, UUID.randomUUID())
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(jobHistoryDTO))
@@ -261,7 +265,7 @@ class JobHistoryResourceIT {
     @Transactional
     void putWithMissingIdPathParamJobHistory() throws Exception {
         int databaseSizeBeforeUpdate = jobHistoryRepository.findAll().size();
-        jobHistory.setId(UUID.randomUUID());
+        jobHistory.setId(count.incrementAndGet());
 
         // Create the JobHistory
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
@@ -293,6 +297,8 @@ class JobHistoryResourceIT {
         JobHistory partialUpdatedJobHistory = new JobHistory();
         partialUpdatedJobHistory.setId(jobHistory.getId());
 
+        partialUpdatedJobHistory.startDate(UPDATED_START_DATE);
+
         restJobHistoryMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedJobHistory.getId())
@@ -306,7 +312,7 @@ class JobHistoryResourceIT {
         List<JobHistory> jobHistoryList = jobHistoryRepository.findAll();
         assertThat(jobHistoryList).hasSize(databaseSizeBeforeUpdate);
         JobHistory testJobHistory = jobHistoryList.get(jobHistoryList.size() - 1);
-        assertThat(testJobHistory.getStartDate()).isEqualTo(DEFAULT_START_DATE);
+        assertThat(testJobHistory.getStartDate()).isEqualTo(UPDATED_START_DATE);
         assertThat(testJobHistory.getEndDate()).isEqualTo(DEFAULT_END_DATE);
         assertThat(testJobHistory.getLanguage()).isEqualTo(DEFAULT_LANGUAGE);
     }
@@ -347,7 +353,7 @@ class JobHistoryResourceIT {
     @Transactional
     void patchNonExistingJobHistory() throws Exception {
         int databaseSizeBeforeUpdate = jobHistoryRepository.findAll().size();
-        jobHistory.setId(UUID.randomUUID());
+        jobHistory.setId(count.incrementAndGet());
 
         // Create the JobHistory
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
@@ -371,7 +377,7 @@ class JobHistoryResourceIT {
     @Transactional
     void patchWithIdMismatchJobHistory() throws Exception {
         int databaseSizeBeforeUpdate = jobHistoryRepository.findAll().size();
-        jobHistory.setId(UUID.randomUUID());
+        jobHistory.setId(count.incrementAndGet());
 
         // Create the JobHistory
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
@@ -379,7 +385,7 @@ class JobHistoryResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobHistoryMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, UUID.randomUUID())
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(jobHistoryDTO))
@@ -395,7 +401,7 @@ class JobHistoryResourceIT {
     @Transactional
     void patchWithMissingIdPathParamJobHistory() throws Exception {
         int databaseSizeBeforeUpdate = jobHistoryRepository.findAll().size();
-        jobHistory.setId(UUID.randomUUID());
+        jobHistory.setId(count.incrementAndGet());
 
         // Create the JobHistory
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
@@ -425,7 +431,7 @@ class JobHistoryResourceIT {
 
         // Delete the jobHistory
         restJobHistoryMockMvc
-            .perform(delete(ENTITY_API_URL_ID, jobHistory.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, jobHistory.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

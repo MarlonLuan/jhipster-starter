@@ -17,12 +17,13 @@
       "detail": {
         "title": "Job"
       },
-      "id": "Id",
+      "id": "ID",
       "jobTitle": "Job Title",
       "minSalary": "Min Salary",
       "maxSalary": "Max Salary",
       "task": "Task",
-      "employee": "Employee"
+      "employee": "Employee",
+      "jobHistory": "Job History"
     }
   }
 }

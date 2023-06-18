@@ -1,8 +1,8 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.DepartmentDTO;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -43,17 +43,24 @@ public interface DepartmentService {
     Page<DepartmentDTO> findAll(Pageable pageable);
 
     /**
+     * Get all the DepartmentDTO where JobHistory is {@code null}.
+     *
+     * @return the {@link List} of entities.
+     */
+    List<DepartmentDTO> findAllWhereJobHistoryIsNull();
+
+    /**
      * Get the "id" department.
      *
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<DepartmentDTO> findOne(UUID id);
+    Optional<DepartmentDTO> findOne(Long id);
 
     /**
      * Delete the "id" department.
      *
      * @param id the id of the entity.
      */
-    void delete(UUID id);
+    void delete(Long id);
 }

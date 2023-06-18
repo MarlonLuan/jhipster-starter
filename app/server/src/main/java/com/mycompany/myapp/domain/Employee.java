@@ -1,12 +1,11 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * The Employee entity.
@@ -19,9 +18,10 @@ public class Employee implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
-    private UUID id;
+    private Long id;
 
     /**
      * The firstname attribute.
@@ -47,33 +47,37 @@ public class Employee implements Serializable {
     @Column(name = "commission_pct")
     private Long commissionPct;
 
-    @OneToMany(mappedBy = "employee")
-    @JsonIgnoreProperties(value = { "tasks", "employee" }, allowSetters = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "employee")
+    @JsonIgnoreProperties(value = { "tasks", "employee", "jobHistory" }, allowSetters = true)
     private Set<Job> jobs = new HashSet<>();
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "jobs", "manager", "department" }, allowSetters = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "jobs", "manager", "department", "jobHistory" }, allowSetters = true)
     private Employee manager;
 
     /**
      * Another side of the same relationship
      */
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "location", "employees" }, allowSetters = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "location", "employees", "jobHistory" }, allowSetters = true)
     private Department department;
+
+    @JsonIgnoreProperties(value = { "job", "department", "employee" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "employee")
+    private JobHistory jobHistory;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public Employee id(UUID id) {
+    public Employee id(Long id) {
         this.setId(id);
         return this;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -222,6 +226,25 @@ public class Employee implements Serializable {
 
     public Employee department(Department department) {
         this.setDepartment(department);
+        return this;
+    }
+
+    public JobHistory getJobHistory() {
+        return this.jobHistory;
+    }
+
+    public void setJobHistory(JobHistory jobHistory) {
+        if (this.jobHistory != null) {
+            this.jobHistory.setEmployee(null);
+        }
+        if (jobHistory != null) {
+            jobHistory.setEmployee(this);
+        }
+        this.jobHistory = jobHistory;
+    }
+
+    public Employee jobHistory(JobHistory jobHistory) {
+        this.setJobHistory(jobHistory);
         return this;
     }
 

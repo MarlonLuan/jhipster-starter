@@ -8,12 +8,12 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
-          <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.id" for="field_id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.startDate" for="field_startDate">Start Date</label>
           <div class="d-flex">
             <input
@@ -28,7 +28,7 @@
           </div>
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.endDate" for="field_endDate">End Date</label>
           <div class="d-flex">
             <input
@@ -43,7 +43,7 @@
           </div>
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.language" for="field_language">Language</label>
           <select class="form-control" name="language" formControlName="language" id="field_language" data-cy="language">
             <option [ngValue]="null">{{ 'jhipsterApp.Language.null' | translate }}</option>
@@ -51,15 +51,15 @@
           </select>
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.job" for="field_job">Job</label>
           <select class="form-control" id="field_job" data-cy="job" name="job" formControlName="job" [compareWith]="compareJob">
             <option [ngValue]="null"></option>
-            <option [ngValue]="jobOption" *ngFor="let jobOption of jobsSharedCollection">{{ jobOption.id }}</option>
+            <option [ngValue]="jobOption" *ngFor="let jobOption of jobsCollection">{{ jobOption.id }}</option>
           </select>
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.department" for="field_department">Department</label>
           <select
             class="form-control"
@@ -70,13 +70,11 @@
             [compareWith]="compareDepartment"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="departmentOption" *ngFor="let departmentOption of departmentsSharedCollection">
-              {{ departmentOption.id }}
-            </option>
+            <option [ngValue]="departmentOption" *ngFor="let departmentOption of departmentsCollection">{{ departmentOption.id }}</option>
           </select>
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.employee" for="field_employee">Employee</label>
           <select
             class="form-control"
@@ -87,7 +85,7 @@
             [compareWith]="compareEmployee"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="employeeOption" *ngFor="let employeeOption of employeesSharedCollection">{{ employeeOption.id }}</option>
+            <option [ngValue]="employeeOption" *ngFor="let employeeOption of employeesCollection">{{ employeeOption.id }}</option>
           </select>
         </div>
       </div>

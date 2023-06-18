@@ -21,8 +21,7 @@ describe('Task Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      declarations: [TaskUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), TaskUpdateComponent],
       providers: [
         FormBuilder,
         {
@@ -46,7 +45,7 @@ describe('Task Management Update Component', () => {
 
   describe('ngOnInit', () => {
     it('Should update editForm', () => {
-      const task: ITask = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+      const task: ITask = { id: 456 };
 
       activatedRoute.data = of({ task });
       comp.ngOnInit();
@@ -59,7 +58,7 @@ describe('Task Management Update Component', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ITask>>();
-      const task = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const task = { id: 123 };
       jest.spyOn(taskFormService, 'getTask').mockReturnValue(task);
       jest.spyOn(taskService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -82,7 +81,7 @@ describe('Task Management Update Component', () => {
     it('Should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ITask>>();
-      const task = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const task = { id: 123 };
       jest.spyOn(taskFormService, 'getTask').mockReturnValue({ id: null });
       jest.spyOn(taskService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -105,7 +104,7 @@ describe('Task Management Update Component', () => {
     it('Should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ITask>>();
-      const task = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const task = { id: 123 };
       jest.spyOn(taskService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ task });

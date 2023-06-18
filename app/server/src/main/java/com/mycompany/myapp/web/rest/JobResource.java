@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,7 +78,7 @@ public class JobResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/jobs/{id}")
-    public ResponseEntity<JobDTO> updateJob(@PathVariable(value = "id", required = false) final UUID id, @RequestBody JobDTO jobDTO)
+    public ResponseEntity<JobDTO> updateJob(@PathVariable(value = "id", required = false) final Long id, @RequestBody JobDTO jobDTO)
         throws URISyntaxException {
         log.debug("REST request to update Job : {}, {}", id, jobDTO);
         if (jobDTO.getId() == null) {
@@ -111,7 +111,7 @@ public class JobResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/jobs/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<JobDTO> partialUpdateJob(@PathVariable(value = "id", required = false) final UUID id, @RequestBody JobDTO jobDTO)
+    public ResponseEntity<JobDTO> partialUpdateJob(@PathVariable(value = "id", required = false) final Long id, @RequestBody JobDTO jobDTO)
         throws URISyntaxException {
         log.debug("REST request to partial update Job partially : {}, {}", id, jobDTO);
         if (jobDTO.getId() == null) {
@@ -138,13 +138,19 @@ public class JobResource {
      *
      * @param pageable the pagination information.
      * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of jobs in body.
      */
     @GetMapping("/jobs")
     public ResponseEntity<List<JobDTO>> getAllJobs(
-        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String filter,
         @RequestParam(required = false, defaultValue = "false") boolean eagerload
     ) {
+        if ("jobhistory-is-null".equals(filter)) {
+            log.debug("REST request to get all Jobs where jobHistory is null");
+            return new ResponseEntity<>(jobService.findAllWhereJobHistoryIsNull(), HttpStatus.OK);
+        }
         log.debug("REST request to get a page of Jobs");
         Page<JobDTO> page;
         if (eagerload) {
@@ -163,7 +169,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the jobDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/jobs/{id}")
-    public ResponseEntity<JobDTO> getJob(@PathVariable UUID id) {
+    public ResponseEntity<JobDTO> getJob(@PathVariable Long id) {
         log.debug("REST request to get Job : {}", id);
         Optional<JobDTO> jobDTO = jobService.findOne(id);
         return ResponseUtil.wrapOrNotFound(jobDTO);
@@ -176,7 +182,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/jobs/{id}")
-    public ResponseEntity<Void> deleteJob(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
         log.debug("REST request to delete Job : {}", id);
         jobService.delete(id);
         return ResponseEntity

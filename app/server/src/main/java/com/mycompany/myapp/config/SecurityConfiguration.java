@@ -1,5 +1,7 @@
 package com.mycompany.myapp.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import com.mycompany.myapp.security.*;
 import com.mycompany.myapp.security.SecurityUtils;
 import com.mycompany.myapp.security.oauth2.AudienceValidator;
@@ -9,11 +11,10 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,68 +26,54 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.web.filter.CorsFilter;
-import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import tech.jhipster.config.JHipsterProperties;
+import tech.jhipster.web.filter.CookieCsrfFilter;
 
+@Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-@Import(SecurityProblemSupport.class)
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
     private final JHipsterProperties jHipsterProperties;
 
-    private final CorsFilter corsFilter;
-
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
-    private final SecurityProblemSupport problemSupport;
-
-    public SecurityConfiguration(CorsFilter corsFilter, JHipsterProperties jHipsterProperties, SecurityProblemSupport problemSupport) {
-        this.corsFilter = corsFilter;
-        this.problemSupport = problemSupport;
+    public SecurityConfiguration(JHipsterProperties jHipsterProperties) {
         this.jHipsterProperties = jHipsterProperties;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // @formatter:off
         http
-            .csrf()
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        .and()
-            .addFilterBefore(corsFilter, CsrfFilter.class)
-            .exceptionHandling()
-                .authenticationEntryPoint(problemSupport)
-                .accessDeniedHandler(problemSupport)
-        .and()
-            .authorizeRequests()
-            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .antMatchers("/swagger-ui/**").permitAll()
-            .antMatchers("/test/**").permitAll()
-            .antMatchers("/api/authenticate").permitAll()
-            .antMatchers("/api/auth-info").permitAll()
-            .antMatchers("/api/admin/**").hasAuthority(AuthoritiesConstants.ADMIN)
-            .antMatchers("/api/**").authenticated()
-            .antMatchers("/management/health").permitAll()
-            .antMatchers("/management/health/**").permitAll()
-            .antMatchers("/management/info").permitAll()
-            .antMatchers("/management/prometheus").permitAll()
-            .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
-        .and()
-            .oauth2Login()
-        .and()
-            .oauth2ResourceServer()
-                .jwt()
-                .jwtAuthenticationConverter(authenticationConverter())
-                .and()
-            .and()
-                .oauth2Client();
+            .csrf(csrf ->
+                csrf
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    // See https://stackoverflow.com/q/74447118/65681
+                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+            )
+            .addFilterAfter(new CookieCsrfFilter(), BasicAuthenticationFilter.class)
+            .authorizeHttpRequests(authz ->
+                // prettier-ignore
+                authz
+                    .requestMatchers("/api/authenticate").permitAll()
+                    .requestMatchers("/api/auth-info").permitAll()
+                    .requestMatchers("/api/admin/**").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers("/api/**").authenticated()
+                    .requestMatchers("/v3/api-docs/**").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers("/management/health").permitAll()
+                    .requestMatchers("/management/health/**").permitAll()
+                    .requestMatchers("/management/info").permitAll()
+                    .requestMatchers("/management/prometheus").permitAll()
+                    .requestMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
+            )
+            .oauth2Login(withDefaults())
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter())))
+            .oauth2Client();
         return http.build();
-        // @formatter:on
     }
 
     Converter<Jwt, AbstractAuthenticationToken> authenticationConverter() {

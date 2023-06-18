@@ -17,12 +17,13 @@
       "detail": {
         "title": "Location"
       },
-      "id": "Id",
+      "id": "ID",
       "streetAddress": "Street Address",
       "postalCode": "Postal Code",
       "city": "City",
       "stateProvince": "State Province",
-      "country": "Country"
+      "country": "Country",
+      "department": "Department"
     }
   }
 }
