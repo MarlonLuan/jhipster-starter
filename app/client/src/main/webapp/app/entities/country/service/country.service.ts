@@ -30,7 +30,7 @@ export class CountryService {
     return this.http.patch<ICountry>(`${this.resourceUrl}/${this.getCountryIdentifier(country)}`, country, { observe: 'response' });
   }
 
-  find(id: string): Observable<EntityResponseType> {
+  find(id: number): Observable<EntityResponseType> {
     return this.http.get<ICountry>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
@@ -39,11 +39,11 @@ export class CountryService {
     return this.http.get<ICountry[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
+  delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  getCountryIdentifier(country: Pick<ICountry, 'id'>): string {
+  getCountryIdentifier(country: Pick<ICountry, 'id'>): number {
     return country.id;
   }
 

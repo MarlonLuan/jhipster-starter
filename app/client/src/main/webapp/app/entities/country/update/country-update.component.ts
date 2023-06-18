@@ -4,6 +4,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
+import SharedModule from 'app/shared/shared.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 import { CountryFormService, CountryFormGroup } from './country-form.service';
 import { ICountry } from '../country.model';
 import { CountryService } from '../service/country.service';
@@ -11,14 +14,16 @@ import { IRegion } from 'app/entities/region/region.model';
 import { RegionService } from 'app/entities/region/service/region.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-country-update',
   templateUrl: './country-update.component.html',
+  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class CountryUpdateComponent implements OnInit {
   isSaving = false;
   country: ICountry | null = null;
 
-  regionsSharedCollection: IRegion[] = [];
+  regionsCollection: IRegion[] = [];
 
   editForm: CountryFormGroup = this.countryFormService.createCountryFormGroup();
 
@@ -79,14 +84,14 @@ export class CountryUpdateComponent implements OnInit {
     this.country = country;
     this.countryFormService.resetForm(this.editForm, country);
 
-    this.regionsSharedCollection = this.regionService.addRegionToCollectionIfMissing<IRegion>(this.regionsSharedCollection, country.region);
+    this.regionsCollection = this.regionService.addRegionToCollectionIfMissing<IRegion>(this.regionsCollection, country.region);
   }
 
   protected loadRelationshipsOptions(): void {
     this.regionService
-      .query()
+      .query({ filter: 'country-is-null' })
       .pipe(map((res: HttpResponse<IRegion[]>) => res.body ?? []))
       .pipe(map((regions: IRegion[]) => this.regionService.addRegionToCollectionIfMissing<IRegion>(regions, this.country?.region)))
-      .subscribe((regions: IRegion[]) => (this.regionsSharedCollection = regions));
+      .subscribe((regions: IRegion[]) => (this.regionsCollection = regions));
   }
 }

@@ -1,11 +1,10 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * A Job.
@@ -18,9 +17,10 @@ public class Job implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
-    private UUID id;
+    private Long id;
 
     @Column(name = "job_title")
     private String jobTitle;
@@ -31,27 +31,31 @@ public class Job implements Serializable {
     @Column(name = "max_salary")
     private Long maxSalary;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "rel_job__task", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "task_id"))
     @JsonIgnoreProperties(value = { "jobs" }, allowSetters = true)
     private Set<Task> tasks = new HashSet<>();
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = { "jobs", "manager", "department" }, allowSetters = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "jobs", "manager", "department", "jobHistory" }, allowSetters = true)
     private Employee employee;
+
+    @JsonIgnoreProperties(value = { "job", "department", "employee" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "job")
+    private JobHistory jobHistory;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public Job id(UUID id) {
+    public Job id(Long id) {
         this.setId(id);
         return this;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -129,6 +133,25 @@ public class Job implements Serializable {
 
     public Job employee(Employee employee) {
         this.setEmployee(employee);
+        return this;
+    }
+
+    public JobHistory getJobHistory() {
+        return this.jobHistory;
+    }
+
+    public void setJobHistory(JobHistory jobHistory) {
+        if (this.jobHistory != null) {
+            this.jobHistory.setJob(null);
+        }
+        if (jobHistory != null) {
+            jobHistory.setJob(this);
+        }
+        this.jobHistory = jobHistory;
+    }
+
+    public Job jobHistory(JobHistory jobHistory) {
+        this.setJobHistory(jobHistory);
         return this;
     }
 

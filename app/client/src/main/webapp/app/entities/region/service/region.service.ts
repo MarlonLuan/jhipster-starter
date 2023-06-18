@@ -30,7 +30,7 @@ export class RegionService {
     return this.http.patch<IRegion>(`${this.resourceUrl}/${this.getRegionIdentifier(region)}`, region, { observe: 'response' });
   }
 
-  find(id: string): Observable<EntityResponseType> {
+  find(id: number): Observable<EntityResponseType> {
     return this.http.get<IRegion>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
@@ -39,11 +39,11 @@ export class RegionService {
     return this.http.get<IRegion[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
+  delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  getRegionIdentifier(region: Pick<IRegion, 'id'>): string {
+  getRegionIdentifier(region: Pick<IRegion, 'id'>): number {
     return region.id;
   }
 

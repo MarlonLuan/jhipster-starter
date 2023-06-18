@@ -3,7 +3,6 @@ package com.mycompany.myapp.repository;
 import com.mycompany.myapp.domain.Job;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -17,8 +16,8 @@ import org.springframework.stereotype.Repository;
  * For more information refer to https://github.com/jhipster/generator-jhipster/issues/17990.
  */
 @Repository
-public interface JobRepository extends JobRepositoryWithBagRelationships, JpaRepository<Job, UUID> {
-    default Optional<Job> findOneWithEagerRelationships(UUID id) {
+public interface JobRepository extends JobRepositoryWithBagRelationships, JpaRepository<Job, Long> {
+    default Optional<Job> findOneWithEagerRelationships(Long id) {
         return this.fetchBagRelationships(this.findById(id));
     }
 

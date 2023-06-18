@@ -11,11 +11,12 @@ import com.mycompany.myapp.domain.Employee;
 import com.mycompany.myapp.repository.EmployeeRepository;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
 import com.mycompany.myapp.service.mapper.EmployeeMapper;
+import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.UUID;
-import javax.persistence.EntityManager;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,9 @@ class EmployeeResourceIT {
 
     private static final String ENTITY_API_URL = "/api/employees";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -144,7 +148,7 @@ class EmployeeResourceIT {
     @Transactional
     void createEmployeeWithExistingId() throws Exception {
         // Create the Employee with an existing ID
-        employeeRepository.saveAndFlush(employee);
+        employee.setId(1L);
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
         int databaseSizeBeforeCreate = employeeRepository.findAll().size();
@@ -175,7 +179,7 @@ class EmployeeResourceIT {
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(employee.getId().toString())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(employee.getId().intValue())))
             .andExpect(jsonPath("$.[*].firstName").value(hasItem(DEFAULT_FIRST_NAME)))
             .andExpect(jsonPath("$.[*].lastName").value(hasItem(DEFAULT_LAST_NAME)))
             .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
@@ -196,7 +200,7 @@ class EmployeeResourceIT {
             .perform(get(ENTITY_API_URL_ID, employee.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(employee.getId().toString()))
+            .andExpect(jsonPath("$.id").value(employee.getId().intValue()))
             .andExpect(jsonPath("$.firstName").value(DEFAULT_FIRST_NAME))
             .andExpect(jsonPath("$.lastName").value(DEFAULT_LAST_NAME))
             .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL))
@@ -210,7 +214,7 @@ class EmployeeResourceIT {
     @Transactional
     void getNonExistingEmployee() throws Exception {
         // Get the employee
-        restEmployeeMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
+        restEmployeeMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -222,7 +226,7 @@ class EmployeeResourceIT {
         int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
 
         // Update the employee
-        Employee updatedEmployee = employeeRepository.findById(employee.getId()).get();
+        Employee updatedEmployee = employeeRepository.findById(employee.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedEmployee are not directly saved in db
         em.detach(updatedEmployee);
         updatedEmployee
@@ -261,7 +265,7 @@ class EmployeeResourceIT {
     @Transactional
     void putNonExistingEmployee() throws Exception {
         int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
-        employee.setId(UUID.randomUUID());
+        employee.setId(count.incrementAndGet());
 
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
@@ -285,7 +289,7 @@ class EmployeeResourceIT {
     @Transactional
     void putWithIdMismatchEmployee() throws Exception {
         int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
-        employee.setId(UUID.randomUUID());
+        employee.setId(count.incrementAndGet());
 
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
@@ -293,7 +297,7 @@ class EmployeeResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, UUID.randomUUID())
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
@@ -309,7 +313,7 @@ class EmployeeResourceIT {
     @Transactional
     void putWithMissingIdPathParamEmployee() throws Exception {
         int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
-        employee.setId(UUID.randomUUID());
+        employee.setId(count.incrementAndGet());
 
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
@@ -341,7 +345,7 @@ class EmployeeResourceIT {
         Employee partialUpdatedEmployee = new Employee();
         partialUpdatedEmployee.setId(employee.getId());
 
-        partialUpdatedEmployee.lastName(UPDATED_LAST_NAME).email(UPDATED_EMAIL).commissionPct(UPDATED_COMMISSION_PCT);
+        partialUpdatedEmployee.salary(UPDATED_SALARY).commissionPct(UPDATED_COMMISSION_PCT);
 
         restEmployeeMockMvc
             .perform(
@@ -357,11 +361,11 @@ class EmployeeResourceIT {
         assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
         Employee testEmployee = employeeList.get(employeeList.size() - 1);
         assertThat(testEmployee.getFirstName()).isEqualTo(DEFAULT_FIRST_NAME);
-        assertThat(testEmployee.getLastName()).isEqualTo(UPDATED_LAST_NAME);
-        assertThat(testEmployee.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testEmployee.getLastName()).isEqualTo(DEFAULT_LAST_NAME);
+        assertThat(testEmployee.getEmail()).isEqualTo(DEFAULT_EMAIL);
         assertThat(testEmployee.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
         assertThat(testEmployee.getHireDate()).isEqualTo(DEFAULT_HIRE_DATE);
-        assertThat(testEmployee.getSalary()).isEqualTo(DEFAULT_SALARY);
+        assertThat(testEmployee.getSalary()).isEqualTo(UPDATED_SALARY);
         assertThat(testEmployee.getCommissionPct()).isEqualTo(UPDATED_COMMISSION_PCT);
     }
 
@@ -412,7 +416,7 @@ class EmployeeResourceIT {
     @Transactional
     void patchNonExistingEmployee() throws Exception {
         int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
-        employee.setId(UUID.randomUUID());
+        employee.setId(count.incrementAndGet());
 
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
@@ -436,7 +440,7 @@ class EmployeeResourceIT {
     @Transactional
     void patchWithIdMismatchEmployee() throws Exception {
         int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
-        employee.setId(UUID.randomUUID());
+        employee.setId(count.incrementAndGet());
 
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
@@ -444,7 +448,7 @@ class EmployeeResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, UUID.randomUUID())
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
@@ -460,7 +464,7 @@ class EmployeeResourceIT {
     @Transactional
     void patchWithMissingIdPathParamEmployee() throws Exception {
         int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
-        employee.setId(UUID.randomUUID());
+        employee.setId(count.incrementAndGet());
 
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
@@ -490,7 +494,7 @@ class EmployeeResourceIT {
 
         // Delete the employee
         restEmployeeMockMvc
-            .perform(delete(ENTITY_API_URL_ID, employee.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, employee.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

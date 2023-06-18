@@ -1,7 +1,7 @@
 import { ICountry } from 'app/entities/country/country.model';
 
 export interface ILocation {
-  id: string;
+  id: number;
   streetAddress?: string | null;
   postalCode?: string | null;
   city?: string | null;

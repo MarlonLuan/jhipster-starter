@@ -2,7 +2,6 @@ package com.mycompany.myapp.service.dto;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Region} entity.
@@ -10,15 +9,15 @@ import java.util.UUID;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class RegionDTO implements Serializable {
 
-    private UUID id;
+    private Long id;
 
     private String regionName;
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -55,7 +54,7 @@ public class RegionDTO implements Serializable {
     @Override
     public String toString() {
         return "RegionDTO{" +
-            "id='" + getId() + "'" +
+            "id=" + getId() +
             ", regionName='" + getRegionName() + "'" +
             "}";
     }

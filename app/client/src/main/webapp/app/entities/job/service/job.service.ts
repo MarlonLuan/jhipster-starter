@@ -30,7 +30,7 @@ export class JobService {
     return this.http.patch<IJob>(`${this.resourceUrl}/${this.getJobIdentifier(job)}`, job, { observe: 'response' });
   }
 
-  find(id: string): Observable<EntityResponseType> {
+  find(id: number): Observable<EntityResponseType> {
     return this.http.get<IJob>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
@@ -39,11 +39,11 @@ export class JobService {
     return this.http.get<IJob[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
+  delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  getJobIdentifier(job: Pick<IJob, 'id'>): string {
+  getJobIdentifier(job: Pick<IJob, 'id'>): number {
     return job.id;
   }
 

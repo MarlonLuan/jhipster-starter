@@ -13,10 +13,11 @@ import com.mycompany.myapp.repository.JobRepository;
 import com.mycompany.myapp.service.JobService;
 import com.mycompany.myapp.service.dto.JobDTO;
 import com.mycompany.myapp.service.mapper.JobMapper;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import javax.persistence.EntityManager;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +53,9 @@ class JobResourceIT {
 
     private static final String ENTITY_API_URL = "/api/jobs";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private JobRepository jobRepository;
@@ -125,7 +129,7 @@ class JobResourceIT {
     @Transactional
     void createJobWithExistingId() throws Exception {
         // Create the Job with an existing ID
-        jobRepository.saveAndFlush(job);
+        job.setId(1L);
         JobDTO jobDTO = jobMapper.toDto(job);
 
         int databaseSizeBeforeCreate = jobRepository.findAll().size();
@@ -153,7 +157,7 @@ class JobResourceIT {
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(job.getId().toString())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(job.getId().intValue())))
             .andExpect(jsonPath("$.[*].jobTitle").value(hasItem(DEFAULT_JOB_TITLE)))
             .andExpect(jsonPath("$.[*].minSalary").value(hasItem(DEFAULT_MIN_SALARY.intValue())))
             .andExpect(jsonPath("$.[*].maxSalary").value(hasItem(DEFAULT_MAX_SALARY.intValue())));
@@ -187,7 +191,7 @@ class JobResourceIT {
             .perform(get(ENTITY_API_URL_ID, job.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(job.getId().toString()))
+            .andExpect(jsonPath("$.id").value(job.getId().intValue()))
             .andExpect(jsonPath("$.jobTitle").value(DEFAULT_JOB_TITLE))
             .andExpect(jsonPath("$.minSalary").value(DEFAULT_MIN_SALARY.intValue()))
             .andExpect(jsonPath("$.maxSalary").value(DEFAULT_MAX_SALARY.intValue()));
@@ -197,7 +201,7 @@ class JobResourceIT {
     @Transactional
     void getNonExistingJob() throws Exception {
         // Get the job
-        restJobMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
+        restJobMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -209,7 +213,7 @@ class JobResourceIT {
         int databaseSizeBeforeUpdate = jobRepository.findAll().size();
 
         // Update the job
-        Job updatedJob = jobRepository.findById(job.getId()).get();
+        Job updatedJob = jobRepository.findById(job.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedJob are not directly saved in db
         em.detach(updatedJob);
         updatedJob.jobTitle(UPDATED_JOB_TITLE).minSalary(UPDATED_MIN_SALARY).maxSalary(UPDATED_MAX_SALARY);
@@ -237,7 +241,7 @@ class JobResourceIT {
     @Transactional
     void putNonExistingJob() throws Exception {
         int databaseSizeBeforeUpdate = jobRepository.findAll().size();
-        job.setId(UUID.randomUUID());
+        job.setId(count.incrementAndGet());
 
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
@@ -261,7 +265,7 @@ class JobResourceIT {
     @Transactional
     void putWithIdMismatchJob() throws Exception {
         int databaseSizeBeforeUpdate = jobRepository.findAll().size();
-        job.setId(UUID.randomUUID());
+        job.setId(count.incrementAndGet());
 
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
@@ -269,7 +273,7 @@ class JobResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, UUID.randomUUID())
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(jobDTO))
@@ -285,7 +289,7 @@ class JobResourceIT {
     @Transactional
     void putWithMissingIdPathParamJob() throws Exception {
         int databaseSizeBeforeUpdate = jobRepository.findAll().size();
-        job.setId(UUID.randomUUID());
+        job.setId(count.incrementAndGet());
 
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
@@ -314,7 +318,7 @@ class JobResourceIT {
         Job partialUpdatedJob = new Job();
         partialUpdatedJob.setId(job.getId());
 
-        partialUpdatedJob.minSalary(UPDATED_MIN_SALARY);
+        partialUpdatedJob.jobTitle(UPDATED_JOB_TITLE).minSalary(UPDATED_MIN_SALARY);
 
         restJobMockMvc
             .perform(
@@ -329,7 +333,7 @@ class JobResourceIT {
         List<Job> jobList = jobRepository.findAll();
         assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
         Job testJob = jobList.get(jobList.size() - 1);
-        assertThat(testJob.getJobTitle()).isEqualTo(DEFAULT_JOB_TITLE);
+        assertThat(testJob.getJobTitle()).isEqualTo(UPDATED_JOB_TITLE);
         assertThat(testJob.getMinSalary()).isEqualTo(UPDATED_MIN_SALARY);
         assertThat(testJob.getMaxSalary()).isEqualTo(DEFAULT_MAX_SALARY);
     }
@@ -370,7 +374,7 @@ class JobResourceIT {
     @Transactional
     void patchNonExistingJob() throws Exception {
         int databaseSizeBeforeUpdate = jobRepository.findAll().size();
-        job.setId(UUID.randomUUID());
+        job.setId(count.incrementAndGet());
 
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
@@ -394,7 +398,7 @@ class JobResourceIT {
     @Transactional
     void patchWithIdMismatchJob() throws Exception {
         int databaseSizeBeforeUpdate = jobRepository.findAll().size();
-        job.setId(UUID.randomUUID());
+        job.setId(count.incrementAndGet());
 
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
@@ -402,7 +406,7 @@ class JobResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, UUID.randomUUID())
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(jobDTO))
@@ -418,7 +422,7 @@ class JobResourceIT {
     @Transactional
     void patchWithMissingIdPathParamJob() throws Exception {
         int databaseSizeBeforeUpdate = jobRepository.findAll().size();
-        job.setId(UUID.randomUUID());
+        job.setId(count.incrementAndGet());
 
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
@@ -448,7 +452,7 @@ class JobResourceIT {
 
         // Delete the job
         restJobMockMvc
-            .perform(delete(ENTITY_API_URL_ID, job.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, job.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

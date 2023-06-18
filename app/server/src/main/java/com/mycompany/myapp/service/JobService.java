@@ -1,8 +1,8 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.JobDTO;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -43,6 +43,13 @@ public interface JobService {
     Page<JobDTO> findAll(Pageable pageable);
 
     /**
+     * Get all the JobDTO where JobHistory is {@code null}.
+     *
+     * @return the {@link List} of entities.
+     */
+    List<JobDTO> findAllWhereJobHistoryIsNull();
+
+    /**
      * Get all the jobs with eager load of many-to-many relationships.
      *
      * @param pageable the pagination information.
@@ -56,12 +63,12 @@ public interface JobService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<JobDTO> findOne(UUID id);
+    Optional<JobDTO> findOne(Long id);
 
     /**
      * Delete the "id" job.
      *
      * @param id the id of the entity.
      */
-    void delete(UUID id);
+    void delete(Long id);
 }

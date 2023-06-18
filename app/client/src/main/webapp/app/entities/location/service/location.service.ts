@@ -30,7 +30,7 @@ export class LocationService {
     return this.http.patch<ILocation>(`${this.resourceUrl}/${this.getLocationIdentifier(location)}`, location, { observe: 'response' });
   }
 
-  find(id: string): Observable<EntityResponseType> {
+  find(id: number): Observable<EntityResponseType> {
     return this.http.get<ILocation>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
@@ -39,11 +39,11 @@ export class LocationService {
     return this.http.get<ILocation[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
+  delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  getLocationIdentifier(location: Pick<ILocation, 'id'>): string {
+  getLocationIdentifier(location: Pick<ILocation, 'id'>): number {
     return location.id;
   }
 

@@ -18,8 +18,11 @@ describe('Employee Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'employee', component: EmployeeComponent }]), HttpClientTestingModule],
-      declarations: [EmployeeComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'employee', component: EmployeeComponent }]),
+        HttpClientTestingModule,
+        EmployeeComponent,
+      ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -51,7 +54,7 @@ describe('Employee Management Component', () => {
     jest.spyOn(service, 'query').mockReturnValue(
       of(
         new HttpResponse({
-          body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
+          body: [{ id: 123 }],
           headers,
         })
       )
@@ -64,12 +67,12 @@ describe('Employee Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.employees?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    expect(comp.employees?.[0]).toEqual(expect.objectContaining({ id: 123 }));
   });
 
   describe('trackId', () => {
     it('Should forward to employeeService', () => {
-      const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const entity = { id: 123 };
       jest.spyOn(service, 'getEmployeeIdentifier');
       const id = comp.trackId(0, entity);
       expect(service.getEmployeeIdentifier).toHaveBeenCalledWith(entity);

@@ -1,7 +1,7 @@
 import { IJob } from 'app/entities/job/job.model';
 
 export interface ITask {
-  id: string;
+  id: number;
   title?: string | null;
   description?: string | null;
   jobs?: Pick<IJob, 'id'>[] | null;

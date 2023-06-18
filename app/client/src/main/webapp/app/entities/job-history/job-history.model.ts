@@ -5,10 +5,10 @@ import { IEmployee } from 'app/entities/employee/employee.model';
 import { Language } from 'app/entities/enumerations/language.model';
 
 export interface IJobHistory {
-  id: string;
+  id: number;
   startDate?: dayjs.Dayjs | null;
   endDate?: dayjs.Dayjs | null;
-  language?: Language | null;
+  language?: keyof typeof Language | null;
   job?: Pick<IJob, 'id'> | null;
   department?: Pick<IDepartment, 'id'> | null;
   employee?: Pick<IEmployee, 'id'> | null;

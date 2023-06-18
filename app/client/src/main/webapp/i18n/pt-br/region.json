@@ -17,8 +17,9 @@
       "detail": {
         "title": "Region"
       },
-      "id": "Id",
-      "regionName": "Region Name"
+      "id": "ID",
+      "regionName": "Region Name",
+      "country": "Country"
     }
   }
 }

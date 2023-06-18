@@ -11,9 +11,10 @@ import com.mycompany.myapp.domain.Region;
 import com.mycompany.myapp.repository.RegionRepository;
 import com.mycompany.myapp.service.dto.RegionDTO;
 import com.mycompany.myapp.service.mapper.RegionMapper;
+import jakarta.persistence.EntityManager;
 import java.util.List;
-import java.util.UUID;
-import javax.persistence.EntityManager;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ class RegionResourceIT {
 
     private static final String ENTITY_API_URL = "/api/regions";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private RegionRepository regionRepository;
@@ -104,7 +108,7 @@ class RegionResourceIT {
     @Transactional
     void createRegionWithExistingId() throws Exception {
         // Create the Region with an existing ID
-        regionRepository.saveAndFlush(region);
+        region.setId(1L);
         RegionDTO regionDTO = regionMapper.toDto(region);
 
         int databaseSizeBeforeCreate = regionRepository.findAll().size();
@@ -135,7 +139,7 @@ class RegionResourceIT {
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(region.getId().toString())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(region.getId().intValue())))
             .andExpect(jsonPath("$.[*].regionName").value(hasItem(DEFAULT_REGION_NAME)));
     }
 
@@ -150,7 +154,7 @@ class RegionResourceIT {
             .perform(get(ENTITY_API_URL_ID, region.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(region.getId().toString()))
+            .andExpect(jsonPath("$.id").value(region.getId().intValue()))
             .andExpect(jsonPath("$.regionName").value(DEFAULT_REGION_NAME));
     }
 
@@ -158,7 +162,7 @@ class RegionResourceIT {
     @Transactional
     void getNonExistingRegion() throws Exception {
         // Get the region
-        restRegionMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
+        restRegionMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -170,7 +174,7 @@ class RegionResourceIT {
         int databaseSizeBeforeUpdate = regionRepository.findAll().size();
 
         // Update the region
-        Region updatedRegion = regionRepository.findById(region.getId()).get();
+        Region updatedRegion = regionRepository.findById(region.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedRegion are not directly saved in db
         em.detach(updatedRegion);
         updatedRegion.regionName(UPDATED_REGION_NAME);
@@ -196,7 +200,7 @@ class RegionResourceIT {
     @Transactional
     void putNonExistingRegion() throws Exception {
         int databaseSizeBeforeUpdate = regionRepository.findAll().size();
-        region.setId(UUID.randomUUID());
+        region.setId(count.incrementAndGet());
 
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
@@ -220,7 +224,7 @@ class RegionResourceIT {
     @Transactional
     void putWithIdMismatchRegion() throws Exception {
         int databaseSizeBeforeUpdate = regionRepository.findAll().size();
-        region.setId(UUID.randomUUID());
+        region.setId(count.incrementAndGet());
 
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
@@ -228,7 +232,7 @@ class RegionResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restRegionMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, UUID.randomUUID())
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(regionDTO))
@@ -244,7 +248,7 @@ class RegionResourceIT {
     @Transactional
     void putWithMissingIdPathParamRegion() throws Exception {
         int databaseSizeBeforeUpdate = regionRepository.findAll().size();
-        region.setId(UUID.randomUUID());
+        region.setId(count.incrementAndGet());
 
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
@@ -328,7 +332,7 @@ class RegionResourceIT {
     @Transactional
     void patchNonExistingRegion() throws Exception {
         int databaseSizeBeforeUpdate = regionRepository.findAll().size();
-        region.setId(UUID.randomUUID());
+        region.setId(count.incrementAndGet());
 
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
@@ -352,7 +356,7 @@ class RegionResourceIT {
     @Transactional
     void patchWithIdMismatchRegion() throws Exception {
         int databaseSizeBeforeUpdate = regionRepository.findAll().size();
-        region.setId(UUID.randomUUID());
+        region.setId(count.incrementAndGet());
 
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
@@ -360,7 +364,7 @@ class RegionResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restRegionMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, UUID.randomUUID())
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(regionDTO))
@@ -376,7 +380,7 @@ class RegionResourceIT {
     @Transactional
     void patchWithMissingIdPathParamRegion() throws Exception {
         int databaseSizeBeforeUpdate = regionRepository.findAll().size();
-        region.setId(UUID.randomUUID());
+        region.setId(count.incrementAndGet());
 
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
@@ -406,7 +410,7 @@ class RegionResourceIT {
 
         // Delete the region
         restRegionMockMvc
-            .perform(delete(ENTITY_API_URL_ID, region.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, region.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,7 +79,7 @@ public class CountryResource {
      */
     @PutMapping("/countries/{id}")
     public ResponseEntity<CountryDTO> updateCountry(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @RequestBody CountryDTO countryDTO
     ) throws URISyntaxException {
         log.debug("REST request to update Country : {}, {}", id, countryDTO);
@@ -114,7 +114,7 @@ public class CountryResource {
      */
     @PatchMapping(value = "/countries/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<CountryDTO> partialUpdateCountry(
-        @PathVariable(value = "id", required = false) final UUID id,
+        @PathVariable(value = "id", required = false) final Long id,
         @RequestBody CountryDTO countryDTO
     ) throws URISyntaxException {
         log.debug("REST request to partial update Country partially : {}, {}", id, countryDTO);
@@ -141,10 +141,18 @@ public class CountryResource {
      * {@code GET  /countries} : get all the countries.
      *
      * @param pageable the pagination information.
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of countries in body.
      */
     @GetMapping("/countries")
-    public ResponseEntity<List<CountryDTO>> getAllCountries(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<CountryDTO>> getAllCountries(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String filter
+    ) {
+        if ("location-is-null".equals(filter)) {
+            log.debug("REST request to get all Countrys where location is null");
+            return new ResponseEntity<>(countryService.findAllWhereLocationIsNull(), HttpStatus.OK);
+        }
         log.debug("REST request to get a page of Countries");
         Page<CountryDTO> page = countryService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -158,7 +166,7 @@ public class CountryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the countryDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/countries/{id}")
-    public ResponseEntity<CountryDTO> getCountry(@PathVariable UUID id) {
+    public ResponseEntity<CountryDTO> getCountry(@PathVariable Long id) {
         log.debug("REST request to get Country : {}", id);
         Optional<CountryDTO> countryDTO = countryService.findOne(id);
         return ResponseUtil.wrapOrNotFound(countryDTO);
@@ -171,7 +179,7 @@ public class CountryResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/countries/{id}")
-    public ResponseEntity<Void> deleteCountry(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteCountry(@PathVariable Long id) {
         log.debug("REST request to delete Country : {}", id);
         countryService.delete(id);
         return ResponseEntity

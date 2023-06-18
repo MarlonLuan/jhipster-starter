@@ -8,12 +8,12 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
-          <label class="form-label" jhiTranslate="jhipsterApp.employee.id" for="field_id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label
             class="form-label"
             jhiTranslate="jhipsterApp.employee.firstName"
@@ -24,17 +24,17 @@
           <input type="text" class="form-control" name="firstName" id="field_firstName" data-cy="firstName" formControlName="firstName" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.employee.lastName" for="field_lastName">Last Name</label>
           <input type="text" class="form-control" name="lastName" id="field_lastName" data-cy="lastName" formControlName="lastName" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.employee.email" for="field_email">Email</label>
           <input type="text" class="form-control" name="email" id="field_email" data-cy="email" formControlName="email" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.employee.phoneNumber" for="field_phoneNumber">Phone Number</label>
           <input
             type="text"
@@ -46,7 +46,7 @@
           />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.employee.hireDate" for="field_hireDate">Hire Date</label>
           <div class="d-flex">
             <input
@@ -61,12 +61,12 @@
           </div>
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.employee.salary" for="field_salary">Salary</label>
           <input type="number" class="form-control" name="salary" id="field_salary" data-cy="salary" formControlName="salary" />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.employee.commissionPct" for="field_commissionPct">Commission Pct</label>
           <input
             type="number"
@@ -78,7 +78,7 @@
           />
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.employee.manager" for="field_manager">Manager</label>
           <select
             class="form-control"
@@ -93,7 +93,7 @@
           </select>
         </div>
 
-        <div class="row mb-3">
+        <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.employee.department" for="field_department">Department</label>
           <select
             class="form-control"

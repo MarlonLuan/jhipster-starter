@@ -11,9 +11,10 @@ import com.mycompany.myapp.domain.Location;
 import com.mycompany.myapp.repository.LocationRepository;
 import com.mycompany.myapp.service.dto.LocationDTO;
 import com.mycompany.myapp.service.mapper.LocationMapper;
+import jakarta.persistence.EntityManager;
 import java.util.List;
-import java.util.UUID;
-import javax.persistence.EntityManager;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ class LocationResourceIT {
 
     private static final String ENTITY_API_URL = "/api/locations";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private LocationRepository locationRepository;
@@ -124,7 +128,7 @@ class LocationResourceIT {
     @Transactional
     void createLocationWithExistingId() throws Exception {
         // Create the Location with an existing ID
-        locationRepository.saveAndFlush(location);
+        location.setId(1L);
         LocationDTO locationDTO = locationMapper.toDto(location);
 
         int databaseSizeBeforeCreate = locationRepository.findAll().size();
@@ -155,7 +159,7 @@ class LocationResourceIT {
             .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(location.getId().toString())))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(location.getId().intValue())))
             .andExpect(jsonPath("$.[*].streetAddress").value(hasItem(DEFAULT_STREET_ADDRESS)))
             .andExpect(jsonPath("$.[*].postalCode").value(hasItem(DEFAULT_POSTAL_CODE)))
             .andExpect(jsonPath("$.[*].city").value(hasItem(DEFAULT_CITY)))
@@ -173,7 +177,7 @@ class LocationResourceIT {
             .perform(get(ENTITY_API_URL_ID, location.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(location.getId().toString()))
+            .andExpect(jsonPath("$.id").value(location.getId().intValue()))
             .andExpect(jsonPath("$.streetAddress").value(DEFAULT_STREET_ADDRESS))
             .andExpect(jsonPath("$.postalCode").value(DEFAULT_POSTAL_CODE))
             .andExpect(jsonPath("$.city").value(DEFAULT_CITY))
@@ -184,7 +188,7 @@ class LocationResourceIT {
     @Transactional
     void getNonExistingLocation() throws Exception {
         // Get the location
-        restLocationMockMvc.perform(get(ENTITY_API_URL_ID, UUID.randomUUID().toString())).andExpect(status().isNotFound());
+        restLocationMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -196,7 +200,7 @@ class LocationResourceIT {
         int databaseSizeBeforeUpdate = locationRepository.findAll().size();
 
         // Update the location
-        Location updatedLocation = locationRepository.findById(location.getId()).get();
+        Location updatedLocation = locationRepository.findById(location.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedLocation are not directly saved in db
         em.detach(updatedLocation);
         updatedLocation
@@ -229,7 +233,7 @@ class LocationResourceIT {
     @Transactional
     void putNonExistingLocation() throws Exception {
         int databaseSizeBeforeUpdate = locationRepository.findAll().size();
-        location.setId(UUID.randomUUID());
+        location.setId(count.incrementAndGet());
 
         // Create the Location
         LocationDTO locationDTO = locationMapper.toDto(location);
@@ -253,7 +257,7 @@ class LocationResourceIT {
     @Transactional
     void putWithIdMismatchLocation() throws Exception {
         int databaseSizeBeforeUpdate = locationRepository.findAll().size();
-        location.setId(UUID.randomUUID());
+        location.setId(count.incrementAndGet());
 
         // Create the Location
         LocationDTO locationDTO = locationMapper.toDto(location);
@@ -261,7 +265,7 @@ class LocationResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restLocationMockMvc
             .perform(
-                put(ENTITY_API_URL_ID, UUID.randomUUID())
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(locationDTO))
@@ -277,7 +281,7 @@ class LocationResourceIT {
     @Transactional
     void putWithMissingIdPathParamLocation() throws Exception {
         int databaseSizeBeforeUpdate = locationRepository.findAll().size();
-        location.setId(UUID.randomUUID());
+        location.setId(count.incrementAndGet());
 
         // Create the Location
         LocationDTO locationDTO = locationMapper.toDto(location);
@@ -309,7 +313,7 @@ class LocationResourceIT {
         Location partialUpdatedLocation = new Location();
         partialUpdatedLocation.setId(location.getId());
 
-        partialUpdatedLocation.streetAddress(UPDATED_STREET_ADDRESS).city(UPDATED_CITY).stateProvince(UPDATED_STATE_PROVINCE);
+        partialUpdatedLocation.streetAddress(UPDATED_STREET_ADDRESS).postalCode(UPDATED_POSTAL_CODE).city(UPDATED_CITY);
 
         restLocationMockMvc
             .perform(
@@ -325,9 +329,9 @@ class LocationResourceIT {
         assertThat(locationList).hasSize(databaseSizeBeforeUpdate);
         Location testLocation = locationList.get(locationList.size() - 1);
         assertThat(testLocation.getStreetAddress()).isEqualTo(UPDATED_STREET_ADDRESS);
-        assertThat(testLocation.getPostalCode()).isEqualTo(DEFAULT_POSTAL_CODE);
+        assertThat(testLocation.getPostalCode()).isEqualTo(UPDATED_POSTAL_CODE);
         assertThat(testLocation.getCity()).isEqualTo(UPDATED_CITY);
-        assertThat(testLocation.getStateProvince()).isEqualTo(UPDATED_STATE_PROVINCE);
+        assertThat(testLocation.getStateProvince()).isEqualTo(DEFAULT_STATE_PROVINCE);
     }
 
     @Test
@@ -371,7 +375,7 @@ class LocationResourceIT {
     @Transactional
     void patchNonExistingLocation() throws Exception {
         int databaseSizeBeforeUpdate = locationRepository.findAll().size();
-        location.setId(UUID.randomUUID());
+        location.setId(count.incrementAndGet());
 
         // Create the Location
         LocationDTO locationDTO = locationMapper.toDto(location);
@@ -395,7 +399,7 @@ class LocationResourceIT {
     @Transactional
     void patchWithIdMismatchLocation() throws Exception {
         int databaseSizeBeforeUpdate = locationRepository.findAll().size();
-        location.setId(UUID.randomUUID());
+        location.setId(count.incrementAndGet());
 
         // Create the Location
         LocationDTO locationDTO = locationMapper.toDto(location);
@@ -403,7 +407,7 @@ class LocationResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restLocationMockMvc
             .perform(
-                patch(ENTITY_API_URL_ID, UUID.randomUUID())
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
                     .content(TestUtil.convertObjectToJsonBytes(locationDTO))
@@ -419,7 +423,7 @@ class LocationResourceIT {
     @Transactional
     void patchWithMissingIdPathParamLocation() throws Exception {
         int databaseSizeBeforeUpdate = locationRepository.findAll().size();
-        location.setId(UUID.randomUUID());
+        location.setId(count.incrementAndGet());
 
         // Create the Location
         LocationDTO locationDTO = locationMapper.toDto(location);
@@ -449,7 +453,7 @@ class LocationResourceIT {
 
         // Delete the location
         restLocationMockMvc
-            .perform(delete(ENTITY_API_URL_ID, location.getId().toString()).with(csrf()).accept(MediaType.APPLICATION_JSON))
+            .perform(delete(ENTITY_API_URL_ID, location.getId()).with(csrf()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

@@ -5,8 +5,11 @@ import com.mycompany.myapp.repository.RegionRepository;
 import com.mycompany.myapp.service.RegionService;
 import com.mycompany.myapp.service.dto.RegionDTO;
 import com.mycompany.myapp.service.mapper.RegionMapper;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -70,15 +73,29 @@ public class RegionServiceImpl implements RegionService {
         return regionRepository.findAll(pageable).map(regionMapper::toDto);
     }
 
+    /**
+     *  Get all the regions where Country is {@code null}.
+     *  @return the list of entities.
+     */
+    @Transactional(readOnly = true)
+    public List<RegionDTO> findAllWhereCountryIsNull() {
+        log.debug("Request to get all regions where Country is null");
+        return StreamSupport
+            .stream(regionRepository.findAll().spliterator(), false)
+            .filter(region -> region.getCountry() == null)
+            .map(regionMapper::toDto)
+            .collect(Collectors.toCollection(LinkedList::new));
+    }
+
     @Override
     @Transactional(readOnly = true)
-    public Optional<RegionDTO> findOne(UUID id) {
+    public Optional<RegionDTO> findOne(Long id) {
         log.debug("Request to get Region : {}", id);
         return regionRepository.findById(id).map(regionMapper::toDto);
     }
 
     @Override
-    public void delete(UUID id) {
+    public void delete(Long id) {
         log.debug("Request to delete Region : {}", id);
         regionRepository.deleteById(id);
     }

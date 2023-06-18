@@ -2,7 +2,7 @@ import dayjs from 'dayjs/esm';
 import { IDepartment } from 'app/entities/department/department.model';
 
 export interface IEmployee {
-  id: string;
+  id: number;
   firstName?: string | null;
   lastName?: string | null;
   email?: string | null;

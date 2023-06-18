@@ -18,8 +18,7 @@ describe('Country Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      declarations: [CountryDeleteDialogComponent],
+      imports: [HttpClientTestingModule, CountryDeleteDialogComponent],
       providers: [NgbActiveModal],
     })
       .overrideTemplate(CountryDeleteDialogComponent, '')
@@ -38,11 +37,11 @@ describe('Country Management Delete Component', () => {
         jest.spyOn(service, 'delete').mockReturnValue(of(new HttpResponse({ body: {} })));
 
         // WHEN
-        comp.confirmDelete('9fec3727-3421-4967-b213-ba36557ca194');
+        comp.confirmDelete(123);
         tick();
 
         // THEN
-        expect(service.delete).toHaveBeenCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
+        expect(service.delete).toHaveBeenCalledWith(123);
         expect(mockActiveModal.close).toHaveBeenCalledWith('deleted');
       })
     ));

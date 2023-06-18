@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { map } from 'rxjs/operators';
+
 import dayjs from 'dayjs/esm';
 
 import { isPresent } from 'app/core/util/operators';
@@ -52,7 +54,7 @@ export class JobHistoryService {
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
-  find(id: string): Observable<EntityResponseType> {
+  find(id: number): Observable<EntityResponseType> {
     return this.http
       .get<RestJobHistory>(`${this.resourceUrl}/${id}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
@@ -65,11 +67,11 @@ export class JobHistoryService {
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
+  delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  getJobHistoryIdentifier(jobHistory: Pick<IJobHistory, 'id'>): string {
+  getJobHistoryIdentifier(jobHistory: Pick<IJobHistory, 'id'>): number {
     return jobHistory.id;
   }
 

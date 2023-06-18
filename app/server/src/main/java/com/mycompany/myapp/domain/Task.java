@@ -1,11 +1,10 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
-import javax.persistence.*;
 
 /**
  * Task entity.\n@author The JHipster team.
@@ -18,9 +17,10 @@ public class Task implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
+    @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
-    private UUID id;
+    private Long id;
 
     @Column(name = "title")
     private String title;
@@ -28,22 +28,22 @@ public class Task implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @ManyToMany(mappedBy = "tasks")
-    @JsonIgnoreProperties(value = { "tasks", "employee" }, allowSetters = true)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tasks")
+    @JsonIgnoreProperties(value = { "tasks", "employee", "jobHistory" }, allowSetters = true)
     private Set<Job> jobs = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
-    public UUID getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public Task id(UUID id) {
+    public Task id(Long id) {
         this.setId(id);
         return this;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

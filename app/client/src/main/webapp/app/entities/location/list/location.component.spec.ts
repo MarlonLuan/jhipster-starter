@@ -18,8 +18,11 @@ describe('Location Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([{ path: 'location', component: LocationComponent }]), HttpClientTestingModule],
-      declarations: [LocationComponent],
+      imports: [
+        RouterTestingModule.withRoutes([{ path: 'location', component: LocationComponent }]),
+        HttpClientTestingModule,
+        LocationComponent,
+      ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -51,7 +54,7 @@ describe('Location Management Component', () => {
     jest.spyOn(service, 'query').mockReturnValue(
       of(
         new HttpResponse({
-          body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
+          body: [{ id: 123 }],
           headers,
         })
       )
@@ -64,12 +67,12 @@ describe('Location Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.locations?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    expect(comp.locations?.[0]).toEqual(expect.objectContaining({ id: 123 }));
   });
 
   describe('trackId', () => {
     it('Should forward to locationService', () => {
-      const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const entity = { id: 123 };
       jest.spyOn(service, 'getLocationIdentifier');
       const id = comp.trackId(0, entity);
       expect(service.getLocationIdentifier).toHaveBeenCalledWith(entity);

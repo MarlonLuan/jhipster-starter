@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Job} entity.
@@ -12,7 +11,7 @@ import java.util.UUID;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class JobDTO implements Serializable {
 
-    private UUID id;
+    private Long id;
 
     private String jobTitle;
 
@@ -24,11 +23,11 @@ public class JobDTO implements Serializable {
 
     private EmployeeDTO employee;
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -97,7 +96,7 @@ public class JobDTO implements Serializable {
     @Override
     public String toString() {
         return "JobDTO{" +
-            "id='" + getId() + "'" +
+            "id=" + getId() +
             ", jobTitle='" + getJobTitle() + "'" +
             ", minSalary=" + getMinSalary() +
             ", maxSalary=" + getMaxSalary() +

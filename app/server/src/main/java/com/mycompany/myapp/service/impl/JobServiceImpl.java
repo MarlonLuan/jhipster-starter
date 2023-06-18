@@ -5,8 +5,11 @@ import com.mycompany.myapp.repository.JobRepository;
 import com.mycompany.myapp.service.JobService;
 import com.mycompany.myapp.service.dto.JobDTO;
 import com.mycompany.myapp.service.mapper.JobMapper;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -74,15 +77,29 @@ public class JobServiceImpl implements JobService {
         return jobRepository.findAllWithEagerRelationships(pageable).map(jobMapper::toDto);
     }
 
+    /**
+     *  Get all the jobs where JobHistory is {@code null}.
+     *  @return the list of entities.
+     */
+    @Transactional(readOnly = true)
+    public List<JobDTO> findAllWhereJobHistoryIsNull() {
+        log.debug("Request to get all jobs where JobHistory is null");
+        return StreamSupport
+            .stream(jobRepository.findAll().spliterator(), false)
+            .filter(job -> job.getJobHistory() == null)
+            .map(jobMapper::toDto)
+            .collect(Collectors.toCollection(LinkedList::new));
+    }
+
     @Override
     @Transactional(readOnly = true)
-    public Optional<JobDTO> findOne(UUID id) {
+    public Optional<JobDTO> findOne(Long id) {
         log.debug("Request to get Job : {}", id);
         return jobRepository.findOneWithEagerRelationships(id).map(jobMapper::toDto);
     }
 
     @Override
-    public void delete(UUID id) {
+    public void delete(Long id) {
         log.debug("Request to delete Job : {}", id);
         jobRepository.deleteById(id);
     }

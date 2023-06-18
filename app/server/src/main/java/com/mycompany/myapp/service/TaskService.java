@@ -2,7 +2,6 @@ package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.TaskDTO;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -48,12 +47,12 @@ public interface TaskService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<TaskDTO> findOne(UUID id);
+    Optional<TaskDTO> findOne(Long id);
 
     /**
      * Delete the "id" task.
      *
      * @param id the id of the entity.
      */
-    void delete(UUID id);
+    void delete(Long id);
 }

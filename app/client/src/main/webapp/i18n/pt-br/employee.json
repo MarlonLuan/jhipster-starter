@@ -17,7 +17,7 @@
       "detail": {
         "title": "Employee"
       },
-      "id": "Id",
+      "id": "ID",
       "firstName": "First Name",
       "lastName": "Last Name",
       "email": "Email",
@@ -28,6 +28,7 @@
       "job": "Job",
       "manager": "Manager",
       "department": "Department",
+      "jobHistory": "Job History",
       "help": {
         "firstName": "The firstname attribute."
       }

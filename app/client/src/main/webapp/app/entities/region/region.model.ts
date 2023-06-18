@@ -1,5 +1,5 @@
 export interface IRegion {
-  id: string;
+  id: number;
   regionName?: string | null;
 }
 

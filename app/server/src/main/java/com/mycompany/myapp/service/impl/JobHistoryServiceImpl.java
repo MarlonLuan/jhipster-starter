@@ -6,7 +6,6 @@ import com.mycompany.myapp.service.JobHistoryService;
 import com.mycompany.myapp.service.dto.JobHistoryDTO;
 import com.mycompany.myapp.service.mapper.JobHistoryMapper;
 import java.util.Optional;
-import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -72,13 +71,13 @@ public class JobHistoryServiceImpl implements JobHistoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<JobHistoryDTO> findOne(UUID id) {
+    public Optional<JobHistoryDTO> findOne(Long id) {
         log.debug("Request to get JobHistory : {}", id);
         return jobHistoryRepository.findById(id).map(jobHistoryMapper::toDto);
     }
 
     @Override
-    public void delete(UUID id) {
+    public void delete(Long id) {
         log.debug("Request to delete JobHistory : {}", id);
         jobHistoryRepository.deleteById(id);
     }

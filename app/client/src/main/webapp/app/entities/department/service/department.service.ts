@@ -34,7 +34,7 @@ export class DepartmentService {
     });
   }
 
-  find(id: string): Observable<EntityResponseType> {
+  find(id: number): Observable<EntityResponseType> {
     return this.http.get<IDepartment>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
@@ -43,11 +43,11 @@ export class DepartmentService {
     return this.http.get<IDepartment[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
+  delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  getDepartmentIdentifier(department: Pick<IDepartment, 'id'>): string {
+  getDepartmentIdentifier(department: Pick<IDepartment, 'id'>): number {
     return department.id;
   }
 
