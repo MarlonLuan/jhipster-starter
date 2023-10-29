@@ -15,7 +15,7 @@
         [routerLink]="['/region/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span jhiTranslate="jhipsterApp.region.home.createLabel"> Create a new Region </span>
+        <span jhiTranslate="jhipsterApp.region.home.createLabel">Create a new Region</span>
       </button>
     </div>
   </h2>
@@ -55,15 +55,15 @@
           <td>{{ region.regionName }}</td>
           <td class="text-end">
             <div class="btn-group">
-              <button type="submit" [routerLink]="['/region', region.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+              <a [routerLink]="['/region', region.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
                 <fa-icon icon="eye"></fa-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
-              </button>
+              </a>
 
-              <button type="submit" [routerLink]="['/region', region.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+              <a [routerLink]="['/region', region.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
                 <fa-icon icon="pencil-alt"></fa-icon>
                 <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
-              </button>
+              </a>
 
               <button type="submit" (click)="delete(region)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                 <fa-icon icon="times"></fa-icon>

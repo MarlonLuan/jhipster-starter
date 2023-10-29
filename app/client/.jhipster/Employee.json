@@ -1,8 +1,8 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20231014143029",
+  "changelogDate": "20231029000521",
+  "documentation": "The Employee entity.",
   "dto": "mapstruct",
-  "embedded": false,
   "entityTableName": "employee",
   "fields": [
     {
@@ -10,9 +10,9 @@
       "fieldType": "UUID"
     },
     {
+      "documentation": "The firstname attribute.",
       "fieldName": "firstName",
-      "fieldType": "String",
-      "javadoc": "The firstname attribute."
+      "fieldType": "String"
     },
     {
       "fieldName": "lastName",
@@ -39,32 +39,29 @@
       "fieldType": "Long"
     }
   ],
-  "fluentMethods": true,
-  "javadoc": "The Employee entity.",
-  "jpaMetamodelFiltering": false,
   "name": "Employee",
   "pagination": "pagination",
-  "readOnly": false,
   "relationships": [
     {
       "otherEntityName": "job",
       "otherEntityRelationshipName": "employee",
       "relationshipName": "job",
+      "relationshipSide": "left",
       "relationshipType": "one-to-many"
     },
     {
       "otherEntityName": "employee",
       "relationshipName": "manager",
+      "relationshipSide": "left",
       "relationshipType": "many-to-one"
     },
     {
-      "javadoc": "Another side of the same relationship",
+      "documentation": "Another side of the same relationship",
       "otherEntityName": "department",
-      "otherEntityRelationshipName": "employee",
       "relationshipName": "department",
+      "relationshipSide": "right",
       "relationshipType": "many-to-one"
     }
   ],
-  "service": "serviceImpl",
-  "skipServer": true
+  "service": "serviceImpl"
 }
