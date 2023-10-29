@@ -1,6 +1,5 @@
 package com.mycompany.myapp.service.dto;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
@@ -8,7 +7,6 @@ import java.util.UUID;
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Task} entity.
  */
-@Schema(description = "Task entity.\n@author The JHipster team.")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class TaskDTO implements Serializable {
 

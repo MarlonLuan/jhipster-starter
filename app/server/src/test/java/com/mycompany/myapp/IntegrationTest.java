@@ -1,6 +1,5 @@
 package com.mycompany.myapp;
 
-import com.mycompany.myapp.JhipsterApp;
 import com.mycompany.myapp.config.AsyncSyncConfiguration;
 import com.mycompany.myapp.config.EmbeddedSQL;
 import com.mycompany.myapp.config.TestSecurityConfiguration;

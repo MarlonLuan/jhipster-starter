@@ -9,7 +9,6 @@ import java.util.UUID;
 /**
  * A DTO for the {@link com.mycompany.myapp.domain.Employee} entity.
  */
-@Schema(description = "The Employee entity.")
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class EmployeeDTO implements Serializable {
 
@@ -35,6 +34,10 @@ public class EmployeeDTO implements Serializable {
 
     private EmployeeDTO manager;
 
+    /**
+     * Another side of the same relationship
+     */
+    @Schema(description = "Another side of the same relationship")
     private DepartmentDTO department;
 
     public UUID getId() {

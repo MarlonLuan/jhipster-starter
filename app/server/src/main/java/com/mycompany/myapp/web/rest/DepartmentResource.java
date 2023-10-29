@@ -4,14 +4,14 @@ import com.mycompany.myapp.repository.DepartmentRepository;
 import com.mycompany.myapp.service.DepartmentService;
 import com.mycompany.myapp.service.dto.DepartmentDTO;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -143,10 +143,18 @@ public class DepartmentResource {
      * {@code GET  /departments} : get all the departments.
      *
      * @param pageable the pagination information.
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of departments in body.
      */
     @GetMapping("/departments")
-    public ResponseEntity<List<DepartmentDTO>> getAllDepartments(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<DepartmentDTO>> getAllDepartments(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String filter
+    ) {
+        if ("jobhistory-is-null".equals(filter)) {
+            log.debug("REST request to get all Departments where jobHistory is null");
+            return new ResponseEntity<>(departmentService.findAllWhereJobHistoryIsNull(), HttpStatus.OK);
+        }
         log.debug("REST request to get a page of Departments");
         Page<DepartmentDTO> page = departmentService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
