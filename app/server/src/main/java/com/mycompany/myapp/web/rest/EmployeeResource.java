@@ -28,7 +28,7 @@ import tech.jhipster.web.util.ResponseUtil;
  * REST controller for managing {@link com.mycompany.myapp.domain.Employee}.
  */
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/employees")
 public class EmployeeResource {
 
     private final Logger log = LoggerFactory.getLogger(EmployeeResource.class);
@@ -54,7 +54,7 @@ public class EmployeeResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new employeeDTO, or with status {@code 400 (Bad Request)} if the employee has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("/employees")
+    @PostMapping("")
     public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody EmployeeDTO employeeDTO) throws URISyntaxException {
         log.debug("REST request to save Employee : {}", employeeDTO);
         if (employeeDTO.getId() != null) {
@@ -77,7 +77,7 @@ public class EmployeeResource {
      * or with status {@code 500 (Internal Server Error)} if the employeeDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/employees/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<EmployeeDTO> updateEmployee(
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody EmployeeDTO employeeDTO
@@ -112,7 +112,7 @@ public class EmployeeResource {
      * or with status {@code 500 (Internal Server Error)} if the employeeDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/employees/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<EmployeeDTO> partialUpdateEmployee(
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody EmployeeDTO employeeDTO
@@ -141,10 +141,18 @@ public class EmployeeResource {
      * {@code GET  /employees} : get all the employees.
      *
      * @param pageable the pagination information.
+     * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of employees in body.
      */
-    @GetMapping("/employees")
-    public ResponseEntity<List<EmployeeDTO>> getAllEmployees(@org.springdoc.api.annotations.ParameterObject Pageable pageable) {
+    @GetMapping("")
+    public ResponseEntity<List<EmployeeDTO>> getAllEmployees(
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(required = false) String filter
+    ) {
+        if ("jobhistory-is-null".equals(filter)) {
+            log.debug("REST request to get all Employees where jobHistory is null");
+            return new ResponseEntity<>(employeeService.findAllWhereJobHistoryIsNull(), HttpStatus.OK);
+        }
         log.debug("REST request to get a page of Employees");
         Page<EmployeeDTO> page = employeeService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -157,7 +165,7 @@ public class EmployeeResource {
      * @param id the id of the employeeDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the employeeDTO, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/employees/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<EmployeeDTO> getEmployee(@PathVariable UUID id) {
         log.debug("REST request to get Employee : {}", id);
         Optional<EmployeeDTO> employeeDTO = employeeService.findOne(id);
@@ -170,7 +178,7 @@ public class EmployeeResource {
      * @param id the id of the employeeDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/employees/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable UUID id) {
         log.debug("REST request to delete Employee : {}", id);
         employeeService.delete(id);
