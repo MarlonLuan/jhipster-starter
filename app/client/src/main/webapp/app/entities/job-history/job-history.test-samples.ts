@@ -1,24 +1,20 @@
 import dayjs from 'dayjs/esm';
 
-import { Language } from 'app/entities/enumerations/language.model';
-
 import { IJobHistory, NewJobHistory } from './job-history.model';
 
 export const sampleWithRequiredData: IJobHistory = {
-  id: 'f5e3cfb1-cf3d-4bcf-90ee-f9d5ac3f0fbf',
+  id: '5140dff9-ab49-4882-a42b-a3a3b175e037',
 };
 
 export const sampleWithPartialData: IJobHistory = {
-  id: '36427201-76e4-4885-a171-5926c59a55f5',
-  startDate: dayjs('2023-10-14T14:11'),
-  endDate: dayjs('2023-10-13T23:38'),
+  id: '5c4fa0e6-76b5-42d6-9bcc-df6511a9cba4',
 };
 
 export const sampleWithFullData: IJobHistory = {
-  id: '641c82ec-f1c8-4416-9eab-abdf71b06628',
-  startDate: dayjs('2023-10-13T15:04'),
-  endDate: dayjs('2023-10-13T22:55'),
-  language: Language['ENGLISH'],
+  id: '4b2595da-028d-4a3f-a049-9a694e3f35e8',
+  startDate: dayjs('2023-11-03T04:33'),
+  endDate: dayjs('2023-11-02T16:57'),
+  language: 'FRENCH',
 };
 
 export const sampleWithNewData: NewJobHistory = {

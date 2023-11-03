@@ -37,7 +37,6 @@ describe('Job Service', () => {
     });
 
     it('should create a Job', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const job = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };

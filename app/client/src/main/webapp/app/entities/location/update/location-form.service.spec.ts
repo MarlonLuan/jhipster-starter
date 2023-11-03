@@ -25,7 +25,7 @@ describe('Location Form Service', () => {
             city: expect.any(Object),
             stateProvince: expect.any(Object),
             country: expect.any(Object),
-          })
+          }),
         );
       });
 
@@ -40,14 +40,13 @@ describe('Location Form Service', () => {
             city: expect.any(Object),
             stateProvince: expect.any(Object),
             country: expect.any(Object),
-          })
+          }),
         );
       });
     });
 
     describe('getLocation', () => {
       it('should return NewLocation for default Location initial value', () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createLocationFormGroup(sampleWithNewData);
 
         const location = service.getLocation(formGroup) as any;
