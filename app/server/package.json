@@ -7,7 +7,7 @@
   "scripts": {
     "app:start": "./mvnw",
     "app:up": "docker compose -f src/main/docker/app.yml up --wait",
-    "backend:build-cache": "./mvnw dependency:go-offline",
+    "backend:build-cache": "./mvnw dependency:go-offline -ntp",
     "backend:debug": "./mvnw -Dspring-boot.run.jvmArguments=\"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000\"",
     "backend:doc:test": "./mvnw -ntp javadoc:javadoc --batch-mode",
     "backend:info": "./mvnw -ntp enforcer:display-info --batch-mode",
@@ -44,9 +44,6 @@
     "backend_port": 8080,
     "default_environment": "prod",
     "packaging": "jar"
-  },
-  "devDependencies": {
-    "generator-jhipster": "8.0.0"
   },
   "engines": {
     "node": ">=18.18.2"

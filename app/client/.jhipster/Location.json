@@ -1,6 +1,8 @@
 {
+  "annotations": {
+    "changelogDate": "20231209000212"
+  },
   "applications": ["jhipster"],
-  "changelogDate": "20231103160338",
   "documentation": "not an ignored comment",
   "dto": "mapstruct",
   "entityTableName": "location",

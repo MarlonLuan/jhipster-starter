@@ -76,15 +76,15 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "jhipster:build:development",
+            "buildTarget": "jhipster:build:development",
             "port": 4200
           },
           "configurations": {
             "production": {
-              "browserTarget": "jhipster:build:production"
+              "buildTarget": "jhipster:build:production"
             },
             "development": {
-              "browserTarget": "jhipster:build:development"
+              "buildTarget": "jhipster:build:development"
             }
           },
           "defaultConfiguration": "development"
