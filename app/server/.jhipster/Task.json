@@ -1,6 +1,6 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20231103160706",
+  "changelogDate": "20231209004648",
   "documentation": "Task entity.\\n@author The JHipster team.",
   "dto": "mapstruct",
   "entityTableName": "task",

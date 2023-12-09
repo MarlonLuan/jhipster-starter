@@ -1,6 +1,6 @@
 {
   "applications": ["jhipster"],
-  "changelogDate": "20231103160506",
+  "changelogDate": "20231209004448",
   "documentation": "not an ignored comment",
   "dto": "mapstruct",
   "entityTableName": "location",
