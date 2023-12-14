@@ -144,8 +144,8 @@ public class JobResource {
     @GetMapping("")
     public ResponseEntity<List<JobDTO>> getAllJobs(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false) String filter,
-        @RequestParam(required = false, defaultValue = "true") boolean eagerload
+        @RequestParam(name = "filter", required = false) String filter,
+        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
     ) {
         if ("jobhistory-is-null".equals(filter)) {
             log.debug("REST request to get all Jobs where jobHistory is null");
@@ -169,7 +169,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the jobDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<JobDTO> getJob(@PathVariable UUID id) {
+    public ResponseEntity<JobDTO> getJob(@PathVariable("id") UUID id) {
         log.debug("REST request to get Job : {}", id);
         Optional<JobDTO> jobDTO = jobService.findOne(id);
         return ResponseUtil.wrapOrNotFound(jobDTO);
@@ -182,7 +182,7 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteJob(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteJob(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Job : {}", id);
         jobService.delete(id);
         return ResponseEntity
