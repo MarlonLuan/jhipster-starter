@@ -1,6 +1,8 @@
 {
+  "annotations": {
+    "changelogDate": "20231214120441"
+  },
   "applications": ["jhipster"],
-  "changelogDate": "20231103161006",
   "dto": "mapstruct",
   "entityTableName": "job_history",
   "fields": [

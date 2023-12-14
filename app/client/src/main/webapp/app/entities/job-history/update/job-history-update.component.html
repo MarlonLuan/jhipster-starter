@@ -8,10 +8,12 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
-          <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.id" for="field_id">Id</label>
-          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-        </div>
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.id" for="field_id">Id</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
 
         <div class="mb-3">
           <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.startDate" for="field_startDate">Start Date</label>
@@ -47,7 +49,9 @@
           <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.language" for="field_language">Language</label>
           <select class="form-control" name="language" formControlName="language" id="field_language" data-cy="language">
             <option [ngValue]="null">{{ 'jhipsterApp.Language.null' | translate }}</option>
-            <option *ngFor="let language of languageValues" [value]="language">{{ 'jhipsterApp.Language.' + language | translate }}</option>
+            @for (language of languageValues; track $index) {
+              <option [value]="language">{{ 'jhipsterApp.Language.' + language | translate }}</option>
+            }
           </select>
         </div>
 
@@ -55,7 +59,9 @@
           <label class="form-label" jhiTranslate="jhipsterApp.jobHistory.job" for="field_job">Job</label>
           <select class="form-control" id="field_job" data-cy="job" name="job" formControlName="job" [compareWith]="compareJob">
             <option [ngValue]="null"></option>
-            <option [ngValue]="jobOption" *ngFor="let jobOption of jobsCollection">{{ jobOption.id }}</option>
+            @for (jobOption of jobsCollection; track $index) {
+              <option [ngValue]="jobOption">{{ jobOption.id }}</option>
+            }
           </select>
         </div>
 
@@ -70,7 +76,9 @@
             [compareWith]="compareDepartment"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="departmentOption" *ngFor="let departmentOption of departmentsCollection">{{ departmentOption.id }}</option>
+            @for (departmentOption of departmentsCollection; track $index) {
+              <option [ngValue]="departmentOption">{{ departmentOption.id }}</option>
+            }
           </select>
         </div>
 
@@ -85,7 +93,9 @@
             [compareWith]="compareEmployee"
           >
             <option [ngValue]="null"></option>
-            <option [ngValue]="employeeOption" *ngFor="let employeeOption of employeesCollection">{{ employeeOption.id }}</option>
+            @for (employeeOption of employeesCollection; track $index) {
+              <option [ngValue]="employeeOption">{{ employeeOption.id }}</option>
+            }
           </select>
         </div>
       </div>

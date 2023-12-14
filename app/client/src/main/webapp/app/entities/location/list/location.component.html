@@ -24,105 +24,119 @@
 
   <jhi-alert></jhi-alert>
 
-  <div class="alert alert-warning" id="no-result" *ngIf="locations?.length === 0">
-    <span jhiTranslate="jhipsterApp.location.home.notFound">No Locations found</span>
-  </div>
-
-  <div class="table-responsive table-entities" id="entities" *ngIf="locations && locations.length > 0">
-    <table class="table table-striped" aria-describedby="page-heading">
-      <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
-          <th scope="col" jhiSortBy="id">
-            <div class="d-flex">
-              <span jhiTranslate="jhipsterApp.location.id">Id</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="streetAddress">
-            <div class="d-flex">
-              <span jhiTranslate="jhipsterApp.location.streetAddress">Street Address</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="postalCode">
-            <div class="d-flex">
-              <span jhiTranslate="jhipsterApp.location.postalCode">Postal Code</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="city">
-            <div class="d-flex">
-              <span jhiTranslate="jhipsterApp.location.city">City</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="stateProvince">
-            <div class="d-flex">
-              <span jhiTranslate="jhipsterApp.location.stateProvince">State Province</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col" jhiSortBy="country.id">
-            <div class="d-flex">
-              <span jhiTranslate="jhipsterApp.location.country">Country</span>
-              <fa-icon class="p-1" icon="sort"></fa-icon>
-            </div>
-          </th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let location of locations; trackBy: trackId" data-cy="entityTable">
-          <td>
-            <a [routerLink]="['/location', location.id, 'view']">{{ location.id }}</a>
-          </td>
-          <td>{{ location.streetAddress }}</td>
-          <td>{{ location.postalCode }}</td>
-          <td>{{ location.city }}</td>
-          <td>{{ location.stateProvince }}</td>
-          <td>
-            <div *ngIf="location.country">
-              <a [routerLink]="['/country', location.country.id, 'view']">{{ location.country.id }}</a>
-            </div>
-          </td>
-          <td class="text-end">
-            <div class="btn-group">
-              <a [routerLink]="['/location', location.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
-                <fa-icon icon="eye"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
-              </a>
-
-              <a [routerLink]="['/location', location.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                <fa-icon icon="pencil-alt"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
-              </a>
-
-              <button type="submit" (click)="delete(location)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                <fa-icon icon="times"></fa-icon>
-                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div *ngIf="locations && locations.length > 0">
-    <div class="d-flex justify-content-center">
-      <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+  @if (locations?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="jhipsterApp.location.home.notFound">No Locations found</span>
     </div>
+  }
 
-    <div class="d-flex justify-content-center">
-      <ngb-pagination
-        [collectionSize]="totalItems"
-        [page]="page"
-        [pageSize]="itemsPerPage"
-        [maxSize]="5"
-        [rotate]="true"
-        [boundaryLinks]="true"
-        (pageChange)="navigateToPage($event)"
-      ></ngb-pagination>
+  @if (locations && locations.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="jhipsterApp.location.id">Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="streetAddress">
+              <div class="d-flex">
+                <span jhiTranslate="jhipsterApp.location.streetAddress">Street Address</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="postalCode">
+              <div class="d-flex">
+                <span jhiTranslate="jhipsterApp.location.postalCode">Postal Code</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="city">
+              <div class="d-flex">
+                <span jhiTranslate="jhipsterApp.location.city">City</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="stateProvince">
+              <div class="d-flex">
+                <span jhiTranslate="jhipsterApp.location.stateProvince">State Province</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="country.id">
+              <div class="d-flex">
+                <span jhiTranslate="jhipsterApp.location.country">Country</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (location of locations; track trackId) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/location', location.id, 'view']">{{ location.id }}</a>
+              </td>
+              <td>{{ location.streetAddress }}</td>
+              <td>{{ location.postalCode }}</td>
+              <td>{{ location.city }}</td>
+              <td>{{ location.stateProvince }}</td>
+              <td>
+                @if (location.country) {
+                  <div>
+                    <a [routerLink]="['/country', location.country.id, 'view']">{{ location.country.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/location', location.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a [routerLink]="['/location', location.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(location)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
-  </div>
+  }
+  @if (locations && locations.length > 0) {
+    <div>
+      <div class="d-flex justify-content-center">
+        <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <ngb-pagination
+          [collectionSize]="totalItems"
+          [page]="page"
+          [pageSize]="itemsPerPage"
+          [maxSize]="5"
+          [rotate]="true"
+          [boundaryLinks]="true"
+          (pageChange)="navigateToPage($event)"
+        ></ngb-pagination>
+      </div>
+    </div>
+  }
 </div>
