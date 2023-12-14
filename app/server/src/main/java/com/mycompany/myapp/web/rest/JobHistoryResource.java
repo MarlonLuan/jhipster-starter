@@ -157,7 +157,7 @@ public class JobHistoryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the jobHistoryDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    public ResponseEntity<JobHistoryDTO> getJobHistory(@PathVariable UUID id) {
+    public ResponseEntity<JobHistoryDTO> getJobHistory(@PathVariable("id") UUID id) {
         log.debug("REST request to get JobHistory : {}", id);
         Optional<JobHistoryDTO> jobHistoryDTO = jobHistoryService.findOne(id);
         return ResponseUtil.wrapOrNotFound(jobHistoryDTO);
@@ -170,7 +170,7 @@ public class JobHistoryResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteJobHistory(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteJobHistory(@PathVariable("id") UUID id) {
         log.debug("REST request to delete JobHistory : {}", id);
         jobHistoryService.delete(id);
         return ResponseEntity
