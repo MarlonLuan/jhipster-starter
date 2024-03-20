@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -21,13 +21,12 @@ export class RegionUpdateComponent implements OnInit {
   isSaving = false;
   region: IRegion | null = null;
 
-  editForm: RegionFormGroup = this.regionFormService.createRegionFormGroup();
+  protected regionService = inject(RegionService);
+  protected regionFormService = inject(RegionFormService);
+  protected activatedRoute = inject(ActivatedRoute);
 
-  constructor(
-    protected regionService: RegionService,
-    protected regionFormService: RegionFormService,
-    protected activatedRoute: ActivatedRoute,
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  editForm: RegionFormGroup = this.regionFormService.createRegionFormGroup();
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ region }) => {
