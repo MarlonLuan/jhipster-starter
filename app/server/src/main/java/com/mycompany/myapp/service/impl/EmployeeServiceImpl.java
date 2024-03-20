@@ -81,8 +81,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional(readOnly = true)
     public List<EmployeeDTO> findAllWhereJobHistoryIsNull() {
         log.debug("Request to get all employees where JobHistory is null");
-        return StreamSupport
-            .stream(employeeRepository.findAll().spliterator(), false)
+        return StreamSupport.stream(employeeRepository.findAll().spliterator(), false)
             .filter(employee -> employee.getJobHistory() == null)
             .map(employeeMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));

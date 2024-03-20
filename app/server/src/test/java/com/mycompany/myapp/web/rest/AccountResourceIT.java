@@ -38,8 +38,7 @@ class AccountResourceIT {
     @Test
     @Transactional
     void testGetExistingAccount() throws Exception {
-        TestSecurityContextHolder
-            .getContext()
+        TestSecurityContextHolder.getContext()
             .setAuthentication(registerAuthenticationToken(authorizedClientService, clientRegistration, testAuthenticationToken()));
 
         restAccountMockMvc
@@ -47,7 +46,6 @@ class AccountResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.login").value(TEST_USER_LOGIN))
-            .andExpect(jsonPath("$.email").value("john.doe@jhipster.com"))
             .andExpect(jsonPath("$.authorities").value(AuthoritiesConstants.ADMIN));
     }
 

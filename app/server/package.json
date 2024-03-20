@@ -45,11 +45,8 @@
     "default_environment": "prod",
     "packaging": "jar"
   },
-  "devDependencies": {
-    "generator-jhipster": "8.1.0"
-  },
   "engines": {
-    "node": ">=18.18.2"
+    "node": ">=20.11.1"
   },
   "cacheDirectories": [
     "node_modules"

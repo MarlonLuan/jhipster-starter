@@ -62,11 +62,10 @@ public class DepartmentResource {
         if (departmentDTO.getId() != null) {
             throw new BadRequestAlertException("A new department cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        DepartmentDTO result = departmentService.save(departmentDTO);
-        return ResponseEntity
-            .created(new URI("/api/departments/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        departmentDTO = departmentService.save(departmentDTO);
+        return ResponseEntity.created(new URI("/api/departments/" + departmentDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, departmentDTO.getId().toString()))
+            .body(departmentDTO);
     }
 
     /**
@@ -96,11 +95,10 @@ public class DepartmentResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        DepartmentDTO result = departmentService.update(departmentDTO);
-        return ResponseEntity
-            .ok()
+        departmentDTO = departmentService.update(departmentDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, departmentDTO.getId().toString()))
-            .body(result);
+            .body(departmentDTO);
     }
 
     /**
@@ -184,8 +182,7 @@ public class DepartmentResource {
     public ResponseEntity<Void> deleteDepartment(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Department : {}", id);
         departmentService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }

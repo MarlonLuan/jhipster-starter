@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -33,16 +33,15 @@ export class JobHistoryUpdateComponent implements OnInit {
   departmentsCollection: IDepartment[] = [];
   employeesCollection: IEmployee[] = [];
 
-  editForm: JobHistoryFormGroup = this.jobHistoryFormService.createJobHistoryFormGroup();
+  protected jobHistoryService = inject(JobHistoryService);
+  protected jobHistoryFormService = inject(JobHistoryFormService);
+  protected jobService = inject(JobService);
+  protected departmentService = inject(DepartmentService);
+  protected employeeService = inject(EmployeeService);
+  protected activatedRoute = inject(ActivatedRoute);
 
-  constructor(
-    protected jobHistoryService: JobHistoryService,
-    protected jobHistoryFormService: JobHistoryFormService,
-    protected jobService: JobService,
-    protected departmentService: DepartmentService,
-    protected employeeService: EmployeeService,
-    protected activatedRoute: ActivatedRoute,
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  editForm: JobHistoryFormGroup = this.jobHistoryFormService.createJobHistoryFormGroup();
 
   compareJob = (o1: IJob | null, o2: IJob | null): boolean => this.jobService.compareJob(o1, o2);
 
