@@ -1,11 +1,10 @@
 {
   "annotations": {
-    "changelogDate": "20231214120023"
+    "changelogDate": "20240320155854"
   },
   "applications": ["jhipster"],
   "documentation": "not an ignored comment",
   "dto": "mapstruct",
-  "entityTableName": "location",
   "fields": [
     {
       "fieldName": "id",
