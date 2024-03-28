@@ -60,11 +60,10 @@ public class JobResource {
         if (jobDTO.getId() != null) {
             throw new BadRequestAlertException("A new job cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        JobDTO result = jobService.save(jobDTO);
-        return ResponseEntity
-            .created(new URI("/api/jobs/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        jobDTO = jobService.save(jobDTO);
+        return ResponseEntity.created(new URI("/api/jobs/" + jobDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, jobDTO.getId().toString()))
+            .body(jobDTO);
     }
 
     /**
@@ -92,11 +91,10 @@ public class JobResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        JobDTO result = jobService.update(jobDTO);
-        return ResponseEntity
-            .ok()
+        jobDTO = jobService.update(jobDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, jobDTO.getId().toString()))
-            .body(result);
+            .body(jobDTO);
     }
 
     /**
@@ -185,8 +183,7 @@ public class JobResource {
     public ResponseEntity<Void> deleteJob(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Job : {}", id);
         jobService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }

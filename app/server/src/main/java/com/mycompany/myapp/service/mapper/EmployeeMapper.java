@@ -4,6 +4,8 @@ import com.mycompany.myapp.domain.Department;
 import com.mycompany.myapp.domain.Employee;
 import com.mycompany.myapp.service.dto.DepartmentDTO;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
+import java.util.Objects;
+import java.util.UUID;
 import org.mapstruct.*;
 
 /**
@@ -24,4 +26,8 @@ public interface EmployeeMapper extends EntityMapper<EmployeeDTO, Employee> {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     DepartmentDTO toDtoDepartmentId(Department department);
+
+    default String map(UUID value) {
+        return Objects.toString(value, null);
+    }
 }
