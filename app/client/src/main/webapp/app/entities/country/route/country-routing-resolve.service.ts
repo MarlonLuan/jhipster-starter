@@ -7,7 +7,7 @@ import { mergeMap } from 'rxjs/operators';
 import { ICountry } from '../country.model';
 import { CountryService } from '../service/country.service';
 
-export const countryResolve = (route: ActivatedRouteSnapshot): Observable<null | ICountry> => {
+const countryResolve = (route: ActivatedRouteSnapshot): Observable<null | ICountry> => {
   const id = route.params['id'];
   if (id) {
     return inject(CountryService)

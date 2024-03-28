@@ -60,11 +60,10 @@ public class RegionResource {
         if (regionDTO.getId() != null) {
             throw new BadRequestAlertException("A new region cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        RegionDTO result = regionService.save(regionDTO);
-        return ResponseEntity
-            .created(new URI("/api/regions/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        regionDTO = regionService.save(regionDTO);
+        return ResponseEntity.created(new URI("/api/regions/" + regionDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, regionDTO.getId().toString()))
+            .body(regionDTO);
     }
 
     /**
@@ -94,11 +93,10 @@ public class RegionResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        RegionDTO result = regionService.update(regionDTO);
-        return ResponseEntity
-            .ok()
+        regionDTO = regionService.update(regionDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, regionDTO.getId().toString()))
-            .body(result);
+            .body(regionDTO);
     }
 
     /**
@@ -182,8 +180,7 @@ public class RegionResource {
     public ResponseEntity<Void> deleteRegion(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Region : {}", id);
         regionService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }

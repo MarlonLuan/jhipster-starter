@@ -15,10 +15,6 @@ public class EmployeeDTO implements Serializable {
 
     private UUID id;
 
-    /**
-     * The firstname attribute.
-     */
-    @Schema(description = "The firstname attribute.")
     private String firstName;
 
     private String lastName;
@@ -35,10 +31,6 @@ public class EmployeeDTO implements Serializable {
 
     private EmployeeDTO manager;
 
-    /**
-     * Another side of the same relationship
-     */
-    @Schema(description = "Another side of the same relationship")
     private DepartmentDTO department;
 
     public UUID getId() {
