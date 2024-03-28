@@ -16,6 +16,9 @@ import org.springframework.data.domain.PageImpl;
  */
 public class JobRepositoryWithBagRelationshipsImpl implements JobRepositoryWithBagRelationships {
 
+    private static final String ID_PARAMETER = "id";
+    private static final String JOBS_PARAMETER = "jobs";
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -37,7 +40,7 @@ public class JobRepositoryWithBagRelationshipsImpl implements JobRepositoryWithB
     Job fetchTasks(Job result) {
         return entityManager
             .createQuery("select job from Job job left join fetch job.tasks where job.id = :id", Job.class)
-            .setParameter("id", result.getId())
+            .setParameter(ID_PARAMETER, result.getId())
             .getSingleResult();
     }
 
@@ -46,7 +49,7 @@ public class JobRepositoryWithBagRelationshipsImpl implements JobRepositoryWithB
         IntStream.range(0, jobs.size()).forEach(index -> order.put(jobs.get(index).getId(), index));
         List<Job> result = entityManager
             .createQuery("select job from Job job left join fetch job.tasks where job in :jobs", Job.class)
-            .setParameter("jobs", jobs)
+            .setParameter(JOBS_PARAMETER, jobs)
             .getResultList();
         Collections.sort(result, (o1, o2) -> Integer.compare(order.get(o1.getId()), order.get(o2.getId())));
         return result;

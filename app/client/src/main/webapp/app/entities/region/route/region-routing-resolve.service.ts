@@ -7,7 +7,7 @@ import { mergeMap } from 'rxjs/operators';
 import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
 
-export const regionResolve = (route: ActivatedRouteSnapshot): Observable<null | IRegion> => {
+const regionResolve = (route: ActivatedRouteSnapshot): Observable<null | IRegion> => {
   const id = route.params['id'];
   if (id) {
     return inject(RegionService)

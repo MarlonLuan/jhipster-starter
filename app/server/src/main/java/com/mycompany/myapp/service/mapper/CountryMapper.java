@@ -4,6 +4,8 @@ import com.mycompany.myapp.domain.Country;
 import com.mycompany.myapp.domain.Region;
 import com.mycompany.myapp.service.dto.CountryDTO;
 import com.mycompany.myapp.service.dto.RegionDTO;
+import java.util.Objects;
+import java.util.UUID;
 import org.mapstruct.*;
 
 /**
@@ -18,4 +20,8 @@ public interface CountryMapper extends EntityMapper<CountryDTO, Country> {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     RegionDTO toDtoRegionId(Region region);
+
+    default String map(UUID value) {
+        return Objects.toString(value, null);
+    }
 }
