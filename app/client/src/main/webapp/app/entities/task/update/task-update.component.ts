@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -21,13 +21,12 @@ export class TaskUpdateComponent implements OnInit {
   isSaving = false;
   task: ITask | null = null;
 
-  editForm: TaskFormGroup = this.taskFormService.createTaskFormGroup();
+  protected taskService = inject(TaskService);
+  protected taskFormService = inject(TaskFormService);
+  protected activatedRoute = inject(ActivatedRoute);
 
-  constructor(
-    protected taskService: TaskService,
-    protected taskFormService: TaskFormService,
-    protected activatedRoute: ActivatedRoute,
-  ) {}
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  editForm: TaskFormGroup = this.taskFormService.createTaskFormGroup();
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ task }) => {

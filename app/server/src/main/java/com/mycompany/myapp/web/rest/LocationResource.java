@@ -60,11 +60,10 @@ public class LocationResource {
         if (locationDTO.getId() != null) {
             throw new BadRequestAlertException("A new location cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        LocationDTO result = locationService.save(locationDTO);
-        return ResponseEntity
-            .created(new URI("/api/locations/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        locationDTO = locationService.save(locationDTO);
+        return ResponseEntity.created(new URI("/api/locations/" + locationDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, locationDTO.getId().toString()))
+            .body(locationDTO);
     }
 
     /**
@@ -94,11 +93,10 @@ public class LocationResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        LocationDTO result = locationService.update(locationDTO);
-        return ResponseEntity
-            .ok()
+        locationDTO = locationService.update(locationDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, locationDTO.getId().toString()))
-            .body(result);
+            .body(locationDTO);
     }
 
     /**
@@ -182,8 +180,7 @@ public class LocationResource {
     public ResponseEntity<Void> deleteLocation(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Location : {}", id);
         locationService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }

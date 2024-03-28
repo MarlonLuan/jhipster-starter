@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { ASC } from 'app/config/navigation.constants';
 import { LocationComponent } from './list/location.component';
 import { LocationDetailComponent } from './detail/location-detail.component';
 import { LocationUpdateComponent } from './update/location-update.component';
@@ -11,9 +10,7 @@ const locationRoute: Routes = [
   {
     path: '',
     component: LocationComponent,
-    data: {
-      defaultSort: 'id,' + ASC,
-    },
+    data: {},
     canActivate: [UserRouteAccessService],
   },
   {
