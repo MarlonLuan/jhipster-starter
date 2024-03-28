@@ -1,8 +1,6 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
-import { map } from 'rxjs/operators';
+import { map, Observable } from 'rxjs';
 
 import dayjs from 'dayjs/esm';
 
@@ -28,12 +26,10 @@ export type EntityArrayResponseType = HttpResponse<IEmployee[]>;
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeService {
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/employees');
+  protected http = inject(HttpClient);
+  protected applicationConfigService = inject(ApplicationConfigService);
 
-  constructor(
-    protected http: HttpClient,
-    protected applicationConfigService: ApplicationConfigService,
-  ) {}
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/employees');
 
   create(employee: NewEmployee): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(employee);
@@ -87,7 +83,7 @@ export class EmployeeService {
   ): Type[] {
     const employees: Type[] = employeesToCheck.filter(isPresent);
     if (employees.length > 0) {
-      const employeeCollectionIdentifiers = employeeCollection.map(employeeItem => this.getEmployeeIdentifier(employeeItem)!);
+      const employeeCollectionIdentifiers = employeeCollection.map(employeeItem => this.getEmployeeIdentifier(employeeItem));
       const employeesToAdd = employees.filter(employeeItem => {
         const employeeIdentifier = this.getEmployeeIdentifier(employeeItem);
         if (employeeCollectionIdentifiers.includes(employeeIdentifier)) {

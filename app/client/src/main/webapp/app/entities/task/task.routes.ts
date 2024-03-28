@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { ASC } from 'app/config/navigation.constants';
 import { TaskComponent } from './list/task.component';
 import { TaskDetailComponent } from './detail/task-detail.component';
 import { TaskUpdateComponent } from './update/task-update.component';
@@ -11,9 +10,7 @@ const taskRoute: Routes = [
   {
     path: '',
     component: TaskComponent,
-    data: {
-      defaultSort: 'id,' + ASC,
-    },
+    data: {},
     canActivate: [UserRouteAccessService],
   },
   {

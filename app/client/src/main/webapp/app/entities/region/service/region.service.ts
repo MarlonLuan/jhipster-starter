@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -14,12 +14,10 @@ export type EntityArrayResponseType = HttpResponse<IRegion[]>;
 
 @Injectable({ providedIn: 'root' })
 export class RegionService {
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/regions');
+  protected http = inject(HttpClient);
+  protected applicationConfigService = inject(ApplicationConfigService);
 
-  constructor(
-    protected http: HttpClient,
-    protected applicationConfigService: ApplicationConfigService,
-  ) {}
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/regions');
 
   create(region: NewRegion): Observable<EntityResponseType> {
     return this.http.post<IRegion>(this.resourceUrl, region, { observe: 'response' });
@@ -60,7 +58,7 @@ export class RegionService {
   ): Type[] {
     const regions: Type[] = regionsToCheck.filter(isPresent);
     if (regions.length > 0) {
-      const regionCollectionIdentifiers = regionCollection.map(regionItem => this.getRegionIdentifier(regionItem)!);
+      const regionCollectionIdentifiers = regionCollection.map(regionItem => this.getRegionIdentifier(regionItem));
       const regionsToAdd = regions.filter(regionItem => {
         const regionIdentifier = this.getRegionIdentifier(regionItem);
         if (regionCollectionIdentifiers.includes(regionIdentifier)) {
