@@ -8,7 +8,7 @@
     <!--
         Added the constraints for entity Department.
     -->
-    <changeSet id="20240402111654-2" author="jhipster">
+    <changeSet id="20240402112925-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="location_id"
                                  baseTableName="department"
