@@ -60,11 +60,10 @@ public class EmployeeResource {
         if (employeeDTO.getId() != null) {
             throw new BadRequestAlertException("A new employee cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        EmployeeDTO result = employeeService.save(employeeDTO);
-        return ResponseEntity
-            .created(new URI("/api/employees/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        employeeDTO = employeeService.save(employeeDTO);
+        return ResponseEntity.created(new URI("/api/employees/" + employeeDTO.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, employeeDTO.getId().toString()))
+            .body(employeeDTO);
     }
 
     /**
@@ -94,11 +93,10 @@ public class EmployeeResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        EmployeeDTO result = employeeService.update(employeeDTO);
-        return ResponseEntity
-            .ok()
+        employeeDTO = employeeService.update(employeeDTO);
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, employeeDTO.getId().toString()))
-            .body(result);
+            .body(employeeDTO);
     }
 
     /**
@@ -182,8 +180,7 @@ public class EmployeeResource {
     public ResponseEntity<Void> deleteEmployee(@PathVariable("id") UUID id) {
         log.debug("REST request to delete Employee : {}", id);
         employeeService.delete(id);
-        return ResponseEntity
-            .noContent()
+        return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }

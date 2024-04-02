@@ -12,8 +12,8 @@ export const sampleWithPartialData: IJobHistory = {
 
 export const sampleWithFullData: IJobHistory = {
   id: '4b2595da-028d-4a3f-a049-9a694e3f35e8',
-  startDate: dayjs('2023-12-14T00:29'),
-  endDate: dayjs('2023-12-13T12:53'),
+  startDate: dayjs('2024-04-01T23:43'),
+  endDate: dayjs('2024-04-01T12:06'),
   language: 'FRENCH',
 };
 
