@@ -9,7 +9,7 @@
     <!--
         Added the entity Job.
     -->
-    <changeSet id="20240402111954-1" author="jhipster">
+    <changeSet id="20240402112724-1" author="jhipster">
         <createTable tableName="job">
             <column name="id" type="${uuidType}">
                 <constraints primaryKey="true" nullable="false"/>
@@ -30,7 +30,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="20240402111954-1-relations" author="jhipster">
+    <changeSet id="20240402112724-1-relations" author="jhipster">
 
         <createTable tableName="rel_job__task">
             <column name="task_id" type="${uuidType}">
@@ -54,7 +54,7 @@
           This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
           Spring Boot configuration key.
     -->
-    <changeSet id="20240402111954-1-data" author="jhipster" context="faker">
+    <changeSet id="20240402112724-1-data" author="jhipster" context="faker">
         <loadData
                   file="config/liquibase/fake-data/job.csv"
                   separator=";"

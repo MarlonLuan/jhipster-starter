@@ -18,7 +18,7 @@ export const sampleWithFullData: IEmployee = {
   lastName: 'Gutkowski',
   email: 'Jeramy_Hickle-Crona@yahoo.com',
   phoneNumber: 'yuck with',
-  hireDate: dayjs('2024-04-02T02:22'),
+  hireDate: dayjs('2024-04-02T02:29'),
   salary: 20613,
   commissionPct: 22976,
 };
