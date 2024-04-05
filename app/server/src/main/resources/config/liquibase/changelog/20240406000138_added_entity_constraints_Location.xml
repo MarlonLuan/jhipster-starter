@@ -8,7 +8,7 @@
     <!--
         Added the constraints for entity Location.
     -->
-    <changeSet id="20240402111554-2" author="jhipster">
+    <changeSet id="20240406000138-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="country_id"
                                  baseTableName="location"
