@@ -6,27 +6,27 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
     <!--
-        Added the constraints for entity Job.
+        Added the constraints for entity JobHistory.
     -->
-    <changeSet id="20240402111954-2" author="jhipster">
+    <changeSet id="20240406000838-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="job_id"
-                                 baseTableName="rel_job__task"
-                                 constraintName="fk_rel_job__task__job_id"
+                                 baseTableName="job_history"
+                                 constraintName="fk_job_history__job_id"
                                  referencedColumnNames="id"
                                  referencedTableName="job"
                                  />
 
-        <addForeignKeyConstraint baseColumnNames="task_id"
-                                 baseTableName="rel_job__task"
-                                 constraintName="fk_rel_job__task__task_id"
+        <addForeignKeyConstraint baseColumnNames="department_id"
+                                 baseTableName="job_history"
+                                 constraintName="fk_job_history__department_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="task"
+                                 referencedTableName="department"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="employee_id"
-                                 baseTableName="job"
-                                 constraintName="fk_job__employee_id"
+                                 baseTableName="job_history"
+                                 constraintName="fk_job_history__employee_id"
                                  referencedColumnNames="id"
                                  referencedTableName="employee"
                                  />

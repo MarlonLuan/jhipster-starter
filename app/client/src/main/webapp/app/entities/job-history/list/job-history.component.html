@@ -92,7 +92,9 @@
               </td>
               <td>{{ jobHistory.startDate | formatMediumDatetime }}</td>
               <td>{{ jobHistory.endDate | formatMediumDatetime }}</td>
-              <td jhiTranslate="{{ 'jhipsterApp.Language.' + jobHistory.language }}">{{ jobHistory.language }}</td>
+              <td [jhiTranslate]="'jhipsterApp.Language.' + (jobHistory.language ?? 'null')">
+                {{ { null: '', FRENCH: 'FRENCH', ENGLISH: 'ENGLISH', SPANISH: 'SPANISH' }[jobHistory.language ?? 'null'] }}
+              </td>
               <td>
                 @if (jobHistory.job) {
                   <div>
