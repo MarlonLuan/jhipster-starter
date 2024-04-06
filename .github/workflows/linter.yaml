@@ -3,8 +3,8 @@ jobs:
   linter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
-      - uses: github/super-linter/slim@v4
+      - uses: github/super-linter/slim@985ef206aaca4d560cb9ee2af2b42ba44adc1d55 # v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
