@@ -46,7 +46,7 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "8.2.1"
+    "generator-jhipster": "8.3.0"
   },
   "engines": {
     "node": ">=20.11.1"
