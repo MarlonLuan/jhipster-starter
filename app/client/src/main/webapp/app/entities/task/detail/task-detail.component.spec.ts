@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { RouterTestingHarness, RouterTestingModule } from '@angular/router/testing';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { TaskDetailComponent } from './task-detail.component';
@@ -11,7 +11,7 @@ describe('Task Management Detail Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TaskDetailComponent, RouterTestingModule.withRoutes([], { bindToComponentInputs: true })],
+      imports: [TaskDetailComponent],
       providers: [
         provideRouter(
           [
@@ -40,7 +40,7 @@ describe('Task Management Detail Component', () => {
       const instance = await harness.navigateByUrl('/', TaskDetailComponent);
 
       // THEN
-      expect(instance.task).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+      expect(instance.task()).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
     });
   });
 
