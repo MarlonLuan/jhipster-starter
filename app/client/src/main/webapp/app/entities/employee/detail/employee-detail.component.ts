@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -12,7 +12,7 @@ import { IEmployee } from '../employee.model';
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
 })
 export class EmployeeDetailComponent {
-  @Input() employee: IEmployee | null = null;
+  employee = input<IEmployee | null>(null);
 
   previousState(): void {
     window.history.back();
