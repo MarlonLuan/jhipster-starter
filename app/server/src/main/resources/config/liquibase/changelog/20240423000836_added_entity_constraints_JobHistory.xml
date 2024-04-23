@@ -8,7 +8,7 @@
     <!--
         Added the constraints for entity JobHistory.
     -->
-    <changeSet id="20240412000740-2" author="jhipster">
+    <changeSet id="20240423000836-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="job_id"
                                  baseTableName="job_history"
