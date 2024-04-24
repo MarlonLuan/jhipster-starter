@@ -6,29 +6,22 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
     <!--
-        Added the constraints for entity JobHistory.
+        Added the constraints for entity Employee.
     -->
-    <changeSet id="20240412000740-2" author="jhipster">
+    <changeSet id="20240425000443-2" author="jhipster">
 
-        <addForeignKeyConstraint baseColumnNames="job_id"
-                                 baseTableName="job_history"
-                                 constraintName="fk_job_history__job_id"
+        <addForeignKeyConstraint baseColumnNames="manager_id"
+                                 baseTableName="employee"
+                                 constraintName="fk_employee__manager_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="job"
+                                 referencedTableName="employee"
                                  />
 
         <addForeignKeyConstraint baseColumnNames="department_id"
-                                 baseTableName="job_history"
-                                 constraintName="fk_job_history__department_id"
+                                 baseTableName="employee"
+                                 constraintName="fk_employee__department_id"
                                  referencedColumnNames="id"
                                  referencedTableName="department"
-                                 />
-
-        <addForeignKeyConstraint baseColumnNames="employee_id"
-                                 baseTableName="job_history"
-                                 constraintName="fk_job_history__employee_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="employee"
                                  />
     </changeSet>
 </databaseChangeLog>
