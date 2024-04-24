@@ -1,6 +1,6 @@
 {
   "annotations": {
-    "changelogDate": "20240412000416"
+    "changelogDate": "20240424005747"
   },
   "applications": ["jhipster"],
   "documentation": "The Employee entity.",
