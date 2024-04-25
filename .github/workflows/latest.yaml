@@ -22,12 +22,14 @@ jobs:
           mkdir app
 
       - run: |
+          sudo date --set="@0"
           cd app
           mkdir client
           cd client
           echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-server
 
       - run: |
+          sudo date --set="@0"
           cd app
           mkdir server
           cd server
