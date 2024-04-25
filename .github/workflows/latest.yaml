@@ -23,13 +23,17 @@ jobs:
 
       - run: |
           sudo date --set="@0"
+
+      - run: |
+          date --set="@0"
+
+      - run: |
           cd app
           mkdir client
           cd client
           echo "a" | jhipster jdl ../../jdl/app.jdl --skip-git --skip-server
 
       - run: |
-          sudo date --set="@0"
           cd app
           mkdir server
           cd server
