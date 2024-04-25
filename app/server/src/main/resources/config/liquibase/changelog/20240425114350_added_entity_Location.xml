@@ -7,43 +7,30 @@
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <!--
-        Added the entity Employee.
+        Added the entity Location.
     -->
-    <changeSet id="20240412000540-1" author="jhipster">
-        <createTable tableName="employee" remarks="The Employee entity.">
+    <changeSet id="20240425114350-1" author="jhipster">
+        <createTable tableName="location" remarks="not an ignored comment">
             <column name="id" type="${uuidType}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="first_name" type="varchar(255)" remarks="The firstname attribute.">
+            <column name="street_address" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="last_name" type="varchar(255)">
+            <column name="postal_code" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="email" type="varchar(255)">
+            <column name="city" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="phone_number" type="varchar(255)">
+            <column name="state_province" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="hire_date" type="${datetimeType}">
-                <constraints nullable="true" />
-            </column>
-            <column name="salary" type="bigint">
-                <constraints nullable="true" />
-            </column>
-            <column name="commission_pct" type="bigint">
-                <constraints nullable="true" />
-            </column>
-            <column name="manager_id" type="${uuidType}">
-                <constraints nullable="true" />
-            </column>
-            <column name="department_id" type="${uuidType}">
-                <constraints nullable="true" />
+            <column name="country_id" type="${uuidType}">
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_location__country_id" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
         </createTable>
-        <dropDefaultValue tableName="employee" columnName="hire_date" columnDataType="${datetimeType}"/>
     </changeSet>
 
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
@@ -56,20 +43,17 @@
           This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
           Spring Boot configuration key.
     -->
-    <changeSet id="20240412000540-1-data" author="jhipster" context="faker">
+    <changeSet id="20240425114350-1-data" author="jhipster" context="faker">
         <loadData
-                  file="config/liquibase/fake-data/employee.csv"
+                  file="config/liquibase/fake-data/location.csv"
                   separator=";"
-                  tableName="employee"
+                  tableName="location"
                   usePreparedStatements="true">
             <column name="id" type="${uuidType}"/>
-            <column name="first_name" type="string"/>
-            <column name="last_name" type="string"/>
-            <column name="email" type="string"/>
-            <column name="phone_number" type="string"/>
-            <column name="hire_date" type="date"/>
-            <column name="salary" type="numeric"/>
-            <column name="commission_pct" type="numeric"/>
+            <column name="street_address" type="string"/>
+            <column name="postal_code" type="string"/>
+            <column name="city" type="string"/>
+            <column name="state_province" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>
