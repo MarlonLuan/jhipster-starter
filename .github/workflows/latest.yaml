@@ -22,10 +22,7 @@ jobs:
           mkdir app
 
       - run: |
-          sudo date --set="@0"
-
-      - run: |
-          date --set="@0"
+          sudo date --set="@1"
 
       - run: |
           cd app
