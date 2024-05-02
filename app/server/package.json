@@ -46,10 +46,10 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "8.3.0"
+    "generator-jhipster": "8.4.0"
   },
   "engines": {
-    "node": ">=20.12.1"
+    "node": ">=20.12.2"
   },
   "cacheDirectories": [
     "node_modules"

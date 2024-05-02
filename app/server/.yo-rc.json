@@ -7,14 +7,13 @@
     "devDatabaseType": "postgresql",
     "enableHibernateCache": false,
     "entities": ["Region", "Country", "Location", "Department", "Task", "Employee", "Job", "JobHistory"],
-    "jhipsterVersion": "8.3.0",
+    "jhipsterVersion": "8.4.0",
     "languages": ["en", "pt-br"],
-    "lastLiquibaseTimestamp": 1712880460000,
+    "lastLiquibaseTimestamp": 1714652564000,
     "monorepository": true,
     "nativeLanguage": "en",
     "skipClient": true,
     "skipCommitHook": true,
-    "skipUserManagement": true,
-    "syncUserWithIdp": false
+    "skipUserManagement": true
   }
 }
