@@ -1,9 +1,8 @@
 {
-  "annotations": {
-    "changelogDate": "20000101000402"
-  },
   "applications": ["jhipster"],
+  "changelogDate": "19710101000403",
   "dto": "mapstruct",
+  "entityTableName": "department",
   "fields": [
     {
       "fieldName": "id",
@@ -25,7 +24,7 @@
       "relationshipType": "one-to-one"
     },
     {
-      "documentation": "A relationship",
+      "javadoc": "A relationship",
       "otherEntityName": "employee",
       "otherEntityRelationshipName": "department",
       "relationshipName": "employee",

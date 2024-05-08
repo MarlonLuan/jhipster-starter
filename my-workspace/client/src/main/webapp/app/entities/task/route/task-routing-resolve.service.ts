@@ -7,7 +7,7 @@ import { mergeMap } from 'rxjs/operators';
 import { ITask } from '../task.model';
 import { TaskService } from '../service/task.service';
 
-const taskResolve = (route: ActivatedRouteSnapshot): Observable<null | ITask> => {
+export const taskResolve = (route: ActivatedRouteSnapshot): Observable<null | ITask> => {
   const id = route.params['id'];
   if (id) {
     return inject(TaskService)

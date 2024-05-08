@@ -28,7 +28,7 @@ import tech.jhipster.web.util.ResponseUtil;
  * REST controller for managing {@link com.mycompany.myapp.domain.Job}.
  */
 @RestController
-@RequestMapping("/api/jobs")
+@RequestMapping("/api")
 public class JobResource {
 
     private final Logger log = LoggerFactory.getLogger(JobResource.class);
@@ -54,16 +54,17 @@ public class JobResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new jobDTO, or with status {@code 400 (Bad Request)} if the job has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("")
+    @PostMapping("/jobs")
     public ResponseEntity<JobDTO> createJob(@RequestBody JobDTO jobDTO) throws URISyntaxException {
         log.debug("REST request to save Job : {}", jobDTO);
         if (jobDTO.getId() != null) {
             throw new BadRequestAlertException("A new job cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        jobDTO = jobService.save(jobDTO);
-        return ResponseEntity.created(new URI("/api/jobs/" + jobDTO.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, jobDTO.getId().toString()))
-            .body(jobDTO);
+        JobDTO result = jobService.save(jobDTO);
+        return ResponseEntity
+            .created(new URI("/api/jobs/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+            .body(result);
     }
 
     /**
@@ -76,7 +77,7 @@ public class JobResource {
      * or with status {@code 500 (Internal Server Error)} if the jobDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/{id}")
+    @PutMapping("/jobs/{id}")
     public ResponseEntity<JobDTO> updateJob(@PathVariable(value = "id", required = false) final UUID id, @RequestBody JobDTO jobDTO)
         throws URISyntaxException {
         log.debug("REST request to update Job : {}, {}", id, jobDTO);
@@ -91,10 +92,11 @@ public class JobResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        jobDTO = jobService.update(jobDTO);
-        return ResponseEntity.ok()
+        JobDTO result = jobService.update(jobDTO);
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, jobDTO.getId().toString()))
-            .body(jobDTO);
+            .body(result);
     }
 
     /**
@@ -108,7 +110,7 @@ public class JobResource {
      * or with status {@code 500 (Internal Server Error)} if the jobDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/jobs/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<JobDTO> partialUpdateJob(@PathVariable(value = "id", required = false) final UUID id, @RequestBody JobDTO jobDTO)
         throws URISyntaxException {
         log.debug("REST request to partial update Job partially : {}, {}", id, jobDTO);
@@ -139,11 +141,11 @@ public class JobResource {
      * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of jobs in body.
      */
-    @GetMapping("")
+    @GetMapping("/jobs")
     public ResponseEntity<List<JobDTO>> getAllJobs(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam(name = "filter", required = false) String filter,
-        @RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload
+        @RequestParam(required = false) String filter,
+        @RequestParam(required = false, defaultValue = "false") boolean eagerload
     ) {
         if ("jobhistory-is-null".equals(filter)) {
             log.debug("REST request to get all Jobs where jobHistory is null");
@@ -166,8 +168,8 @@ public class JobResource {
      * @param id the id of the jobDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the jobDTO, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<JobDTO> getJob(@PathVariable("id") UUID id) {
+    @GetMapping("/jobs/{id}")
+    public ResponseEntity<JobDTO> getJob(@PathVariable UUID id) {
         log.debug("REST request to get Job : {}", id);
         Optional<JobDTO> jobDTO = jobService.findOne(id);
         return ResponseUtil.wrapOrNotFound(jobDTO);
@@ -179,11 +181,12 @@ public class JobResource {
      * @param id the id of the jobDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteJob(@PathVariable("id") UUID id) {
+    @DeleteMapping("/jobs/{id}")
+    public ResponseEntity<Void> deleteJob(@PathVariable UUID id) {
         log.debug("REST request to delete Job : {}", id);
         jobService.delete(id);
-        return ResponseEntity.noContent()
+        return ResponseEntity
+            .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }

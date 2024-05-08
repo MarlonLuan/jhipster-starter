@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2 id="jhi-task-heading" data-cy="TaskCreateUpdateHeading" jhiTranslate="jhipsterApp.task.home.createOrEditLabel">
         Create or edit a Task
       </h2>
@@ -8,20 +8,18 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id" jhiTranslate="jhipsterApp.task.id">Id</label>
-            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-          </div>
-        }
+        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" jhiTranslate="jhipsterApp.task.id" for="field_id">Id</label>
+          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_title" jhiTranslate="jhipsterApp.task.title">Title</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.task.title" for="field_title">Title</label>
           <input type="text" class="form-control" name="title" id="field_title" data-cy="title" formControlName="title" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_description" jhiTranslate="jhipsterApp.task.description">Description</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.task.description" for="field_description">Description</label>
           <input
             type="text"
             class="form-control"

@@ -16,11 +16,11 @@ export const sampleWithFullData: IEmployee = {
   id: '3d952da4-b247-4407-b3ee-289940d420ba',
   firstName: 'Sister',
   lastName: 'Gutkowski',
-  email: 'Jeramy_Hickle-Crona@yahoo.com',
-  phoneNumber: 'yuck with',
-  hireDate: dayjs('1999-12-31T15:10'),
-  salary: 20613,
-  commissionPct: 22976,
+  email: 'Juwan42@yahoo.com',
+  phoneNumber: 'overstretch continent',
+  hireDate: dayjs('1970-12-31T00:51'),
+  salary: 12188,
+  commissionPct: 20613,
 };
 
 export const sampleWithNewData: NewEmployee = {

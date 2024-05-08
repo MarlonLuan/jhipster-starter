@@ -1,6 +1,8 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
+
+import { map } from 'rxjs/operators';
 
 import dayjs from 'dayjs/esm';
 
@@ -27,10 +29,12 @@ export type EntityArrayResponseType = HttpResponse<IJobHistory[]>;
 
 @Injectable({ providedIn: 'root' })
 export class JobHistoryService {
-  protected http = inject(HttpClient);
-  protected applicationConfigService = inject(ApplicationConfigService);
-
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/job-histories');
+
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(jobHistory: NewJobHistory): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(jobHistory);
@@ -84,7 +88,7 @@ export class JobHistoryService {
   ): Type[] {
     const jobHistories: Type[] = jobHistoriesToCheck.filter(isPresent);
     if (jobHistories.length > 0) {
-      const jobHistoryCollectionIdentifiers = jobHistoryCollection.map(jobHistoryItem => this.getJobHistoryIdentifier(jobHistoryItem));
+      const jobHistoryCollectionIdentifiers = jobHistoryCollection.map(jobHistoryItem => this.getJobHistoryIdentifier(jobHistoryItem)!);
       const jobHistoriesToAdd = jobHistories.filter(jobHistoryItem => {
         const jobHistoryIdentifier = this.getJobHistoryIdentifier(jobHistoryItem);
         if (jobHistoryCollectionIdentifiers.includes(jobHistoryIdentifier)) {

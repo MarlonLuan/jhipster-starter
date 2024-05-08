@@ -1,10 +1,8 @@
 {
-  "annotations": {
-    "changelogDate": "20000101000302"
-  },
   "applications": ["jhipster"],
-  "documentation": "not an ignored comment",
+  "changelogDate": "19710101000303",
   "dto": "mapstruct",
+  "entityTableName": "location",
   "fields": [
     {
       "fieldName": "id",
@@ -27,6 +25,7 @@
       "fieldType": "String"
     }
   ],
+  "javadoc": "not an ignored comment",
   "name": "Location",
   "pagination": "pagination",
   "relationships": [
