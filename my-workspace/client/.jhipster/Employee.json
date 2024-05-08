@@ -1,19 +1,17 @@
 {
-  "annotations": {
-    "changelogDate": "19700101120602"
-  },
   "applications": ["jhipster"],
-  "documentation": "The Employee entity.",
+  "changelogDate": "19700101120602",
   "dto": "mapstruct",
+  "entityTableName": "employee",
   "fields": [
     {
       "fieldName": "id",
       "fieldType": "UUID"
     },
     {
-      "documentation": "The firstname attribute.",
       "fieldName": "firstName",
-      "fieldType": "String"
+      "fieldType": "String",
+      "javadoc": "The firstname attribute."
     },
     {
       "fieldName": "lastName",
@@ -40,6 +38,7 @@
       "fieldType": "Long"
     }
   ],
+  "javadoc": "The Employee entity.",
   "name": "Employee",
   "pagination": "pagination",
   "relationships": [
@@ -57,7 +56,7 @@
       "relationshipType": "many-to-one"
     },
     {
-      "documentation": "Another side of the same relationship",
+      "javadoc": "Another side of the same relationship",
       "otherEntityName": "department",
       "relationshipName": "department",
       "relationshipSide": "right",
