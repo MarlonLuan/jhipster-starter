@@ -22,7 +22,7 @@ jobs:
           mkdir my-workspace
 
       - run: |
-          # sudo date -s "2000-01-01"
+          sudo date -s "2000-01-01"
           cd my-workspace
           mkdir client
           cd client
