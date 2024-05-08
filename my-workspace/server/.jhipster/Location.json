@@ -1,6 +1,6 @@
 {
   "annotations": {
-    "changelogDate": "20000101000303"
+    "changelogDate": "20000101000305"
   },
   "applications": ["jhipster"],
   "documentation": "not an ignored comment",
