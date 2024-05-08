@@ -9,10 +9,11 @@
     "entities": ["Region", "Country", "Location", "Department", "Task", "Employee", "Job", "JobHistory"],
     "jhipsterVersion": "8.4.0",
     "languages": ["en", "pt-br"],
-    "lastLiquibaseTimestamp": 946685282000,
+    "lastLiquibaseTimestamp": 43682000,
     "monorepository": true,
     "nativeLanguage": "en",
     "skipCommitHook": true,
+    "skipJhipsterDependencies": true,
     "skipServer": true
   }
 }
