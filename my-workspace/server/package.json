@@ -49,7 +49,7 @@
     "generator-jhipster": "8.4.0"
   },
   "engines": {
-    "node": ">=20.12.2"
+    "node": ">=20.13.0"
   },
   "cacheDirectories": [
     "node_modules"
