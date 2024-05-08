@@ -28,14 +28,14 @@ jobs:
           cd my-workspace
           mkdir client
           cd client
-          sudo date -s "2000-01-01"
+          sudo date -s "1971-01-01"
           echo "a" | jhipster jdl ../../jdl/workspace.jdl --skip-git --skip-install --skip-server
 
       - run: |
           cd my-workspace
           mkdir server
           cd server
-          sudo date -s "2000-01-01"
+          sudo date -s "1971-01-01"
           echo "a" | jhipster jdl ../../jdl/workspace.jdl --skip-git --skip-install --skip-client
 
       - run: |
