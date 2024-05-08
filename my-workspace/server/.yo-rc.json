@@ -14,6 +14,7 @@
     "nativeLanguage": "en",
     "skipClient": true,
     "skipCommitHook": true,
+    "skipJhipsterDependencies": true,
     "skipUserManagement": true
   }
 }

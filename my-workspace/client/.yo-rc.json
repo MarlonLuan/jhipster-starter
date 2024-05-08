@@ -13,6 +13,7 @@
     "monorepository": true,
     "nativeLanguage": "en",
     "skipCommitHook": true,
+    "skipJhipsterDependencies": true,
     "skipServer": true
   }
 }
