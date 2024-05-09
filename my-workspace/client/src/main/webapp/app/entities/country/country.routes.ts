@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { ASC } from 'app/config/navigation.constants';
 import { CountryComponent } from './list/country.component';
 import { CountryDetailComponent } from './detail/country-detail.component';
 import { CountryUpdateComponent } from './update/country-update.component';
@@ -10,7 +11,9 @@ const countryRoute: Routes = [
   {
     path: '',
     component: CountryComponent,
-    data: {},
+    data: {
+      defaultSort: 'id,' + ASC,
+    },
     canActivate: [UserRouteAccessService],
   },
   {

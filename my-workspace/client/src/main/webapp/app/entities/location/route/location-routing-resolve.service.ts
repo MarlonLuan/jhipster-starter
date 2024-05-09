@@ -7,7 +7,7 @@ import { mergeMap } from 'rxjs/operators';
 import { ILocation } from '../location.model';
 import { LocationService } from '../service/location.service';
 
-const locationResolve = (route: ActivatedRouteSnapshot): Observable<null | ILocation> => {
+export const locationResolve = (route: ActivatedRouteSnapshot): Observable<null | ILocation> => {
   const id = route.params['id'];
   if (id) {
     return inject(LocationService)

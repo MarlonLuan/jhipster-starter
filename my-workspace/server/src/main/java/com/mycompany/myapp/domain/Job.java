@@ -113,11 +113,13 @@ public class Job implements Serializable {
 
     public Job addTask(Task task) {
         this.tasks.add(task);
+        task.getJobs().add(this);
         return this;
     }
 
     public Job removeTask(Task task) {
         this.tasks.remove(task);
+        task.getJobs().remove(this);
         return this;
     }
 
@@ -163,7 +165,7 @@ public class Job implements Serializable {
         if (!(o instanceof Job)) {
             return false;
         }
-        return getId() != null && getId().equals(((Job) o).getId());
+        return id != null && id.equals(((Job) o).id);
     }
 
     @Override

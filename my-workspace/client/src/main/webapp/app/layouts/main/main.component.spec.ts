@@ -3,8 +3,9 @@ jest.mock('app/core/auth/account.service');
 import { waitForAsync, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Router, TitleStrategy } from '@angular/router';
 import { Title } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
 import { DOCUMENT } from '@angular/common';
-import { Component, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { of } from 'rxjs';
 import { TranslateModule, TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
@@ -19,14 +20,14 @@ describe('MainComponent', () => {
   let titleService: Title;
   let translateService: TranslateService;
   let mockAccountService: AccountService;
-  let ngZone: NgZone;
   const routerState: any = { snapshot: { root: { data: {} } } };
   let router: Router;
   let document: Document;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot(), MainComponent],
+      imports: [TranslateModule.forRoot(), RouterTestingModule],
+      declarations: [MainComponent],
       providers: [Title, AccountService, { provide: TitleStrategy, useClass: AppPageTitleStrategy }],
     })
       .overrideTemplate(MainComponent, '')
@@ -41,7 +42,6 @@ describe('MainComponent', () => {
     mockAccountService = TestBed.inject(AccountService);
     mockAccountService.identity = jest.fn(() => of(null));
     mockAccountService.getAuthenticationState = jest.fn(() => of(null));
-    ngZone = TestBed.inject(NgZone);
     router = TestBed.inject(Router);
     document = TestBed.inject(DOCUMENT);
   });
@@ -63,7 +63,7 @@ describe('MainComponent', () => {
     describe('navigation end', () => {
       it('should set page title to default title if pageTitle is missing on routes', fakeAsync(() => {
         // WHEN
-        ngZone.run(() => router.navigateByUrl(''));
+        router.navigateByUrl('');
         tick();
 
         // THEN
@@ -75,7 +75,7 @@ describe('MainComponent', () => {
         router.resetConfig([{ path: '', title: parentRoutePageTitle, component: BlankComponent }]);
 
         // WHEN
-        ngZone.run(() => router.navigateByUrl(''));
+        router.navigateByUrl('');
         tick();
 
         // THEN
@@ -93,7 +93,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        ngZone.run(() => router.navigateByUrl('home'));
+        router.navigateByUrl('home');
         tick();
 
         // THEN
@@ -111,7 +111,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        ngZone.run(() => router.navigateByUrl('home'));
+        router.navigateByUrl('home');
         tick();
 
         // THEN
@@ -134,7 +134,7 @@ describe('MainComponent', () => {
         router.resetConfig([{ path: '', title: parentRoutePageTitle, component: BlankComponent }]);
 
         // WHEN
-        ngZone.run(() => router.navigateByUrl(''));
+        router.navigateByUrl('');
         tick();
 
         // THEN
@@ -161,7 +161,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        ngZone.run(() => router.navigateByUrl('home'));
+        router.navigateByUrl('home');
         tick();
 
         // THEN
@@ -188,7 +188,7 @@ describe('MainComponent', () => {
         ]);
 
         // WHEN
-        ngZone.run(() => router.navigateByUrl('home'));
+        router.navigateByUrl('home');
         tick();
 
         // THEN

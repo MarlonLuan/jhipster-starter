@@ -1,6 +1,6 @@
+const path = require('path');
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
-const path = require('path');
 const { hashElement } = require('folder-hash');
 const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
@@ -37,7 +37,7 @@ module.exports = async (config, options, targetOptions) => {
   }
 
   // configuring proxy for back end service
-  const tls = config.devServer?.server?.type === 'https';
+  const tls = Boolean(config.devServer && config.devServer.https);
   if (config.devServer) {
     config.devServer.proxy = proxyConfig({ tls });
   }
@@ -82,8 +82,8 @@ module.exports = async (config, options, targetOptions) => {
       new BundleAnalyzerPlugin({
         analyzerMode: 'static',
         openAnalyzer: false,
-        // Webpack statistics in temporary folder
-        reportFilename: '../../stats.html',
+        // Webpack statistics in target folder
+        reportFilename: '../stats.html',
       }),
     );
   }
