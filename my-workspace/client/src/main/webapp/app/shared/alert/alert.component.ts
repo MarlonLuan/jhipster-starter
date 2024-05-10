@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -11,12 +11,12 @@ import { AlertService, Alert } from 'app/core/util/alert.service';
   imports: [CommonModule, NgbModule],
 })
 export class AlertComponent implements OnInit, OnDestroy {
-  alerts = signal<Alert[]>([]);
+  alerts: Alert[] = [];
 
-  private alertService = inject(AlertService);
+  constructor(private alertService: AlertService) {}
 
   ngOnInit(): void {
-    this.alerts.set(this.alertService.get());
+    this.alerts = this.alertService.get();
   }
 
   setClasses(alert: Alert): { [key: string]: boolean } {
@@ -32,6 +32,6 @@ export class AlertComponent implements OnInit, OnDestroy {
   }
 
   close(alert: Alert): void {
-    alert.close?.(this.alerts());
+    alert.close?.(this.alerts);
   }
 }

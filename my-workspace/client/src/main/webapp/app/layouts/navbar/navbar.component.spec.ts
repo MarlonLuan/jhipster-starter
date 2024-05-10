@@ -2,6 +2,7 @@ jest.mock('app/login/login.service');
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 
@@ -31,7 +32,7 @@ describe('Navbar Component', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [NavbarComponent, HttpClientTestingModule, TranslateModule.forRoot()],
+      imports: [NavbarComponent, HttpClientTestingModule, RouterTestingModule.withRoutes([]), TranslateModule.forRoot()],
       providers: [LoginService],
     })
       .overrideTemplate(NavbarComponent, '')
@@ -61,19 +62,19 @@ describe('Navbar Component', () => {
     comp.ngOnInit();
 
     // THEN
-    expect(comp.account()).toBeNull();
+    expect(comp.account).toBeNull();
 
     // WHEN
     accountService.authenticate(account);
 
     // THEN
-    expect(comp.account()).toEqual(account);
+    expect(comp.account).toEqual(account);
 
     // WHEN
     accountService.authenticate(null);
 
     // THEN
-    expect(comp.account()).toBeNull();
+    expect(comp.account).toBeNull();
   });
 
   it('Should hold current authenticated user in variable account if user is authenticated before page load', () => {
@@ -84,12 +85,12 @@ describe('Navbar Component', () => {
     comp.ngOnInit();
 
     // THEN
-    expect(comp.account()).toEqual(account);
+    expect(comp.account).toEqual(account);
 
     // WHEN
     accountService.authenticate(null);
 
     // THEN
-    expect(comp.account()).toBeNull();
+    expect(comp.account).toBeNull();
   });
 });

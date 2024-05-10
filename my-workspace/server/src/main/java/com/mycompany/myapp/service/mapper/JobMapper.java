@@ -6,9 +6,7 @@ import com.mycompany.myapp.domain.Task;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
 import com.mycompany.myapp.service.dto.JobDTO;
 import com.mycompany.myapp.service.dto.TaskDTO;
-import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.mapstruct.*;
 
@@ -39,8 +37,4 @@ public interface JobMapper extends EntityMapper<JobDTO, Job> {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     EmployeeDTO toDtoEmployeeId(Employee employee);
-
-    default String map(UUID value) {
-        return Objects.toString(value, null);
-    }
 }
