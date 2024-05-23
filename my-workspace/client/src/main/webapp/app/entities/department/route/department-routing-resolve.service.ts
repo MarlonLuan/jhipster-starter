@@ -7,7 +7,7 @@ import { mergeMap } from 'rxjs/operators';
 import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
 
-const departmentResolve = (route: ActivatedRouteSnapshot): Observable<null | IDepartment> => {
+export const departmentResolve = (route: ActivatedRouteSnapshot): Observable<null | IDepartment> => {
   const id = route.params['id'];
   if (id) {
     return inject(DepartmentService)

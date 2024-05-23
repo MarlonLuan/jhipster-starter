@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -15,8 +15,10 @@ import { RegionService } from '../service/region.service';
 export class RegionDeleteDialogComponent {
   region?: IRegion;
 
-  protected regionService = inject(RegionService);
-  protected activeModal = inject(NgbActiveModal);
+  constructor(
+    protected regionService: RegionService,
+    protected activeModal: NgbActiveModal,
+  ) {}
 
   cancel(): void {
     this.activeModal.dismiss();

@@ -7,7 +7,7 @@ import { mergeMap } from 'rxjs/operators';
 import { IJobHistory } from '../job-history.model';
 import { JobHistoryService } from '../service/job-history.service';
 
-const jobHistoryResolve = (route: ActivatedRouteSnapshot): Observable<null | IJobHistory> => {
+export const jobHistoryResolve = (route: ActivatedRouteSnapshot): Observable<null | IJobHistory> => {
   const id = route.params['id'];
   if (id) {
     return inject(JobHistoryService)

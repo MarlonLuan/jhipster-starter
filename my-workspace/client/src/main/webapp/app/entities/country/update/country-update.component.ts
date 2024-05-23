@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -25,13 +25,14 @@ export class CountryUpdateComponent implements OnInit {
 
   regionsCollection: IRegion[] = [];
 
-  protected countryService = inject(CountryService);
-  protected countryFormService = inject(CountryFormService);
-  protected regionService = inject(RegionService);
-  protected activatedRoute = inject(ActivatedRoute);
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: CountryFormGroup = this.countryFormService.createCountryFormGroup();
+
+  constructor(
+    protected countryService: CountryService,
+    protected countryFormService: CountryFormService,
+    protected regionService: RegionService,
+    protected activatedRoute: ActivatedRoute,
+  ) {}
 
   compareRegion = (o1: IRegion | null, o2: IRegion | null): boolean => this.regionService.compareRegion(o1, o2);
 
