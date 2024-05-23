@@ -37,14 +37,14 @@
     "default_environment": "prod"
   },
   "dependencies": {
-    "@angular/common": "17.3.6",
-    "@angular/compiler": "17.3.6",
-    "@angular/core": "17.3.6",
-    "@angular/forms": "17.3.6",
-    "@angular/localize": "17.3.6",
-    "@angular/platform-browser": "17.3.6",
-    "@angular/platform-browser-dynamic": "17.3.6",
-    "@angular/router": "17.3.6",
+    "@angular/common": "17.3.10",
+    "@angular/compiler": "17.3.10",
+    "@angular/core": "17.3.10",
+    "@angular/forms": "17.3.10",
+    "@angular/localize": "17.3.10",
+    "@angular/platform-browser": "17.3.10",
+    "@angular/platform-browser-dynamic": "17.3.10",
+    "@angular/router": "17.3.10",
     "@fortawesome/angular-fontawesome": "0.14.1",
     "@fortawesome/fontawesome-svg-core": "6.5.2",
     "@fortawesome/free-solid-svg-icons": "6.5.2",
@@ -57,7 +57,7 @@
     "ngx-infinite-scroll": "17.0.0",
     "rxjs": "7.8.1",
     "tslib": "2.6.2",
-    "zone.js": "0.14.4"
+    "zone.js": "0.14.6"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "17.0.2",
@@ -65,8 +65,8 @@
     "@angular-devkit/build-angular": "17.3.6",
     "@angular-eslint/eslint-plugin": "17.3.0",
     "@angular/cli": "17.3.6",
-    "@angular/compiler-cli": "17.3.6",
-    "@angular/service-worker": "17.3.6",
+    "@angular/compiler-cli": "17.3.10",
+    "@angular/service-worker": "17.3.10",
     "@types/jest": "29.5.12",
     "@types/node": "20.11.25",
     "@typescript-eslint/eslint-plugin": "7.7.1",
