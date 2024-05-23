@@ -1,6 +1,5 @@
 {
   "generator-jhipster": {
-    "applicationIndex": 0,
     "authenticationType": "oauth2",
     "baseName": "jhipster",
     "cacheProvider": "no",

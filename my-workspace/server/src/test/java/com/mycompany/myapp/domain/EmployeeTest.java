@@ -29,7 +29,7 @@ class EmployeeTest {
     }
 
     @Test
-    void jobTest() throws Exception {
+    void jobTest() {
         Employee employee = getEmployeeRandomSampleGenerator();
         Job jobBack = getJobRandomSampleGenerator();
 
@@ -51,7 +51,7 @@ class EmployeeTest {
     }
 
     @Test
-    void managerTest() throws Exception {
+    void managerTest() {
         Employee employee = getEmployeeRandomSampleGenerator();
         Employee employeeBack = getEmployeeRandomSampleGenerator();
 
@@ -63,7 +63,7 @@ class EmployeeTest {
     }
 
     @Test
-    void departmentTest() throws Exception {
+    void departmentTest() {
         Employee employee = getEmployeeRandomSampleGenerator();
         Department departmentBack = getDepartmentRandomSampleGenerator();
 
@@ -75,7 +75,7 @@ class EmployeeTest {
     }
 
     @Test
-    void jobHistoryTest() throws Exception {
+    void jobHistoryTest() {
         Employee employee = getEmployeeRandomSampleGenerator();
         JobHistory jobHistoryBack = getJobHistoryRandomSampleGenerator();
 

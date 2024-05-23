@@ -26,7 +26,7 @@ class JobHistoryTest {
     }
 
     @Test
-    void jobTest() throws Exception {
+    void jobTest() {
         JobHistory jobHistory = getJobHistoryRandomSampleGenerator();
         Job jobBack = getJobRandomSampleGenerator();
 
@@ -38,7 +38,7 @@ class JobHistoryTest {
     }
 
     @Test
-    void departmentTest() throws Exception {
+    void departmentTest() {
         JobHistory jobHistory = getJobHistoryRandomSampleGenerator();
         Department departmentBack = getDepartmentRandomSampleGenerator();
 
@@ -50,7 +50,7 @@ class JobHistoryTest {
     }
 
     @Test
-    void employeeTest() throws Exception {
+    void employeeTest() {
         JobHistory jobHistory = getJobHistoryRandomSampleGenerator();
         Employee employeeBack = getEmployeeRandomSampleGenerator();
 
