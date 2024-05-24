@@ -1,8 +1,10 @@
 package com.mycompany.myapp.web.rest;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.mycompany.myapp.security.SecurityUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -62,11 +64,12 @@ public class AccountResource {
 
         private String login;
         private Set<String> authorities;
+        private Map<String, Object> details;
 
-        @JsonCreator
-        UserVM(String login, Set<String> authorities) {
+        UserVM(String login, Set<String> authorities, Map<String, Object> details) {
             this.login = login;
             this.authorities = authorities;
+            this.details = details;
         }
 
         public boolean isActivated() {
@@ -80,16 +83,27 @@ public class AccountResource {
         public String getLogin() {
             return login;
         }
+
+        @JsonAnyGetter
+        public Map<String, Object> getDetails() {
+            return details;
+        }
     }
 
-    private UserVM getUserFromAuthentication(AbstractAuthenticationToken authToken) {
-        if (!(authToken instanceof OAuth2AuthenticationToken) && !(authToken instanceof JwtAuthenticationToken)) {
+    private static UserVM getUserFromAuthentication(AbstractAuthenticationToken authToken) {
+        Map<String, Object> attributes;
+        if (authToken instanceof JwtAuthenticationToken) {
+            attributes = ((JwtAuthenticationToken) authToken).getTokenAttributes();
+        } else if (authToken instanceof OAuth2AuthenticationToken) {
+            attributes = ((OAuth2AuthenticationToken) authToken).getPrincipal().getAttributes();
+        } else {
             throw new IllegalArgumentException("AuthenticationToken is not OAuth2 or JWT!");
         }
 
         return new UserVM(
             authToken.getName(),
-            authToken.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet())
+            authToken.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()),
+            SecurityUtils.extractDetailsFromTokenAttributes(attributes)
         );
     }
 }

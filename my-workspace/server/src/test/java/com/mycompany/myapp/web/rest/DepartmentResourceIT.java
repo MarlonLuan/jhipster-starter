@@ -16,6 +16,7 @@ import com.mycompany.myapp.service.dto.DepartmentDTO;
 import com.mycompany.myapp.service.mapper.DepartmentMapper;
 import jakarta.persistence.EntityManager;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,8 @@ class DepartmentResourceIT {
 
     private Department department;
 
+    private Department insertedDepartment;
+
     /**
      * Create an entity for this test.
      *
@@ -83,6 +86,14 @@ class DepartmentResourceIT {
         department = createEntity(em);
     }
 
+    @AfterEach
+    public void cleanup() {
+        if (insertedDepartment != null) {
+            departmentRepository.delete(insertedDepartment);
+            insertedDepartment = null;
+        }
+    }
+
     @Test
     @Transactional
     void createDepartment() throws Exception {
@@ -105,13 +116,15 @@ class DepartmentResourceIT {
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedDepartment = departmentMapper.toEntity(returnedDepartmentDTO);
         assertDepartmentUpdatableFieldsEquals(returnedDepartment, getPersistedDepartment(returnedDepartment));
+
+        insertedDepartment = returnedDepartment;
     }
 
     @Test
     @Transactional
     void createDepartmentWithExistingId() throws Exception {
         // Create the Department with an existing ID
-        departmentRepository.saveAndFlush(department);
+        insertedDepartment = departmentRepository.saveAndFlush(department);
         DepartmentDTO departmentDTO = departmentMapper.toDto(department);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -146,7 +159,7 @@ class DepartmentResourceIT {
     @Transactional
     void getAllDepartments() throws Exception {
         // Initialize the database
-        departmentRepository.saveAndFlush(department);
+        insertedDepartment = departmentRepository.saveAndFlush(department);
 
         // Get all the departmentList
         restDepartmentMockMvc
@@ -161,7 +174,7 @@ class DepartmentResourceIT {
     @Transactional
     void getDepartment() throws Exception {
         // Initialize the database
-        departmentRepository.saveAndFlush(department);
+        insertedDepartment = departmentRepository.saveAndFlush(department);
 
         // Get the department
         restDepartmentMockMvc
@@ -183,7 +196,7 @@ class DepartmentResourceIT {
     @Transactional
     void putExistingDepartment() throws Exception {
         // Initialize the database
-        departmentRepository.saveAndFlush(department);
+        insertedDepartment = departmentRepository.saveAndFlush(department);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -276,7 +289,7 @@ class DepartmentResourceIT {
     @Transactional
     void partialUpdateDepartmentWithPatch() throws Exception {
         // Initialize the database
-        departmentRepository.saveAndFlush(department);
+        insertedDepartment = departmentRepository.saveAndFlush(department);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -306,7 +319,7 @@ class DepartmentResourceIT {
     @Transactional
     void fullUpdateDepartmentWithPatch() throws Exception {
         // Initialize the database
-        departmentRepository.saveAndFlush(department);
+        insertedDepartment = departmentRepository.saveAndFlush(department);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -401,7 +414,7 @@ class DepartmentResourceIT {
     @Transactional
     void deleteDepartment() throws Exception {
         // Initialize the database
-        departmentRepository.saveAndFlush(department);
+        insertedDepartment = departmentRepository.saveAndFlush(department);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 

@@ -28,7 +28,7 @@ class DepartmentTest {
     }
 
     @Test
-    void locationTest() throws Exception {
+    void locationTest() {
         Department department = getDepartmentRandomSampleGenerator();
         Location locationBack = getLocationRandomSampleGenerator();
 
@@ -40,7 +40,7 @@ class DepartmentTest {
     }
 
     @Test
-    void employeeTest() throws Exception {
+    void employeeTest() {
         Department department = getDepartmentRandomSampleGenerator();
         Employee employeeBack = getEmployeeRandomSampleGenerator();
 
@@ -62,7 +62,7 @@ class DepartmentTest {
     }
 
     @Test
-    void jobHistoryTest() throws Exception {
+    void jobHistoryTest() {
         Department department = getDepartmentRandomSampleGenerator();
         JobHistory jobHistoryBack = getJobHistoryRandomSampleGenerator();
 

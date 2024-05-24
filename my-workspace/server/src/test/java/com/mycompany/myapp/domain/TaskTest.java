@@ -26,7 +26,7 @@ class TaskTest {
     }
 
     @Test
-    void jobTest() throws Exception {
+    void jobTest() {
         Task task = getTaskRandomSampleGenerator();
         Job jobBack = getJobRandomSampleGenerator();
 
