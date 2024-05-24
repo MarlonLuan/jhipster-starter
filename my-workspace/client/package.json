@@ -88,7 +88,7 @@
     "jest-preset-angular": "14.0.3",
     "jest-sonar": "0.2.16",
     "merge-jsons-webpack-plugin": "2.0.1",
-    "rimraf": "5.0.5",
+    "rimraf": "5.0.7",
     "sonar-scanner": "3.1.0",
     "swagger-ui-dist": "5.17.2",
     "ts-jest": "29.1.2",
