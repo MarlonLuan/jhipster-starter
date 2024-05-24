@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
@@ -13,7 +13,7 @@ import { HealthKey, HealthDetails } from '../health.model';
 export default class HealthModalComponent {
   health?: { key: HealthKey; value: HealthDetails };
 
-  private activeModal = inject(NgbActiveModal);
+  constructor(private activeModal: NgbActiveModal) {}
 
   readableValue(value: any): string {
     if (this.health?.key === 'diskSpace') {

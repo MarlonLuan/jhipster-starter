@@ -4,8 +4,6 @@ import com.mycompany.myapp.domain.Department;
 import com.mycompany.myapp.domain.Location;
 import com.mycompany.myapp.service.dto.DepartmentDTO;
 import com.mycompany.myapp.service.dto.LocationDTO;
-import java.util.Objects;
-import java.util.UUID;
 import org.mapstruct.*;
 
 /**
@@ -20,8 +18,4 @@ public interface DepartmentMapper extends EntityMapper<DepartmentDTO, Department
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     LocationDTO toDtoLocationId(Location location);
-
-    default String map(UUID value) {
-        return Objects.toString(value, null);
-    }
 }

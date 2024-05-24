@@ -81,7 +81,8 @@ public class CountryServiceImpl implements CountryService {
     @Transactional(readOnly = true)
     public List<CountryDTO> findAllWhereLocationIsNull() {
         log.debug("Request to get all countries where Location is null");
-        return StreamSupport.stream(countryRepository.findAll().spliterator(), false)
+        return StreamSupport
+            .stream(countryRepository.findAll().spliterator(), false)
             .filter(country -> country.getLocation() == null)
             .map(countryMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
