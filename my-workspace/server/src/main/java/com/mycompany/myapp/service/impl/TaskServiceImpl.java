@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service Implementation for managing {@link com.mycompany.myapp.domain.Task}.
+ * Service Implementation for managing {@link Task}.
  */
 @Service
 @Transactional

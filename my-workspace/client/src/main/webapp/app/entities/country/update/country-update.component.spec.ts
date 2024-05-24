@@ -3,13 +3,14 @@ import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
-import { IRegion } from 'app/entities/region/region.model';
-import { RegionService } from 'app/entities/region/service/region.service';
+import { CountryFormService } from './country-form.service';
 import { CountryService } from '../service/country.service';
 import { ICountry } from '../country.model';
-import { CountryFormService } from './country-form.service';
+import { IRegion } from 'app/entities/region/region.model';
+import { RegionService } from 'app/entities/region/service/region.service';
 
 import { CountryUpdateComponent } from './country-update.component';
 
@@ -23,7 +24,8 @@ describe('Country Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, CountryUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      declarations: [CountryUpdateComponent],
       providers: [
         FormBuilder,
         {
@@ -47,33 +49,37 @@ describe('Country Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call region query and add missing value', () => {
+    it('Should call Region query and add missing value', () => {
       const country: ICountry = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const region: IRegion = { id: 'faf54741-b615-4f21-b670-7ba7fbadbfcd' };
+      const region: IRegion = { id: 'c9a07aaf-b018-4454-9c14-72750ed4f9a6' };
       country.region = region;
 
-      const regionCollection: IRegion[] = [{ id: '8df5ba7c-8ff0-4b17-a1aa-37cde1d66456' }];
+      const regionCollection: IRegion[] = [{ id: '8dd721ae-9167-4dc2-9412-27f29f791f3e' }];
       jest.spyOn(regionService, 'query').mockReturnValue(of(new HttpResponse({ body: regionCollection })));
-      const expectedCollection: IRegion[] = [region, ...regionCollection];
+      const additionalRegions = [region];
+      const expectedCollection: IRegion[] = [...additionalRegions, ...regionCollection];
       jest.spyOn(regionService, 'addRegionToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ country });
       comp.ngOnInit();
 
       expect(regionService.query).toHaveBeenCalled();
-      expect(regionService.addRegionToCollectionIfMissing).toHaveBeenCalledWith(regionCollection, region);
-      expect(comp.regionsCollection).toEqual(expectedCollection);
+      expect(regionService.addRegionToCollectionIfMissing).toHaveBeenCalledWith(
+        regionCollection,
+        ...additionalRegions.map(expect.objectContaining)
+      );
+      expect(comp.regionsSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should update editForm', () => {
       const country: ICountry = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const region: IRegion = { id: '0eb80700-85b1-41be-9947-00e7436642ac' };
+      const region: IRegion = { id: 'ab35acef-89da-4285-9f5e-26037da67825' };
       country.region = region;
 
       activatedRoute.data = of({ country });
       comp.ngOnInit();
 
-      expect(comp.regionsCollection).toContain(region);
+      expect(comp.regionsSharedCollection).toContain(region);
       expect(comp.country).toEqual(country);
     });
   });

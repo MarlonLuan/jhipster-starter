@@ -37,6 +37,7 @@ describe('Region Service', () => {
     });
 
     it('should create a Region', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const region = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };

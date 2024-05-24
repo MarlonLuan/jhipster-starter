@@ -1,28 +1,30 @@
 import { Routes } from '@angular/router';
 
-import ErrorComponent from './error.component';
+import { ErrorComponent } from './error.component';
 
 export const errorRoute: Routes = [
   {
     path: 'error',
     component: ErrorComponent,
-    title: 'error.title',
+    data: {
+      pageTitle: 'error.title',
+    },
   },
   {
     path: 'accessdenied',
     component: ErrorComponent,
     data: {
+      pageTitle: 'error.title',
       errorMessage: 'error.http.403',
     },
-    title: 'error.title',
   },
   {
     path: '404',
     component: ErrorComponent,
     data: {
+      pageTitle: 'error.title',
       errorMessage: 'error.http.404',
     },
-    title: 'error.title',
   },
   {
     path: '**',

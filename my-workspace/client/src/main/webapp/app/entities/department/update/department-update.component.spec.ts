@@ -3,13 +3,14 @@ import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
-import { ILocation } from 'app/entities/location/location.model';
-import { LocationService } from 'app/entities/location/service/location.service';
+import { DepartmentFormService } from './department-form.service';
 import { DepartmentService } from '../service/department.service';
 import { IDepartment } from '../department.model';
-import { DepartmentFormService } from './department-form.service';
+import { ILocation } from 'app/entities/location/location.model';
+import { LocationService } from 'app/entities/location/service/location.service';
 
 import { DepartmentUpdateComponent } from './department-update.component';
 
@@ -23,7 +24,8 @@ describe('Department Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, DepartmentUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      declarations: [DepartmentUpdateComponent],
       providers: [
         FormBuilder,
         {
@@ -47,33 +49,37 @@ describe('Department Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call location query and add missing value', () => {
+    it('Should call Location query and add missing value', () => {
       const department: IDepartment = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const location: ILocation = { id: 'ec166707-f435-49db-98f7-461ed5993f91' };
+      const location: ILocation = { id: '2e9d460e-0f1d-4da3-8aa8-4988ecf19d84' };
       department.location = location;
 
-      const locationCollection: ILocation[] = [{ id: 'bc97ff8b-3e9b-4bb4-bbfe-7f06236ad9fe' }];
+      const locationCollection: ILocation[] = [{ id: '1653978c-1259-46eb-9607-bb3f5324545b' }];
       jest.spyOn(locationService, 'query').mockReturnValue(of(new HttpResponse({ body: locationCollection })));
-      const expectedCollection: ILocation[] = [location, ...locationCollection];
+      const additionalLocations = [location];
+      const expectedCollection: ILocation[] = [...additionalLocations, ...locationCollection];
       jest.spyOn(locationService, 'addLocationToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ department });
       comp.ngOnInit();
 
       expect(locationService.query).toHaveBeenCalled();
-      expect(locationService.addLocationToCollectionIfMissing).toHaveBeenCalledWith(locationCollection, location);
-      expect(comp.locationsCollection).toEqual(expectedCollection);
+      expect(locationService.addLocationToCollectionIfMissing).toHaveBeenCalledWith(
+        locationCollection,
+        ...additionalLocations.map(expect.objectContaining)
+      );
+      expect(comp.locationsSharedCollection).toEqual(expectedCollection);
     });
 
     it('Should update editForm', () => {
       const department: IDepartment = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const location: ILocation = { id: '9409e314-4ef0-44fd-9dde-5cb64b1d3017' };
+      const location: ILocation = { id: 'a199b4f2-e6fe-4cd8-a428-462a1effce2c' };
       department.location = location;
 
       activatedRoute.data = of({ department });
       comp.ngOnInit();
 
-      expect(comp.locationsCollection).toContain(location);
+      expect(comp.locationsSharedCollection).toContain(location);
       expect(comp.department).toEqual(department);
     });
   });

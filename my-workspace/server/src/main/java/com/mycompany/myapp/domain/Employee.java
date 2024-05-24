@@ -1,12 +1,12 @@
 package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import javax.persistence.*;
 
 /**
  * The Employee entity.
@@ -47,24 +47,20 @@ public class Employee implements Serializable {
     @Column(name = "commission_pct")
     private Long commissionPct;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "employee")
-    @JsonIgnoreProperties(value = { "tasks", "employee", "jobHistory" }, allowSetters = true)
+    @OneToMany(mappedBy = "employee")
+    @JsonIgnoreProperties(value = { "tasks", "employee" }, allowSetters = true)
     private Set<Job> jobs = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "jobs", "manager", "department", "jobHistory" }, allowSetters = true)
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "jobs", "manager", "department" }, allowSetters = true)
     private Employee manager;
 
     /**
      * Another side of the same relationship
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "location", "employees", "jobHistory" }, allowSetters = true)
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "location", "employees" }, allowSetters = true)
     private Department department;
-
-    @JsonIgnoreProperties(value = { "job", "department", "employee" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "employee")
-    private JobHistory jobHistory;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -229,25 +225,6 @@ public class Employee implements Serializable {
         return this;
     }
 
-    public JobHistory getJobHistory() {
-        return this.jobHistory;
-    }
-
-    public void setJobHistory(JobHistory jobHistory) {
-        if (this.jobHistory != null) {
-            this.jobHistory.setEmployee(null);
-        }
-        if (jobHistory != null) {
-            jobHistory.setEmployee(this);
-        }
-        this.jobHistory = jobHistory;
-    }
-
-    public Employee jobHistory(JobHistory jobHistory) {
-        this.setJobHistory(jobHistory);
-        return this;
-    }
-
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -258,7 +235,7 @@ public class Employee implements Serializable {
         if (!(o instanceof Employee)) {
             return false;
         }
-        return getId() != null && getId().equals(((Employee) o).getId());
+        return id != null && id.equals(((Employee) o).id);
     }
 
     @Override

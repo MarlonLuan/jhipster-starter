@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -8,8 +8,7 @@ import { Bean, Beans, ConfigProps, Env, PropertySource } from './configuration.m
 
 @Injectable({ providedIn: 'root' })
 export class ConfigurationService {
-  private http = inject(HttpClient);
-  private applicationConfigService = inject(ApplicationConfigService);
+  constructor(private http: HttpClient, private applicationConfigService: ApplicationConfigService) {}
 
   getBeans(): Observable<Bean[]> {
     return this.http.get<ConfigProps>(this.applicationConfigService.getEndpointFor('management/configprops')).pipe(
@@ -17,9 +16,9 @@ export class ConfigurationService {
         Object.values(
           Object.values(configProps.contexts)
             .map(context => context.beans)
-            .reduce((allBeans: Beans, contextBeans: Beans) => ({ ...allBeans, ...contextBeans }), {}),
-        ),
-      ),
+            .reduce((allBeans: Beans, contextBeans: Beans) => ({ ...allBeans, ...contextBeans }))
+        )
+      )
     );
   }
 

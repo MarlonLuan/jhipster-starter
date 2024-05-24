@@ -37,6 +37,7 @@ describe('Task Service', () => {
     });
 
     it('should create a Task', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const task = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };

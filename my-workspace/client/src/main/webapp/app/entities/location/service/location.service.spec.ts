@@ -37,6 +37,7 @@ describe('Location Service', () => {
     });
 
     it('should create a Location', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const location = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };

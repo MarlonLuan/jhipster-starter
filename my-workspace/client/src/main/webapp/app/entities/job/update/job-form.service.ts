@@ -40,7 +40,7 @@ export class JobFormService {
         {
           nonNullable: true,
           validators: [Validators.required],
-        },
+        }
       ),
       jobTitle: new FormControl(jobRawValue.jobTitle),
       minSalary: new FormControl(jobRawValue.minSalary),
@@ -60,7 +60,7 @@ export class JobFormService {
       {
         ...jobRawValue,
         id: { value: jobRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
+      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */
     );
   }
 

@@ -1,29 +1,30 @@
-import { inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { of, EMPTY, Observable } from 'rxjs';
+import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 import { ILocation } from '../location.model';
 import { LocationService } from '../service/location.service';
 
-const locationResolve = (route: ActivatedRouteSnapshot): Observable<null | ILocation> => {
-  const id = route.params['id'];
-  if (id) {
-    return inject(LocationService)
-      .find(id)
-      .pipe(
+@Injectable({ providedIn: 'root' })
+export class LocationRoutingResolveService implements Resolve<ILocation | null> {
+  constructor(protected service: LocationService, protected router: Router) {}
+
+  resolve(route: ActivatedRouteSnapshot): Observable<ILocation | null | never> {
+    const id = route.params['id'];
+    if (id) {
+      return this.service.find(id).pipe(
         mergeMap((location: HttpResponse<ILocation>) => {
           if (location.body) {
             return of(location.body);
           } else {
-            inject(Router).navigate(['404']);
+            this.router.navigate(['404']);
             return EMPTY;
           }
-        }),
+        })
       );
+    }
+    return of(null);
   }
-  return of(null);
-};
-
-export default locationResolve;
+}

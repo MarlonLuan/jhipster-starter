@@ -18,7 +18,8 @@ describe('Region Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RegionDeleteDialogComponent],
+      imports: [HttpClientTestingModule],
+      declarations: [RegionDeleteDialogComponent],
       providers: [NgbActiveModal],
     })
       .overrideTemplate(RegionDeleteDialogComponent, '')
@@ -43,7 +44,7 @@ describe('Region Management Delete Component', () => {
         // THEN
         expect(service.delete).toHaveBeenCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
         expect(mockActiveModal.close).toHaveBeenCalledWith('deleted');
-      }),
+      })
     ));
 
     it('Should not call delete service on clear', () => {

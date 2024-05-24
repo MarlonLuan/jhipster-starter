@@ -2,9 +2,7 @@ package com.mycompany.myapp.service.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -19,8 +17,6 @@ public class TaskDTO implements Serializable {
     private String title;
 
     private String description;
-
-    private Set<JobDTO> jobs = new HashSet<>();
 
     public UUID getId() {
         return id;
@@ -44,14 +40,6 @@ public class TaskDTO implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Set<JobDTO> getJobs() {
-        return jobs;
-    }
-
-    public void setJobs(Set<JobDTO> jobs) {
-        this.jobs = jobs;
     }
 
     @Override
@@ -82,7 +70,6 @@ public class TaskDTO implements Serializable {
             "id='" + getId() + "'" +
             ", title='" + getTitle() + "'" +
             ", description='" + getDescription() + "'" +
-            ", jobs=" + getJobs() +
             "}";
     }
 }

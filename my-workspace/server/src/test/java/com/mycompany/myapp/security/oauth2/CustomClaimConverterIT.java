@@ -58,7 +58,8 @@ class CustomClaimConverterIT {
                 any(HttpEntity.class),
                 ArgumentMatchers.<Class<ObjectNode>>any()
             )
-        ).thenReturn(ResponseEntity.ok(userInfo));
+        )
+            .thenReturn(ResponseEntity.ok(userInfo));
     }
 
     @Test
@@ -138,9 +139,10 @@ class CustomClaimConverterIT {
         mockHttpGetUserInfo(user);
 
         assertThatCode(() -> {
-            Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
-            assertThat(convertedClaims).containsEntry("preferred_username", USERNAME).doesNotContainKeys("given_name", "family_name");
-        }).doesNotThrowAnyException();
+                Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
+                assertThat(convertedClaims).containsEntry("preferred_username", USERNAME).doesNotContainKeys("given_name", "family_name");
+            })
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -155,12 +157,13 @@ class CustomClaimConverterIT {
         mockHttpGetUserInfo(user);
 
         assertThatCode(() -> {
-            Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
-            assertThat(convertedClaims)
-                .containsEntry("preferred_username", USERNAME)
-                .containsEntry("given_name", NAME)
-                .containsEntry("family_name", FAMILY_NAME);
-        }).doesNotThrowAnyException();
+                Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
+                assertThat(convertedClaims)
+                    .containsEntry("preferred_username", USERNAME)
+                    .containsEntry("given_name", NAME)
+                    .containsEntry("family_name", FAMILY_NAME);
+            })
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -175,13 +178,14 @@ class CustomClaimConverterIT {
         mockHttpGetUserInfo(user);
 
         assertThatCode(() -> {
-            Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
-            System.out.println(convertedClaims);
-            assertThat(convertedClaims)
-                .containsEntry("preferred_username", USERNAME)
-                .containsEntry("given_name", NAME)
-                .containsEntry("family_name", FAMILY_NAME + " " + NAME_SUFFIX);
-        }).doesNotThrowAnyException();
+                Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
+                System.out.println(convertedClaims);
+                assertThat(convertedClaims)
+                    .containsEntry("preferred_username", USERNAME)
+                    .containsEntry("given_name", NAME)
+                    .containsEntry("family_name", FAMILY_NAME + " " + NAME_SUFFIX);
+            })
+            .doesNotThrowAnyException();
     }
 
     @Test
@@ -196,8 +200,9 @@ class CustomClaimConverterIT {
         mockHttpGetUserInfo(user);
 
         assertThatCode(() -> {
-            Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
-            assertThat(convertedClaims).containsEntry("preferred_username", USERNAME).containsEntry("email", EMAIL);
-        }).doesNotThrowAnyException();
+                Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
+                assertThat(convertedClaims).containsEntry("preferred_username", USERNAME).containsEntry("email", EMAIL);
+            })
+            .doesNotThrowAnyException();
     }
 }

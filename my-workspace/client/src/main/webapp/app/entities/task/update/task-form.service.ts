@@ -14,12 +14,13 @@ type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>
  */
 type TaskFormGroupInput = ITask | PartialWithRequiredKeyOf<NewTask>;
 
-type TaskFormDefaults = Pick<NewTask, 'id'>;
+type TaskFormDefaults = Pick<NewTask, 'id' | 'jobs'>;
 
 type TaskFormGroupContent = {
   id: FormControl<ITask['id'] | NewTask['id']>;
   title: FormControl<ITask['title']>;
   description: FormControl<ITask['description']>;
+  jobs: FormControl<ITask['jobs']>;
 };
 
 export type TaskFormGroup = FormGroup<TaskFormGroupContent>;
@@ -37,10 +38,11 @@ export class TaskFormService {
         {
           nonNullable: true,
           validators: [Validators.required],
-        },
+        }
       ),
       title: new FormControl(taskRawValue.title),
       description: new FormControl(taskRawValue.description),
+      jobs: new FormControl(taskRawValue.jobs ?? []),
     });
   }
 
@@ -54,13 +56,14 @@ export class TaskFormService {
       {
         ...taskRawValue,
         id: { value: taskRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
+      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */
     );
   }
 
   private getFormDefaults(): TaskFormDefaults {
     return {
       id: null,
+      jobs: [],
     };
   }
 }

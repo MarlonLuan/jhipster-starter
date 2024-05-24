@@ -39,6 +39,7 @@ describe('JobHistory Service', () => {
     });
 
     it('should create a JobHistory', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const jobHistory = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };

@@ -1,26 +1,21 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 
-import SharedModule from 'app/shared/shared.module';
 import { LoginService } from 'app/login/login.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 
 @Component({
-  standalone: true,
   selector: 'jhi-home',
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule],
+  styleUrls: ['./home.component.scss'],
 })
-export default class HomeComponent implements OnInit {
-  account = signal<Account | null>(null);
+export class HomeComponent implements OnInit {
+  account: Account | null = null;
 
-  private accountService = inject(AccountService);
-  private loginService = inject(LoginService);
+  constructor(private accountService: AccountService, private loginService: LoginService) {}
 
   ngOnInit(): void {
-    this.accountService.identity().subscribe(account => this.account.set(account));
+    this.accountService.identity().subscribe(account => (this.account = account));
   }
 
   login(): void {

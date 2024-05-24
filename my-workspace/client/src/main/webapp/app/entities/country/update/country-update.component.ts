@@ -1,37 +1,33 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import SharedModule from 'app/shared/shared.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-import { IRegion } from 'app/entities/region/region.model';
-import { RegionService } from 'app/entities/region/service/region.service';
+import { CountryFormService, CountryFormGroup } from './country-form.service';
 import { ICountry } from '../country.model';
 import { CountryService } from '../service/country.service';
-import { CountryFormService, CountryFormGroup } from './country-form.service';
+import { IRegion } from 'app/entities/region/region.model';
+import { RegionService } from 'app/entities/region/service/region.service';
 
 @Component({
-  standalone: true,
   selector: 'jhi-country-update',
   templateUrl: './country-update.component.html',
-  imports: [SharedModule, FormsModule, ReactiveFormsModule],
 })
 export class CountryUpdateComponent implements OnInit {
   isSaving = false;
   country: ICountry | null = null;
 
-  regionsCollection: IRegion[] = [];
+  regionsSharedCollection: IRegion[] = [];
 
-  protected countryService = inject(CountryService);
-  protected countryFormService = inject(CountryFormService);
-  protected regionService = inject(RegionService);
-  protected activatedRoute = inject(ActivatedRoute);
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: CountryFormGroup = this.countryFormService.createCountryFormGroup();
+
+  constructor(
+    protected countryService: CountryService,
+    protected countryFormService: CountryFormService,
+    protected regionService: RegionService,
+    protected activatedRoute: ActivatedRoute
+  ) {}
 
   compareRegion = (o1: IRegion | null, o2: IRegion | null): boolean => this.regionService.compareRegion(o1, o2);
 
@@ -83,14 +79,14 @@ export class CountryUpdateComponent implements OnInit {
     this.country = country;
     this.countryFormService.resetForm(this.editForm, country);
 
-    this.regionsCollection = this.regionService.addRegionToCollectionIfMissing<IRegion>(this.regionsCollection, country.region);
+    this.regionsSharedCollection = this.regionService.addRegionToCollectionIfMissing<IRegion>(this.regionsSharedCollection, country.region);
   }
 
   protected loadRelationshipsOptions(): void {
     this.regionService
-      .query({ filter: 'country-is-null' })
+      .query()
       .pipe(map((res: HttpResponse<IRegion[]>) => res.body ?? []))
       .pipe(map((regions: IRegion[]) => this.regionService.addRegionToCollectionIfMissing<IRegion>(regions, this.country?.region)))
-      .subscribe((regions: IRegion[]) => (this.regionsCollection = regions));
+      .subscribe((regions: IRegion[]) => (this.regionsSharedCollection = regions));
   }
 }

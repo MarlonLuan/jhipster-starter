@@ -38,6 +38,7 @@ describe('Employee Service', () => {
     });
 
     it('should create a Employee', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const employee = { ...sampleWithNewData };
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };

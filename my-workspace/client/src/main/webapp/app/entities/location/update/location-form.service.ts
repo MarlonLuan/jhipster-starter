@@ -40,7 +40,7 @@ export class LocationFormService {
         {
           nonNullable: true,
           validators: [Validators.required],
-        },
+        }
       ),
       streetAddress: new FormControl(locationRawValue.streetAddress),
       postalCode: new FormControl(locationRawValue.postalCode),
@@ -60,7 +60,7 @@ export class LocationFormService {
       {
         ...locationRawValue,
         id: { value: locationRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
+      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */
     );
   }
 

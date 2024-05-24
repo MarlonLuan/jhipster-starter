@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -14,10 +14,9 @@ export type EntityArrayResponseType = HttpResponse<ICountry[]>;
 
 @Injectable({ providedIn: 'root' })
 export class CountryService {
-  protected http = inject(HttpClient);
-  protected applicationConfigService = inject(ApplicationConfigService);
-
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/countries');
+
+  constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
   create(country: NewCountry): Observable<EntityResponseType> {
     return this.http.post<ICountry>(this.resourceUrl, country, { observe: 'response' });
@@ -58,7 +57,7 @@ export class CountryService {
   ): Type[] {
     const countries: Type[] = countriesToCheck.filter(isPresent);
     if (countries.length > 0) {
-      const countryCollectionIdentifiers = countryCollection.map(countryItem => this.getCountryIdentifier(countryItem));
+      const countryCollectionIdentifiers = countryCollection.map(countryItem => this.getCountryIdentifier(countryItem)!);
       const countriesToAdd = countries.filter(countryItem => {
         const countryIdentifier = this.getCountryIdentifier(countryItem);
         if (countryCollectionIdentifiers.includes(countryIdentifier)) {

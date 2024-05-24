@@ -1,7 +1,6 @@
 package com.mycompany.myapp.service;
 
 import com.mycompany.myapp.service.dto.EmployeeDTO;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -42,13 +41,6 @@ public interface EmployeeService {
      * @return the list of entities.
      */
     Page<EmployeeDTO> findAll(Pageable pageable);
-
-    /**
-     * Get all the EmployeeDTO where JobHistory is {@code null}.
-     *
-     * @return the {@link List} of entities.
-     */
-    List<EmployeeDTO> findAllWhereJobHistoryIsNull();
 
     /**
      * Get the "id" employee.

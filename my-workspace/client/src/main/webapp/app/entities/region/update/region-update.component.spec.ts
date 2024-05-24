@@ -3,11 +3,12 @@ import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
+import { RegionFormService } from './region-form.service';
 import { RegionService } from '../service/region.service';
 import { IRegion } from '../region.model';
-import { RegionFormService } from './region-form.service';
 
 import { RegionUpdateComponent } from './region-update.component';
 
@@ -20,7 +21,8 @@ describe('Region Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RegionUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      declarations: [RegionUpdateComponent],
       providers: [
         FormBuilder,
         {

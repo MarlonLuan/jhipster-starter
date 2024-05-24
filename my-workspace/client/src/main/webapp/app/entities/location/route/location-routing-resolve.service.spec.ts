@@ -2,22 +2,24 @@ import { TestBed } from '@angular/core/testing';
 import { HttpResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRouteSnapshot, ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { ILocation } from '../location.model';
 import { LocationService } from '../service/location.service';
 
-import locationResolve from './location-routing-resolve.service';
+import { LocationRoutingResolveService } from './location-routing-resolve.service';
 
 describe('Location routing resolve service', () => {
   let mockRouter: Router;
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
+  let routingResolveService: LocationRoutingResolveService;
   let service: LocationService;
   let resultLocation: ILocation | null | undefined;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       providers: [
         {
           provide: ActivatedRoute,
@@ -32,6 +34,7 @@ describe('Location routing resolve service', () => {
     mockRouter = TestBed.inject(Router);
     jest.spyOn(mockRouter, 'navigate').mockImplementation(() => Promise.resolve(true));
     mockActivatedRouteSnapshot = TestBed.inject(ActivatedRoute).snapshot;
+    routingResolveService = TestBed.inject(LocationRoutingResolveService);
     service = TestBed.inject(LocationService);
     resultLocation = undefined;
   });
@@ -43,12 +46,8 @@ describe('Location routing resolve service', () => {
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN
-      TestBed.runInInjectionContext(() => {
-        locationResolve(mockActivatedRouteSnapshot).subscribe({
-          next(result) {
-            resultLocation = result;
-          },
-        });
+      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
+        resultLocation = result;
       });
 
       // THEN
@@ -62,12 +61,8 @@ describe('Location routing resolve service', () => {
       mockActivatedRouteSnapshot.params = {};
 
       // WHEN
-      TestBed.runInInjectionContext(() => {
-        locationResolve(mockActivatedRouteSnapshot).subscribe({
-          next(result) {
-            resultLocation = result;
-          },
-        });
+      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
+        resultLocation = result;
       });
 
       // THEN
@@ -81,12 +76,8 @@ describe('Location routing resolve service', () => {
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN
-      TestBed.runInInjectionContext(() => {
-        locationResolve(mockActivatedRouteSnapshot).subscribe({
-          next(result) {
-            resultLocation = result;
-          },
-        });
+      routingResolveService.resolve(mockActivatedRouteSnapshot).subscribe(result => {
+        resultLocation = result;
       });
 
       // THEN

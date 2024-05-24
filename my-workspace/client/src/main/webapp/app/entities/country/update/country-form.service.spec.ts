@@ -22,7 +22,7 @@ describe('Country Form Service', () => {
             id: expect.any(Object),
             countryName: expect.any(Object),
             region: expect.any(Object),
-          }),
+          })
         );
       });
 
@@ -34,13 +34,14 @@ describe('Country Form Service', () => {
             id: expect.any(Object),
             countryName: expect.any(Object),
             region: expect.any(Object),
-          }),
+          })
         );
       });
     });
 
     describe('getCountry', () => {
       it('should return NewCountry for default Country initial value', () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createCountryFormGroup(sampleWithNewData);
 
         const country = service.getCountry(formGroup) as any;

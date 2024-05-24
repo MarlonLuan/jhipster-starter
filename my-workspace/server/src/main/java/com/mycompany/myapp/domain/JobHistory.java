@@ -2,10 +2,10 @@ package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.mycompany.myapp.domain.enumeration.Language;
-import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
+import javax.persistence.*;
 
 /**
  * A JobHistory.
@@ -32,18 +32,18 @@ public class JobHistory implements Serializable {
     @Column(name = "language")
     private Language language;
 
-    @JsonIgnoreProperties(value = { "tasks", "employee", "jobHistory" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "tasks", "employee" }, allowSetters = true)
+    @OneToOne
     @JoinColumn(unique = true)
     private Job job;
 
-    @JsonIgnoreProperties(value = { "location", "employees", "jobHistory" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "location", "employees" }, allowSetters = true)
+    @OneToOne
     @JoinColumn(unique = true)
     private Department department;
 
-    @JsonIgnoreProperties(value = { "jobs", "manager", "department", "jobHistory" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "jobs", "manager", "department" }, allowSetters = true)
+    @OneToOne
     @JoinColumn(unique = true)
     private Employee employee;
 
@@ -150,7 +150,7 @@ public class JobHistory implements Serializable {
         if (!(o instanceof JobHistory)) {
             return false;
         }
-        return getId() != null && getId().equals(((JobHistory) o).getId());
+        return id != null && id.equals(((JobHistory) o).id);
     }
 
     @Override

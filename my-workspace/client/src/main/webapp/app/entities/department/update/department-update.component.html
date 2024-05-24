@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2 id="jhi-department-heading" data-cy="DepartmentCreateUpdateHeading" jhiTranslate="jhipsterApp.department.home.createOrEditLabel">
         Create or edit a Department
       </h2>
@@ -8,15 +8,13 @@
       <div>
         <jhi-alert-error></jhi-alert-error>
 
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id" jhiTranslate="jhipsterApp.department.id">Id</label>
-            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-          </div>
-        }
+        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" jhiTranslate="jhipsterApp.department.id" for="field_id">Id</label>
+          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
 
-        <div class="mb-3">
-          <label class="form-label" for="field_departmentName" jhiTranslate="jhipsterApp.department.departmentName">Department Name</label>
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="jhipsterApp.department.departmentName" for="field_departmentName">Department Name</label>
           <input
             type="text"
             class="form-control"
@@ -25,19 +23,23 @@
             data-cy="departmentName"
             formControlName="departmentName"
           />
-          @if (
-            editForm.get('departmentName')!.invalid && (editForm.get('departmentName')!.dirty || editForm.get('departmentName')!.touched)
-          ) {
-            <div>
-              @if (editForm.get('departmentName')?.errors?.required) {
-                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
-              }
-            </div>
-          }
+          <div
+            *ngIf="
+              editForm.get('departmentName')!.invalid && (editForm.get('departmentName')!.dirty || editForm.get('departmentName')!.touched)
+            "
+          >
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('departmentName')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label" for="field_location" jhiTranslate="jhipsterApp.department.location">Location</label>
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="jhipsterApp.department.location" for="field_location">Location</label>
           <select
             class="form-control"
             id="field_location"
@@ -47,9 +49,7 @@
             [compareWith]="compareLocation"
           >
             <option [ngValue]="null"></option>
-            @for (locationOption of locationsCollection; track $index) {
-              <option [ngValue]="locationOption">{{ locationOption.id }}</option>
-            }
+            <option [ngValue]="locationOption" *ngFor="let locationOption of locationsSharedCollection">{{ locationOption.id }}</option>
           </select>
         </div>
       </div>

@@ -36,7 +36,7 @@ export class RegionFormService {
         {
           nonNullable: true,
           validators: [Validators.required],
-        },
+        }
       ),
       regionName: new FormControl(regionRawValue.regionName),
     });
@@ -52,7 +52,7 @@ export class RegionFormService {
       {
         ...regionRawValue,
         id: { value: regionRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
+      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */
     );
   }
 

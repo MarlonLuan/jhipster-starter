@@ -1,44 +1,42 @@
-import NavbarItem from 'app/layouts/navbar/navbar-item.model';
-
-export const EntityNavbarItems: NavbarItem[] = [
+export const EntityNavbarItems = [
   {
     name: 'Region',
-    route: '/region',
+    route: 'region',
     translationKey: 'global.menu.entities.region',
   },
   {
     name: 'Country',
-    route: '/country',
+    route: 'country',
     translationKey: 'global.menu.entities.country',
   },
   {
     name: 'Location',
-    route: '/location',
+    route: 'location',
     translationKey: 'global.menu.entities.location',
   },
   {
     name: 'Department',
-    route: '/department',
+    route: 'department',
     translationKey: 'global.menu.entities.department',
   },
   {
     name: 'Task',
-    route: '/task',
+    route: 'task',
     translationKey: 'global.menu.entities.task',
   },
   {
     name: 'Employee',
-    route: '/employee',
+    route: 'employee',
     translationKey: 'global.menu.entities.employee',
   },
   {
     name: 'Job',
-    route: '/job',
+    route: 'job',
     translationKey: 'global.menu.entities.job',
   },
   {
     name: 'JobHistory',
-    route: '/job-history',
+    route: 'job-history',
     translationKey: 'global.menu.entities.jobHistory',
   },
 ];

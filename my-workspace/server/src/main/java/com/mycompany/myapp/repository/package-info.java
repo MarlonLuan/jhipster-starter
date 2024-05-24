@@ -1,4 +1,4 @@
 /**
- * Repository layer.
+ * Spring Data JPA repositories.
  */
 package com.mycompany.myapp.repository;

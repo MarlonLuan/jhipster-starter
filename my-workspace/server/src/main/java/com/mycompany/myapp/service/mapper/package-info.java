@@ -1,4 +1,4 @@
 /**
- * Data transfer objects mappers.
+ * MapStruct mappers for mapping domain objects and Data Transfer Objects.
  */
 package com.mycompany.myapp.service.mapper;

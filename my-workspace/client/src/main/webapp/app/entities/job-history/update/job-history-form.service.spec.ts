@@ -26,7 +26,7 @@ describe('JobHistory Form Service', () => {
             job: expect.any(Object),
             department: expect.any(Object),
             employee: expect.any(Object),
-          }),
+          })
         );
       });
 
@@ -42,13 +42,14 @@ describe('JobHistory Form Service', () => {
             job: expect.any(Object),
             department: expect.any(Object),
             employee: expect.any(Object),
-          }),
+          })
         );
       });
     });
 
     describe('getJobHistory', () => {
       it('should return NewJobHistory for default JobHistory initial value', () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const formGroup = service.createJobHistoryFormGroup(sampleWithNewData);
 
         const jobHistory = service.getJobHistory(formGroup) as any;

@@ -22,8 +22,7 @@
       "minSalary": "Min Salary",
       "maxSalary": "Max Salary",
       "task": "Task",
-      "employee": "Employee",
-      "jobHistory": "Job History"
+      "employee": "Employee"
     }
   }
 }
