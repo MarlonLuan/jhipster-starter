@@ -19,6 +19,7 @@ import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,8 @@ class JobHistoryResourceIT {
 
     private JobHistory jobHistory;
 
+    private JobHistory insertedJobHistory;
+
     /**
      * Create an entity for this test.
      *
@@ -92,6 +95,14 @@ class JobHistoryResourceIT {
         jobHistory = createEntity(em);
     }
 
+    @AfterEach
+    public void cleanup() {
+        if (insertedJobHistory != null) {
+            jobHistoryRepository.delete(insertedJobHistory);
+            insertedJobHistory = null;
+        }
+    }
+
     @Test
     @Transactional
     void createJobHistory() throws Exception {
@@ -114,13 +125,15 @@ class JobHistoryResourceIT {
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedJobHistory = jobHistoryMapper.toEntity(returnedJobHistoryDTO);
         assertJobHistoryUpdatableFieldsEquals(returnedJobHistory, getPersistedJobHistory(returnedJobHistory));
+
+        insertedJobHistory = returnedJobHistory;
     }
 
     @Test
     @Transactional
     void createJobHistoryWithExistingId() throws Exception {
         // Create the JobHistory with an existing ID
-        jobHistoryRepository.saveAndFlush(jobHistory);
+        insertedJobHistory = jobHistoryRepository.saveAndFlush(jobHistory);
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -138,7 +151,7 @@ class JobHistoryResourceIT {
     @Transactional
     void getAllJobHistories() throws Exception {
         // Initialize the database
-        jobHistoryRepository.saveAndFlush(jobHistory);
+        insertedJobHistory = jobHistoryRepository.saveAndFlush(jobHistory);
 
         // Get all the jobHistoryList
         restJobHistoryMockMvc
@@ -155,7 +168,7 @@ class JobHistoryResourceIT {
     @Transactional
     void getJobHistory() throws Exception {
         // Initialize the database
-        jobHistoryRepository.saveAndFlush(jobHistory);
+        insertedJobHistory = jobHistoryRepository.saveAndFlush(jobHistory);
 
         // Get the jobHistory
         restJobHistoryMockMvc
@@ -179,7 +192,7 @@ class JobHistoryResourceIT {
     @Transactional
     void putExistingJobHistory() throws Exception {
         // Initialize the database
-        jobHistoryRepository.saveAndFlush(jobHistory);
+        insertedJobHistory = jobHistoryRepository.saveAndFlush(jobHistory);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -272,7 +285,7 @@ class JobHistoryResourceIT {
     @Transactional
     void partialUpdateJobHistoryWithPatch() throws Exception {
         // Initialize the database
-        jobHistoryRepository.saveAndFlush(jobHistory);
+        insertedJobHistory = jobHistoryRepository.saveAndFlush(jobHistory);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -304,7 +317,7 @@ class JobHistoryResourceIT {
     @Transactional
     void fullUpdateJobHistoryWithPatch() throws Exception {
         // Initialize the database
-        jobHistoryRepository.saveAndFlush(jobHistory);
+        insertedJobHistory = jobHistoryRepository.saveAndFlush(jobHistory);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -399,7 +412,7 @@ class JobHistoryResourceIT {
     @Transactional
     void deleteJobHistory() throws Exception {
         // Initialize the database
-        jobHistoryRepository.saveAndFlush(jobHistory);
+        insertedJobHistory = jobHistoryRepository.saveAndFlush(jobHistory);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 

@@ -18,6 +18,7 @@ import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,8 @@ class EmployeeResourceIT {
 
     private Employee employee;
 
+    private Employee insertedEmployee;
+
     /**
      * Create an entity for this test.
      *
@@ -117,6 +120,14 @@ class EmployeeResourceIT {
         employee = createEntity(em);
     }
 
+    @AfterEach
+    public void cleanup() {
+        if (insertedEmployee != null) {
+            employeeRepository.delete(insertedEmployee);
+            insertedEmployee = null;
+        }
+    }
+
     @Test
     @Transactional
     void createEmployee() throws Exception {
@@ -139,13 +150,15 @@ class EmployeeResourceIT {
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedEmployee = employeeMapper.toEntity(returnedEmployeeDTO);
         assertEmployeeUpdatableFieldsEquals(returnedEmployee, getPersistedEmployee(returnedEmployee));
+
+        insertedEmployee = returnedEmployee;
     }
 
     @Test
     @Transactional
     void createEmployeeWithExistingId() throws Exception {
         // Create the Employee with an existing ID
-        employeeRepository.saveAndFlush(employee);
+        insertedEmployee = employeeRepository.saveAndFlush(employee);
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -163,7 +176,7 @@ class EmployeeResourceIT {
     @Transactional
     void getAllEmployees() throws Exception {
         // Initialize the database
-        employeeRepository.saveAndFlush(employee);
+        insertedEmployee = employeeRepository.saveAndFlush(employee);
 
         // Get all the employeeList
         restEmployeeMockMvc
@@ -184,7 +197,7 @@ class EmployeeResourceIT {
     @Transactional
     void getEmployee() throws Exception {
         // Initialize the database
-        employeeRepository.saveAndFlush(employee);
+        insertedEmployee = employeeRepository.saveAndFlush(employee);
 
         // Get the employee
         restEmployeeMockMvc
@@ -212,7 +225,7 @@ class EmployeeResourceIT {
     @Transactional
     void putExistingEmployee() throws Exception {
         // Initialize the database
-        employeeRepository.saveAndFlush(employee);
+        insertedEmployee = employeeRepository.saveAndFlush(employee);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -312,7 +325,7 @@ class EmployeeResourceIT {
     @Transactional
     void partialUpdateEmployeeWithPatch() throws Exception {
         // Initialize the database
-        employeeRepository.saveAndFlush(employee);
+        insertedEmployee = employeeRepository.saveAndFlush(employee);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -346,7 +359,7 @@ class EmployeeResourceIT {
     @Transactional
     void fullUpdateEmployeeWithPatch() throws Exception {
         // Initialize the database
-        employeeRepository.saveAndFlush(employee);
+        insertedEmployee = employeeRepository.saveAndFlush(employee);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -448,7 +461,7 @@ class EmployeeResourceIT {
     @Transactional
     void deleteEmployee() throws Exception {
         // Initialize the database
-        employeeRepository.saveAndFlush(employee);
+        insertedEmployee = employeeRepository.saveAndFlush(employee);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 

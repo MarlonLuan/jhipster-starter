@@ -19,6 +19,7 @@ import com.mycompany.myapp.service.mapper.JobMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,6 +78,8 @@ class JobResourceIT {
 
     private Job job;
 
+    private Job insertedJob;
+
     /**
      * Create an entity for this test.
      *
@@ -104,6 +107,14 @@ class JobResourceIT {
         job = createEntity(em);
     }
 
+    @AfterEach
+    public void cleanup() {
+        if (insertedJob != null) {
+            jobRepository.delete(insertedJob);
+            insertedJob = null;
+        }
+    }
+
     @Test
     @Transactional
     void createJob() throws Exception {
@@ -124,13 +135,15 @@ class JobResourceIT {
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedJob = jobMapper.toEntity(returnedJobDTO);
         assertJobUpdatableFieldsEquals(returnedJob, getPersistedJob(returnedJob));
+
+        insertedJob = returnedJob;
     }
 
     @Test
     @Transactional
     void createJobWithExistingId() throws Exception {
         // Create the Job with an existing ID
-        jobRepository.saveAndFlush(job);
+        insertedJob = jobRepository.saveAndFlush(job);
         JobDTO jobDTO = jobMapper.toDto(job);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -148,7 +161,7 @@ class JobResourceIT {
     @Transactional
     void getAllJobs() throws Exception {
         // Initialize the database
-        jobRepository.saveAndFlush(job);
+        insertedJob = jobRepository.saveAndFlush(job);
 
         // Get all the jobList
         restJobMockMvc
@@ -182,7 +195,7 @@ class JobResourceIT {
     @Transactional
     void getJob() throws Exception {
         // Initialize the database
-        jobRepository.saveAndFlush(job);
+        insertedJob = jobRepository.saveAndFlush(job);
 
         // Get the job
         restJobMockMvc
@@ -206,7 +219,7 @@ class JobResourceIT {
     @Transactional
     void putExistingJob() throws Exception {
         // Initialize the database
-        jobRepository.saveAndFlush(job);
+        insertedJob = jobRepository.saveAndFlush(job);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -299,7 +312,7 @@ class JobResourceIT {
     @Transactional
     void partialUpdateJobWithPatch() throws Exception {
         // Initialize the database
-        jobRepository.saveAndFlush(job);
+        insertedJob = jobRepository.saveAndFlush(job);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -328,7 +341,7 @@ class JobResourceIT {
     @Transactional
     void fullUpdateJobWithPatch() throws Exception {
         // Initialize the database
-        jobRepository.saveAndFlush(job);
+        insertedJob = jobRepository.saveAndFlush(job);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -421,7 +434,7 @@ class JobResourceIT {
     @Transactional
     void deleteJob() throws Exception {
         // Initialize the database
-        jobRepository.saveAndFlush(job);
+        insertedJob = jobRepository.saveAndFlush(job);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 

@@ -16,6 +16,7 @@ import com.mycompany.myapp.service.dto.TaskDTO;
 import com.mycompany.myapp.service.mapper.TaskMapper;
 import jakarta.persistence.EntityManager;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,8 @@ class TaskResourceIT {
 
     private Task task;
 
+    private Task insertedTask;
+
     /**
      * Create an entity for this test.
      *
@@ -86,6 +89,14 @@ class TaskResourceIT {
         task = createEntity(em);
     }
 
+    @AfterEach
+    public void cleanup() {
+        if (insertedTask != null) {
+            taskRepository.delete(insertedTask);
+            insertedTask = null;
+        }
+    }
+
     @Test
     @Transactional
     void createTask() throws Exception {
@@ -106,13 +117,15 @@ class TaskResourceIT {
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedTask = taskMapper.toEntity(returnedTaskDTO);
         assertTaskUpdatableFieldsEquals(returnedTask, getPersistedTask(returnedTask));
+
+        insertedTask = returnedTask;
     }
 
     @Test
     @Transactional
     void createTaskWithExistingId() throws Exception {
         // Create the Task with an existing ID
-        taskRepository.saveAndFlush(task);
+        insertedTask = taskRepository.saveAndFlush(task);
         TaskDTO taskDTO = taskMapper.toDto(task);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -130,7 +143,7 @@ class TaskResourceIT {
     @Transactional
     void getAllTasks() throws Exception {
         // Initialize the database
-        taskRepository.saveAndFlush(task);
+        insertedTask = taskRepository.saveAndFlush(task);
 
         // Get all the taskList
         restTaskMockMvc
@@ -146,7 +159,7 @@ class TaskResourceIT {
     @Transactional
     void getTask() throws Exception {
         // Initialize the database
-        taskRepository.saveAndFlush(task);
+        insertedTask = taskRepository.saveAndFlush(task);
 
         // Get the task
         restTaskMockMvc
@@ -169,7 +182,7 @@ class TaskResourceIT {
     @Transactional
     void putExistingTask() throws Exception {
         // Initialize the database
-        taskRepository.saveAndFlush(task);
+        insertedTask = taskRepository.saveAndFlush(task);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -262,7 +275,7 @@ class TaskResourceIT {
     @Transactional
     void partialUpdateTaskWithPatch() throws Exception {
         // Initialize the database
-        taskRepository.saveAndFlush(task);
+        insertedTask = taskRepository.saveAndFlush(task);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -291,7 +304,7 @@ class TaskResourceIT {
     @Transactional
     void fullUpdateTaskWithPatch() throws Exception {
         // Initialize the database
-        taskRepository.saveAndFlush(task);
+        insertedTask = taskRepository.saveAndFlush(task);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -384,7 +397,7 @@ class TaskResourceIT {
     @Transactional
     void deleteTask() throws Exception {
         // Initialize the database
-        taskRepository.saveAndFlush(task);
+        insertedTask = taskRepository.saveAndFlush(task);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 

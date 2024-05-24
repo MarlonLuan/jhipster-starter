@@ -16,6 +16,7 @@ import com.mycompany.myapp.service.dto.CountryDTO;
 import com.mycompany.myapp.service.mapper.CountryMapper;
 import jakarta.persistence.EntityManager;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,8 @@ class CountryResourceIT {
 
     private Country country;
 
+    private Country insertedCountry;
+
     /**
      * Create an entity for this test.
      *
@@ -83,6 +86,14 @@ class CountryResourceIT {
         country = createEntity(em);
     }
 
+    @AfterEach
+    public void cleanup() {
+        if (insertedCountry != null) {
+            countryRepository.delete(insertedCountry);
+            insertedCountry = null;
+        }
+    }
+
     @Test
     @Transactional
     void createCountry() throws Exception {
@@ -105,13 +116,15 @@ class CountryResourceIT {
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         var returnedCountry = countryMapper.toEntity(returnedCountryDTO);
         assertCountryUpdatableFieldsEquals(returnedCountry, getPersistedCountry(returnedCountry));
+
+        insertedCountry = returnedCountry;
     }
 
     @Test
     @Transactional
     void createCountryWithExistingId() throws Exception {
         // Create the Country with an existing ID
-        countryRepository.saveAndFlush(country);
+        insertedCountry = countryRepository.saveAndFlush(country);
         CountryDTO countryDTO = countryMapper.toDto(country);
 
         long databaseSizeBeforeCreate = getRepositoryCount();
@@ -129,7 +142,7 @@ class CountryResourceIT {
     @Transactional
     void getAllCountries() throws Exception {
         // Initialize the database
-        countryRepository.saveAndFlush(country);
+        insertedCountry = countryRepository.saveAndFlush(country);
 
         // Get all the countryList
         restCountryMockMvc
@@ -144,7 +157,7 @@ class CountryResourceIT {
     @Transactional
     void getCountry() throws Exception {
         // Initialize the database
-        countryRepository.saveAndFlush(country);
+        insertedCountry = countryRepository.saveAndFlush(country);
 
         // Get the country
         restCountryMockMvc
@@ -166,7 +179,7 @@ class CountryResourceIT {
     @Transactional
     void putExistingCountry() throws Exception {
         // Initialize the database
-        countryRepository.saveAndFlush(country);
+        insertedCountry = countryRepository.saveAndFlush(country);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -259,7 +272,7 @@ class CountryResourceIT {
     @Transactional
     void partialUpdateCountryWithPatch() throws Exception {
         // Initialize the database
-        countryRepository.saveAndFlush(country);
+        insertedCountry = countryRepository.saveAndFlush(country);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -286,7 +299,7 @@ class CountryResourceIT {
     @Transactional
     void fullUpdateCountryWithPatch() throws Exception {
         // Initialize the database
-        countryRepository.saveAndFlush(country);
+        insertedCountry = countryRepository.saveAndFlush(country);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -381,7 +394,7 @@ class CountryResourceIT {
     @Transactional
     void deleteCountry() throws Exception {
         // Initialize the database
-        countryRepository.saveAndFlush(country);
+        insertedCountry = countryRepository.saveAndFlush(country);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 
