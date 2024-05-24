@@ -81,7 +81,8 @@ public class LocationServiceImpl implements LocationService {
     @Transactional(readOnly = true)
     public List<LocationDTO> findAllWhereDepartmentIsNull() {
         log.debug("Request to get all locations where Department is null");
-        return StreamSupport.stream(locationRepository.findAll().spliterator(), false)
+        return StreamSupport
+            .stream(locationRepository.findAll().spliterator(), false)
             .filter(location -> location.getDepartment() == null)
             .map(locationMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));

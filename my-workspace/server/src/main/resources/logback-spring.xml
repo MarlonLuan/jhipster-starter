@@ -27,8 +27,6 @@
     </root>
     -->
 
-    <logger name="com.mycompany.myapp" level="INFO"/>
-
     <logger name="angus.activation" level="WARN"/>
     <logger name="jakarta.activation" level="WARN"/>
     <logger name="jakarta.mail" level="WARN"/>
