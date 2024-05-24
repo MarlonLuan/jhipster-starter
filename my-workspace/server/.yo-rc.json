@@ -11,7 +11,7 @@
     "clientPackageManager": "npm",
     "clientTheme": "none",
     "clientThemeVariant": "",
-    "creationTimestamp": 43201264,
+    "creationTimestamp": 43201298,
     "databaseType": "sql",
     "devDatabaseType": "postgresql",
     "dtoSuffix": "DTO",
