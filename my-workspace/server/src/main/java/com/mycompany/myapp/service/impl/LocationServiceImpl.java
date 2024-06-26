@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LocationServiceImpl implements LocationService {
 
-    private final Logger log = LoggerFactory.getLogger(LocationServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LocationServiceImpl.class);
 
     private final LocationRepository locationRepository;
 
@@ -38,7 +38,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationDTO save(LocationDTO locationDTO) {
-        log.debug("Request to save Location : {}", locationDTO);
+        LOG.debug("Request to save Location : {}", locationDTO);
         Location location = locationMapper.toEntity(locationDTO);
         location = locationRepository.save(location);
         return locationMapper.toDto(location);
@@ -46,7 +46,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationDTO update(LocationDTO locationDTO) {
-        log.debug("Request to update Location : {}", locationDTO);
+        LOG.debug("Request to update Location : {}", locationDTO);
         Location location = locationMapper.toEntity(locationDTO);
         location = locationRepository.save(location);
         return locationMapper.toDto(location);
@@ -54,7 +54,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public Optional<LocationDTO> partialUpdate(LocationDTO locationDTO) {
-        log.debug("Request to partially update Location : {}", locationDTO);
+        LOG.debug("Request to partially update Location : {}", locationDTO);
 
         return locationRepository
             .findById(locationDTO.getId())
@@ -70,7 +70,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     @Transactional(readOnly = true)
     public Page<LocationDTO> findAll(Pageable pageable) {
-        log.debug("Request to get all Locations");
+        LOG.debug("Request to get all Locations");
         return locationRepository.findAll(pageable).map(locationMapper::toDto);
     }
 
@@ -80,7 +80,7 @@ public class LocationServiceImpl implements LocationService {
      */
     @Transactional(readOnly = true)
     public List<LocationDTO> findAllWhereDepartmentIsNull() {
-        log.debug("Request to get all locations where Department is null");
+        LOG.debug("Request to get all locations where Department is null");
         return StreamSupport.stream(locationRepository.findAll().spliterator(), false)
             .filter(location -> location.getDepartment() == null)
             .map(locationMapper::toDto)
@@ -90,13 +90,13 @@ public class LocationServiceImpl implements LocationService {
     @Override
     @Transactional(readOnly = true)
     public Optional<LocationDTO> findOne(UUID id) {
-        log.debug("Request to get Location : {}", id);
+        LOG.debug("Request to get Location : {}", id);
         return locationRepository.findById(id).map(locationMapper::toDto);
     }
 
     @Override
     public void delete(UUID id) {
-        log.debug("Request to delete Location : {}", id);
+        LOG.debug("Request to delete Location : {}", id);
         locationRepository.deleteById(id);
     }
 }

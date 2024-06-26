@@ -31,7 +31,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/employees")
 public class EmployeeResource {
 
-    private final Logger log = LoggerFactory.getLogger(EmployeeResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EmployeeResource.class);
 
     private static final String ENTITY_NAME = "employee";
 
@@ -56,7 +56,7 @@ public class EmployeeResource {
      */
     @PostMapping("")
     public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody EmployeeDTO employeeDTO) throws URISyntaxException {
-        log.debug("REST request to save Employee : {}", employeeDTO);
+        LOG.debug("REST request to save Employee : {}", employeeDTO);
         if (employeeDTO.getId() != null) {
             throw new BadRequestAlertException("A new employee cannot already have an ID", ENTITY_NAME, "idexists");
         }
@@ -81,7 +81,7 @@ public class EmployeeResource {
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody EmployeeDTO employeeDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update Employee : {}, {}", id, employeeDTO);
+        LOG.debug("REST request to update Employee : {}, {}", id, employeeDTO);
         if (employeeDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -115,7 +115,7 @@ public class EmployeeResource {
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody EmployeeDTO employeeDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update Employee partially : {}, {}", id, employeeDTO);
+        LOG.debug("REST request to partial update Employee partially : {}, {}", id, employeeDTO);
         if (employeeDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -148,10 +148,10 @@ public class EmployeeResource {
         @RequestParam(name = "filter", required = false) String filter
     ) {
         if ("jobhistory-is-null".equals(filter)) {
-            log.debug("REST request to get all Employees where jobHistory is null");
+            LOG.debug("REST request to get all Employees where jobHistory is null");
             return new ResponseEntity<>(employeeService.findAllWhereJobHistoryIsNull(), HttpStatus.OK);
         }
-        log.debug("REST request to get a page of Employees");
+        LOG.debug("REST request to get a page of Employees");
         Page<EmployeeDTO> page = employeeService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -165,7 +165,7 @@ public class EmployeeResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeDTO> getEmployee(@PathVariable("id") UUID id) {
-        log.debug("REST request to get Employee : {}", id);
+        LOG.debug("REST request to get Employee : {}", id);
         Optional<EmployeeDTO> employeeDTO = employeeService.findOne(id);
         return ResponseUtil.wrapOrNotFound(employeeDTO);
     }
@@ -178,7 +178,7 @@ public class EmployeeResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable("id") UUID id) {
-        log.debug("REST request to delete Employee : {}", id);
+        LOG.debug("REST request to delete Employee : {}", id);
         employeeService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))

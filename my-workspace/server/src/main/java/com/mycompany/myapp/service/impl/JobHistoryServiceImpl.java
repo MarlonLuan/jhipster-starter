@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JobHistoryServiceImpl implements JobHistoryService {
 
-    private final Logger log = LoggerFactory.getLogger(JobHistoryServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JobHistoryServiceImpl.class);
 
     private final JobHistoryRepository jobHistoryRepository;
 
@@ -34,7 +34,7 @@ public class JobHistoryServiceImpl implements JobHistoryService {
 
     @Override
     public JobHistoryDTO save(JobHistoryDTO jobHistoryDTO) {
-        log.debug("Request to save JobHistory : {}", jobHistoryDTO);
+        LOG.debug("Request to save JobHistory : {}", jobHistoryDTO);
         JobHistory jobHistory = jobHistoryMapper.toEntity(jobHistoryDTO);
         jobHistory = jobHistoryRepository.save(jobHistory);
         return jobHistoryMapper.toDto(jobHistory);
@@ -42,7 +42,7 @@ public class JobHistoryServiceImpl implements JobHistoryService {
 
     @Override
     public JobHistoryDTO update(JobHistoryDTO jobHistoryDTO) {
-        log.debug("Request to update JobHistory : {}", jobHistoryDTO);
+        LOG.debug("Request to update JobHistory : {}", jobHistoryDTO);
         JobHistory jobHistory = jobHistoryMapper.toEntity(jobHistoryDTO);
         jobHistory = jobHistoryRepository.save(jobHistory);
         return jobHistoryMapper.toDto(jobHistory);
@@ -50,7 +50,7 @@ public class JobHistoryServiceImpl implements JobHistoryService {
 
     @Override
     public Optional<JobHistoryDTO> partialUpdate(JobHistoryDTO jobHistoryDTO) {
-        log.debug("Request to partially update JobHistory : {}", jobHistoryDTO);
+        LOG.debug("Request to partially update JobHistory : {}", jobHistoryDTO);
 
         return jobHistoryRepository
             .findById(jobHistoryDTO.getId())
@@ -66,20 +66,20 @@ public class JobHistoryServiceImpl implements JobHistoryService {
     @Override
     @Transactional(readOnly = true)
     public Page<JobHistoryDTO> findAll(Pageable pageable) {
-        log.debug("Request to get all JobHistories");
+        LOG.debug("Request to get all JobHistories");
         return jobHistoryRepository.findAll(pageable).map(jobHistoryMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<JobHistoryDTO> findOne(UUID id) {
-        log.debug("Request to get JobHistory : {}", id);
+        LOG.debug("Request to get JobHistory : {}", id);
         return jobHistoryRepository.findById(id).map(jobHistoryMapper::toDto);
     }
 
     @Override
     public void delete(UUID id) {
-        log.debug("Request to delete JobHistory : {}", id);
+        LOG.debug("Request to delete JobHistory : {}", id);
         jobHistoryRepository.deleteById(id);
     }
 }

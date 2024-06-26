@@ -30,7 +30,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/tasks")
 public class TaskResource {
 
-    private final Logger log = LoggerFactory.getLogger(TaskResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TaskResource.class);
 
     private static final String ENTITY_NAME = "task";
 
@@ -55,7 +55,7 @@ public class TaskResource {
      */
     @PostMapping("")
     public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) throws URISyntaxException {
-        log.debug("REST request to save Task : {}", taskDTO);
+        LOG.debug("REST request to save Task : {}", taskDTO);
         if (taskDTO.getId() != null) {
             throw new BadRequestAlertException("A new task cannot already have an ID", ENTITY_NAME, "idexists");
         }
@@ -78,7 +78,7 @@ public class TaskResource {
     @PutMapping("/{id}")
     public ResponseEntity<TaskDTO> updateTask(@PathVariable(value = "id", required = false) final UUID id, @RequestBody TaskDTO taskDTO)
         throws URISyntaxException {
-        log.debug("REST request to update Task : {}, {}", id, taskDTO);
+        LOG.debug("REST request to update Task : {}, {}", id, taskDTO);
         if (taskDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -112,7 +112,7 @@ public class TaskResource {
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody TaskDTO taskDTO
     ) throws URISyntaxException {
-        log.debug("REST request to partial update Task partially : {}, {}", id, taskDTO);
+        LOG.debug("REST request to partial update Task partially : {}, {}", id, taskDTO);
         if (taskDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -140,7 +140,7 @@ public class TaskResource {
      */
     @GetMapping("")
     public ResponseEntity<List<TaskDTO>> getAllTasks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        log.debug("REST request to get a page of Tasks");
+        LOG.debug("REST request to get a page of Tasks");
         Page<TaskDTO> page = taskService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -154,7 +154,7 @@ public class TaskResource {
      */
     @GetMapping("/{id}")
     public ResponseEntity<TaskDTO> getTask(@PathVariable("id") UUID id) {
-        log.debug("REST request to get Task : {}", id);
+        LOG.debug("REST request to get Task : {}", id);
         Optional<TaskDTO> taskDTO = taskService.findOne(id);
         return ResponseUtil.wrapOrNotFound(taskDTO);
     }
@@ -167,7 +167,7 @@ public class TaskResource {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable("id") UUID id) {
-        log.debug("REST request to delete Task : {}", id);
+        LOG.debug("REST request to delete Task : {}", id);
         taskService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
