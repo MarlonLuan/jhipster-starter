@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LocationServiceImpl implements LocationService {
 
-    private final Logger log = LoggerFactory.getLogger(LocationServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(LocationServiceImpl.class);
 
     private final LocationRepository locationRepository;
 

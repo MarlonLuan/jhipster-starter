@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RegionServiceImpl implements RegionService {
 
-    private final Logger log = LoggerFactory.getLogger(RegionServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(RegionServiceImpl.class);
 
     private final RegionRepository regionRepository;
 

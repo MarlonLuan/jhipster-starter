@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CountryServiceImpl implements CountryService {
 
-    private final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
 
     private final CountryRepository countryRepository;
 

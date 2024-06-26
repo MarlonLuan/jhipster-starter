@@ -31,7 +31,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/countries")
 public class CountryResource {
 
-    private final Logger log = LoggerFactory.getLogger(CountryResource.class);
+    private static final Logger log = LoggerFactory.getLogger(CountryResource.class);
 
     private static final String ENTITY_NAME = "country";
 

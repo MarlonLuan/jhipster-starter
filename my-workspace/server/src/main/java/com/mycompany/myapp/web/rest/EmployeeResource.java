@@ -31,7 +31,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/employees")
 public class EmployeeResource {
 
-    private final Logger log = LoggerFactory.getLogger(EmployeeResource.class);
+    private static final Logger log = LoggerFactory.getLogger(EmployeeResource.class);
 
     private static final String ENTITY_NAME = "employee";
 
