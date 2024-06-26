@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final Logger log = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     private final EmployeeRepository employeeRepository;
 

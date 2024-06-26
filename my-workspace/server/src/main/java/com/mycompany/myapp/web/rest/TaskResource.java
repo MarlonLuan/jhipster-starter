@@ -30,7 +30,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/tasks")
 public class TaskResource {
 
-    private final Logger log = LoggerFactory.getLogger(TaskResource.class);
+    private static final Logger log = LoggerFactory.getLogger(TaskResource.class);
 
     private static final String ENTITY_NAME = "task";
 

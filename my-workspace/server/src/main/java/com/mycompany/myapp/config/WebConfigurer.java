@@ -20,7 +20,7 @@ import tech.jhipster.config.JHipsterProperties;
 @Configuration
 public class WebConfigurer implements ServletContextInitializer {
 
-    private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
+    private static final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
 
     private final Environment env;
 

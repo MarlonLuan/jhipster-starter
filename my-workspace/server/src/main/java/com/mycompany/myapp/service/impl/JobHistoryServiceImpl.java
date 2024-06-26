@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JobHistoryServiceImpl implements JobHistoryService {
 
-    private final Logger log = LoggerFactory.getLogger(JobHistoryServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(JobHistoryServiceImpl.class);
 
     private final JobHistoryRepository jobHistoryRepository;
 

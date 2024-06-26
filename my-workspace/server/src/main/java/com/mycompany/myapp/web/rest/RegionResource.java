@@ -31,7 +31,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/regions")
 public class RegionResource {
 
-    private final Logger log = LoggerFactory.getLogger(RegionResource.class);
+    private static final Logger log = LoggerFactory.getLogger(RegionResource.class);
 
     private static final String ENTITY_NAME = "region";
 

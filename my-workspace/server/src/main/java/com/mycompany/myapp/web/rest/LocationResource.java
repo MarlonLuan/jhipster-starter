@@ -31,7 +31,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/locations")
 public class LocationResource {
 
-    private final Logger log = LoggerFactory.getLogger(LocationResource.class);
+    private static final Logger log = LoggerFactory.getLogger(LocationResource.class);
 
     private static final String ENTITY_NAME = "location";
 

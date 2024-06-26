@@ -1,21 +1,18 @@
 # jhipster
 
-This application was generated using JHipster 8.5.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.5.0](https://www.jhipster.tech/documentation-archive/v8.5.0).
+This application was generated using JHipster 8.6.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.6.0](https://www.jhipster.tech/documentation-archive/v8.6.0).
 
 ## Project Structure
 
 ## Development
 
-Before you can build this project, you must install and configure the following dependencies on your machine:
+The build system will install automatically the recommended version of Node and npm.
 
-1. [Node.js](https://nodejs.org/): We use Node to run a development web server and build the project.
-   Depending on your system, you can install Node either from source or as a pre-packaged bundle.
-
-After installing Node, you should be able to run the following command to install development tools.
+We provide a wrapper to launch npm.
 You will only need to run this command when dependencies change in [package.json](package.json).
 
 ```
-npm install
+./npmw install
 ```
 
 We use npm scripts and [Angular CLI][] with [Webpack][] as our build system.
@@ -25,14 +22,14 @@ auto-refreshes when files change on your hard drive.
 
 ```
 ./mvnw
-npm start
+./npmw start
 ```
 
 Npm is also used to manage CSS and JavaScript dependencies used in this application. You can upgrade dependencies by
-specifying a newer version in [package.json](package.json). You can also run `npm update` and `npm install` to manage dependencies.
-Add the `help` flag on any command to see how you can use it. For example, `npm help update`.
+specifying a newer version in [package.json](package.json). You can also run `./npmw update` and `./npmw install` to manage dependencies.
+Add the `help` flag on any command to see how you can use it. For example, `./npmw help update`.
 
-The `npm run` command will list all of the scripts available to run for this project.
+The `./npmw run` command will list all the scripts available to run for this project.
 
 ### PWA Support
 
@@ -49,13 +46,13 @@ ServiceWorkerModule.register('ngsw-worker.js', { enabled: false }),
 For example, to add [Leaflet][] library as a runtime dependency of your application, you would run following command:
 
 ```
-npm install --save --save-exact leaflet
+./npmw install --save --save-exact leaflet
 ```
 
 To benefit from TypeScript type definitions from [DefinitelyTyped][] repository in development, you would run following command:
 
 ```
-npm install --save-dev --save-exact @types/leaflet
+./npmw install --save-dev --save-exact @types/leaflet
 ```
 
 Then you would import the JS and CSS files specified in library's installation instructions so that [Webpack][] knows about them:
@@ -102,17 +99,17 @@ update src/main/webapp/app/app.config.ts
 Unit tests are run by [Jest][]. They're located in [src/test/javascript/](src/test/javascript/) and can be run with:
 
 ```
-npm test
+./npmw test
 ```
 
 [JHipster Homepage and latest documentation]: https://www.jhipster.tech
-[JHipster 8.5.0 archive]: https://www.jhipster.tech/documentation-archive/v8.5.0
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v8.5.0/development/
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v8.5.0/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v8.5.0/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v8.5.0/running-tests/
-[Code quality page]: https://www.jhipster.tech/documentation-archive/v8.5.0/code-quality/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v8.5.0/setting-up-ci/
+[JHipster 8.6.0 archive]: https://www.jhipster.tech/documentation-archive/v8.6.0
+[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v8.6.0/development/
+[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v8.6.0/docker-compose
+[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v8.6.0/production/
+[Running tests page]: https://www.jhipster.tech/documentation-archive/v8.6.0/running-tests/
+[Code quality page]: https://www.jhipster.tech/documentation-archive/v8.6.0/code-quality/
+[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v8.6.0/setting-up-ci/
 [Node.js]: https://nodejs.org/
 [NPM]: https://www.npmjs.com/
 [Webpack]: https://webpack.github.io/

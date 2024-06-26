@@ -30,7 +30,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/job-histories")
 public class JobHistoryResource {
 
-    private final Logger log = LoggerFactory.getLogger(JobHistoryResource.class);
+    private static final Logger log = LoggerFactory.getLogger(JobHistoryResource.class);
 
     private static final String ENTITY_NAME = "jobHistory";
 
