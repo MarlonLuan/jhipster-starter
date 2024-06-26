@@ -2,8 +2,8 @@
 name: jhipster
 services:
   keycloak:
-    image: quay.io/keycloak/keycloak:24.0.4
-    command: 'start-dev --import-realm'
+    image: quay.io/keycloak/keycloak:22.0.1
+    command: ['start-dev --import-realm']
     volumes:
       - ./realm-config:/opt/keycloak/data/import
       - ./realm-config/keycloak-health-check.sh:/opt/keycloak/health-check.sh

@@ -81,7 +81,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional(readOnly = true)
     public List<DepartmentDTO> findAllWhereJobHistoryIsNull() {
         log.debug("Request to get all departments where JobHistory is null");
-        return StreamSupport.stream(departmentRepository.findAll().spliterator(), false)
+        return StreamSupport
+            .stream(departmentRepository.findAll().spliterator(), false)
             .filter(department -> department.getJobHistory() == null)
             .map(departmentMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));

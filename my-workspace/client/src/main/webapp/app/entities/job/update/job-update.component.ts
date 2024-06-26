@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -28,14 +28,15 @@ export class JobUpdateComponent implements OnInit {
   tasksSharedCollection: ITask[] = [];
   employeesSharedCollection: IEmployee[] = [];
 
-  protected jobService = inject(JobService);
-  protected jobFormService = inject(JobFormService);
-  protected taskService = inject(TaskService);
-  protected employeeService = inject(EmployeeService);
-  protected activatedRoute = inject(ActivatedRoute);
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: JobFormGroup = this.jobFormService.createJobFormGroup();
+
+  constructor(
+    protected jobService: JobService,
+    protected jobFormService: JobFormService,
+    protected taskService: TaskService,
+    protected employeeService: EmployeeService,
+    protected activatedRoute: ActivatedRoute,
+  ) {}
 
   compareTask = (o1: ITask | null, o2: ITask | null): boolean => this.taskService.compareTask(o1, o2);
 

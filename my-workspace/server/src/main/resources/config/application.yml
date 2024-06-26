@@ -67,10 +67,6 @@ management:
       export:
         enabled: true
         step: 60
-  observations:
-    key-values:
-      application: ${spring.application.name}
-  metrics:
     enable:
       http: true
       jvm: true
@@ -82,10 +78,13 @@ management:
         all: true
       percentiles:
         all: 0, 0.5, 0.75, 0.95, 0.99, 1.0
-    data:
-      repository:
-        autotime:
-          enabled: true
+    tags:
+      application: ${spring.application.name}
+    web:
+      server:
+        request:
+          autotime:
+            enabled: true
 
 spring:
   application:
@@ -94,7 +93,7 @@ spring:
     # The commented value for `active` can be replaced with valid Spring profiles to load.
     # Otherwise, it will be filled in by maven when building the JAR file
     # Either way, it can be overridden by `--spring.profiles.active` value passed in the commandline or `-Dspring.profiles.active` set in `JAVA_OPTS`
-    active: '@spring.profiles.active@'
+    active: #spring.profiles.active#
     group:
       dev:
         - dev
@@ -136,20 +135,6 @@ spring:
   mvc:
     problemdetails:
       enabled: true
-  security:
-    oauth2:
-      client:
-        provider:
-          oidc:
-            issuer-uri: http://localhost:9080/realms/jhipster
-        registration:
-          oidc:
-            client-id: web_app
-            client-secret: web_app
-            scope: openid, profile, email, offline_access # last one for refresh tokens
-      resourceserver:
-        jwt:
-          principal-claim-name: preferred_username
   task:
     execution:
       thread-name-prefix: jhipster-task-
@@ -166,6 +151,17 @@ spring:
   output:
     ansi:
       console-available: true
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: http://localhost:9080/realms/jhipster
+        registration:
+          oidc:
+            client-id: web_app
+            client-secret: web_app
+            scope: openid, profile, email, offline_access # last one for refresh tokens
 
 server:
   servlet:
