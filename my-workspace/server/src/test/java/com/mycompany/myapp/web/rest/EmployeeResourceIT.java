@@ -1,14 +1,11 @@
 package com.mycompany.myapp.web.rest;
 
-import static com.mycompany.myapp.domain.EmployeeAsserts.*;
-import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Employee;
 import com.mycompany.myapp.repository.EmployeeRepository;
@@ -17,8 +14,8 @@ import com.mycompany.myapp.service.mapper.EmployeeMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +58,6 @@ class EmployeeResourceIT {
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
     @Autowired
-    private ObjectMapper om;
-
-    @Autowired
     private EmployeeRepository employeeRepository;
 
     @Autowired
@@ -76,8 +70,6 @@ class EmployeeResourceIT {
     private MockMvc restEmployeeMockMvc;
 
     private Employee employee;
-
-    private Employee insertedEmployee;
 
     /**
      * Create an entity for this test.
@@ -120,63 +112,63 @@ class EmployeeResourceIT {
         employee = createEntity(em);
     }
 
-    @AfterEach
-    public void cleanup() {
-        if (insertedEmployee != null) {
-            employeeRepository.delete(insertedEmployee);
-            insertedEmployee = null;
-        }
-    }
-
     @Test
     @Transactional
     void createEmployee() throws Exception {
-        long databaseSizeBeforeCreate = getRepositoryCount();
+        int databaseSizeBeforeCreate = employeeRepository.findAll().size();
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
-        var returnedEmployeeDTO = om.readValue(
-            restEmployeeMockMvc
-                .perform(
-                    post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(employeeDTO))
-                )
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString(),
-            EmployeeDTO.class
-        );
+        restEmployeeMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
+            )
+            .andExpect(status().isCreated());
 
         // Validate the Employee in the database
-        assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
-        var returnedEmployee = employeeMapper.toEntity(returnedEmployeeDTO);
-        assertEmployeeUpdatableFieldsEquals(returnedEmployee, getPersistedEmployee(returnedEmployee));
-
-        insertedEmployee = returnedEmployee;
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeCreate + 1);
+        Employee testEmployee = employeeList.get(employeeList.size() - 1);
+        assertThat(testEmployee.getFirstName()).isEqualTo(DEFAULT_FIRST_NAME);
+        assertThat(testEmployee.getLastName()).isEqualTo(DEFAULT_LAST_NAME);
+        assertThat(testEmployee.getEmail()).isEqualTo(DEFAULT_EMAIL);
+        assertThat(testEmployee.getPhoneNumber()).isEqualTo(DEFAULT_PHONE_NUMBER);
+        assertThat(testEmployee.getHireDate()).isEqualTo(DEFAULT_HIRE_DATE);
+        assertThat(testEmployee.getSalary()).isEqualTo(DEFAULT_SALARY);
+        assertThat(testEmployee.getCommissionPct()).isEqualTo(DEFAULT_COMMISSION_PCT);
     }
 
     @Test
     @Transactional
     void createEmployeeWithExistingId() throws Exception {
         // Create the Employee with an existing ID
-        insertedEmployee = employeeRepository.saveAndFlush(employee);
+        employeeRepository.saveAndFlush(employee);
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
-        long databaseSizeBeforeCreate = getRepositoryCount();
+        int databaseSizeBeforeCreate = employeeRepository.findAll().size();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restEmployeeMockMvc
-            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(employeeDTO)))
+            .perform(
+                post(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Employee in the database
-        assertSameRepositoryCount(databaseSizeBeforeCreate);
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeCreate);
     }
 
     @Test
     @Transactional
     void getAllEmployees() throws Exception {
         // Initialize the database
-        insertedEmployee = employeeRepository.saveAndFlush(employee);
+        employeeRepository.saveAndFlush(employee);
 
         // Get all the employeeList
         restEmployeeMockMvc
@@ -197,7 +189,7 @@ class EmployeeResourceIT {
     @Transactional
     void getEmployee() throws Exception {
         // Initialize the database
-        insertedEmployee = employeeRepository.saveAndFlush(employee);
+        employeeRepository.saveAndFlush(employee);
 
         // Get the employee
         restEmployeeMockMvc
@@ -225,9 +217,9 @@ class EmployeeResourceIT {
     @Transactional
     void putExistingEmployee() throws Exception {
         // Initialize the database
-        insertedEmployee = employeeRepository.saveAndFlush(employee);
+        employeeRepository.saveAndFlush(employee);
 
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
 
         // Update the employee
         Employee updatedEmployee = employeeRepository.findById(employee.getId()).orElseThrow();
@@ -248,19 +240,27 @@ class EmployeeResourceIT {
                 put(ENTITY_API_URL_ID, employeeDTO.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(employeeDTO))
+                    .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
             )
             .andExpect(status().isOk());
 
         // Validate the Employee in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedEmployeeToMatchAllProperties(updatedEmployee);
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
+        Employee testEmployee = employeeList.get(employeeList.size() - 1);
+        assertThat(testEmployee.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
+        assertThat(testEmployee.getLastName()).isEqualTo(UPDATED_LAST_NAME);
+        assertThat(testEmployee.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testEmployee.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
+        assertThat(testEmployee.getHireDate()).isEqualTo(UPDATED_HIRE_DATE);
+        assertThat(testEmployee.getSalary()).isEqualTo(UPDATED_SALARY);
+        assertThat(testEmployee.getCommissionPct()).isEqualTo(UPDATED_COMMISSION_PCT);
     }
 
     @Test
     @Transactional
     void putNonExistingEmployee() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
         employee.setId(UUID.randomUUID());
 
         // Create the Employee
@@ -272,18 +272,19 @@ class EmployeeResourceIT {
                 put(ENTITY_API_URL_ID, employeeDTO.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(employeeDTO))
+                    .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Employee in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchEmployee() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
         employee.setId(UUID.randomUUID());
 
         // Create the Employee
@@ -295,18 +296,19 @@ class EmployeeResourceIT {
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(employeeDTO))
+                    .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Employee in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamEmployee() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
         employee.setId(UUID.randomUUID());
 
         // Create the Employee
@@ -314,20 +316,26 @@ class EmployeeResourceIT {
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
-            .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(employeeDTO)))
+            .perform(
+                put(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
+            )
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Employee in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void partialUpdateEmployeeWithPatch() throws Exception {
         // Initialize the database
-        insertedEmployee = employeeRepository.saveAndFlush(employee);
+        employeeRepository.saveAndFlush(employee);
 
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
 
         // Update the employee using partial update
         Employee partialUpdatedEmployee = new Employee();
@@ -345,23 +353,30 @@ class EmployeeResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedEmployee.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedEmployee))
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedEmployee))
             )
             .andExpect(status().isOk());
 
         // Validate the Employee in the database
-
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertEmployeeUpdatableFieldsEquals(createUpdateProxyForBean(partialUpdatedEmployee, employee), getPersistedEmployee(employee));
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
+        Employee testEmployee = employeeList.get(employeeList.size() - 1);
+        assertThat(testEmployee.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
+        assertThat(testEmployee.getLastName()).isEqualTo(UPDATED_LAST_NAME);
+        assertThat(testEmployee.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testEmployee.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
+        assertThat(testEmployee.getHireDate()).isEqualTo(UPDATED_HIRE_DATE);
+        assertThat(testEmployee.getSalary()).isEqualTo(DEFAULT_SALARY);
+        assertThat(testEmployee.getCommissionPct()).isEqualTo(DEFAULT_COMMISSION_PCT);
     }
 
     @Test
     @Transactional
     void fullUpdateEmployeeWithPatch() throws Exception {
         // Initialize the database
-        insertedEmployee = employeeRepository.saveAndFlush(employee);
+        employeeRepository.saveAndFlush(employee);
 
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
 
         // Update the employee using partial update
         Employee partialUpdatedEmployee = new Employee();
@@ -381,20 +396,27 @@ class EmployeeResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedEmployee.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedEmployee))
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedEmployee))
             )
             .andExpect(status().isOk());
 
         // Validate the Employee in the database
-
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertEmployeeUpdatableFieldsEquals(partialUpdatedEmployee, getPersistedEmployee(partialUpdatedEmployee));
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
+        Employee testEmployee = employeeList.get(employeeList.size() - 1);
+        assertThat(testEmployee.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
+        assertThat(testEmployee.getLastName()).isEqualTo(UPDATED_LAST_NAME);
+        assertThat(testEmployee.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testEmployee.getPhoneNumber()).isEqualTo(UPDATED_PHONE_NUMBER);
+        assertThat(testEmployee.getHireDate()).isEqualTo(UPDATED_HIRE_DATE);
+        assertThat(testEmployee.getSalary()).isEqualTo(UPDATED_SALARY);
+        assertThat(testEmployee.getCommissionPct()).isEqualTo(UPDATED_COMMISSION_PCT);
     }
 
     @Test
     @Transactional
     void patchNonExistingEmployee() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
         employee.setId(UUID.randomUUID());
 
         // Create the Employee
@@ -406,18 +428,19 @@ class EmployeeResourceIT {
                 patch(ENTITY_API_URL_ID, employeeDTO.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(employeeDTO))
+                    .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Employee in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchEmployee() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
         employee.setId(UUID.randomUUID());
 
         // Create the Employee
@@ -429,18 +452,19 @@ class EmployeeResourceIT {
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(employeeDTO))
+                    .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Employee in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamEmployee() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = employeeRepository.findAll().size();
         employee.setId(UUID.randomUUID());
 
         // Create the Employee
@@ -449,21 +473,25 @@ class EmployeeResourceIT {
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(
-                patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(employeeDTO))
+                patch(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(employeeDTO))
             )
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Employee in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void deleteEmployee() throws Exception {
         // Initialize the database
-        insertedEmployee = employeeRepository.saveAndFlush(employee);
+        employeeRepository.saveAndFlush(employee);
 
-        long databaseSizeBeforeDelete = getRepositoryCount();
+        int databaseSizeBeforeDelete = employeeRepository.findAll().size();
 
         // Delete the employee
         restEmployeeMockMvc
@@ -471,34 +499,7 @@ class EmployeeResourceIT {
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
-        assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-    }
-
-    protected long getRepositoryCount() {
-        return employeeRepository.count();
-    }
-
-    protected void assertIncrementedRepositoryCount(long countBefore) {
-        assertThat(countBefore + 1).isEqualTo(getRepositoryCount());
-    }
-
-    protected void assertDecrementedRepositoryCount(long countBefore) {
-        assertThat(countBefore - 1).isEqualTo(getRepositoryCount());
-    }
-
-    protected void assertSameRepositoryCount(long countBefore) {
-        assertThat(countBefore).isEqualTo(getRepositoryCount());
-    }
-
-    protected Employee getPersistedEmployee(Employee employee) {
-        return employeeRepository.findById(employee.getId()).orElseThrow();
-    }
-
-    protected void assertPersistedEmployeeToMatchAllProperties(Employee expectedEmployee) {
-        assertEmployeeAllPropertiesEquals(expectedEmployee, getPersistedEmployee(expectedEmployee));
-    }
-
-    protected void assertPersistedEmployeeToMatchUpdatableProperties(Employee expectedEmployee) {
-        assertEmployeeAllUpdatablePropertiesEquals(expectedEmployee, getPersistedEmployee(expectedEmployee));
+        List<Employee> employeeList = employeeRepository.findAll();
+        assertThat(employeeList).hasSize(databaseSizeBeforeDelete - 1);
     }
 }

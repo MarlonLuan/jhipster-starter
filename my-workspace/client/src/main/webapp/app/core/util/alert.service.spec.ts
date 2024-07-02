@@ -99,10 +99,10 @@ describe('Alert service test', () => {
 
     it('should produce an alert object with correct id', inject([AlertService], (service: AlertService) => {
       service.addAlert({ type: 'info', message: 'Hello Jhipster info' });
-      expect(service.addAlert({ type: 'success', message: 'Hello JHipster success' })).toEqual(
+      expect(service.addAlert({ type: 'success', message: 'Hello Jhipster success' })).toEqual(
         expect.objectContaining({
           type: 'success',
-          message: 'Hello JHipster success',
+          message: 'Hello Jhipster success',
           id: 1,
         } as Alert),
       );
@@ -111,7 +111,7 @@ describe('Alert service test', () => {
       expect(service.get()[1]).toEqual(
         expect.objectContaining({
           type: 'success',
-          message: 'Hello JHipster success',
+          message: 'Hello Jhipster success',
           id: 1,
         } as Alert),
       );
@@ -120,11 +120,11 @@ describe('Alert service test', () => {
     it('should close an alert correctly', inject([AlertService], (service: AlertService) => {
       const alert0 = service.addAlert({ type: 'info', message: 'Hello Jhipster info' });
       const alert1 = service.addAlert({ type: 'info', message: 'Hello Jhipster info 2' });
-      const alert2 = service.addAlert({ type: 'success', message: 'Hello JHipster success' });
+      const alert2 = service.addAlert({ type: 'success', message: 'Hello Jhipster success' });
       expect(alert2).toEqual(
         expect.objectContaining({
           type: 'success',
-          message: 'Hello JHipster success',
+          message: 'Hello Jhipster success',
           id: 2,
         } as Alert),
       );
@@ -144,7 +144,7 @@ describe('Alert service test', () => {
       expect(service.get()[0]).not.toEqual(
         expect.objectContaining({
           type: 'success',
-          message: 'Hello JHipster success',
+          message: 'Hello Jhipster success',
           id: 2,
         } as Alert),
       );
@@ -270,7 +270,7 @@ describe('Alert service test', () => {
       },
     ));
 
-    it('should produce a info message with provided key if translation key does not exist in translations and message is not provided', inject(
+    it('should produce a info message with provided key if transltion key does not exist in translations and message is not provided', inject(
       [AlertService, TranslateService],
       (service: AlertService) => {
         expect(service.addAlert({ type: 'info', translationKey: 'hello.jhipster' })).toEqual(

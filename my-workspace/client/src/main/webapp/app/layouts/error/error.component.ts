@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -11,12 +11,14 @@ import SharedModule from 'app/shared/shared.module';
   imports: [SharedModule],
 })
 export default class ErrorComponent implements OnInit, OnDestroy {
-  errorMessage = signal<string | undefined>(undefined);
+  errorMessage?: string;
   errorKey?: string;
   langChangeSubscription?: Subscription;
 
-  private readonly translateService = inject(TranslateService);
-  private readonly route = inject(ActivatedRoute);
+  constructor(
+    private translateService: TranslateService,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
     this.route.data.subscribe(routeData => {
@@ -35,10 +37,10 @@ export default class ErrorComponent implements OnInit, OnDestroy {
   }
 
   private getErrorMessageTranslation(): void {
-    this.errorMessage.set('');
+    this.errorMessage = '';
     if (this.errorKey) {
       this.translateService.get(this.errorKey).subscribe(translatedErrorMessage => {
-        this.errorMessage.set(translatedErrorMessage);
+        this.errorMessage = translatedErrorMessage;
       });
     }
   }

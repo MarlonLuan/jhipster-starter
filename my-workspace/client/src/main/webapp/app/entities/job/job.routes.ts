@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { ASC } from 'app/config/navigation.constants';
 import { JobComponent } from './list/job.component';
 import { JobDetailComponent } from './detail/job-detail.component';
 import { JobUpdateComponent } from './update/job-update.component';
@@ -10,7 +11,9 @@ const jobRoute: Routes = [
   {
     path: '',
     component: JobComponent,
-    data: {},
+    data: {
+      defaultSort: 'id,' + ASC,
+    },
     canActivate: [UserRouteAccessService],
   },
   {

@@ -3,5 +3,7 @@ src/main/docker/
 jest.conf.js
 webpack/
 target/
+build/
+node/
 coverage/
-target/classes/static/
+postcss.config.js

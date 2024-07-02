@@ -1,7 +1,8 @@
 jest.mock('@ng-bootstrap/ng-bootstrap');
 
 import { ComponentFixture, TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
-import { provideHttpClient, HttpResponse } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -17,8 +18,8 @@ describe('Location Management Delete Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [LocationDeleteDialogComponent],
-      providers: [provideHttpClient(), NgbActiveModal],
+      imports: [HttpClientTestingModule, LocationDeleteDialogComponent],
+      providers: [NgbActiveModal],
     })
       .overrideTemplate(LocationDeleteDialogComponent, '')
       .compileComponents();

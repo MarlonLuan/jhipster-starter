@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient, HttpResponse } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
 import { ITask } from 'app/entities/task/task.model';
@@ -25,9 +27,8 @@ describe('Job Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [JobUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), JobUpdateComponent],
       providers: [
-        provideHttpClient(),
         FormBuilder,
         {
           provide: ActivatedRoute,
@@ -75,10 +76,10 @@ describe('Job Management Update Component', () => {
 
     it('Should call Employee query and add missing value', () => {
       const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const employee: IEmployee = { id: '7ea6b3ac-2009-4d79-b4dd-fafd23744703' };
+      const employee: IEmployee = { id: '37ea6b3a-c200-49d7-894d-dfafd2374470' };
       job.employee = employee;
 
-      const employeeCollection: IEmployee[] = [{ id: '22a5e439-4cad-464c-8c6e-42e2e30679ab' }];
+      const employeeCollection: IEmployee[] = [{ id: 'e22a5e43-94ca-4d64-acc6-e42e2e30679a' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [employee];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
@@ -99,7 +100,7 @@ describe('Job Management Update Component', () => {
       const job: IJob = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
       const task: ITask = { id: '32fabf97-8a2f-45f5-a37f-42d0efda4958' };
       job.tasks = [task];
-      const employee: IEmployee = { id: '7a74c41b-0bfc-40e1-a7a4-ab73f484b4f4' };
+      const employee: IEmployee = { id: '37a74c41-b0bf-4c0e-917a-4ab73f484b4f' };
       job.employee = employee;
 
       activatedRoute.data = of({ job });

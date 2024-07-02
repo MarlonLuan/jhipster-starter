@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JobServiceImpl implements JobService {
 
-    private static final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(JobServiceImpl.class);
 
     private final JobRepository jobRepository;
 
@@ -85,7 +85,8 @@ public class JobServiceImpl implements JobService {
     @Transactional(readOnly = true)
     public List<JobDTO> findAllWhereJobHistoryIsNull() {
         log.debug("Request to get all jobs where JobHistory is null");
-        return StreamSupport.stream(jobRepository.findAll().spliterator(), false)
+        return StreamSupport
+            .stream(jobRepository.findAll().spliterator(), false)
             .filter(job -> job.getJobHistory() == null)
             .map(jobMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));

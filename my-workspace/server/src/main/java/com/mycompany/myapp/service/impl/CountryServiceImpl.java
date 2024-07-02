@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CountryServiceImpl implements CountryService {
 
-    private static final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
 
     private final CountryRepository countryRepository;
 
@@ -81,7 +81,8 @@ public class CountryServiceImpl implements CountryService {
     @Transactional(readOnly = true)
     public List<CountryDTO> findAllWhereLocationIsNull() {
         log.debug("Request to get all countries where Location is null");
-        return StreamSupport.stream(countryRepository.findAll().spliterator(), false)
+        return StreamSupport
+            .stream(countryRepository.findAll().spliterator(), false)
             .filter(country -> country.getLocation() == null)
             .map(countryMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));

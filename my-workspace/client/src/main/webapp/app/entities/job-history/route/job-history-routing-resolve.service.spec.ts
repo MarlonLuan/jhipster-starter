@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { provideHttpClient, HttpResponse } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRouteSnapshot, ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { IJobHistory } from '../job-history.model';
@@ -16,8 +18,8 @@ describe('JobHistory routing resolve service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       providers: [
-        provideHttpClient(),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -51,7 +53,7 @@ describe('JobHistory routing resolve service', () => {
       });
 
       // THEN
-      expect(service.find).toHaveBeenCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
+      expect(service.find).toBeCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
       expect(resultJobHistory).toEqual({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
     });
 
@@ -89,7 +91,7 @@ describe('JobHistory routing resolve service', () => {
       });
 
       // THEN
-      expect(service.find).toHaveBeenCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
+      expect(service.find).toBeCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
       expect(resultJobHistory).toEqual(undefined);
       expect(mockRouter.navigate).toHaveBeenCalledWith(['404']);
     });

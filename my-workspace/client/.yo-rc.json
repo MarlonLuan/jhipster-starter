@@ -1,16 +1,18 @@
 {
   "generator-jhipster": {
+    "applicationIndex": 0,
     "authenticationType": "oauth2",
     "baseName": "jhipster",
     "cacheProvider": "no",
     "devDatabaseType": "postgresql",
     "devServerPort": 4200,
     "entities": ["Region", "Country", "Location", "Department", "Task", "Employee", "Job", "JobHistory"],
-    "jhipsterVersion": "8.6.0",
+    "jhipsterVersion": "8.0.0-beta.3",
     "languages": ["en", "pt-br"],
     "lastLiquibaseTimestamp": 43682000,
     "monorepository": true,
     "nativeLanguage": "en",
+    "skipClient": false,
     "skipCommitHook": true,
     "skipServer": true
   }
