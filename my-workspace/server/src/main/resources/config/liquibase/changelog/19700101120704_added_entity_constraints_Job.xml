@@ -8,7 +8,7 @@
     <!--
         Added the constraints for entity Job.
     -->
-    <changeSet id="19700101120703-2" author="jhipster">
+    <changeSet id="19700101120704-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="job_id"
                                  baseTableName="rel_job__task"
