@@ -1,21 +1,18 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { JobComponent } from './list/job.component';
-import { JobDetailComponent } from './detail/job-detail.component';
-import { JobUpdateComponent } from './update/job-update.component';
 import JobResolve from './route/job-routing-resolve.service';
 
 const jobRoute: Routes = [
   {
     path: '',
-    component: JobComponent,
+    loadComponent: () => import('./list/job.component').then(m => m.JobComponent),
     data: {},
     canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',
-    component: JobDetailComponent,
+    loadComponent: () => import('./detail/job-detail.component').then(m => m.JobDetailComponent),
     resolve: {
       job: JobResolve,
     },
@@ -23,7 +20,7 @@ const jobRoute: Routes = [
   },
   {
     path: 'new',
-    component: JobUpdateComponent,
+    loadComponent: () => import('./update/job-update.component').then(m => m.JobUpdateComponent),
     resolve: {
       job: JobResolve,
     },
@@ -31,7 +28,7 @@ const jobRoute: Routes = [
   },
   {
     path: ':id/edit',
-    component: JobUpdateComponent,
+    loadComponent: () => import('./update/job-update.component').then(m => m.JobUpdateComponent),
     resolve: {
       job: JobResolve,
     },

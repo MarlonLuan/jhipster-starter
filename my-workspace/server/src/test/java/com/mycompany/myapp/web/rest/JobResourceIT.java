@@ -86,9 +86,8 @@ class JobResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Job createEntity(EntityManager em) {
-        Job job = new Job().jobTitle(DEFAULT_JOB_TITLE).minSalary(DEFAULT_MIN_SALARY).maxSalary(DEFAULT_MAX_SALARY);
-        return job;
+    public static Job createEntity() {
+        return new Job().jobTitle(DEFAULT_JOB_TITLE).minSalary(DEFAULT_MIN_SALARY).maxSalary(DEFAULT_MAX_SALARY);
     }
 
     /**
@@ -97,14 +96,13 @@ class JobResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Job createUpdatedEntity(EntityManager em) {
-        Job job = new Job().jobTitle(UPDATED_JOB_TITLE).minSalary(UPDATED_MIN_SALARY).maxSalary(UPDATED_MAX_SALARY);
-        return job;
+    public static Job createUpdatedEntity() {
+        return new Job().jobTitle(UPDATED_JOB_TITLE).minSalary(UPDATED_MIN_SALARY).maxSalary(UPDATED_MAX_SALARY);
     }
 
     @BeforeEach
     public void initTest() {
-        job = createEntity(em);
+        job = createEntity();
     }
 
     @AfterEach
