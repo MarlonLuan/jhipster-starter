@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -9,7 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ITask } from '../task.model';
 import { TaskService } from '../service/task.service';
-import { TaskFormService, TaskFormGroup } from './task-form.service';
+import { TaskFormGroup, TaskFormService } from './task-form.service';
 
 @Component({
   standalone: true,

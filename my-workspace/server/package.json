@@ -4,6 +4,7 @@
   "private": true,
   "description": "Description for jhipster",
   "license": "UNLICENSED",
+  "type": "commonjs",
   "scripts": {
     "app:start": "./mvnw",
     "app:up": "docker compose -f src/main/docker/app.yml up --wait",
@@ -37,8 +38,8 @@
     "java:war": "./mvnw -ntp verify -DskipTests --batch-mode -Pwar",
     "java:war:dev": "npm run java:war -- -Pdev,webapp",
     "java:war:prod": "npm run java:war -- -Pprod",
-    "prettier:check": "prettier --check \"{,src/**/,.blueprint/**/}*.{md,json,yml,html,java}\"",
-    "prettier:format": "prettier --write \"{,src/**/,.blueprint/**/}*.{md,json,yml,html,java}\"",
+    "prettier:check": "prettier --check \"{,src/**/,.blueprint/**/}*.{md,json,yml,js,cjs,mjs,ts,cts,mts,java}\"",
+    "prettier:format": "prettier --write \"{,src/**/,.blueprint/**/}*.{md,json,yml,js,cjs,mjs,ts,cts,mts,java}\"",
     "services:up": "docker compose -f src/main/docker/services.yml up --wait"
   },
   "config": {
@@ -47,10 +48,13 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "8.6.0"
+    "generator-jhipster": "8.7.0",
+    "prettier": "3.3.3",
+    "prettier-plugin-java": "2.6.4",
+    "prettier-plugin-packagejson": "2.5.2"
   },
   "engines": {
-    "node": ">=20.15.0"
+    "node": ">=20.17.0"
   },
   "cacheDirectories": [
     "node_modules"

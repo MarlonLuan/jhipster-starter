@@ -1,21 +1,18 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
-import { EmployeeComponent } from './list/employee.component';
-import { EmployeeDetailComponent } from './detail/employee-detail.component';
-import { EmployeeUpdateComponent } from './update/employee-update.component';
 import EmployeeResolve from './route/employee-routing-resolve.service';
 
 const employeeRoute: Routes = [
   {
     path: '',
-    component: EmployeeComponent,
+    loadComponent: () => import('./list/employee.component').then(m => m.EmployeeComponent),
     data: {},
     canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',
-    component: EmployeeDetailComponent,
+    loadComponent: () => import('./detail/employee-detail.component').then(m => m.EmployeeDetailComponent),
     resolve: {
       employee: EmployeeResolve,
     },
@@ -23,7 +20,7 @@ const employeeRoute: Routes = [
   },
   {
     path: 'new',
-    component: EmployeeUpdateComponent,
+    loadComponent: () => import('./update/employee-update.component').then(m => m.EmployeeUpdateComponent),
     resolve: {
       employee: EmployeeResolve,
     },
@@ -31,7 +28,7 @@ const employeeRoute: Routes = [
   },
   {
     path: ':id/edit',
-    component: EmployeeUpdateComponent,
+    loadComponent: () => import('./update/employee-update.component').then(m => m.EmployeeUpdateComponent),
     resolve: {
       employee: EmployeeResolve,
     },

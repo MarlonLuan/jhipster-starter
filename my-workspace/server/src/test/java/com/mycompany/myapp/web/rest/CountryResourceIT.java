@@ -65,9 +65,8 @@ class CountryResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Country createEntity(EntityManager em) {
-        Country country = new Country().countryName(DEFAULT_COUNTRY_NAME);
-        return country;
+    public static Country createEntity() {
+        return new Country().countryName(DEFAULT_COUNTRY_NAME);
     }
 
     /**
@@ -76,14 +75,13 @@ class CountryResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Country createUpdatedEntity(EntityManager em) {
-        Country country = new Country().countryName(UPDATED_COUNTRY_NAME);
-        return country;
+    public static Country createUpdatedEntity() {
+        return new Country().countryName(UPDATED_COUNTRY_NAME);
     }
 
     @BeforeEach
     public void initTest() {
-        country = createEntity(em);
+        country = createEntity();
     }
 
     @AfterEach

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -16,7 +16,7 @@ import { EmployeeService } from 'app/entities/employee/service/employee.service'
 import { Language } from 'app/entities/enumerations/language.model';
 import { JobHistoryService } from '../service/job-history.service';
 import { IJobHistory } from '../job-history.model';
-import { JobHistoryFormService, JobHistoryFormGroup } from './job-history-form.service';
+import { JobHistoryFormGroup, JobHistoryFormService } from './job-history-form.service';
 
 @Component({
   standalone: true,

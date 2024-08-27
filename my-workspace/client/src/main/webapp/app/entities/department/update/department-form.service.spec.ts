@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { sampleWithRequiredData, sampleWithNewData } from '../department.test-samples';
+import { sampleWithNewData, sampleWithRequiredData } from '../department.test-samples';
 
 import { DepartmentFormService } from './department-form.service';
 
