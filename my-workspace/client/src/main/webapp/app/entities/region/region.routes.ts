@@ -1,18 +1,24 @@
 import { Routes } from '@angular/router';
 
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { ASC } from 'app/config/navigation.constants';
+import { RegionComponent } from './list/region.component';
+import { RegionDetailComponent } from './detail/region-detail.component';
+import { RegionUpdateComponent } from './update/region-update.component';
 import RegionResolve from './route/region-routing-resolve.service';
 
 const regionRoute: Routes = [
   {
     path: '',
-    loadComponent: () => import('./list/region.component').then(m => m.RegionComponent),
-    data: {},
+    component: RegionComponent,
+    data: {
+      defaultSort: 'id,' + ASC,
+    },
     canActivate: [UserRouteAccessService],
   },
   {
     path: ':id/view',
-    loadComponent: () => import('./detail/region-detail.component').then(m => m.RegionDetailComponent),
+    component: RegionDetailComponent,
     resolve: {
       region: RegionResolve,
     },
@@ -20,7 +26,7 @@ const regionRoute: Routes = [
   },
   {
     path: 'new',
-    loadComponent: () => import('./update/region-update.component').then(m => m.RegionUpdateComponent),
+    component: RegionUpdateComponent,
     resolve: {
       region: RegionResolve,
     },
@@ -28,7 +34,7 @@ const regionRoute: Routes = [
   },
   {
     path: ':id/edit',
-    loadComponent: () => import('./update/region-update.component').then(m => m.RegionUpdateComponent),
+    component: RegionUpdateComponent,
     resolve: {
       region: RegionResolve,
     },

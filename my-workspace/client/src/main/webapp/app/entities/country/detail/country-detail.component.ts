@@ -1,8 +1,8 @@
-import { Component, input } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, Input } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
-import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
+import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'app/shared/date';
 import { ICountry } from '../country.model';
 
 @Component({
@@ -12,7 +12,9 @@ import { ICountry } from '../country.model';
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
 })
 export class CountryDetailComponent {
-  country = input<ICountry | null>(null);
+  @Input() country: ICountry | null = null;
+
+  constructor(protected activatedRoute: ActivatedRoute) {}
 
   previousState(): void {
     window.history.back();

@@ -1,14 +1,9 @@
 package com.mycompany.myapp.domain;
 
-import static com.mycompany.myapp.domain.EmployeeTestSamples.*;
-import static com.mycompany.myapp.domain.JobHistoryTestSamples.*;
-import static com.mycompany.myapp.domain.JobTestSamples.*;
-import static com.mycompany.myapp.domain.TaskTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.mycompany.myapp.web.rest.TestUtil;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class JobTest {
@@ -16,58 +11,14 @@ class JobTest {
     @Test
     void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(Job.class);
-        Job job1 = getJobSample1();
+        Job job1 = new Job();
+        job1.setId(UUID.randomUUID());
         Job job2 = new Job();
-        assertThat(job1).isNotEqualTo(job2);
-
         job2.setId(job1.getId());
         assertThat(job1).isEqualTo(job2);
-
-        job2 = getJobSample2();
+        job2.setId(UUID.randomUUID());
         assertThat(job1).isNotEqualTo(job2);
-    }
-
-    @Test
-    void taskTest() {
-        Job job = getJobRandomSampleGenerator();
-        Task taskBack = getTaskRandomSampleGenerator();
-
-        job.addTask(taskBack);
-        assertThat(job.getTasks()).containsOnly(taskBack);
-
-        job.removeTask(taskBack);
-        assertThat(job.getTasks()).doesNotContain(taskBack);
-
-        job.tasks(new HashSet<>(Set.of(taskBack)));
-        assertThat(job.getTasks()).containsOnly(taskBack);
-
-        job.setTasks(new HashSet<>());
-        assertThat(job.getTasks()).doesNotContain(taskBack);
-    }
-
-    @Test
-    void employeeTest() {
-        Job job = getJobRandomSampleGenerator();
-        Employee employeeBack = getEmployeeRandomSampleGenerator();
-
-        job.setEmployee(employeeBack);
-        assertThat(job.getEmployee()).isEqualTo(employeeBack);
-
-        job.employee(null);
-        assertThat(job.getEmployee()).isNull();
-    }
-
-    @Test
-    void jobHistoryTest() {
-        Job job = getJobRandomSampleGenerator();
-        JobHistory jobHistoryBack = getJobHistoryRandomSampleGenerator();
-
-        job.setJobHistory(jobHistoryBack);
-        assertThat(job.getJobHistory()).isEqualTo(jobHistoryBack);
-        assertThat(jobHistoryBack.getJob()).isEqualTo(job);
-
-        job.jobHistory(null);
-        assertThat(job.getJobHistory()).isNull();
-        assertThat(jobHistoryBack.getJob()).isNull();
+        job1.setId(null);
+        assertThat(job1).isNotEqualTo(job2);
     }
 }

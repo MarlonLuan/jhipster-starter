@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ import { IRegion } from 'app/entities/region/region.model';
 import { RegionService } from 'app/entities/region/service/region.service';
 import { ICountry } from '../country.model';
 import { CountryService } from '../service/country.service';
-import { CountryFormGroup, CountryFormService } from './country-form.service';
+import { CountryFormService, CountryFormGroup } from './country-form.service';
 
 @Component({
   standalone: true,
@@ -25,13 +25,14 @@ export class CountryUpdateComponent implements OnInit {
 
   regionsCollection: IRegion[] = [];
 
-  protected countryService = inject(CountryService);
-  protected countryFormService = inject(CountryFormService);
-  protected regionService = inject(RegionService);
-  protected activatedRoute = inject(ActivatedRoute);
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: CountryFormGroup = this.countryFormService.createCountryFormGroup();
+
+  constructor(
+    protected countryService: CountryService,
+    protected countryFormService: CountryFormService,
+    protected regionService: RegionService,
+    protected activatedRoute: ActivatedRoute,
+  ) {}
 
   compareRegion = (o1: IRegion | null, o2: IRegion | null): boolean => this.regionService.compareRegion(o1, o2);
 
