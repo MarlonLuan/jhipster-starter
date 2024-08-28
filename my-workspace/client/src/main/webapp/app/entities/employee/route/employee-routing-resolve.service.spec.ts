@@ -70,7 +70,7 @@ describe('Employee routing resolve service', () => {
       });
 
       // THEN
-      expect(service.find).not.toBeCalled();
+      expect(service.find).not.toHaveBeenCalled();
       expect(resultEmployee).toEqual(null);
     });
 
