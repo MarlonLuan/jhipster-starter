@@ -1,5 +1,5 @@
-import { ParamMap, Params, convertToParamMap } from '@angular/router';
-import { FilterOption, FilterOptions } from './filter.model';
+import { convertToParamMap, ParamMap, Params } from '@angular/router';
+import { FilterOptions, FilterOption } from './filter.model';
 
 describe('FilterModel Tests', () => {
   describe('FilterOption', () => {
@@ -75,7 +75,7 @@ describe('FilterModel Tests', () => {
     });
 
     describe('clear', () => {
-      it("removes empty filters and doesn't emit next element", () => {
+      it("removes empty filters and dosn't emit next element", () => {
         const filters = new FilterOptions([new FilterOption('foo'), new FilterOption('bar')]);
         jest.spyOn(filters.filterChanges, 'next');
 
@@ -211,7 +211,7 @@ describe('FilterModel Tests', () => {
         expect(filters.filterOptions).toMatchObject([]);
       });
 
-      it('should parse from Params and have a parameter with 2 values and one additional value', () => {
+      it('should parse from Params and have a parameter with 2 values and one aditional value', () => {
         const filters: FilterOptions = new FilterOptions([new FilterOption('hello.in', ['world'])]);
         jest.spyOn(filters.filterChanges, 'next');
 

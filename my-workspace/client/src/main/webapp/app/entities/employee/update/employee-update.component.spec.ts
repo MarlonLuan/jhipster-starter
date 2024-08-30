@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Subject, from, of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of, Subject, from } from 'rxjs';
 
 import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
@@ -22,9 +24,8 @@ describe('Employee Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [EmployeeUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), EmployeeUpdateComponent],
       providers: [
-        provideHttpClient(),
         FormBuilder,
         {
           provide: ActivatedRoute,
@@ -49,10 +50,10 @@ describe('Employee Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call Employee query and add missing value', () => {
       const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const manager: IEmployee = { id: 'aa3d9ffc-cb8e-47a8-8e42-fd6ca66ad2af' };
+      const manager: IEmployee = { id: 'baa3d9ff-ccb8-4e7a-b8e4-2fd6ca66ad2a' };
       employee.manager = manager;
 
-      const employeeCollection: IEmployee[] = [{ id: '7880a3b6-7dc5-41e8-a29d-e6a0941bcfb9' }];
+      const employeeCollection: IEmployee[] = [{ id: '27880a3b-67dc-451e-a829-de6a0941bcfb' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [manager];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
@@ -93,7 +94,7 @@ describe('Employee Management Update Component', () => {
 
     it('Should update editForm', () => {
       const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const manager: IEmployee = { id: '126f3af0-0890-43bc-843d-372cd21d58c7' };
+      const manager: IEmployee = { id: 'a126f3af-0089-403b-9c43-d372cd21d58c' };
       employee.manager = manager;
       const department: IDepartment = { id: 'af9f1d6d-d545-40d2-b45c-adb7df814bff' };
       employee.department = department;
