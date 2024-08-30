@@ -53,7 +53,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (region of regions; track trackId) {
+          @for (region of regions; track trackId(region)) {
             <tr data-cy="entityTable">
               <td>
                 <a [routerLink]="['/region', region.id, 'view']">{{ region.id }}</a>

@@ -50,7 +50,7 @@ export class LocationComponent implements OnInit {
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
-  trackId = (_index: number, item: ILocation): string => this.locationService.getLocationIdentifier(item);
+  trackId = (item: ILocation): string => this.locationService.getLocationIdentifier(item);
 
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])

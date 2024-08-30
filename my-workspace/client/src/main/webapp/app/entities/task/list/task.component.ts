@@ -50,7 +50,7 @@ export class TaskComponent implements OnInit {
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
-  trackId = (_index: number, item: ITask): string => this.taskService.getTaskIdentifier(item);
+  trackId = (item: ITask): string => this.taskService.getTaskIdentifier(item);
 
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
