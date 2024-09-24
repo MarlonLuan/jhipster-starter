@@ -50,7 +50,7 @@ export class RegionComponent implements OnInit {
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
-  trackId = (_index: number, item: IRegion): string => this.regionService.getRegionIdentifier(item);
+  trackId = (item: IRegion): string => this.regionService.getRegionIdentifier(item);
 
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])

@@ -91,7 +91,7 @@ describe('Task Management Component', () => {
     it('Should forward to taskService', () => {
       const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
       jest.spyOn(service, 'getTaskIdentifier');
-      const id = comp.trackId(0, entity);
+      const id = comp.trackId(entity);
       expect(service.getTaskIdentifier).toHaveBeenCalledWith(entity);
       expect(id).toBe(entity.id);
     });

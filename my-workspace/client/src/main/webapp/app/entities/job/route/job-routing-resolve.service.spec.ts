@@ -70,7 +70,7 @@ describe('Job routing resolve service', () => {
       });
 
       // THEN
-      expect(service.find).not.toBeCalled();
+      expect(service.find).not.toHaveBeenCalled();
       expect(resultJob).toEqual(null);
     });
 

@@ -50,7 +50,7 @@ export class DepartmentComponent implements OnInit {
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
-  trackId = (_index: number, item: IDepartment): string => this.departmentService.getDepartmentIdentifier(item);
+  trackId = (item: IDepartment): string => this.departmentService.getDepartmentIdentifier(item);
 
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
