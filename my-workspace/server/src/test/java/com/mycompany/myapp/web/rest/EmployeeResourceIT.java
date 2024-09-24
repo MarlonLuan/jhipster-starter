@@ -335,8 +335,8 @@ class EmployeeResourceIT {
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
             .email(UPDATED_EMAIL)
-            .phoneNumber(UPDATED_PHONE_NUMBER)
-            .hireDate(UPDATED_HIRE_DATE);
+            .salary(UPDATED_SALARY)
+            .commissionPct(UPDATED_COMMISSION_PCT);
 
         restEmployeeMockMvc
             .perform(

@@ -57,10 +57,10 @@ describe('JobHistory Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call job query and add missing value', () => {
       const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const job: IJob = { id: '2ee204a3-a22e-481a-bf42-0c504685422d' };
+      const job: IJob = { id: '813c9112-58d4-4c1b-be6c-67148e49fcf9' };
       jobHistory.job = job;
 
-      const jobCollection: IJob[] = [{ id: 'f1c451fa-d20c-4029-a01e-95898b280f57' }];
+      const jobCollection: IJob[] = [{ id: 'd127dc54-dff4-43cf-bf3c-064fc98aceb6' }];
       jest.spyOn(jobService, 'query').mockReturnValue(of(new HttpResponse({ body: jobCollection })));
       const expectedCollection: IJob[] = [job, ...jobCollection];
       jest.spyOn(jobService, 'addJobToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -75,10 +75,10 @@ describe('JobHistory Management Update Component', () => {
 
     it('Should call department query and add missing value', () => {
       const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const department: IDepartment = { id: 'd656358c-fe0d-4278-b35b-639cc3c9a066' };
+      const department: IDepartment = { id: 'f5e5c1c7-b90d-4a9d-a1ef-352652ec93c5' };
       jobHistory.department = department;
 
-      const departmentCollection: IDepartment[] = [{ id: '729f6ba1-de52-4793-ae36-7b7f1f1faf9f' }];
+      const departmentCollection: IDepartment[] = [{ id: 'a47b398e-1dc1-4536-96c6-e7ffed349e55' }];
       jest.spyOn(departmentService, 'query').mockReturnValue(of(new HttpResponse({ body: departmentCollection })));
       const expectedCollection: IDepartment[] = [department, ...departmentCollection];
       jest.spyOn(departmentService, 'addDepartmentToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -93,10 +93,10 @@ describe('JobHistory Management Update Component', () => {
 
     it('Should call employee query and add missing value', () => {
       const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const employee: IEmployee = { id: '15c51012-3081-4015-a4f3-8e8150b8c475' };
+      const employee: IEmployee = { id: '4d4cacf2-0221-4a04-b437-ea6bfa7b0c32' };
       jobHistory.employee = employee;
 
-      const employeeCollection: IEmployee[] = [{ id: '70b2d984-224e-470b-8025-e49830c4e68a' }];
+      const employeeCollection: IEmployee[] = [{ id: '173ee3b3-a496-4c5b-ba87-aff269aca59e' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const expectedCollection: IEmployee[] = [employee, ...employeeCollection];
       jest.spyOn(employeeService, 'addEmployeeToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -111,11 +111,11 @@ describe('JobHistory Management Update Component', () => {
 
     it('Should update editForm', () => {
       const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const job: IJob = { id: '07dd156f-8f8e-44fb-997c-a14e4b7ad832' };
+      const job: IJob = { id: '04acdfda-fb65-46b8-a7a7-b001ec657ea7' };
       jobHistory.job = job;
-      const department: IDepartment = { id: 'b707f154-4fb3-4cd0-a88f-6c3244da277a' };
+      const department: IDepartment = { id: 'ca327a6e-d6f3-4689-b2e9-bfd054aadc1e' };
       jobHistory.department = department;
-      const employee: IEmployee = { id: 'fdd7e992-c097-443f-a5de-4cdf99caa7ff' };
+      const employee: IEmployee = { id: 'd2073bd0-c7db-48f9-97ed-493c22af640d' };
       jobHistory.employee = employee;
 
       activatedRoute.data = of({ jobHistory });

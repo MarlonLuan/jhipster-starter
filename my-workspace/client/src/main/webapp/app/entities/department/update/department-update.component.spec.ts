@@ -49,10 +49,10 @@ describe('Department Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call location query and add missing value', () => {
       const department: IDepartment = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const location: ILocation = { id: 'ec166707-f435-49db-98f7-461ed5993f91' };
+      const location: ILocation = { id: '19f377db-3746-431a-a320-121d4e9cd70d' };
       department.location = location;
 
-      const locationCollection: ILocation[] = [{ id: 'bc97ff8b-3e9b-4bb4-bbfe-7f06236ad9fe' }];
+      const locationCollection: ILocation[] = [{ id: '25921a04-0aa1-46c9-b349-8b1980df9978' }];
       jest.spyOn(locationService, 'query').mockReturnValue(of(new HttpResponse({ body: locationCollection })));
       const expectedCollection: ILocation[] = [location, ...locationCollection];
       jest.spyOn(locationService, 'addLocationToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -67,7 +67,7 @@ describe('Department Management Update Component', () => {
 
     it('Should update editForm', () => {
       const department: IDepartment = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const location: ILocation = { id: '9409e314-4ef0-44fd-9dde-5cb64b1d3017' };
+      const location: ILocation = { id: '236759f6-be9c-423c-80e2-6fd010804b1a' };
       department.location = location;
 
       activatedRoute.data = of({ department });

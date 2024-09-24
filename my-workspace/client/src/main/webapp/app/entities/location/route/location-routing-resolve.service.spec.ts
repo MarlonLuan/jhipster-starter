@@ -70,7 +70,7 @@ describe('Location routing resolve service', () => {
       });
 
       // THEN
-      expect(service.find).not.toBeCalled();
+      expect(service.find).not.toHaveBeenCalled();
       expect(resultLocation).toEqual(null);
     });
 

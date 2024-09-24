@@ -305,7 +305,7 @@ class LocationResourceIT {
         Location partialUpdatedLocation = new Location();
         partialUpdatedLocation.setId(location.getId());
 
-        partialUpdatedLocation.stateProvince(UPDATED_STATE_PROVINCE);
+        partialUpdatedLocation.city(UPDATED_CITY);
 
         restLocationMockMvc
             .perform(

@@ -50,7 +50,7 @@ export class JobHistoryComponent implements OnInit {
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
-  trackId = (_index: number, item: IJobHistory): string => this.jobHistoryService.getJobHistoryIdentifier(item);
+  trackId = (item: IJobHistory): string => this.jobHistoryService.getJobHistoryIdentifier(item);
 
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
