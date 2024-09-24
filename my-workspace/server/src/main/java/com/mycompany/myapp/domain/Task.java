@@ -8,8 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Task entity.
- * @author The JHipster team.
+ * Task entity.\n@author The JHipster team.
  */
 @Entity
 @Table(name = "task")
@@ -115,7 +114,7 @@ public class Task implements Serializable {
         if (!(o instanceof Task)) {
             return false;
         }
-        return getId() != null && getId().equals(((Task) o).getId());
+        return id != null && id.equals(((Task) o).id);
     }
 
     @Override
