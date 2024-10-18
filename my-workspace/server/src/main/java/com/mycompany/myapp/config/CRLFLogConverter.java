@@ -24,7 +24,7 @@ public class CRLFLogConverter extends CompositeConverter<ILoggingEvent> {
 
     public static final Marker CRLF_SAFE_MARKER = MarkerFactory.getMarker("CRLF_SAFE");
 
-    private static final String[] SAFE_LOGS = {
+    private static final String[] SAFE_LOGGERS = {
         "org.hibernate",
         "org.springframework.boot.autoconfigure",
         "org.springframework.boot.diagnostics",
@@ -55,7 +55,7 @@ public class CRLFLogConverter extends CompositeConverter<ILoggingEvent> {
     }
 
     protected boolean isLoggerSafe(ILoggingEvent event) {
-        for (String safeLogger : SAFE_LOGS) {
+        for (String safeLogger : SAFE_LOGGERS) {
             if (event.getLoggerName().startsWith(safeLogger)) {
                 return true;
             }
