@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { sampleWithNewData, sampleWithRequiredData } from '../task.test-samples';
+import { sampleWithRequiredData, sampleWithNewData } from '../task.test-samples';
 
 import { TaskFormService } from './task-form.service';
 
@@ -22,6 +22,7 @@ describe('Task Form Service', () => {
             id: expect.any(Object),
             title: expect.any(Object),
             description: expect.any(Object),
+            jobs: expect.any(Object),
           }),
         );
       });
@@ -34,6 +35,7 @@ describe('Task Form Service', () => {
             id: expect.any(Object),
             title: expect.any(Object),
             description: expect.any(Object),
+            jobs: expect.any(Object),
           }),
         );
       });
