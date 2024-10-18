@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { sampleWithNewData, sampleWithRequiredData } from '../location.test-samples';
+import { sampleWithRequiredData, sampleWithNewData } from '../location.test-samples';
 
 import { LocationFormService } from './location-form.service';
 

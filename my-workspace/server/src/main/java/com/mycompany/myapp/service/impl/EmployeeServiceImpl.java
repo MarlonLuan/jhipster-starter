@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     private final EmployeeRepository employeeRepository;
 
@@ -38,7 +38,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDTO save(EmployeeDTO employeeDTO) {
-        LOG.debug("Request to save Employee : {}", employeeDTO);
+        log.debug("Request to save Employee : {}", employeeDTO);
         Employee employee = employeeMapper.toEntity(employeeDTO);
         employee = employeeRepository.save(employee);
         return employeeMapper.toDto(employee);
@@ -46,7 +46,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDTO update(EmployeeDTO employeeDTO) {
-        LOG.debug("Request to update Employee : {}", employeeDTO);
+        log.debug("Request to update Employee : {}", employeeDTO);
         Employee employee = employeeMapper.toEntity(employeeDTO);
         employee = employeeRepository.save(employee);
         return employeeMapper.toDto(employee);
@@ -54,7 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Optional<EmployeeDTO> partialUpdate(EmployeeDTO employeeDTO) {
-        LOG.debug("Request to partially update Employee : {}", employeeDTO);
+        log.debug("Request to partially update Employee : {}", employeeDTO);
 
         return employeeRepository
             .findById(employeeDTO.getId())
@@ -70,7 +70,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public Page<EmployeeDTO> findAll(Pageable pageable) {
-        LOG.debug("Request to get all Employees");
+        log.debug("Request to get all Employees");
         return employeeRepository.findAll(pageable).map(employeeMapper::toDto);
     }
 
@@ -80,8 +80,9 @@ public class EmployeeServiceImpl implements EmployeeService {
      */
     @Transactional(readOnly = true)
     public List<EmployeeDTO> findAllWhereJobHistoryIsNull() {
-        LOG.debug("Request to get all employees where JobHistory is null");
-        return StreamSupport.stream(employeeRepository.findAll().spliterator(), false)
+        log.debug("Request to get all employees where JobHistory is null");
+        return StreamSupport
+            .stream(employeeRepository.findAll().spliterator(), false)
             .filter(employee -> employee.getJobHistory() == null)
             .map(employeeMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
@@ -90,13 +91,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public Optional<EmployeeDTO> findOne(UUID id) {
-        LOG.debug("Request to get Employee : {}", id);
+        log.debug("Request to get Employee : {}", id);
         return employeeRepository.findById(id).map(employeeMapper::toDto);
     }
 
     @Override
     public void delete(UUID id) {
-        LOG.debug("Request to delete Employee : {}", id);
+        log.debug("Request to delete Employee : {}", id);
         employeeRepository.deleteById(id);
     }
 }

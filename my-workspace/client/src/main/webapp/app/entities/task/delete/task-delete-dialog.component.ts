@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -15,8 +15,10 @@ import { TaskService } from '../service/task.service';
 export class TaskDeleteDialogComponent {
   task?: ITask;
 
-  protected taskService = inject(TaskService);
-  protected activeModal = inject(NgbActiveModal);
+  constructor(
+    protected taskService: TaskService,
+    protected activeModal: NgbActiveModal,
+  ) {}
 
   cancel(): void {
     this.activeModal.dismiss();

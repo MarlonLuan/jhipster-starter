@@ -7,12 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class WebConfigurerTestController {
 
     @GetMapping("/api/test-cors")
-    public void testCorsOnApiPath() {
-        // empty method
-    }
+    public void testCorsOnApiPath() {}
 
     @GetMapping("/test/test-cors")
-    public void testCorsOnOtherPath() {
-        // empty method
-    }
+    public void testCorsOnOtherPath() {}
 }
