@@ -102,7 +102,7 @@ public class Country implements Serializable {
         if (!(o instanceof Country)) {
             return false;
         }
-        return getId() != null && getId().equals(((Country) o).getId());
+        return id != null && id.equals(((Country) o).id);
     }
 
     @Override
