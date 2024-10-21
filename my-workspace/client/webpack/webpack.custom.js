@@ -4,7 +4,7 @@ const { merge } = require('webpack-merge');
 const { hashElement } = require('folder-hash');
 const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const WebpackNotifierPlugin = require('webpack-notifier');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -23,8 +23,11 @@ module.exports = async (config, options, targetOptions) => {
   if (config.mode === 'development') {
     config.plugins.push(
       new ESLintPlugin({
-        configType: 'flat',
-        extensions: ['ts', 'js', 'html'],
+        baseConfig: {
+          parserOptions: {
+            project: ['../tsconfig.app.json'],
+          },
+        },
       }),
       new WebpackNotifierPlugin({
         title: 'JHipster',
@@ -34,7 +37,7 @@ module.exports = async (config, options, targetOptions) => {
   }
 
   // configuring proxy for back end service
-  const tls = config.devServer?.server?.type === 'https';
+  const tls = Boolean(config.devServer && config.devServer.https);
   if (config.devServer) {
     config.devServer.proxy = proxyConfig({ tls });
   }
@@ -52,13 +55,6 @@ module.exports = async (config, options, targetOptions) => {
             proxyOptions: {
               changeOrigin: false, //pass the Host header to the backend unchanged  https://github.com/Browsersync/browser-sync/issues/430
             },
-            proxyReq: [
-              function (proxyReq) {
-                // URI that will be retrieved by the ForwardedHeaderFilter on the server side
-                proxyReq.setHeader('X-Forwarded-Host', 'localhost:9000');
-                proxyReq.setHeader('X-Forwarded-Proto', 'https');
-              },
-            ],
           },
           socket: {
             clients: {
@@ -86,8 +82,8 @@ module.exports = async (config, options, targetOptions) => {
       new BundleAnalyzerPlugin({
         analyzerMode: 'static',
         openAnalyzer: false,
-        // Webpack statistics in temporary folder
-        reportFilename: '../../stats.html',
+        // Webpack statistics in target folder
+        reportFilename: '../stats.html',
       }),
     );
   }
