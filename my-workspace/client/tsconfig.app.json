@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./target/out-tsc/app",
+    "outDir": "./target/classes/static/app",
     "types": ["@angular/localize"]
   },
   "files": ["src/main/webapp/main.ts"],

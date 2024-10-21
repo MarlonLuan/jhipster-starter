@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { sampleWithNewData, sampleWithRequiredData } from '../region.test-samples';
+import { sampleWithRequiredData, sampleWithNewData } from '../region.test-samples';
 
 import { RegionFormService } from './region-form.service';
 

@@ -144,7 +144,7 @@ public class Department implements Serializable {
         if (!(o instanceof Department)) {
             return false;
         }
-        return getId() != null && getId().equals(((Department) o).getId());
+        return id != null && id.equals(((Department) o).id);
     }
 
     @Override

@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Subject, from, of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of, Subject, from } from 'rxjs';
 
 import { IRegion } from 'app/entities/region/region.model';
 import { RegionService } from 'app/entities/region/service/region.service';
@@ -22,9 +24,8 @@ describe('Country Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [CountryUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), CountryUpdateComponent],
       providers: [
-        provideHttpClient(),
         FormBuilder,
         {
           provide: ActivatedRoute,
@@ -49,10 +50,10 @@ describe('Country Management Update Component', () => {
   describe('ngOnInit', () => {
     it('Should call region query and add missing value', () => {
       const country: ICountry = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const region: IRegion = { id: '62cc83f7-6f55-4ca4-bfcb-353a20c69118' };
+      const region: IRegion = { id: 'faf54741-b615-4f21-b670-7ba7fbadbfcd' };
       country.region = region;
 
-      const regionCollection: IRegion[] = [{ id: 'c9048421-e2ee-4b4e-afd2-b9e324f40164' }];
+      const regionCollection: IRegion[] = [{ id: '8df5ba7c-8ff0-4b17-a1aa-37cde1d66456' }];
       jest.spyOn(regionService, 'query').mockReturnValue(of(new HttpResponse({ body: regionCollection })));
       const expectedCollection: IRegion[] = [region, ...regionCollection];
       jest.spyOn(regionService, 'addRegionToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -67,7 +68,7 @@ describe('Country Management Update Component', () => {
 
     it('Should update editForm', () => {
       const country: ICountry = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const region: IRegion = { id: '03f0c964-cc44-401f-8af9-17efd28ceba9' };
+      const region: IRegion = { id: '0eb80700-85b1-41be-9947-00e7436642ac' };
       country.region = region;
 
       activatedRoute.data = of({ country });

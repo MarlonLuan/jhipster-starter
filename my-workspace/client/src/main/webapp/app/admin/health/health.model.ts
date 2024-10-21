@@ -11,5 +11,5 @@ export interface Health {
 
 export interface HealthDetails {
   status: HealthStatus;
-  details?: Record<string, unknown>;
+  details?: { [key: string]: unknown };
 }

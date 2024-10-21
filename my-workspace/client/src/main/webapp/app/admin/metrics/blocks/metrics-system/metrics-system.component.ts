@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 import SharedModule from 'app/shared/shared.module';
 import { ProcessMetrics } from 'app/admin/metrics/metrics.model';
@@ -14,12 +14,12 @@ export class MetricsSystemComponent {
   /**
    * object containing thread related metrics
    */
-  systemMetrics = input<ProcessMetrics>();
+  @Input() systemMetrics?: ProcessMetrics;
 
   /**
    * boolean field saying if the metrics are in the process of being updated
    */
-  updating = input<boolean>();
+  @Input() updating?: boolean;
 
   convertMillisecondsToDuration(ms: number): string {
     const times = {

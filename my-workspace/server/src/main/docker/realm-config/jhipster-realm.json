@@ -29,7 +29,7 @@
   "oauth2DevicePollingInterval": 5,
   "enabled": true,
   "sslRequired": "external",
-  "registrationAllowed": true,
+  "registrationAllowed": false,
   "registrationEmailAsUsername": false,
   "rememberMe": false,
   "verifyEmail": false,
@@ -438,7 +438,6 @@
     "containerId": "jhipster"
   },
   "requiredCredentials": ["password"],
-  "defaultGroups": ["/Users"],
   "otpPolicyType": "totp",
   "otpPolicyAlgorithm": "HmacSHA1",
   "otpPolicyInitialCounter": 0,
@@ -447,7 +446,6 @@
   "otpPolicyPeriod": 30,
   "otpPolicyCodeReusable": false,
   "otpSupportedApplications": ["totpAppGoogleName", "totpAppFreeOTPName", "totpAppMicrosoftAuthenticatorName"],
-  "localizationTexts": {},
   "webAuthnPolicyRpEntityName": "keycloak",
   "webAuthnPolicySignatureAlgorithms": ["ES256"],
   "webAuthnPolicyRpId": "",
@@ -458,7 +456,6 @@
   "webAuthnPolicyCreateTimeout": 0,
   "webAuthnPolicyAvoidSameAuthenticatorRegister": false,
   "webAuthnPolicyAcceptableAaguids": [],
-  "webAuthnPolicyExtraOrigins": [],
   "webAuthnPolicyPasswordlessRpEntityName": "keycloak",
   "webAuthnPolicyPasswordlessSignatureAlgorithms": ["ES256"],
   "webAuthnPolicyPasswordlessRpId": "",
@@ -469,7 +466,6 @@
   "webAuthnPolicyPasswordlessCreateTimeout": 0,
   "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister": false,
   "webAuthnPolicyPasswordlessAcceptableAaguids": [],
-  "webAuthnPolicyPasswordlessExtraOrigins": [],
   "users": [
     {
       "id": "f742ba6f-1d8a-4dec-bf15-e02dab508283",
@@ -511,7 +507,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "c22570f1-5eb2-485c-8cbb-6eafdbb53f40",
+      "secret": "cd20235a-7f0e-4f51-bb55-eeb32c8a54c3",
       "redirectUris": ["/realms/jhipster/account/*"],
       "webOrigins": [],
       "notBefore": 0,
@@ -543,7 +539,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "e63f7682-9b81-4f7d-9360-6f8e569a8389",
+      "secret": "6b7bc66e-7a1f-43de-bbab-35336fd4c032",
       "redirectUris": ["/realms/jhipster/account/*"],
       "webOrigins": [],
       "notBefore": 0,
@@ -584,7 +580,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "16b05ce4-04d9-41c5-8145-de447fe566d9",
+      "secret": "ee6c36fc-7f66-48a2-8892-b08616fc75d5",
       "redirectUris": [],
       "webOrigins": [],
       "notBefore": 0,
@@ -614,7 +610,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "70d3f0ab-e5c1-4b69-a5de-f562506a6b95",
+      "secret": "a6d0161f-b8ee-4651-a619-0a98b318f9c7",
       "redirectUris": [],
       "webOrigins": [],
       "notBefore": 0,
@@ -688,7 +684,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "e62e7755-661f-4273-97a7-a11777c5d09d",
+      "secret": "1360bd0e-5dcd-4ed4-890f-4bdc9f14c551",
       "redirectUris": [],
       "webOrigins": [],
       "notBefore": 0,
@@ -720,7 +716,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "55ac9bfe-29b4-42c3-91c0-b4a57a029183",
+      "secret": "54254dfe-8444-4277-8fde-2586f65d39c2",
       "redirectUris": ["/admin/jhipster/console/*"],
       "webOrigins": ["+"],
       "notBefore": 0,
@@ -1572,6 +1568,22 @@
       "builtIn": true,
       "authenticationExecutions": [
         {
+          "authenticator": "basic-auth",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
+          "authenticator": "basic-auth-otp",
+          "authenticatorFlow": false,
+          "requirement": "DISABLED",
+          "priority": 20,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
           "authenticator": "auth-spnego",
           "authenticatorFlow": false,
           "requirement": "DISABLED",
@@ -1962,6 +1974,14 @@
       "builtIn": true,
       "authenticationExecutions": [
         {
+          "authenticator": "no-cookie-redirect",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
           "authenticatorFlow": true,
           "requirement": "REQUIRED",
           "priority": 20,
@@ -2007,6 +2027,14 @@
           "autheticatorFlow": false
         },
         {
+          "authenticator": "registration-profile-action",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 40,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
           "authenticator": "registration-password-action",
           "authenticatorFlow": false,
           "requirement": "REQUIRED",
@@ -2021,14 +2049,6 @@
           "priority": 60,
           "userSetupAllowed": false,
           "autheticatorFlow": false
-        },
-        {
-          "authenticator": "registration-terms-and-conditions",
-          "authenticatorFlow": false,
-          "requirement": "DISABLED",
-          "priority": 70,
-          "autheticatorFlow": false,
-          "userSetupAllowed": false
         }
       ]
     },
@@ -2120,9 +2140,9 @@
       "config": {}
     },
     {
-      "alias": "TERMS_AND_CONDITIONS",
+      "alias": "terms_and_conditions",
       "name": "Terms and Conditions",
-      "providerId": "TERMS_AND_CONDITIONS",
+      "providerId": "terms_and_conditions",
       "enabled": false,
       "defaultAction": false,
       "priority": 20,
@@ -2214,7 +2234,7 @@
     "frontendUrl": "",
     "acr.loa.map": "[]"
   },
-  "keycloakVersion": "23.0.1",
+  "keycloakVersion": "22.0.1",
   "userManagedAccessAllowed": false,
   "clientProfiles": {
     "profiles": []
