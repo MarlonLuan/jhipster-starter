@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TaskServiceImpl implements TaskService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TaskServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
 
     private final TaskRepository taskRepository;
 
@@ -34,7 +34,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDTO save(TaskDTO taskDTO) {
-        LOG.debug("Request to save Task : {}", taskDTO);
+        log.debug("Request to save Task : {}", taskDTO);
         Task task = taskMapper.toEntity(taskDTO);
         task = taskRepository.save(task);
         return taskMapper.toDto(task);
@@ -42,7 +42,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDTO update(TaskDTO taskDTO) {
-        LOG.debug("Request to update Task : {}", taskDTO);
+        log.debug("Request to update Task : {}", taskDTO);
         Task task = taskMapper.toEntity(taskDTO);
         task = taskRepository.save(task);
         return taskMapper.toDto(task);
@@ -50,7 +50,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Optional<TaskDTO> partialUpdate(TaskDTO taskDTO) {
-        LOG.debug("Request to partially update Task : {}", taskDTO);
+        log.debug("Request to partially update Task : {}", taskDTO);
 
         return taskRepository
             .findById(taskDTO.getId())
@@ -66,20 +66,20 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     public Page<TaskDTO> findAll(Pageable pageable) {
-        LOG.debug("Request to get all Tasks");
+        log.debug("Request to get all Tasks");
         return taskRepository.findAll(pageable).map(taskMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<TaskDTO> findOne(UUID id) {
-        LOG.debug("Request to get Task : {}", id);
+        log.debug("Request to get Task : {}", id);
         return taskRepository.findById(id).map(taskMapper::toDto);
     }
 
     @Override
     public void delete(UUID id) {
-        LOG.debug("Request to delete Task : {}", id);
+        log.debug("Request to delete Task : {}", id);
         taskRepository.deleteById(id);
     }
 }

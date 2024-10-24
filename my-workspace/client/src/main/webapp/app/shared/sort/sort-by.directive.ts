@@ -1,42 +1,56 @@
-import { Directive, HostListener, Input, contentChild, effect, inject } from '@angular/core';
+import { AfterContentInit, ContentChild, Directive, Host, HostListener, Input, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { IconDefinition, faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { faSort, faSortDown, faSortUp, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
-import { SortDirective } from './sort.directive';
+import SortDirective from './sort.directive';
 
 @Directive({
   standalone: true,
   selector: '[jhiSortBy]',
 })
-export class SortByDirective {
-  @Input() jhiSortBy!: string;
+export default class SortByDirective<T> implements AfterContentInit, OnDestroy {
+  @Input() jhiSortBy!: T;
 
-  iconComponent = contentChild(FaIconComponent);
+  @ContentChild(FaIconComponent, { static: false })
+  iconComponent?: FaIconComponent;
 
-  protected sortIcon = faSort;
-  protected sortAscIcon = faSortUp;
-  protected sortDescIcon = faSortDown;
+  sortIcon = faSort;
+  sortAscIcon = faSortUp;
+  sortDescIcon = faSortDown;
 
-  private sort = inject(SortDirective, { host: true });
+  private readonly destroy$ = new Subject<void>();
 
-  constructor() {
-    effect(() => {
-      if (this.iconComponent()) {
-        let icon: IconDefinition = this.sortIcon;
-        const { predicate, order } = this.sort.sortState();
-        if (predicate === this.jhiSortBy && order !== undefined) {
-          icon = order === 'asc' ? this.sortAscIcon : this.sortDescIcon;
-        }
-        this.iconComponent()!.icon = icon.iconName;
-        this.iconComponent()!.render();
-      }
-    });
+  constructor(@Host() private sort: SortDirective<T>) {
+    sort.predicateChange.pipe(takeUntil(this.destroy$)).subscribe(() => this.updateIconDefinition());
+    sort.ascendingChange.pipe(takeUntil(this.destroy$)).subscribe(() => this.updateIconDefinition());
   }
 
   @HostListener('click')
   onClick(): void {
-    if (this.iconComponent()) {
+    if (this.iconComponent) {
       this.sort.sort(this.jhiSortBy);
+    }
+  }
+
+  ngAfterContentInit(): void {
+    this.updateIconDefinition();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private updateIconDefinition(): void {
+    if (this.iconComponent) {
+      let icon: IconDefinition = this.sortIcon;
+      if (this.sort.predicate === this.jhiSortBy) {
+        icon = this.sort.ascending ? this.sortAscIcon : this.sortDescIcon;
+      }
+      this.iconComponent.icon = icon.iconName;
+      this.iconComponent.render();
     }
   }
 }

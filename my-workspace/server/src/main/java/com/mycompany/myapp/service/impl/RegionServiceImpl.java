@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RegionServiceImpl implements RegionService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RegionServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(RegionServiceImpl.class);
 
     private final RegionRepository regionRepository;
 
@@ -38,7 +38,7 @@ public class RegionServiceImpl implements RegionService {
 
     @Override
     public RegionDTO save(RegionDTO regionDTO) {
-        LOG.debug("Request to save Region : {}", regionDTO);
+        log.debug("Request to save Region : {}", regionDTO);
         Region region = regionMapper.toEntity(regionDTO);
         region = regionRepository.save(region);
         return regionMapper.toDto(region);
@@ -46,7 +46,7 @@ public class RegionServiceImpl implements RegionService {
 
     @Override
     public RegionDTO update(RegionDTO regionDTO) {
-        LOG.debug("Request to update Region : {}", regionDTO);
+        log.debug("Request to update Region : {}", regionDTO);
         Region region = regionMapper.toEntity(regionDTO);
         region = regionRepository.save(region);
         return regionMapper.toDto(region);
@@ -54,7 +54,7 @@ public class RegionServiceImpl implements RegionService {
 
     @Override
     public Optional<RegionDTO> partialUpdate(RegionDTO regionDTO) {
-        LOG.debug("Request to partially update Region : {}", regionDTO);
+        log.debug("Request to partially update Region : {}", regionDTO);
 
         return regionRepository
             .findById(regionDTO.getId())
@@ -70,7 +70,7 @@ public class RegionServiceImpl implements RegionService {
     @Override
     @Transactional(readOnly = true)
     public Page<RegionDTO> findAll(Pageable pageable) {
-        LOG.debug("Request to get all Regions");
+        log.debug("Request to get all Regions");
         return regionRepository.findAll(pageable).map(regionMapper::toDto);
     }
 
@@ -80,8 +80,9 @@ public class RegionServiceImpl implements RegionService {
      */
     @Transactional(readOnly = true)
     public List<RegionDTO> findAllWhereCountryIsNull() {
-        LOG.debug("Request to get all regions where Country is null");
-        return StreamSupport.stream(regionRepository.findAll().spliterator(), false)
+        log.debug("Request to get all regions where Country is null");
+        return StreamSupport
+            .stream(regionRepository.findAll().spliterator(), false)
             .filter(region -> region.getCountry() == null)
             .map(regionMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
@@ -90,13 +91,13 @@ public class RegionServiceImpl implements RegionService {
     @Override
     @Transactional(readOnly = true)
     public Optional<RegionDTO> findOne(UUID id) {
-        LOG.debug("Request to get Region : {}", id);
+        log.debug("Request to get Region : {}", id);
         return regionRepository.findById(id).map(regionMapper::toDto);
     }
 
     @Override
     public void delete(UUID id) {
-        LOG.debug("Request to delete Region : {}", id);
+        log.debug("Request to delete Region : {}", id);
         regionRepository.deleteById(id);
     }
 }

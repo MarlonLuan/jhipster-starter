@@ -1,4 +1,6 @@
-import { Directive, TemplateRef, ViewContainerRef, computed, effect, inject, input } from '@angular/core';
+import { Directive, Input, TemplateRef, ViewContainerRef, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { AccountService } from 'app/core/auth/account.service';
 
@@ -17,26 +19,40 @@ import { AccountService } from 'app/core/auth/account.service';
   standalone: true,
   selector: '[jhiHasAnyAuthority]',
 })
-export default class HasAnyAuthorityDirective {
-  public authorities = input<string | string[]>([], { alias: 'jhiHasAnyAuthority' });
+export default class HasAnyAuthorityDirective implements OnDestroy {
+  private authorities!: string | string[];
 
-  private templateRef = inject(TemplateRef<any>);
-  private viewContainerRef = inject(ViewContainerRef);
+  private readonly destroy$ = new Subject<void>();
 
-  constructor() {
-    const accountService = inject(AccountService);
-    const currentAccount = accountService.trackCurrentAccount();
-    const hasPermission = computed(() => currentAccount()?.authorities && accountService.hasAnyAuthority(this.authorities()));
+  constructor(
+    private accountService: AccountService,
+    private templateRef: TemplateRef<any>,
+    private viewContainerRef: ViewContainerRef,
+  ) {}
 
-    effect(
-      () => {
-        if (hasPermission()) {
-          this.viewContainerRef.createEmbeddedView(this.templateRef);
-        } else {
-          this.viewContainerRef.clear();
-        }
-      },
-      { allowSignalWrites: true },
-    );
+  @Input()
+  set jhiHasAnyAuthority(value: string | string[]) {
+    this.authorities = value;
+    this.updateView();
+    // Get notified each time authentication state changes.
+    this.accountService
+      .getAuthenticationState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.updateView();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private updateView(): void {
+    const hasAnyAuthority = this.accountService.hasAnyAuthority(this.authorities);
+    this.viewContainerRef.clear();
+    if (hasAnyAuthority) {
+      this.viewContainerRef.createEmbeddedView(this.templateRef);
+    }
   }
 }

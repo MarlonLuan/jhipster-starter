@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 import SharedModule from 'app/shared/shared.module';
 import { Databases } from 'app/admin/metrics/metrics.model';
@@ -15,12 +15,12 @@ export class MetricsDatasourceComponent {
   /**
    * object containing all datasource related metrics
    */
-  datasourceMetrics = input<Databases>();
+  @Input() datasourceMetrics?: Databases;
 
   /**
    * boolean field saying if the metrics are in the process of being updated
    */
-  updating = input<boolean>();
+  @Input() updating?: boolean;
 
-  filterNaN = (n: number): number => filterNaN(n);
+  filterNaN = (input: number): number => filterNaN(input);
 }
