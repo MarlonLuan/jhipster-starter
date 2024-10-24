@@ -1,8 +1,8 @@
-import { Component, input } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, Input } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
-import { DurationPipe, FormatMediumDatePipe, FormatMediumDatetimePipe } from 'app/shared/date';
+import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'app/shared/date';
 import { ITask } from '../task.model';
 
 @Component({
@@ -12,7 +12,9 @@ import { ITask } from '../task.model';
   imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
 })
 export class TaskDetailComponent {
-  task = input<ITask | null>(null);
+  @Input() task: ITask | null = null;
+
+  constructor(protected activatedRoute: ActivatedRoute) {}
 
   previousState(): void {
     window.history.back();

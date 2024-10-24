@@ -22,7 +22,8 @@ public class BadRequestAlertException extends ErrorResponseException {
     public BadRequestAlertException(URI type, String defaultMessage, String entityName, String errorKey) {
         super(
             HttpStatus.BAD_REQUEST,
-            ProblemDetailWithCauseBuilder.instance()
+            ProblemDetailWithCauseBuilder
+                .instance()
                 .withStatus(HttpStatus.BAD_REQUEST.value())
                 .withType(type)
                 .withTitle(defaultMessage)

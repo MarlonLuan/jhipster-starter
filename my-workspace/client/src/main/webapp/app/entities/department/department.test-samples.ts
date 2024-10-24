@@ -1,22 +1,22 @@
 import { IDepartment, NewDepartment } from './department.model';
 
 export const sampleWithRequiredData: IDepartment = {
-  id: 'b051f710-c8f7-4238-9476-a8d32832ca08',
-  departmentName: 'where whereas while',
+  id: 'ba015a18-f470-41e0-94cb-8cf97424358e',
+  departmentName: 'muffled readily skewer',
 };
 
 export const sampleWithPartialData: IDepartment = {
-  id: '6e7fc8ed-32c8-4653-bf4a-2d2e92fe511b',
-  departmentName: 'dally',
+  id: '4ad06897-bd4b-4856-9645-35635c9190f4',
+  departmentName: 'legitimate happy',
 };
 
 export const sampleWithFullData: IDepartment = {
-  id: 'cab4ad23-c17e-47b7-b32a-2a916d4025ab',
-  departmentName: 'when suspiciously',
+  id: '62198ee6-ee57-4af3-bc48-be5d93626cc8',
+  departmentName: 'zowie subsidence',
 };
 
 export const sampleWithNewData: NewDepartment = {
-  departmentName: 'that',
+  departmentName: 'even absentmindedly',
   id: null,
 };
 

@@ -1,6 +1,6 @@
 function setupProxy({ tls }) {
-  const serverResources = ['/api', '/services', '/management', '/v3/api-docs', '/h2-console', '/auth', '/oauth2', '/login', '/health'];
-  return [
+  const serverResources = ['/api', '/services', '/management', '/v3/api-docs', '/h2-console', '/oauth2', '/login', '/auth', '/health'];
+  const conf = [
     {
       context: serverResources,
       target: `http${tls ? 's' : ''}://localhost:8080`,
@@ -8,6 +8,7 @@ function setupProxy({ tls }) {
       changeOrigin: tls,
     },
   ];
+  return conf;
 }
 
 module.exports = setupProxy;
