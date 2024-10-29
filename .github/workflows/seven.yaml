@@ -1,6 +1,7 @@
 on:
   workflow_dispatch:
-
+env:
+  FORCE_COLOR: 2
 jobs:
   seven:
     runs-on: ubuntu-latest
