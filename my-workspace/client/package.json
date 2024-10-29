@@ -95,7 +95,7 @@
     "swagger-ui-dist": "5.17.14",
     "ts-jest": "29.2.5",
     "typescript": "5.5.4",
-    "typescript-eslint": "8.11.0",
+    "typescript-eslint": "8.12.2",
     "wait-on": "8.0.1",
     "webpack-bundle-analyzer": "4.10.2",
     "webpack-merge": "6.0.1",
