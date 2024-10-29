@@ -1,4 +1,6 @@
 on: push
+env:
+  FORCE_COLOR: 2
 jobs:
   linter:
     runs-on: ubuntu-latest
