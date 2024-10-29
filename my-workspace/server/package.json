@@ -4,7 +4,6 @@
   "private": true,
   "description": "Description for jhipster",
   "license": "UNLICENSED",
-  "type": "commonjs",
   "scripts": {
     "app:start": "./mvnw",
     "app:up": "docker compose -f src/main/docker/app.yml up --wait",
@@ -23,7 +22,7 @@
     "ci:e2e:server:start": "java -jar target/e2e.$npm_package_config_packaging --spring.profiles.active=e2e,$npm_package_config_default_environment -Dlogging.level.ROOT=OFF -Dlogging.level.tech.jhipster=OFF -Dlogging.level.com.mycompany.myapp=OFF -Dlogging.level.org.springframework=OFF -Dlogging.level.org.springframework.web=OFF -Dlogging.level.org.springframework.security=OFF --logging.level.org.springframework.web=ERROR",
     "ci:e2e:teardown": "npm run ci:e2e:teardown:docker --if-present",
     "ci:e2e:teardown:docker": "docker compose -f src/main/docker/services.yml down -v && docker ps -a",
-    "ci:server:await": "echo \"Waiting for server at port $npm_package_config_backend_port to start\" && wait-on -t 180000 http-get://127.0.0.1:$npm_package_config_backend_port/management/health && echo \"Server at port $npm_package_config_backend_port started\"",
+    "ci:server:await": "echo \"Waiting for server at port $npm_package_config_backend_port to start\" && wait-on -t 360000 http-get://127.0.0.1:$npm_package_config_backend_port/management/health && echo \"Server at port $npm_package_config_backend_port started\"",
     "docker:db:down": "docker compose -f src/main/docker/postgresql.yml down -v",
     "docker:db:up": "docker compose -f src/main/docker/postgresql.yml up --wait",
     "docker:keycloak:down": "docker compose -f src/main/docker/keycloak.yml down -v",
@@ -48,13 +47,13 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "8.7.1",
+    "generator-jhipster": "8.7.2",
     "prettier": "3.3.3",
-    "prettier-plugin-java": "2.6.4",
-    "prettier-plugin-packagejson": "2.5.2"
+    "prettier-plugin-java": "2.6.5",
+    "prettier-plugin-packagejson": "2.5.3"
   },
   "engines": {
-    "node": ">=20.17.0"
+    "node": ">=20.18.0"
   },
   "cacheDirectories": [
     "node_modules"

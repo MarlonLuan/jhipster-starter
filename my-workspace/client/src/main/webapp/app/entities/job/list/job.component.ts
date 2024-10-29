@@ -43,10 +43,10 @@ export class JobComponent implements OnInit {
   totalItems = 0;
   page = 1;
 
-  public router = inject(Router);
-  protected jobService = inject(JobService);
-  protected activatedRoute = inject(ActivatedRoute);
-  protected sortService = inject(SortService);
+  public readonly router = inject(Router);
+  protected readonly jobService = inject(JobService);
+  protected readonly activatedRoute = inject(ActivatedRoute);
+  protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
 
