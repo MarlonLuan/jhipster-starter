@@ -67,7 +67,7 @@
     "@angular/compiler-cli": "18.2.9",
     "@angular/service-worker": "18.2.9",
     "@types/jest": "29.5.14",
-    "@types/node": "20.11.25",
+    "@types/node": "20.17.5",
     "angular-eslint": "18.4.0",
     "browser-sync": "3.0.3",
     "browser-sync-webpack-plugin": "2.3.0",
