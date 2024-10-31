@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { sampleWithNewData, sampleWithRequiredData } from '../job-history.test-samples';
+import { sampleWithRequiredData, sampleWithNewData } from '../job-history.test-samples';
 
 import { JobHistoryFormService } from './job-history-form.service';
 

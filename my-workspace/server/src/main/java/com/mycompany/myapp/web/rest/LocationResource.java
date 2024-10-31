@@ -28,10 +28,10 @@ import tech.jhipster.web.util.ResponseUtil;
  * REST controller for managing {@link com.mycompany.myapp.domain.Location}.
  */
 @RestController
-@RequestMapping("/api/locations")
+@RequestMapping("/api")
 public class LocationResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LocationResource.class);
+    private final Logger log = LoggerFactory.getLogger(LocationResource.class);
 
     private static final String ENTITY_NAME = "location";
 
@@ -54,16 +54,17 @@ public class LocationResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new locationDTO, or with status {@code 400 (Bad Request)} if the location has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("")
+    @PostMapping("/locations")
     public ResponseEntity<LocationDTO> createLocation(@RequestBody LocationDTO locationDTO) throws URISyntaxException {
-        LOG.debug("REST request to save Location : {}", locationDTO);
+        log.debug("REST request to save Location : {}", locationDTO);
         if (locationDTO.getId() != null) {
             throw new BadRequestAlertException("A new location cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        locationDTO = locationService.save(locationDTO);
-        return ResponseEntity.created(new URI("/api/locations/" + locationDTO.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, locationDTO.getId().toString()))
-            .body(locationDTO);
+        LocationDTO result = locationService.save(locationDTO);
+        return ResponseEntity
+            .created(new URI("/api/locations/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+            .body(result);
     }
 
     /**
@@ -76,12 +77,12 @@ public class LocationResource {
      * or with status {@code 500 (Internal Server Error)} if the locationDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/{id}")
+    @PutMapping("/locations/{id}")
     public ResponseEntity<LocationDTO> updateLocation(
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody LocationDTO locationDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to update Location : {}, {}", id, locationDTO);
+        log.debug("REST request to update Location : {}, {}", id, locationDTO);
         if (locationDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -93,10 +94,11 @@ public class LocationResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        locationDTO = locationService.update(locationDTO);
-        return ResponseEntity.ok()
+        LocationDTO result = locationService.update(locationDTO);
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, locationDTO.getId().toString()))
-            .body(locationDTO);
+            .body(result);
     }
 
     /**
@@ -110,12 +112,12 @@ public class LocationResource {
      * or with status {@code 500 (Internal Server Error)} if the locationDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/locations/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<LocationDTO> partialUpdateLocation(
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody LocationDTO locationDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Location partially : {}, {}", id, locationDTO);
+        log.debug("REST request to partial update Location partially : {}, {}", id, locationDTO);
         if (locationDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -142,16 +144,16 @@ public class LocationResource {
      * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of locations in body.
      */
-    @GetMapping("")
+    @GetMapping("/locations")
     public ResponseEntity<List<LocationDTO>> getAllLocations(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam(name = "filter", required = false) String filter
+        @RequestParam(required = false) String filter
     ) {
         if ("department-is-null".equals(filter)) {
-            LOG.debug("REST request to get all Locations where department is null");
+            log.debug("REST request to get all Locations where department is null");
             return new ResponseEntity<>(locationService.findAllWhereDepartmentIsNull(), HttpStatus.OK);
         }
-        LOG.debug("REST request to get a page of Locations");
+        log.debug("REST request to get a page of Locations");
         Page<LocationDTO> page = locationService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
@@ -163,9 +165,9 @@ public class LocationResource {
      * @param id the id of the locationDTO to retrieve.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the locationDTO, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<LocationDTO> getLocation(@PathVariable("id") UUID id) {
-        LOG.debug("REST request to get Location : {}", id);
+    @GetMapping("/locations/{id}")
+    public ResponseEntity<LocationDTO> getLocation(@PathVariable UUID id) {
+        log.debug("REST request to get Location : {}", id);
         Optional<LocationDTO> locationDTO = locationService.findOne(id);
         return ResponseUtil.wrapOrNotFound(locationDTO);
     }
@@ -176,11 +178,12 @@ public class LocationResource {
      * @param id the id of the locationDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLocation(@PathVariable("id") UUID id) {
-        LOG.debug("REST request to delete Location : {}", id);
+    @DeleteMapping("/locations/{id}")
+    public ResponseEntity<Void> deleteLocation(@PathVariable UUID id) {
+        log.debug("REST request to delete Location : {}", id);
         locationService.delete(id);
-        return ResponseEntity.noContent()
+        return ResponseEntity
+            .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
             .build();
     }
