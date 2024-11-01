@@ -20,7 +20,7 @@ import tech.jhipster.config.JHipsterProperties;
 @Configuration
 public class WebConfigurer implements ServletContextInitializer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WebConfigurer.class);
+    private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
 
     private final Environment env;
 
@@ -32,12 +32,12 @@ public class WebConfigurer implements ServletContextInitializer {
     }
 
     @Override
-    public void onStartup(ServletContext servletContext) {
+    public void onStartup(ServletContext servletContext) throws ServletException {
         if (env.getActiveProfiles().length != 0) {
-            LOG.info("Web application configuration, using profiles: {}", (Object[]) env.getActiveProfiles());
+            log.info("Web application configuration, using profiles: {}", (Object[]) env.getActiveProfiles());
         }
 
-        LOG.info("Web application fully configured");
+        log.info("Web application fully configured");
     }
 
     @Bean
@@ -45,7 +45,7 @@ public class WebConfigurer implements ServletContextInitializer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = jHipsterProperties.getCors();
         if (!CollectionUtils.isEmpty(config.getAllowedOrigins()) || !CollectionUtils.isEmpty(config.getAllowedOriginPatterns())) {
-            LOG.debug("Registering CORS filter");
+            log.debug("Registering CORS filter");
             source.registerCorsConfiguration("/api/**", config);
             source.registerCorsConfiguration("/management/**", config);
             source.registerCorsConfiguration("/v3/api-docs", config);

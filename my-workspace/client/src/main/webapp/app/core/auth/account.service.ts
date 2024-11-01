@@ -1,9 +1,9 @@
-import { Injectable, Signal, inject, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, ReplaySubject, of } from 'rxjs';
-import { catchError, shareReplay, tap } from 'rxjs/operators';
+import { shareReplay, tap, catchError } from 'rxjs/operators';
 
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 import { Account } from 'app/core/auth/account.model';
@@ -11,37 +11,34 @@ import { ApplicationConfigService } from '../config/application-config.service';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
-  private readonly userIdentity = signal<Account | null>(null);
-  private readonly authenticationState = new ReplaySubject<Account | null>(1);
+  private userIdentity: Account | null = null;
+  private authenticationState = new ReplaySubject<Account | null>(1);
   private accountCache$?: Observable<Account> | null;
 
-  private readonly translateService = inject(TranslateService);
-  private readonly http = inject(HttpClient);
-  private readonly stateStorageService = inject(StateStorageService);
-  private readonly router = inject(Router);
-  private readonly applicationConfigService = inject(ApplicationConfigService);
+  constructor(
+    private translateService: TranslateService,
+    private http: HttpClient,
+    private stateStorageService: StateStorageService,
+    private router: Router,
+    private applicationConfigService: ApplicationConfigService,
+  ) {}
 
   authenticate(identity: Account | null): void {
-    this.userIdentity.set(identity);
-    this.authenticationState.next(this.userIdentity());
+    this.userIdentity = identity;
+    this.authenticationState.next(this.userIdentity);
     if (!identity) {
       this.accountCache$ = null;
     }
   }
 
-  trackCurrentAccount(): Signal<Account | null> {
-    return this.userIdentity.asReadonly();
-  }
-
   hasAnyAuthority(authorities: string[] | string): boolean {
-    const userIdentity = this.userIdentity();
-    if (!userIdentity) {
+    if (!this.userIdentity) {
       return false;
     }
     if (!Array.isArray(authorities)) {
       authorities = [authorities];
     }
-    return userIdentity.authorities.some((authority: string) => authorities.includes(authority));
+    return this.userIdentity.authorities.some((authority: string) => authorities.includes(authority));
   }
 
   identity(force?: boolean): Observable<Account | null> {
@@ -66,7 +63,7 @@ export class AccountService {
   }
 
   isAuthenticated(): boolean {
-    return this.userIdentity() !== null;
+    return this.userIdentity !== null;
   }
 
   getAuthenticationState(): Observable<Account | null> {
