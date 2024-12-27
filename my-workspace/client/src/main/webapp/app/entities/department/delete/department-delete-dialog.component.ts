@@ -8,7 +8,6 @@ import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
 
 @Component({
-  standalone: true,
   templateUrl: './department-delete-dialog.component.html',
   imports: [SharedModule, FormsModule],
 })

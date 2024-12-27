@@ -16,7 +16,6 @@ import { IJob } from '../job.model';
 import { JobFormGroup, JobFormService } from './job-form.service';
 
 @Component({
-  standalone: true,
   selector: 'jhi-job-update',
   templateUrl: './job-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

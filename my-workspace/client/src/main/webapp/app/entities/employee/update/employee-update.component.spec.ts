@@ -48,11 +48,11 @@ describe('Employee Management Update Component', () => {
 
   describe('ngOnInit', () => {
     it('Should call Employee query and add missing value', () => {
-      const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const manager: IEmployee = { id: '9cd4ce22-369b-477c-810f-01aa7f8bf955' };
+      const employee: IEmployee = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
+      const manager: IEmployee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       employee.manager = manager;
 
-      const employeeCollection: IEmployee[] = [{ id: '201143e1-0845-47bd-a824-7b2e93ce81d7' }];
+      const employeeCollection: IEmployee[] = [{ id: '004a716c-7d58-420f-b029-f644967e1d69' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [manager];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
@@ -70,11 +70,11 @@ describe('Employee Management Update Component', () => {
     });
 
     it('Should call Department query and add missing value', () => {
-      const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const department: IDepartment = { id: 'd5733771-1a9b-4771-94f3-d8fc24a7a7c0' };
+      const employee: IEmployee = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
+      const department: IDepartment = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
       employee.department = department;
 
-      const departmentCollection: IDepartment[] = [{ id: '9e1e4e8e-8003-4e69-91a2-892615800fb3' }];
+      const departmentCollection: IDepartment[] = [{ id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' }];
       jest.spyOn(departmentService, 'query').mockReturnValue(of(new HttpResponse({ body: departmentCollection })));
       const additionalDepartments = [department];
       const expectedCollection: IDepartment[] = [...additionalDepartments, ...departmentCollection];
@@ -92,17 +92,17 @@ describe('Employee Management Update Component', () => {
     });
 
     it('Should update editForm', () => {
-      const employee: IEmployee = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const manager: IEmployee = { id: '20735ecf-9a7f-423d-9914-e39a6880a8f1' };
+      const employee: IEmployee = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
+      const manager: IEmployee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       employee.manager = manager;
-      const department: IDepartment = { id: 'c5d3b108-ebe9-4ec6-92ac-0ccbee228059' };
+      const department: IDepartment = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
       employee.department = department;
 
       activatedRoute.data = of({ employee });
       comp.ngOnInit();
 
-      expect(comp.employeesSharedCollection).toContain(manager);
-      expect(comp.departmentsSharedCollection).toContain(department);
+      expect(comp.employeesSharedCollection).toContainEqual(manager);
+      expect(comp.departmentsSharedCollection).toContainEqual(department);
       expect(comp.employee).toEqual(employee);
     });
   });
@@ -111,7 +111,7 @@ describe('Employee Management Update Component', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IEmployee>>();
-      const employee = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const employee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       jest.spyOn(employeeFormService, 'getEmployee').mockReturnValue(employee);
       jest.spyOn(employeeService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -134,7 +134,7 @@ describe('Employee Management Update Component', () => {
     it('Should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IEmployee>>();
-      const employee = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const employee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       jest.spyOn(employeeFormService, 'getEmployee').mockReturnValue({ id: null });
       jest.spyOn(employeeService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -157,7 +157,7 @@ describe('Employee Management Update Component', () => {
     it('Should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IEmployee>>();
-      const employee = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const employee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       jest.spyOn(employeeService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ employee });
@@ -178,8 +178,8 @@ describe('Employee Management Update Component', () => {
   describe('Compare relationships', () => {
     describe('compareEmployee', () => {
       it('Should forward to employeeService', () => {
-        const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
+        const entity2 = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
         jest.spyOn(employeeService, 'compareEmployee');
         comp.compareEmployee(entity, entity2);
         expect(employeeService.compareEmployee).toHaveBeenCalledWith(entity, entity2);
@@ -188,8 +188,8 @@ describe('Employee Management Update Component', () => {
 
     describe('compareDepartment', () => {
       it('Should forward to departmentService', () => {
-        const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
+        const entity2 = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
         jest.spyOn(departmentService, 'compareDepartment');
         comp.compareDepartment(entity, entity2);
         expect(departmentService.compareDepartment).toHaveBeenCalledWith(entity, entity2);

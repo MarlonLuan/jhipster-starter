@@ -19,7 +19,6 @@ import { IJobHistory } from '../job-history.model';
 import { JobHistoryFormGroup, JobHistoryFormService } from './job-history-form.service';
 
 @Component({
-  standalone: true,
   selector: 'jhi-job-history-update',
   templateUrl: './job-history-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

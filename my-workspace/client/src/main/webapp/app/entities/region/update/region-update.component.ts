@@ -12,7 +12,6 @@ import { RegionService } from '../service/region.service';
 import { RegionFormGroup, RegionFormService } from './region-form.service';
 
 @Component({
-  standalone: true,
   selector: 'jhi-region-update',
   templateUrl: './region-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

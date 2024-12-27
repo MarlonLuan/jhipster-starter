@@ -18,7 +18,7 @@ describe('Job Management Detail Component', () => {
             {
               path: '**',
               loadComponent: () => import('./job-detail.component').then(m => m.JobDetailComponent),
-              resolve: { job: () => of({ id: '9fec3727-3421-4967-b213-ba36557ca194' }) },
+              resolve: { job: () => of({ id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' }) },
             },
           ],
           withComponentInputBinding(),
@@ -40,7 +40,7 @@ describe('Job Management Detail Component', () => {
       const instance = await harness.navigateByUrl('/', JobDetailComponent);
 
       // THEN
-      expect(instance.job()).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+      expect(instance.job()).toEqual(expect.objectContaining({ id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' }));
     });
   });
 

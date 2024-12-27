@@ -59,7 +59,7 @@ describe('Employee Management Component', () => {
       .mockReturnValueOnce(
         of(
           new HttpResponse({
-            body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
+            body: [{ id: '004a716c-7d58-420f-b029-f644967e1d69' }],
             headers: new HttpHeaders({
               link: '<http://localhost/api/foo?page=1&size=20>; rel="next"',
             }),
@@ -69,7 +69,7 @@ describe('Employee Management Component', () => {
       .mockReturnValueOnce(
         of(
           new HttpResponse({
-            body: [{ id: '1361f429-3817-4123-8ee3-fdf8943310b2' }],
+            body: [{ id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' }],
             headers: new HttpHeaders({
               link: '<http://localhost/api/foo?page=0&size=20>; rel="prev",<http://localhost/api/foo?page=2&size=20>; rel="next"',
             }),
@@ -84,12 +84,12 @@ describe('Employee Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.employees?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    expect(comp.employees()[0]).toEqual(expect.objectContaining({ id: '004a716c-7d58-420f-b029-f644967e1d69' }));
   });
 
   describe('trackId', () => {
     it('Should forward to employeeService', () => {
-      const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const entity = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       jest.spyOn(service, 'getEmployeeIdentifier');
       const id = comp.trackId(entity);
       expect(service.getEmployeeIdentifier).toHaveBeenCalledWith(entity);

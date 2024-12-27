@@ -18,7 +18,7 @@ describe('Department Management Detail Component', () => {
             {
               path: '**',
               loadComponent: () => import('./department-detail.component').then(m => m.DepartmentDetailComponent),
-              resolve: { department: () => of({ id: '9fec3727-3421-4967-b213-ba36557ca194' }) },
+              resolve: { department: () => of({ id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' }) },
             },
           ],
           withComponentInputBinding(),
@@ -40,7 +40,7 @@ describe('Department Management Detail Component', () => {
       const instance = await harness.navigateByUrl('/', DepartmentDetailComponent);
 
       // THEN
-      expect(instance.department()).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+      expect(instance.department()).toEqual(expect.objectContaining({ id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' }));
     });
   });
 

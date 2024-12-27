@@ -1,19 +1,20 @@
 import { IJob, NewJob } from './job.model';
 
 export const sampleWithRequiredData: IJob = {
-  id: '5e08dff6-b63c-4d8c-884b-8b1638afea56',
+  id: '3f17577a-c1b4-477d-85da-ba09f8f55a88',
 };
 
 export const sampleWithPartialData: IJob = {
-  id: '6a0b0b5b-bb33-466f-9d65-e2432e1f2c06',
-  jobTitle: 'Corporate Configuration Representative',
+  id: '67252276-5028-44c6-8933-292efe5facda',
+  jobTitle: 'Internal Configuration Assistant',
+  maxSalary: 15580,
 };
 
 export const sampleWithFullData: IJob = {
-  id: 'c5fd0091-9882-405b-a7d5-ffef9c1eba82',
-  jobTitle: 'National Operations Designer',
-  minSalary: 15335,
-  maxSalary: 20882,
+  id: '4dfdd60f-7466-42ea-af41-a893fc57e831',
+  jobTitle: 'Legacy Functionality Agent',
+  minSalary: 8606,
+  maxSalary: 14819,
 };
 
 export const sampleWithNewData: NewJob = {

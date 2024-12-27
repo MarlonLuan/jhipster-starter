@@ -14,7 +14,6 @@ import { CountryService } from '../service/country.service';
 import { CountryFormGroup, CountryFormService } from './country-form.service';
 
 @Component({
-  standalone: true,
   selector: 'jhi-country-update',
   templateUrl: './country-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

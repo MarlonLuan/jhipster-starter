@@ -8,7 +8,6 @@ import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
 
 @Component({
-  standalone: true,
   templateUrl: './region-delete-dialog.component.html',
   imports: [SharedModule, FormsModule],
 })

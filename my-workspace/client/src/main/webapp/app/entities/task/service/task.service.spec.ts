@@ -165,7 +165,7 @@ describe('Task Service', () => {
       });
 
       it('Should return false if one entity is null', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
         const entity2 = null;
 
         const compareResult1 = service.compareTask(entity1, entity2);
@@ -176,8 +176,8 @@ describe('Task Service', () => {
       });
 
       it('Should return false if primaryKey differs', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity1 = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
+        const entity2 = { id: '59358286-4c96-4301-945b-e60ba7cd5403' };
 
         const compareResult1 = service.compareTask(entity1, entity2);
         const compareResult2 = service.compareTask(entity2, entity1);
@@ -187,8 +187,8 @@ describe('Task Service', () => {
       });
 
       it('Should return false if primaryKey matches', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
+        const entity2 = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
 
         const compareResult1 = service.compareTask(entity1, entity2);
         const compareResult2 = service.compareTask(entity2, entity1);

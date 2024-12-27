@@ -59,7 +59,7 @@ describe('Department Management Component', () => {
       .mockReturnValueOnce(
         of(
           new HttpResponse({
-            body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
+            body: [{ id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' }],
             headers: new HttpHeaders({
               link: '<http://localhost/api/foo?page=1&size=20>; rel="next"',
             }),
@@ -69,7 +69,7 @@ describe('Department Management Component', () => {
       .mockReturnValueOnce(
         of(
           new HttpResponse({
-            body: [{ id: '1361f429-3817-4123-8ee3-fdf8943310b2' }],
+            body: [{ id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' }],
             headers: new HttpHeaders({
               link: '<http://localhost/api/foo?page=0&size=20>; rel="prev",<http://localhost/api/foo?page=2&size=20>; rel="next"',
             }),
@@ -84,12 +84,12 @@ describe('Department Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.departments?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    expect(comp.departments()[0]).toEqual(expect.objectContaining({ id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' }));
   });
 
   describe('trackId', () => {
     it('Should forward to departmentService', () => {
-      const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const entity = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
       jest.spyOn(service, 'getDepartmentIdentifier');
       const id = comp.trackId(entity);
       expect(service.getDepartmentIdentifier).toHaveBeenCalledWith(entity);

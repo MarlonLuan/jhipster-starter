@@ -56,11 +56,11 @@ describe('JobHistory Management Update Component', () => {
 
   describe('ngOnInit', () => {
     it('Should call job query and add missing value', () => {
-      const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const job: IJob = { id: '813c9112-58d4-4c1b-be6c-67148e49fcf9' };
+      const jobHistory: IJobHistory = { id: '77b493ed-9aef-4d01-8fd4-f257729b9d4d' };
+      const job: IJob = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
       jobHistory.job = job;
 
-      const jobCollection: IJob[] = [{ id: 'd127dc54-dff4-43cf-bf3c-064fc98aceb6' }];
+      const jobCollection: IJob[] = [{ id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' }];
       jest.spyOn(jobService, 'query').mockReturnValue(of(new HttpResponse({ body: jobCollection })));
       const expectedCollection: IJob[] = [job, ...jobCollection];
       jest.spyOn(jobService, 'addJobToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -74,11 +74,11 @@ describe('JobHistory Management Update Component', () => {
     });
 
     it('Should call department query and add missing value', () => {
-      const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const department: IDepartment = { id: 'f5e5c1c7-b90d-4a9d-a1ef-352652ec93c5' };
+      const jobHistory: IJobHistory = { id: '77b493ed-9aef-4d01-8fd4-f257729b9d4d' };
+      const department: IDepartment = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
       jobHistory.department = department;
 
-      const departmentCollection: IDepartment[] = [{ id: 'a47b398e-1dc1-4536-96c6-e7ffed349e55' }];
+      const departmentCollection: IDepartment[] = [{ id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' }];
       jest.spyOn(departmentService, 'query').mockReturnValue(of(new HttpResponse({ body: departmentCollection })));
       const expectedCollection: IDepartment[] = [department, ...departmentCollection];
       jest.spyOn(departmentService, 'addDepartmentToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -92,11 +92,11 @@ describe('JobHistory Management Update Component', () => {
     });
 
     it('Should call employee query and add missing value', () => {
-      const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const employee: IEmployee = { id: '4d4cacf2-0221-4a04-b437-ea6bfa7b0c32' };
+      const jobHistory: IJobHistory = { id: '77b493ed-9aef-4d01-8fd4-f257729b9d4d' };
+      const employee: IEmployee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       jobHistory.employee = employee;
 
-      const employeeCollection: IEmployee[] = [{ id: '173ee3b3-a496-4c5b-ba87-aff269aca59e' }];
+      const employeeCollection: IEmployee[] = [{ id: '004a716c-7d58-420f-b029-f644967e1d69' }];
       jest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const expectedCollection: IEmployee[] = [employee, ...employeeCollection];
       jest.spyOn(employeeService, 'addEmployeeToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -110,20 +110,20 @@ describe('JobHistory Management Update Component', () => {
     });
 
     it('Should update editForm', () => {
-      const jobHistory: IJobHistory = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const job: IJob = { id: '04acdfda-fb65-46b8-a7a7-b001ec657ea7' };
+      const jobHistory: IJobHistory = { id: '77b493ed-9aef-4d01-8fd4-f257729b9d4d' };
+      const job: IJob = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
       jobHistory.job = job;
-      const department: IDepartment = { id: 'ca327a6e-d6f3-4689-b2e9-bfd054aadc1e' };
+      const department: IDepartment = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
       jobHistory.department = department;
-      const employee: IEmployee = { id: 'd2073bd0-c7db-48f9-97ed-493c22af640d' };
+      const employee: IEmployee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       jobHistory.employee = employee;
 
       activatedRoute.data = of({ jobHistory });
       comp.ngOnInit();
 
-      expect(comp.jobsCollection).toContain(job);
-      expect(comp.departmentsCollection).toContain(department);
-      expect(comp.employeesCollection).toContain(employee);
+      expect(comp.jobsCollection).toContainEqual(job);
+      expect(comp.departmentsCollection).toContainEqual(department);
+      expect(comp.employeesCollection).toContainEqual(employee);
       expect(comp.jobHistory).toEqual(jobHistory);
     });
   });
@@ -132,7 +132,7 @@ describe('JobHistory Management Update Component', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IJobHistory>>();
-      const jobHistory = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
       jest.spyOn(jobHistoryFormService, 'getJobHistory').mockReturnValue(jobHistory);
       jest.spyOn(jobHistoryService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -155,7 +155,7 @@ describe('JobHistory Management Update Component', () => {
     it('Should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IJobHistory>>();
-      const jobHistory = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
       jest.spyOn(jobHistoryFormService, 'getJobHistory').mockReturnValue({ id: null });
       jest.spyOn(jobHistoryService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -178,7 +178,7 @@ describe('JobHistory Management Update Component', () => {
     it('Should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IJobHistory>>();
-      const jobHistory = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
       jest.spyOn(jobHistoryService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ jobHistory });
@@ -199,8 +199,8 @@ describe('JobHistory Management Update Component', () => {
   describe('Compare relationships', () => {
     describe('compareJob', () => {
       it('Should forward to jobService', () => {
-        const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
+        const entity2 = { id: 'ee3221b5-0074-405f-9c0c-4e29fb63663c' };
         jest.spyOn(jobService, 'compareJob');
         comp.compareJob(entity, entity2);
         expect(jobService.compareJob).toHaveBeenCalledWith(entity, entity2);
@@ -209,8 +209,8 @@ describe('JobHistory Management Update Component', () => {
 
     describe('compareDepartment', () => {
       it('Should forward to departmentService', () => {
-        const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
+        const entity2 = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
         jest.spyOn(departmentService, 'compareDepartment');
         comp.compareDepartment(entity, entity2);
         expect(departmentService.compareDepartment).toHaveBeenCalledWith(entity, entity2);
@@ -219,8 +219,8 @@ describe('JobHistory Management Update Component', () => {
 
     describe('compareEmployee', () => {
       it('Should forward to employeeService', () => {
-        const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
+        const entity2 = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
         jest.spyOn(employeeService, 'compareEmployee');
         comp.compareEmployee(entity, entity2);
         expect(employeeService.compareEmployee).toHaveBeenCalledWith(entity, entity2);

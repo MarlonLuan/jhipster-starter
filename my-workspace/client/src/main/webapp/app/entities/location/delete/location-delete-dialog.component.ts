@@ -8,7 +8,6 @@ import { ILocation } from '../location.model';
 import { LocationService } from '../service/location.service';
 
 @Component({
-  standalone: true,
   templateUrl: './location-delete-dialog.component.html',
   imports: [SharedModule, FormsModule],
 })

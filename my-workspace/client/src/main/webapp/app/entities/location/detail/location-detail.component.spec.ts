@@ -18,7 +18,7 @@ describe('Location Management Detail Component', () => {
             {
               path: '**',
               loadComponent: () => import('./location-detail.component').then(m => m.LocationDetailComponent),
-              resolve: { location: () => of({ id: '9fec3727-3421-4967-b213-ba36557ca194' }) },
+              resolve: { location: () => of({ id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' }) },
             },
           ],
           withComponentInputBinding(),
@@ -40,7 +40,7 @@ describe('Location Management Detail Component', () => {
       const instance = await harness.navigateByUrl('/', LocationDetailComponent);
 
       // THEN
-      expect(instance.location()).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+      expect(instance.location()).toEqual(expect.objectContaining({ id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' }));
     });
   });
 

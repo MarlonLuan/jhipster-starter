@@ -24,17 +24,15 @@
 
   <jhi-alert></jhi-alert>
 
-  @if (jobs?.length === 0) {
+  @if (jobs().length === 0) {
     <div class="alert alert-warning" id="no-result">
       <span jhiTranslate="jhipsterApp.job.home.notFound">No Jobs found</span>
     </div>
-  }
-
-  @if (jobs && jobs.length > 0) {
+  } @else {
     <div class="table-responsive table-entities" id="entities">
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
-          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.job.id">Id</span>
@@ -73,7 +71,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (job of jobs; track trackId(job)) {
+          @for (job of jobs(); track trackId(job)) {
             <tr data-cy="entityTable">
               <td>
                 <a [routerLink]="['/job', job.id, 'view']">{{ job.id }}</a>
@@ -112,7 +110,7 @@
       </table>
     </div>
   }
-  @if (jobs && jobs.length > 0) {
+  @if (jobs().length > 0) {
     <div>
       <div class="d-flex justify-content-center">
         <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>

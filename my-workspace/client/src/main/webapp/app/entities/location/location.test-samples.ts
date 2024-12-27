@@ -1,23 +1,21 @@
 import { ILocation, NewLocation } from './location.model';
 
 export const sampleWithRequiredData: ILocation = {
-  id: 'c701fccc-d2c2-400d-ad00-e49eb3f6a2be',
+  id: '6414de64-0d53-4042-9e42-0c5e8e37b63a',
 };
 
 export const sampleWithPartialData: ILocation = {
-  id: 'bb0388f2-cc7e-436c-9a5d-a919bc476fed',
-  streetAddress: 'familiarize conservative',
-  postalCode: 'upon per',
-  city: 'El Dorado Hills',
-  stateProvince: 'lawful',
+  id: 'e2220cbb-f906-4139-a68c-186411dc05cb',
+  postalCode: 'deserted',
+  city: 'Altenwerthport',
 };
 
 export const sampleWithFullData: ILocation = {
-  id: 'fbebbbef-63a9-4e90-9e14-f4dd5b41315c',
-  streetAddress: 'boohoo and',
-  postalCode: 'beyond',
-  city: 'East Kendrickfurt',
-  stateProvince: 'micromanage',
+  id: 'a5652600-0907-448a-97c0-6de60e5bf02c',
+  streetAddress: 'hastily fatal er',
+  postalCode: 'against because peninsula',
+  city: 'Vonton',
+  stateProvince: 'from sophisticated even',
 };
 
 export const sampleWithNewData: NewLocation = {
