@@ -165,7 +165,7 @@ describe('Department Service', () => {
       });
 
       it('Should return false if one entity is null', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
         const entity2 = null;
 
         const compareResult1 = service.compareDepartment(entity1, entity2);
@@ -176,8 +176,8 @@ describe('Department Service', () => {
       });
 
       it('Should return false if primaryKey differs', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
+        const entity2 = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
 
         const compareResult1 = service.compareDepartment(entity1, entity2);
         const compareResult2 = service.compareDepartment(entity2, entity1);
@@ -187,8 +187,8 @@ describe('Department Service', () => {
       });
 
       it('Should return false if primaryKey matches', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
+        const entity2 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
 
         const compareResult1 = service.compareDepartment(entity1, entity2);
         const compareResult2 = service.compareDepartment(entity2, entity1);

@@ -18,7 +18,7 @@ describe('Task Management Detail Component', () => {
             {
               path: '**',
               loadComponent: () => import('./task-detail.component').then(m => m.TaskDetailComponent),
-              resolve: { task: () => of({ id: '9fec3727-3421-4967-b213-ba36557ca194' }) },
+              resolve: { task: () => of({ id: 'ca341530-545c-46df-8582-8232c8c59bdb' }) },
             },
           ],
           withComponentInputBinding(),
@@ -40,7 +40,7 @@ describe('Task Management Detail Component', () => {
       const instance = await harness.navigateByUrl('/', TaskDetailComponent);
 
       // THEN
-      expect(instance.task()).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+      expect(instance.task()).toEqual(expect.objectContaining({ id: 'ca341530-545c-46df-8582-8232c8c59bdb' }));
     });
   });
 

@@ -1,6 +1,6 @@
 # jhipster
 
-This application was generated using JHipster 8.7.3, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.7.3](https://www.jhipster.tech/documentation-archive/v8.7.3).
+This application was generated using JHipster 8.8.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.8.0](https://www.jhipster.tech/documentation-archive/v8.8.0).
 
 ## Project Structure
 
@@ -103,13 +103,13 @@ Unit tests are run by [Jest][]. They're located in [src/test/javascript/](src/te
 ```
 
 [JHipster Homepage and latest documentation]: https://www.jhipster.tech
-[JHipster 8.7.3 archive]: https://www.jhipster.tech/documentation-archive/v8.7.3
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v8.7.3/development/
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v8.7.3/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v8.7.3/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v8.7.3/running-tests/
-[Code quality page]: https://www.jhipster.tech/documentation-archive/v8.7.3/code-quality/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v8.7.3/setting-up-ci/
+[JHipster 8.8.0 archive]: https://www.jhipster.tech/documentation-archive/v8.8.0
+[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v8.8.0/development/
+[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v8.8.0/docker-compose
+[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v8.8.0/production/
+[Running tests page]: https://www.jhipster.tech/documentation-archive/v8.8.0/running-tests/
+[Code quality page]: https://www.jhipster.tech/documentation-archive/v8.8.0/code-quality/
+[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v8.8.0/setting-up-ci/
 [Node.js]: https://nodejs.org/
 [NPM]: https://www.npmjs.com/
 [Webpack]: https://webpack.github.io/

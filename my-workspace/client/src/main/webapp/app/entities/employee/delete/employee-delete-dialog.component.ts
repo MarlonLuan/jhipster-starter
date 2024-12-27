@@ -8,7 +8,6 @@ import { IEmployee } from '../employee.model';
 import { EmployeeService } from '../service/employee.service';
 
 @Component({
-  standalone: true,
   templateUrl: './employee-delete-dialog.component.html',
   imports: [SharedModule, FormsModule],
 })

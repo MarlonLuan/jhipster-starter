@@ -59,7 +59,7 @@ describe('Country Management Component', () => {
       .mockReturnValueOnce(
         of(
           new HttpResponse({
-            body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
+            body: [{ id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' }],
             headers: new HttpHeaders({
               link: '<http://localhost/api/foo?page=1&size=20>; rel="next"',
             }),
@@ -69,7 +69,7 @@ describe('Country Management Component', () => {
       .mockReturnValueOnce(
         of(
           new HttpResponse({
-            body: [{ id: '1361f429-3817-4123-8ee3-fdf8943310b2' }],
+            body: [{ id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' }],
             headers: new HttpHeaders({
               link: '<http://localhost/api/foo?page=0&size=20>; rel="prev",<http://localhost/api/foo?page=2&size=20>; rel="next"',
             }),
@@ -84,12 +84,12 @@ describe('Country Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.countries?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    expect(comp.countries()[0]).toEqual(expect.objectContaining({ id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' }));
   });
 
   describe('trackId', () => {
     it('Should forward to countryService', () => {
-      const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const entity = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
       jest.spyOn(service, 'getCountryIdentifier');
       const id = comp.trackId(entity);
       expect(service.getCountryIdentifier).toHaveBeenCalledWith(entity);

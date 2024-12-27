@@ -18,7 +18,7 @@ describe('Country Management Detail Component', () => {
             {
               path: '**',
               loadComponent: () => import('./country-detail.component').then(m => m.CountryDetailComponent),
-              resolve: { country: () => of({ id: '9fec3727-3421-4967-b213-ba36557ca194' }) },
+              resolve: { country: () => of({ id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' }) },
             },
           ],
           withComponentInputBinding(),
@@ -40,7 +40,7 @@ describe('Country Management Detail Component', () => {
       const instance = await harness.navigateByUrl('/', CountryDetailComponent);
 
       // THEN
-      expect(instance.country()).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+      expect(instance.country()).toEqual(expect.objectContaining({ id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' }));
     });
   });
 

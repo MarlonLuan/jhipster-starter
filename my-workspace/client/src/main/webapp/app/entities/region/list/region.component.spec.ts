@@ -59,7 +59,7 @@ describe('Region Management Component', () => {
       .mockReturnValueOnce(
         of(
           new HttpResponse({
-            body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
+            body: [{ id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' }],
             headers: new HttpHeaders({
               link: '<http://localhost/api/foo?page=1&size=20>; rel="next"',
             }),
@@ -69,7 +69,7 @@ describe('Region Management Component', () => {
       .mockReturnValueOnce(
         of(
           new HttpResponse({
-            body: [{ id: '1361f429-3817-4123-8ee3-fdf8943310b2' }],
+            body: [{ id: '08490cb2-dd41-43f2-95f0-554d7eff5216' }],
             headers: new HttpHeaders({
               link: '<http://localhost/api/foo?page=0&size=20>; rel="prev",<http://localhost/api/foo?page=2&size=20>; rel="next"',
             }),
@@ -84,12 +84,12 @@ describe('Region Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.regions?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    expect(comp.regions()[0]).toEqual(expect.objectContaining({ id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' }));
   });
 
   describe('trackId', () => {
     it('Should forward to regionService', () => {
-      const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const entity = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
       jest.spyOn(service, 'getRegionIdentifier');
       const id = comp.trackId(entity);
       expect(service.getRegionIdentifier).toHaveBeenCalledWith(entity);

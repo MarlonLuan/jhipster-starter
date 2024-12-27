@@ -1,16 +1,17 @@
 import { IRegion, NewRegion } from './region.model';
 
 export const sampleWithRequiredData: IRegion = {
-  id: '549240fa-9356-4105-99e2-2e179ff0782f',
+  id: 'aa7d632a-9a7a-4274-bb5f-5d63d109ca88',
 };
 
 export const sampleWithPartialData: IRegion = {
-  id: '44449bc4-ea73-4ece-893c-a8b91fcbaa57',
+  id: 'f9ebc996-da81-498e-a62e-0194a94d5494',
+  regionName: 'yesterday dispense',
 };
 
 export const sampleWithFullData: IRegion = {
-  id: '65260b7b-dfd8-4fb7-88fb-7a3ced65ae87',
-  regionName: 'pfft',
+  id: 'f347f590-0453-4974-a82f-c0d2aebae169',
+  regionName: 'breakable sophisticated whine',
 };
 
 export const sampleWithNewData: NewRegion = {

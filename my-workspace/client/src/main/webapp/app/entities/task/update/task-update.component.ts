@@ -12,7 +12,6 @@ import { TaskService } from '../service/task.service';
 import { TaskFormGroup, TaskFormService } from './task-form.service';
 
 @Component({
-  standalone: true,
   selector: 'jhi-task-update',
   templateUrl: './task-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

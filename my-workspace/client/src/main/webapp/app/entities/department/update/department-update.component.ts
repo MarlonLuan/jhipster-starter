@@ -14,7 +14,6 @@ import { DepartmentService } from '../service/department.service';
 import { DepartmentFormGroup, DepartmentFormService } from './department-form.service';
 
 @Component({
-  standalone: true,
   selector: 'jhi-department-update',
   templateUrl: './department-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],

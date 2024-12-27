@@ -59,7 +59,7 @@ describe('Location Management Component', () => {
       .mockReturnValueOnce(
         of(
           new HttpResponse({
-            body: [{ id: '9fec3727-3421-4967-b213-ba36557ca194' }],
+            body: [{ id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' }],
             headers: new HttpHeaders({
               link: '<http://localhost/api/foo?page=1&size=20>; rel="next"',
             }),
@@ -69,7 +69,7 @@ describe('Location Management Component', () => {
       .mockReturnValueOnce(
         of(
           new HttpResponse({
-            body: [{ id: '1361f429-3817-4123-8ee3-fdf8943310b2' }],
+            body: [{ id: 'a63537fe-865d-41e2-bc62-b6de781e4f03' }],
             headers: new HttpHeaders({
               link: '<http://localhost/api/foo?page=0&size=20>; rel="prev",<http://localhost/api/foo?page=2&size=20>; rel="next"',
             }),
@@ -84,12 +84,12 @@ describe('Location Management Component', () => {
 
     // THEN
     expect(service.query).toHaveBeenCalled();
-    expect(comp.locations?.[0]).toEqual(expect.objectContaining({ id: '9fec3727-3421-4967-b213-ba36557ca194' }));
+    expect(comp.locations()[0]).toEqual(expect.objectContaining({ id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' }));
   });
 
   describe('trackId', () => {
     it('Should forward to locationService', () => {
-      const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const entity = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
       jest.spyOn(service, 'getLocationIdentifier');
       const id = comp.trackId(entity);
       expect(service.getLocationIdentifier).toHaveBeenCalledWith(entity);

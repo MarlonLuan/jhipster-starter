@@ -8,7 +8,6 @@ import { ICountry } from '../country.model';
 import { CountryService } from '../service/country.service';
 
 @Component({
-  standalone: true,
   templateUrl: './country-delete-dialog.component.html',
   imports: [SharedModule, FormsModule],
 })

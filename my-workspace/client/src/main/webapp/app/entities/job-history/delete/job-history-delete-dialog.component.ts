@@ -8,7 +8,6 @@ import { IJobHistory } from '../job-history.model';
 import { JobHistoryService } from '../service/job-history.service';
 
 @Component({
-  standalone: true,
   templateUrl: './job-history-delete-dialog.component.html',
   imports: [SharedModule, FormsModule],
 })

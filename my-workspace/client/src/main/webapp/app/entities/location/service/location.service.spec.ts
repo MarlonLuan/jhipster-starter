@@ -165,7 +165,7 @@ describe('Location Service', () => {
       });
 
       it('Should return false if one entity is null', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
         const entity2 = null;
 
         const compareResult1 = service.compareLocation(entity1, entity2);
@@ -176,8 +176,8 @@ describe('Location Service', () => {
       });
 
       it('Should return false if primaryKey differs', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity1 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
+        const entity2 = { id: 'a63537fe-865d-41e2-bc62-b6de781e4f03' };
 
         const compareResult1 = service.compareLocation(entity1, entity2);
         const compareResult2 = service.compareLocation(entity2, entity1);
@@ -187,8 +187,8 @@ describe('Location Service', () => {
       });
 
       it('Should return false if primaryKey matches', () => {
-        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity1 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
+        const entity2 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
 
         const compareResult1 = service.compareLocation(entity1, entity2);
         const compareResult2 = service.compareLocation(entity2, entity1);

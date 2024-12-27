@@ -48,11 +48,11 @@ describe('Country Management Update Component', () => {
 
   describe('ngOnInit', () => {
     it('Should call region query and add missing value', () => {
-      const country: ICountry = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const region: IRegion = { id: '62cc83f7-6f55-4ca4-bfcb-353a20c69118' };
+      const country: ICountry = { id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' };
+      const region: IRegion = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
       country.region = region;
 
-      const regionCollection: IRegion[] = [{ id: 'c9048421-e2ee-4b4e-afd2-b9e324f40164' }];
+      const regionCollection: IRegion[] = [{ id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' }];
       jest.spyOn(regionService, 'query').mockReturnValue(of(new HttpResponse({ body: regionCollection })));
       const expectedCollection: IRegion[] = [region, ...regionCollection];
       jest.spyOn(regionService, 'addRegionToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -66,14 +66,14 @@ describe('Country Management Update Component', () => {
     });
 
     it('Should update editForm', () => {
-      const country: ICountry = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
-      const region: IRegion = { id: '03f0c964-cc44-401f-8af9-17efd28ceba9' };
+      const country: ICountry = { id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' };
+      const region: IRegion = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
       country.region = region;
 
       activatedRoute.data = of({ country });
       comp.ngOnInit();
 
-      expect(comp.regionsCollection).toContain(region);
+      expect(comp.regionsCollection).toContainEqual(region);
       expect(comp.country).toEqual(country);
     });
   });
@@ -82,7 +82,7 @@ describe('Country Management Update Component', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ICountry>>();
-      const country = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
       jest.spyOn(countryFormService, 'getCountry').mockReturnValue(country);
       jest.spyOn(countryService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -105,7 +105,7 @@ describe('Country Management Update Component', () => {
     it('Should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ICountry>>();
-      const country = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
       jest.spyOn(countryFormService, 'getCountry').mockReturnValue({ id: null });
       jest.spyOn(countryService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -128,7 +128,7 @@ describe('Country Management Update Component', () => {
     it('Should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ICountry>>();
-      const country = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+      const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
       jest.spyOn(countryService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ country });
@@ -149,8 +149,8 @@ describe('Country Management Update Component', () => {
   describe('Compare relationships', () => {
     describe('compareRegion', () => {
       it('Should forward to regionService', () => {
-        const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
-        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+        const entity = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
+        const entity2 = { id: '08490cb2-dd41-43f2-95f0-554d7eff5216' };
         jest.spyOn(regionService, 'compareRegion');
         comp.compareRegion(entity, entity2);
         expect(regionService.compareRegion).toHaveBeenCalledWith(entity, entity2);

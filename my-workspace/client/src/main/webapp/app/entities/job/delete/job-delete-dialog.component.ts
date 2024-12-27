@@ -8,7 +8,6 @@ import { IJob } from '../job.model';
 import { JobService } from '../service/job.service';
 
 @Component({
-  standalone: true,
   templateUrl: './job-delete-dialog.component.html',
   imports: [SharedModule, FormsModule],
 })

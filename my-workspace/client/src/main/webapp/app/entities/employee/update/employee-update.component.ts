@@ -14,7 +14,6 @@ import { EmployeeService } from '../service/employee.service';
 import { EmployeeFormGroup, EmployeeFormService } from './employee-form.service';
 
 @Component({
-  standalone: true,
   selector: 'jhi-employee-update',
   templateUrl: './employee-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],
