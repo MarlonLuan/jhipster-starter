@@ -4,10 +4,12 @@ export type HealthKey = 'diskSpace' | 'mail' | 'ping' | 'livenessState' | 'readi
 
 export interface Health {
   status: HealthStatus;
-  components?: Partial<Record<HealthKey, HealthDetails>>;
+  components: {
+    [key in HealthKey]?: HealthDetails;
+  };
 }
 
 export interface HealthDetails {
   status: HealthStatus;
-  details?: Record<string, unknown>;
+  details?: { [key: string]: unknown };
 }

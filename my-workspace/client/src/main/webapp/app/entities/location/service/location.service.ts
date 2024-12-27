@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -14,10 +14,12 @@ export type EntityArrayResponseType = HttpResponse<ILocation[]>;
 
 @Injectable({ providedIn: 'root' })
 export class LocationService {
-  protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/locations');
+
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(location: NewLocation): Observable<EntityResponseType> {
     return this.http.post<ILocation>(this.resourceUrl, location, { observe: 'response' });
@@ -58,7 +60,7 @@ export class LocationService {
   ): Type[] {
     const locations: Type[] = locationsToCheck.filter(isPresent);
     if (locations.length > 0) {
-      const locationCollectionIdentifiers = locationCollection.map(locationItem => this.getLocationIdentifier(locationItem));
+      const locationCollectionIdentifiers = locationCollection.map(locationItem => this.getLocationIdentifier(locationItem)!);
       const locationsToAdd = locations.filter(locationItem => {
         const locationIdentifier = this.getLocationIdentifier(locationItem);
         if (locationCollectionIdentifiers.includes(locationIdentifier)) {
