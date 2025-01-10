@@ -96,7 +96,7 @@ update src/main/webapp/app/app.config.ts
 
 ### Client tests
 
-Unit tests are run by [Jest][]. They're located in [src/test/javascript/](src/test/javascript/) and can be run with:
+Unit tests are run by [Jest][]. They're located near components and can be run with:
 
 ```
 ./npmw test
@@ -114,7 +114,7 @@ Unit tests are run by [Jest][]. They're located in [src/test/javascript/](src/te
 [NPM]: https://www.npmjs.com/
 [Webpack]: https://webpack.github.io/
 [BrowserSync]: https://www.browsersync.io/
-[Jest]: https://facebook.github.io/jest/
+[Jest]: https://jestjs.io
 [Leaflet]: https://leafletjs.com/
 [DefinitelyTyped]: https://definitelytyped.org/
 [Angular CLI]: https://cli.angular.io/
