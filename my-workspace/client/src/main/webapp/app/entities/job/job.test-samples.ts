@@ -1,20 +1,20 @@
 import { IJob, NewJob } from './job.model';
 
 export const sampleWithRequiredData: IJob = {
-  id: '3f17577a-c1b4-477d-85da-ba09f8f55a88',
+  id: '5def0d87-dff0-4ff6-a7b7-6632c6da82cb',
 };
 
 export const sampleWithPartialData: IJob = {
-  id: '67252276-5028-44c6-8933-292efe5facda',
-  jobTitle: 'Internal Configuration Assistant',
-  maxSalary: 15580,
+  id: 'bd81b412-6c3a-484a-a8f9-e5ad5867233b',
+  minSalary: 19637,
+  maxSalary: 25983,
 };
 
 export const sampleWithFullData: IJob = {
-  id: '4dfdd60f-7466-42ea-af41-a893fc57e831',
-  jobTitle: 'Legacy Functionality Agent',
-  minSalary: 8606,
-  maxSalary: 14819,
+  id: 'b6fa909b-f0db-4b52-8b3b-4bd39366b63f',
+  jobTitle: 'Internal Program Coordinator',
+  minSalary: 8466,
+  maxSalary: 11866,
 };
 
 export const sampleWithNewData: NewJob = {

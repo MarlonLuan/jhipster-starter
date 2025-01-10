@@ -3,27 +3,24 @@ import dayjs from 'dayjs/esm';
 import { IEmployee, NewEmployee } from './employee.model';
 
 export const sampleWithRequiredData: IEmployee = {
-  id: '45d65e9e-1c5f-4bf0-87f0-94bd4c787463',
+  id: '57427bc4-b977-459e-ae6b-83582f8a0c27',
 };
 
 export const sampleWithPartialData: IEmployee = {
-  id: 'e7bb318e-817b-4234-a44c-3feb57a7d003',
-  firstName: 'Verla',
-  lastName: 'Graham',
-  email: 'Tressie.Christiansen@hotmail.com',
-  phoneNumber: 'draft',
-  salary: 5661,
+  id: '1d9467fc-a3d4-4467-a631-0ea58b74cf92',
+  firstName: 'Reed',
+  lastName: 'Price',
 };
 
 export const sampleWithFullData: IEmployee = {
-  id: '9cc8c9f0-b708-4c46-b961-1f02c7e2a3bc',
-  firstName: 'Trudie',
-  lastName: 'Rippin',
-  email: 'Marcia.Littel73@yahoo.com',
-  phoneNumber: 'pick brr glum',
-  hireDate: dayjs('1969-12-31T13:23'),
-  salary: 32028,
-  commissionPct: 17425,
+  id: '3d952da4-b247-4407-b3ee-289940d420ba',
+  firstName: 'Sister',
+  lastName: 'Gutkowski',
+  email: 'Juwan42@yahoo.com',
+  phoneNumber: 'overstretch continent',
+  hireDate: dayjs('1969-12-31T12:51'),
+  salary: 12188,
+  commissionPct: 20613,
 };
 
 export const sampleWithNewData: NewEmployee = {

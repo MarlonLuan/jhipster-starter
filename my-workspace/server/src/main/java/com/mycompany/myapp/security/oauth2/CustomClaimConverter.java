@@ -40,7 +40,8 @@ public class CustomClaimConverter implements Converter<Map<String, Object>, Map<
 
     // See https://github.com/jhipster/generator-jhipster/issues/18868
     // We don't use a distributed cache or the user selected cache implementation here on purpose
-    private final Cache<String, ObjectNode> users = Caffeine.newBuilder()
+    private final Cache<String, ObjectNode> users = Caffeine
+        .newBuilder()
         .maximumSize(10_000)
         .expireAfterWrite(Duration.ofHours(1))
         .recordStats()
@@ -62,18 +63,21 @@ public class CustomClaimConverter implements Converter<Map<String, Object>, Map<
             // Retrieve and set the token
             String token = bearerTokenResolver.resolve(((ServletRequestAttributes) attributes).getRequest());
             HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(token);
+            headers.set("Authorization", buildBearer(token));
 
             // Retrieve user info from OAuth provider if not already loaded
-            ObjectNode user = users.get(claims.get("sub").toString(), s -> {
-                ResponseEntity<ObjectNode> userInfo = restTemplate.exchange(
-                    registration.getProviderDetails().getUserInfoEndpoint().getUri(),
-                    HttpMethod.GET,
-                    new HttpEntity<String>(headers),
-                    ObjectNode.class
-                );
-                return userInfo.getBody();
-            });
+            ObjectNode user = users.get(
+                claims.get("sub").toString(),
+                s -> {
+                    ResponseEntity<ObjectNode> userInfo = restTemplate.exchange(
+                        registration.getProviderDetails().getUserInfoEndpoint().getUri(),
+                        HttpMethod.GET,
+                        new HttpEntity<String>(headers),
+                        ObjectNode.class
+                    );
+                    return userInfo.getBody();
+                }
+            );
 
             // Add custom claims
             if (user != null) {
@@ -100,7 +104,8 @@ public class CustomClaimConverter implements Converter<Map<String, Object>, Map<
                     convertedClaims.put("groups", groups);
                 }
                 if (user.has(SecurityUtils.CLAIMS_NAMESPACE + "roles")) {
-                    List<String> roles = StreamSupport.stream(user.get(SecurityUtils.CLAIMS_NAMESPACE + "roles").spliterator(), false)
+                    List<String> roles = StreamSupport
+                        .stream(user.get(SecurityUtils.CLAIMS_NAMESPACE + "roles").spliterator(), false)
                         .map(JsonNode::asText)
                         .toList();
                     convertedClaims.put("roles", roles);
@@ -108,5 +113,9 @@ public class CustomClaimConverter implements Converter<Map<String, Object>, Map<
             }
         }
         return convertedClaims;
+    }
+
+    private String buildBearer(String token) {
+        return "Bearer " + token;
     }
 }

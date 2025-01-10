@@ -1,17 +1,16 @@
 import { ICountry, NewCountry } from './country.model';
 
 export const sampleWithRequiredData: ICountry = {
-  id: 'fdc879a8-22a2-4576-a8ea-f6ecd3b8bffb',
+  id: '3c3f3185-997c-4a38-a73b-9744928a9db8',
 };
 
 export const sampleWithPartialData: ICountry = {
-  id: '9cc45373-0234-44db-939c-9d55d016272d',
-  countryName: 'phooey dreamily calmly',
+  id: '7117efa0-fc18-4796-9d9b-5be88a6ec40a',
 };
 
 export const sampleWithFullData: ICountry = {
-  id: 'db413a1d-367f-406b-a380-c1fa201a845d',
-  countryName: 'wedge enlightened',
+  id: '29a21f6d-4ba0-4145-879c-46f836a8e4c1',
+  countryName: 'quaintly underneath',
 };
 
 export const sampleWithNewData: NewCountry = {
