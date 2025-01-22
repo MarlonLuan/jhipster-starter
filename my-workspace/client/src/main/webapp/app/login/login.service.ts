@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 
 import { AuthServerProvider } from 'app/core/auth/auth-session.service';
@@ -6,8 +6,10 @@ import { Logout } from './logout.model';
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
-  private readonly location = inject(Location);
-  private readonly authServerProvider = inject(AuthServerProvider);
+  constructor(
+    private location: Location,
+    private authServerProvider: AuthServerProvider,
+  ) {}
 
   login(): void {
     // If you have configured multiple OIDC providers, then, you can update this URL to /login.

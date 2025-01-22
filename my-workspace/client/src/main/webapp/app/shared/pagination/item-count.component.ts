@@ -5,6 +5,7 @@ import TranslateDirective from '../language/translate.directive';
  * A component that will take care of item count statistics of a pagination.
  */
 @Component({
+  standalone: true,
   selector: 'jhi-item-count',
   template: ` <div jhiTranslate="global.item-count" [translateValues]="{ first: first, second: second, total: total }"></div> `,
   imports: [TranslateDirective],

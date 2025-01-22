@@ -3,12 +3,13 @@ const { pathsToModuleNameMapper } = require('ts-jest');
 const {
   compilerOptions: { paths = {}, baseUrl = './' },
 } = require('./tsconfig.json');
+const environment = require('./webpack/environment');
 
 module.exports = {
   transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$|dayjs/esm)'],
   resolver: 'jest-preset-angular/build/resolvers/ng-jest-resolver.js',
   globals: {
-    __VERSION__: 'test',
+    ...environment,
   },
   roots: ['<rootDir>', `<rootDir>/${baseUrl}`],
   modulePaths: [`<rootDir>/${baseUrl}`],

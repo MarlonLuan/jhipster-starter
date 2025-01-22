@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -8,14 +8,17 @@ import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
 
 @Component({
+  standalone: true,
   templateUrl: './department-delete-dialog.component.html',
   imports: [SharedModule, FormsModule],
 })
 export class DepartmentDeleteDialogComponent {
   department?: IDepartment;
 
-  protected departmentService = inject(DepartmentService);
-  protected activeModal = inject(NgbActiveModal);
+  constructor(
+    protected departmentService: DepartmentService,
+    protected activeModal: NgbActiveModal,
+  ) {}
 
   cancel(): void {
     this.activeModal.dismiss();
