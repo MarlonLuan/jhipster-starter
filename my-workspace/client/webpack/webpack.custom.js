@@ -50,13 +50,13 @@ module.exports = async (config, options, targetOptions) => {
             target: `http${tls ? 's' : ''}://localhost:${targetOptions.target === 'serve' ? '4200' : '8080'}`,
             ws: true,
             proxyOptions: {
-              changeOrigin: false, //pass the Host header to the backend unchanged  https://github.com/Browsersync/browser-sync/issues/430
+              changeOrigin: false, //pass the Host header to the backend unchanged https://github.com/Browsersync/browser-sync/issues/430
             },
             proxyReq: [
               function (proxyReq) {
                 // URI that will be retrieved by the ForwardedHeaderFilter on the server side
                 proxyReq.setHeader('X-Forwarded-Host', 'localhost:9000');
-                proxyReq.setHeader('X-Forwarded-Proto', 'https');
+                proxyReq.setHeader('X-Forwarded-Proto', `http${tls ? 's' : ''}`);
               },
             ],
           },
