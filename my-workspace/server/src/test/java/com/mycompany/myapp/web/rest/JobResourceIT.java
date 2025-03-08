@@ -101,12 +101,12 @@ class JobResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         job = createEntity();
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         if (insertedJob != null) {
             jobRepository.delete(insertedJob);
             insertedJob = null;

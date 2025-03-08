@@ -83,12 +83,12 @@ class TaskResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         task = createEntity();
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         if (insertedTask != null) {
             taskRepository.delete(insertedTask);
             insertedTask = null;
