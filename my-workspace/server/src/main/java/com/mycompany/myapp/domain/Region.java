@@ -84,7 +84,7 @@ public class Region implements Serializable {
         if (!(o instanceof Region)) {
             return false;
         }
-        return getId() != null && getId().equals(((Region) o).getId());
+        return id != null && id.equals(((Region) o).id);
     }
 
     @Override

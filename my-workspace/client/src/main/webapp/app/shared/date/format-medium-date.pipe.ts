@@ -3,6 +3,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import dayjs from 'dayjs/esm';
 
 @Pipe({
+  standalone: true,
   name: 'formatMediumDate',
 })
 export default class FormatMediumDatePipe implements PipeTransform {

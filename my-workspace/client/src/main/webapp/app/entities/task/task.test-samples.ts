@@ -1,18 +1,17 @@
 import { ITask, NewTask } from './task.model';
 
 export const sampleWithRequiredData: ITask = {
-  id: '48d52277-8822-451c-b2af-8ac2d6db7e44',
+  id: '099b6577-e459-4ae6-8877-0fc9de254d22',
 };
 
 export const sampleWithPartialData: ITask = {
-  id: 'b751c019-b7ab-4c2a-bcf3-93813e232715',
-  title: 'sheathe hm',
+  id: '21bb33a1-76d1-49b8-b664-78c1444c1282',
 };
 
 export const sampleWithFullData: ITask = {
-  id: '680ee62d-cbd3-4f39-ad5a-8e3732304692',
-  title: 'condense familiar barring',
-  description: 'hm zowie',
+  id: '93779c99-4145-4ec8-b238-9ba23b40a7d9',
+  title: 'quickly closely',
+  description: 'clean potato',
 };
 
 export const sampleWithNewData: NewTask = {

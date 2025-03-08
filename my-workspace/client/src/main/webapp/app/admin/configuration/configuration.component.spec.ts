@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
 import ConfigurationComponent from './configuration.component';
@@ -13,8 +13,8 @@ describe('ConfigurationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [ConfigurationComponent],
-      providers: [provideHttpClient(), ConfigurationService],
+      imports: [HttpClientTestingModule, ConfigurationComponent],
+      providers: [ConfigurationService],
     })
       .overrideTemplate(ConfigurationComponent, '')
       .compileComponents();
@@ -58,9 +58,9 @@ describe('ConfigurationComponent', () => {
       // THEN
       expect(service.getBeans).toHaveBeenCalled();
       expect(service.getPropertySources).toHaveBeenCalled();
-      expect(comp.allBeans()).toEqual(beans);
-      expect(comp.beans()).toEqual(beans);
-      expect(comp.propertySources()).toEqual(propertySources);
+      expect(comp.allBeans).toEqual(beans);
+      expect(comp.beans).toEqual(beans);
+      expect(comp.propertySources).toEqual(propertySources);
     });
   });
 });

@@ -1,17 +1,20 @@
-import { Component, input } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, Input } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
-import { FormatMediumDatetimePipe } from 'app/shared/date';
+import { DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe } from 'app/shared/date';
 import { IEmployee } from '../employee.model';
 
 @Component({
+  standalone: true,
   selector: 'jhi-employee-detail',
   templateUrl: './employee-detail.component.html',
-  imports: [SharedModule, RouterModule, FormatMediumDatetimePipe],
+  imports: [SharedModule, RouterModule, DurationPipe, FormatMediumDatetimePipe, FormatMediumDatePipe],
 })
 export class EmployeeDetailComponent {
-  employee = input<IEmployee | null>(null);
+  @Input() employee: IEmployee | null = null;
+
+  constructor(protected activatedRoute: ActivatedRoute) {}
 
   previousState(): void {
     window.history.back();

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -16,9 +16,10 @@ import { EmployeeService } from 'app/entities/employee/service/employee.service'
 import { Language } from 'app/entities/enumerations/language.model';
 import { JobHistoryService } from '../service/job-history.service';
 import { IJobHistory } from '../job-history.model';
-import { JobHistoryFormGroup, JobHistoryFormService } from './job-history-form.service';
+import { JobHistoryFormService, JobHistoryFormGroup } from './job-history-form.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-job-history-update',
   templateUrl: './job-history-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],
@@ -32,15 +33,16 @@ export class JobHistoryUpdateComponent implements OnInit {
   departmentsCollection: IDepartment[] = [];
   employeesCollection: IEmployee[] = [];
 
-  protected jobHistoryService = inject(JobHistoryService);
-  protected jobHistoryFormService = inject(JobHistoryFormService);
-  protected jobService = inject(JobService);
-  protected departmentService = inject(DepartmentService);
-  protected employeeService = inject(EmployeeService);
-  protected activatedRoute = inject(ActivatedRoute);
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: JobHistoryFormGroup = this.jobHistoryFormService.createJobHistoryFormGroup();
+
+  constructor(
+    protected jobHistoryService: JobHistoryService,
+    protected jobHistoryFormService: JobHistoryFormService,
+    protected jobService: JobService,
+    protected departmentService: DepartmentService,
+    protected employeeService: EmployeeService,
+    protected activatedRoute: ActivatedRoute,
+  ) {}
 
   compareJob = (o1: IJob | null, o2: IJob | null): boolean => this.jobService.compareJob(o1, o2);
 
