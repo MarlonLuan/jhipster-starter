@@ -80,12 +80,12 @@ class RegionResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         region = createEntity();
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         if (insertedRegion != null) {
             regionRepository.delete(insertedRegion);
             insertedRegion = null;
