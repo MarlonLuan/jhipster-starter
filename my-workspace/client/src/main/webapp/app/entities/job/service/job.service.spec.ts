@@ -1,9 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 import { IJob } from '../job.model';
-import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../job.test-samples';
+import { sampleWithRequiredData, sampleWithNewData, sampleWithPartialData, sampleWithFullData } from '../job.test-samples';
 
 import { JobService } from './job.service';
 
@@ -18,7 +17,7 @@ describe('Job Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      imports: [HttpClientTestingModule],
     });
     expectedResult = null;
     service = TestBed.inject(JobService);
@@ -165,7 +164,7 @@ describe('Job Service', () => {
       });
 
       it('Should return false if one entity is null', () => {
-        const entity1 = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
         const entity2 = null;
 
         const compareResult1 = service.compareJob(entity1, entity2);
@@ -176,8 +175,8 @@ describe('Job Service', () => {
       });
 
       it('Should return false if primaryKey differs', () => {
-        const entity1 = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
-        const entity2 = { id: 'ee3221b5-0074-405f-9c0c-4e29fb63663c' };
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
 
         const compareResult1 = service.compareJob(entity1, entity2);
         const compareResult2 = service.compareJob(entity2, entity1);
@@ -187,8 +186,8 @@ describe('Job Service', () => {
       });
 
       it('Should return false if primaryKey matches', () => {
-        const entity1 = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
-        const entity2 = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
         const compareResult1 = service.compareJob(entity1, entity2);
         const compareResult2 = service.compareJob(entity2, entity1);

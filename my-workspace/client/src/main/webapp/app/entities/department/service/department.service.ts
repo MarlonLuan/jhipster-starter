@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -14,10 +14,12 @@ export type EntityArrayResponseType = HttpResponse<IDepartment[]>;
 
 @Injectable({ providedIn: 'root' })
 export class DepartmentService {
-  protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/departments');
+
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(department: NewDepartment): Observable<EntityResponseType> {
     return this.http.post<IDepartment>(this.resourceUrl, department, { observe: 'response' });
@@ -62,7 +64,7 @@ export class DepartmentService {
   ): Type[] {
     const departments: Type[] = departmentsToCheck.filter(isPresent);
     if (departments.length > 0) {
-      const departmentCollectionIdentifiers = departmentCollection.map(departmentItem => this.getDepartmentIdentifier(departmentItem));
+      const departmentCollectionIdentifiers = departmentCollection.map(departmentItem => this.getDepartmentIdentifier(departmentItem)!);
       const departmentsToAdd = departments.filter(departmentItem => {
         const departmentIdentifier = this.getDepartmentIdentifier(departmentItem);
         if (departmentCollectionIdentifiers.includes(departmentIdentifier)) {

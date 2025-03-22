@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Subject, from, of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of, Subject, from } from 'rxjs';
 
 import { RegionService } from '../service/region.service';
 import { IRegion } from '../region.model';
@@ -19,9 +21,8 @@ describe('Region Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RegionUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), RegionUpdateComponent],
       providers: [
-        provideHttpClient(),
         FormBuilder,
         {
           provide: ActivatedRoute,
@@ -44,7 +45,7 @@ describe('Region Management Update Component', () => {
 
   describe('ngOnInit', () => {
     it('Should update editForm', () => {
-      const region: IRegion = { id: '08490cb2-dd41-43f2-95f0-554d7eff5216' };
+      const region: IRegion = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
 
       activatedRoute.data = of({ region });
       comp.ngOnInit();
@@ -57,7 +58,7 @@ describe('Region Management Update Component', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IRegion>>();
-      const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
+      const region = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
       jest.spyOn(regionFormService, 'getRegion').mockReturnValue(region);
       jest.spyOn(regionService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -80,7 +81,7 @@ describe('Region Management Update Component', () => {
     it('Should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IRegion>>();
-      const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
+      const region = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
       jest.spyOn(regionFormService, 'getRegion').mockReturnValue({ id: null });
       jest.spyOn(regionService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -103,7 +104,7 @@ describe('Region Management Update Component', () => {
     it('Should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IRegion>>();
-      const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
+      const region = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
       jest.spyOn(regionService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ region });

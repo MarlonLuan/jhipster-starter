@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -14,10 +14,12 @@ export type EntityArrayResponseType = HttpResponse<IJob[]>;
 
 @Injectable({ providedIn: 'root' })
 export class JobService {
-  protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/jobs');
+
+  constructor(
+    protected http: HttpClient,
+    protected applicationConfigService: ApplicationConfigService,
+  ) {}
 
   create(job: NewJob): Observable<EntityResponseType> {
     return this.http.post<IJob>(this.resourceUrl, job, { observe: 'response' });
@@ -55,7 +57,7 @@ export class JobService {
   addJobToCollectionIfMissing<Type extends Pick<IJob, 'id'>>(jobCollection: Type[], ...jobsToCheck: (Type | null | undefined)[]): Type[] {
     const jobs: Type[] = jobsToCheck.filter(isPresent);
     if (jobs.length > 0) {
-      const jobCollectionIdentifiers = jobCollection.map(jobItem => this.getJobIdentifier(jobItem));
+      const jobCollectionIdentifiers = jobCollection.map(jobItem => this.getJobIdentifier(jobItem)!);
       const jobsToAdd = jobs.filter(jobItem => {
         const jobIdentifier = this.getJobIdentifier(jobItem);
         if (jobCollectionIdentifiers.includes(jobIdentifier)) {

@@ -12,7 +12,7 @@ export interface FileLoadError {
 }
 
 /**
- * A utility service for data.
+ * An utility service for data.
  */
 @Injectable({
   providedIn: 'root',
@@ -55,7 +55,7 @@ export class DataUtils {
    * @param editForm the form group where the input field is located
    * @param field the field name to set the file's 'base 64 data' on
    * @param isImage boolean representing if the file represented by the event is an image
-   * @returns an observable that loads file to form field and completes if successful
+   * @returns an observable that loads file to form field and completes if sussessful
    *      or returns error as FileLoadError on failure
    */
   loadFileToForm(event: Event, editForm: FormGroup, field: string, isImage: boolean): Observable<void> {
@@ -71,7 +71,7 @@ export class DataUtils {
           };
           observer.error(error);
         } else {
-          const fieldContentType = `${field}ContentType`;
+          const fieldContentType: string = field + 'ContentType';
           this.toBase64(file, (base64Data: string) => {
             editForm.patchValue({
               [field]: base64Data,
@@ -125,6 +125,6 @@ export class DataUtils {
   }
 
   private formatAsBytes(size: number): string {
-    return `${size.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} bytes`; // NOSONAR
+    return size.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' bytes'; // NOSONAR
   }
 }
