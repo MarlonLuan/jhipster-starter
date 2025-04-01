@@ -43,7 +43,7 @@ describe('Task Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should update editForm', () => {
+    it('should update editForm', () => {
       const task: ITask = { id: '59358286-4c96-4301-945b-e60ba7cd5403' };
 
       activatedRoute.data = of({ task });
@@ -54,7 +54,7 @@ describe('Task Management Update Component', () => {
   });
 
   describe('save', () => {
-    it('Should call update service on save for existing entity', () => {
+    it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ITask>>();
       const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
@@ -77,7 +77,7 @@ describe('Task Management Update Component', () => {
       expect(comp.isSaving).toEqual(false);
     });
 
-    it('Should call create service on save for new entity', () => {
+    it('should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ITask>>();
       const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
@@ -100,7 +100,7 @@ describe('Task Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
-    it('Should set isSaving to false on error', () => {
+    it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ITask>>();
       const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };

@@ -80,12 +80,12 @@ class CountryResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         country = createEntity();
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         if (insertedCountry != null) {
             countryRepository.delete(insertedCountry);
             insertedCountry = null;

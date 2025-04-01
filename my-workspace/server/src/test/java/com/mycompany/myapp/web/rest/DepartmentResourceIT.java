@@ -80,12 +80,12 @@ class DepartmentResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         department = createEntity();
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         if (insertedDepartment != null) {
             departmentRepository.delete(insertedDepartment);
             insertedDepartment = null;

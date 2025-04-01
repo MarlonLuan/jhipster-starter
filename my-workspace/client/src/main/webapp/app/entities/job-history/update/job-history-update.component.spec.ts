@@ -55,7 +55,7 @@ describe('JobHistory Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call job query and add missing value', () => {
+    it('should call job query and add missing value', () => {
       const jobHistory: IJobHistory = { id: '77b493ed-9aef-4d01-8fd4-f257729b9d4d' };
       const job: IJob = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
       jobHistory.job = job;
@@ -73,7 +73,7 @@ describe('JobHistory Management Update Component', () => {
       expect(comp.jobsCollection).toEqual(expectedCollection);
     });
 
-    it('Should call department query and add missing value', () => {
+    it('should call department query and add missing value', () => {
       const jobHistory: IJobHistory = { id: '77b493ed-9aef-4d01-8fd4-f257729b9d4d' };
       const department: IDepartment = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
       jobHistory.department = department;
@@ -91,7 +91,7 @@ describe('JobHistory Management Update Component', () => {
       expect(comp.departmentsCollection).toEqual(expectedCollection);
     });
 
-    it('Should call employee query and add missing value', () => {
+    it('should call employee query and add missing value', () => {
       const jobHistory: IJobHistory = { id: '77b493ed-9aef-4d01-8fd4-f257729b9d4d' };
       const employee: IEmployee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       jobHistory.employee = employee;
@@ -109,7 +109,7 @@ describe('JobHistory Management Update Component', () => {
       expect(comp.employeesCollection).toEqual(expectedCollection);
     });
 
-    it('Should update editForm', () => {
+    it('should update editForm', () => {
       const jobHistory: IJobHistory = { id: '77b493ed-9aef-4d01-8fd4-f257729b9d4d' };
       const job: IJob = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
       jobHistory.job = job;
@@ -129,7 +129,7 @@ describe('JobHistory Management Update Component', () => {
   });
 
   describe('save', () => {
-    it('Should call update service on save for existing entity', () => {
+    it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IJobHistory>>();
       const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
@@ -152,7 +152,7 @@ describe('JobHistory Management Update Component', () => {
       expect(comp.isSaving).toEqual(false);
     });
 
-    it('Should call create service on save for new entity', () => {
+    it('should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IJobHistory>>();
       const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
@@ -175,7 +175,7 @@ describe('JobHistory Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
-    it('Should set isSaving to false on error', () => {
+    it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IJobHistory>>();
       const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
@@ -198,7 +198,7 @@ describe('JobHistory Management Update Component', () => {
 
   describe('Compare relationships', () => {
     describe('compareJob', () => {
-      it('Should forward to jobService', () => {
+      it('should forward to jobService', () => {
         const entity = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
         const entity2 = { id: 'ee3221b5-0074-405f-9c0c-4e29fb63663c' };
         jest.spyOn(jobService, 'compareJob');
@@ -208,7 +208,7 @@ describe('JobHistory Management Update Component', () => {
     });
 
     describe('compareDepartment', () => {
-      it('Should forward to departmentService', () => {
+      it('should forward to departmentService', () => {
         const entity = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
         const entity2 = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
         jest.spyOn(departmentService, 'compareDepartment');
@@ -218,7 +218,7 @@ describe('JobHistory Management Update Component', () => {
     });
 
     describe('compareEmployee', () => {
-      it('Should forward to employeeService', () => {
+      it('should forward to employeeService', () => {
         const entity = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
         const entity2 = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
         jest.spyOn(employeeService, 'compareEmployee');

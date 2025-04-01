@@ -47,7 +47,7 @@ describe('Department Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call location query and add missing value', () => {
+    it('should call location query and add missing value', () => {
       const department: IDepartment = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
       const location: ILocation = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
       department.location = location;
@@ -65,7 +65,7 @@ describe('Department Management Update Component', () => {
       expect(comp.locationsCollection).toEqual(expectedCollection);
     });
 
-    it('Should update editForm', () => {
+    it('should update editForm', () => {
       const department: IDepartment = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
       const location: ILocation = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
       department.location = location;
@@ -79,7 +79,7 @@ describe('Department Management Update Component', () => {
   });
 
   describe('save', () => {
-    it('Should call update service on save for existing entity', () => {
+    it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IDepartment>>();
       const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
@@ -102,7 +102,7 @@ describe('Department Management Update Component', () => {
       expect(comp.isSaving).toEqual(false);
     });
 
-    it('Should call create service on save for new entity', () => {
+    it('should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IDepartment>>();
       const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
@@ -125,7 +125,7 @@ describe('Department Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
-    it('Should set isSaving to false on error', () => {
+    it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IDepartment>>();
       const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
@@ -148,7 +148,7 @@ describe('Department Management Update Component', () => {
 
   describe('Compare relationships', () => {
     describe('compareLocation', () => {
-      it('Should forward to locationService', () => {
+      it('should forward to locationService', () => {
         const entity = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
         const entity2 = { id: 'a63537fe-865d-41e2-bc62-b6de781e4f03' };
         jest.spyOn(locationService, 'compareLocation');

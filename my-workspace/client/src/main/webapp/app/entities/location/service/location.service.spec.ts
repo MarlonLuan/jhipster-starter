@@ -155,7 +155,7 @@ describe('Location Service', () => {
     });
 
     describe('compareLocation', () => {
-      it('Should return true if both entities are null', () => {
+      it('should return true if both entities are null', () => {
         const entity1 = null;
         const entity2 = null;
 
@@ -164,7 +164,7 @@ describe('Location Service', () => {
         expect(compareResult).toEqual(true);
       });
 
-      it('Should return false if one entity is null', () => {
+      it('should return false if one entity is null', () => {
         const entity1 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
         const entity2 = null;
 
@@ -175,7 +175,7 @@ describe('Location Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey differs', () => {
+      it('should return false if primaryKey differs', () => {
         const entity1 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
         const entity2 = { id: 'a63537fe-865d-41e2-bc62-b6de781e4f03' };
 
@@ -186,7 +186,7 @@ describe('Location Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey matches', () => {
+      it('should return false if primaryKey matches', () => {
         const entity1 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
         const entity2 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
 

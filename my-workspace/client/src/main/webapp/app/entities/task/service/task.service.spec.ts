@@ -155,7 +155,7 @@ describe('Task Service', () => {
     });
 
     describe('compareTask', () => {
-      it('Should return true if both entities are null', () => {
+      it('should return true if both entities are null', () => {
         const entity1 = null;
         const entity2 = null;
 
@@ -164,7 +164,7 @@ describe('Task Service', () => {
         expect(compareResult).toEqual(true);
       });
 
-      it('Should return false if one entity is null', () => {
+      it('should return false if one entity is null', () => {
         const entity1 = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
         const entity2 = null;
 
@@ -175,7 +175,7 @@ describe('Task Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey differs', () => {
+      it('should return false if primaryKey differs', () => {
         const entity1 = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
         const entity2 = { id: '59358286-4c96-4301-945b-e60ba7cd5403' };
 
@@ -186,7 +186,7 @@ describe('Task Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey matches', () => {
+      it('should return false if primaryKey matches', () => {
         const entity1 = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
         const entity2 = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
 

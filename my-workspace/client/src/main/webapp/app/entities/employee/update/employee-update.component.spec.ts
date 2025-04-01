@@ -47,7 +47,7 @@ describe('Employee Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call Employee query and add missing value', () => {
+    it('should call Employee query and add missing value', () => {
       const employee: IEmployee = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
       const manager: IEmployee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       employee.manager = manager;
@@ -69,7 +69,7 @@ describe('Employee Management Update Component', () => {
       expect(comp.employeesSharedCollection).toEqual(expectedCollection);
     });
 
-    it('Should call Department query and add missing value', () => {
+    it('should call Department query and add missing value', () => {
       const employee: IEmployee = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
       const department: IDepartment = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
       employee.department = department;
@@ -91,7 +91,7 @@ describe('Employee Management Update Component', () => {
       expect(comp.departmentsSharedCollection).toEqual(expectedCollection);
     });
 
-    it('Should update editForm', () => {
+    it('should update editForm', () => {
       const employee: IEmployee = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
       const manager: IEmployee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       employee.manager = manager;
@@ -108,7 +108,7 @@ describe('Employee Management Update Component', () => {
   });
 
   describe('save', () => {
-    it('Should call update service on save for existing entity', () => {
+    it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IEmployee>>();
       const employee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
@@ -131,7 +131,7 @@ describe('Employee Management Update Component', () => {
       expect(comp.isSaving).toEqual(false);
     });
 
-    it('Should call create service on save for new entity', () => {
+    it('should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IEmployee>>();
       const employee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
@@ -154,7 +154,7 @@ describe('Employee Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
-    it('Should set isSaving to false on error', () => {
+    it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IEmployee>>();
       const employee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
@@ -177,7 +177,7 @@ describe('Employee Management Update Component', () => {
 
   describe('Compare relationships', () => {
     describe('compareEmployee', () => {
-      it('Should forward to employeeService', () => {
+      it('should forward to employeeService', () => {
         const entity = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
         const entity2 = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
         jest.spyOn(employeeService, 'compareEmployee');
@@ -187,7 +187,7 @@ describe('Employee Management Update Component', () => {
     });
 
     describe('compareDepartment', () => {
-      it('Should forward to departmentService', () => {
+      it('should forward to departmentService', () => {
         const entity = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
         const entity2 = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
         jest.spyOn(departmentService, 'compareDepartment');

@@ -47,7 +47,7 @@ describe('Country Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should call region query and add missing value', () => {
+    it('should call region query and add missing value', () => {
       const country: ICountry = { id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' };
       const region: IRegion = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
       country.region = region;
@@ -65,7 +65,7 @@ describe('Country Management Update Component', () => {
       expect(comp.regionsCollection).toEqual(expectedCollection);
     });
 
-    it('Should update editForm', () => {
+    it('should update editForm', () => {
       const country: ICountry = { id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' };
       const region: IRegion = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
       country.region = region;
@@ -79,7 +79,7 @@ describe('Country Management Update Component', () => {
   });
 
   describe('save', () => {
-    it('Should call update service on save for existing entity', () => {
+    it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ICountry>>();
       const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
@@ -102,7 +102,7 @@ describe('Country Management Update Component', () => {
       expect(comp.isSaving).toEqual(false);
     });
 
-    it('Should call create service on save for new entity', () => {
+    it('should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ICountry>>();
       const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
@@ -125,7 +125,7 @@ describe('Country Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
-    it('Should set isSaving to false on error', () => {
+    it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<ICountry>>();
       const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
@@ -148,7 +148,7 @@ describe('Country Management Update Component', () => {
 
   describe('Compare relationships', () => {
     describe('compareRegion', () => {
-      it('Should forward to regionService', () => {
+      it('should forward to regionService', () => {
         const entity = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
         const entity2 = { id: '08490cb2-dd41-43f2-95f0-554d7eff5216' };
         jest.spyOn(regionService, 'compareRegion');

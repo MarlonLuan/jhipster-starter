@@ -155,7 +155,7 @@ describe('Department Service', () => {
     });
 
     describe('compareDepartment', () => {
-      it('Should return true if both entities are null', () => {
+      it('should return true if both entities are null', () => {
         const entity1 = null;
         const entity2 = null;
 
@@ -164,7 +164,7 @@ describe('Department Service', () => {
         expect(compareResult).toEqual(true);
       });
 
-      it('Should return false if one entity is null', () => {
+      it('should return false if one entity is null', () => {
         const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
         const entity2 = null;
 
@@ -175,7 +175,7 @@ describe('Department Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey differs', () => {
+      it('should return false if primaryKey differs', () => {
         const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
         const entity2 = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
 
@@ -186,7 +186,7 @@ describe('Department Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey matches', () => {
+      it('should return false if primaryKey matches', () => {
         const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
         const entity2 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
 

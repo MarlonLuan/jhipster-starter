@@ -78,7 +78,7 @@ describe('Task Management Component', () => {
       );
   });
 
-  it('Should call load all on init', () => {
+  it('should call load all on init', () => {
     // WHEN
     comp.ngOnInit();
 
@@ -88,7 +88,7 @@ describe('Task Management Component', () => {
   });
 
   describe('trackId', () => {
-    it('Should forward to taskService', () => {
+    it('should forward to taskService', () => {
       const entity = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
       jest.spyOn(service, 'getTaskIdentifier');
       const id = comp.trackId(entity);
