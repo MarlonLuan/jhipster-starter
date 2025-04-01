@@ -78,7 +78,7 @@ describe('Job Management Component', () => {
       );
   });
 
-  it('Should call load all on init', () => {
+  it('should call load all on init', () => {
     // WHEN
     comp.ngOnInit();
 
@@ -88,7 +88,7 @@ describe('Job Management Component', () => {
   });
 
   describe('trackId', () => {
-    it('Should forward to jobService', () => {
+    it('should forward to jobService', () => {
       const entity = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
       jest.spyOn(service, 'getJobIdentifier');
       const id = comp.trackId(entity);

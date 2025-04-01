@@ -89,12 +89,12 @@ class JobHistoryResourceIT {
     }
 
     @BeforeEach
-    public void initTest() {
+    void initTest() {
         jobHistory = createEntity();
     }
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         if (insertedJobHistory != null) {
             jobHistoryRepository.delete(insertedJobHistory);
             insertedJobHistory = null;

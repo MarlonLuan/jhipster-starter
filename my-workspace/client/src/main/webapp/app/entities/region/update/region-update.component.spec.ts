@@ -43,7 +43,7 @@ describe('Region Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('Should update editForm', () => {
+    it('should update editForm', () => {
       const region: IRegion = { id: '08490cb2-dd41-43f2-95f0-554d7eff5216' };
 
       activatedRoute.data = of({ region });
@@ -54,7 +54,7 @@ describe('Region Management Update Component', () => {
   });
 
   describe('save', () => {
-    it('Should call update service on save for existing entity', () => {
+    it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IRegion>>();
       const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
@@ -77,7 +77,7 @@ describe('Region Management Update Component', () => {
       expect(comp.isSaving).toEqual(false);
     });
 
-    it('Should call create service on save for new entity', () => {
+    it('should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IRegion>>();
       const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
@@ -100,7 +100,7 @@ describe('Region Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
-    it('Should set isSaving to false on error', () => {
+    it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IRegion>>();
       const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };

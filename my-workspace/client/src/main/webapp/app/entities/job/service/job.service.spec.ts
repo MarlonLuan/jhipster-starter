@@ -155,7 +155,7 @@ describe('Job Service', () => {
     });
 
     describe('compareJob', () => {
-      it('Should return true if both entities are null', () => {
+      it('should return true if both entities are null', () => {
         const entity1 = null;
         const entity2 = null;
 
@@ -164,7 +164,7 @@ describe('Job Service', () => {
         expect(compareResult).toEqual(true);
       });
 
-      it('Should return false if one entity is null', () => {
+      it('should return false if one entity is null', () => {
         const entity1 = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
         const entity2 = null;
 
@@ -175,7 +175,7 @@ describe('Job Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey differs', () => {
+      it('should return false if primaryKey differs', () => {
         const entity1 = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
         const entity2 = { id: 'ee3221b5-0074-405f-9c0c-4e29fb63663c' };
 
@@ -186,7 +186,7 @@ describe('Job Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey matches', () => {
+      it('should return false if primaryKey matches', () => {
         const entity1 = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
         const entity2 = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
 

@@ -155,7 +155,7 @@ describe('Country Service', () => {
     });
 
     describe('compareCountry', () => {
-      it('Should return true if both entities are null', () => {
+      it('should return true if both entities are null', () => {
         const entity1 = null;
         const entity2 = null;
 
@@ -164,7 +164,7 @@ describe('Country Service', () => {
         expect(compareResult).toEqual(true);
       });
 
-      it('Should return false if one entity is null', () => {
+      it('should return false if one entity is null', () => {
         const entity1 = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
         const entity2 = null;
 
@@ -175,7 +175,7 @@ describe('Country Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey differs', () => {
+      it('should return false if primaryKey differs', () => {
         const entity1 = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
         const entity2 = { id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' };
 
@@ -186,7 +186,7 @@ describe('Country Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('Should return false if primaryKey matches', () => {
+      it('should return false if primaryKey matches', () => {
         const entity1 = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
         const entity2 = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
 

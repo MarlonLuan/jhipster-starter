@@ -78,7 +78,7 @@ describe('Location Management Component', () => {
       );
   });
 
-  it('Should call load all on init', () => {
+  it('should call load all on init', () => {
     // WHEN
     comp.ngOnInit();
 
@@ -88,7 +88,7 @@ describe('Location Management Component', () => {
   });
 
   describe('trackId', () => {
-    it('Should forward to locationService', () => {
+    it('should forward to locationService', () => {
       const entity = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
       jest.spyOn(service, 'getLocationIdentifier');
       const id = comp.trackId(entity);
