@@ -48,12 +48,13 @@ class LogoutResourceIT {
     private Map<String, Object> claims;
 
     @BeforeEach
-    void before() throws Exception {
+    public void before() throws Exception {
         claims = new HashMap<>();
         claims.put("groups", Collections.singletonList(AuthoritiesConstants.USER));
         claims.put("sub", 123);
 
-        SecurityContextHolder.getContext()
+        SecurityContextHolder
+            .getContext()
             .setAuthentication(registerAuthenticationToken(authorizedClientService, clientRegistration, authenticationToken(claims)));
         SecurityContextHolderAwareRequestFilter authInjector = new SecurityContextHolderAwareRequestFilter();
         authInjector.afterPropertiesSet();

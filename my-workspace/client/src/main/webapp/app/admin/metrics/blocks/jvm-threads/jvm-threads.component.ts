@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import SharedModule from 'app/shared/shared.module';
@@ -6,43 +6,53 @@ import { Thread, ThreadState } from 'app/admin/metrics/metrics.model';
 import { MetricsModalThreadsComponent } from '../metrics-modal-threads/metrics-modal-threads.component';
 
 @Component({
+  standalone: true,
   selector: 'jhi-jvm-threads',
   templateUrl: './jvm-threads.component.html',
   imports: [SharedModule],
 })
 export class JvmThreadsComponent {
-  threads = input<Thread[] | undefined>();
+  threadStats = {
+    threadDumpAll: 0,
+    threadDumpRunnable: 0,
+    threadDumpTimedWaiting: 0,
+    threadDumpWaiting: 0,
+    threadDumpBlocked: 0,
+  };
 
-  threadStats = computed(() => {
-    const stats = {
-      threadDumpAll: 0,
-      threadDumpRunnable: 0,
-      threadDumpTimedWaiting: 0,
-      threadDumpWaiting: 0,
-      threadDumpBlocked: 0,
-    };
+  @Input()
+  set threads(threads: Thread[] | undefined) {
+    this._threads = threads;
 
-    this.threads()?.forEach(thread => {
+    threads?.forEach(thread => {
       if (thread.threadState === ThreadState.Runnable) {
-        stats.threadDumpRunnable += 1;
+        this.threadStats.threadDumpRunnable += 1;
       } else if (thread.threadState === ThreadState.Waiting) {
-        stats.threadDumpWaiting += 1;
+        this.threadStats.threadDumpWaiting += 1;
       } else if (thread.threadState === ThreadState.TimedWaiting) {
-        stats.threadDumpTimedWaiting += 1;
+        this.threadStats.threadDumpTimedWaiting += 1;
       } else if (thread.threadState === ThreadState.Blocked) {
-        stats.threadDumpBlocked += 1;
+        this.threadStats.threadDumpBlocked += 1;
       }
     });
 
-    stats.threadDumpAll = stats.threadDumpRunnable + stats.threadDumpWaiting + stats.threadDumpTimedWaiting + stats.threadDumpBlocked;
+    this.threadStats.threadDumpAll =
+      this.threadStats.threadDumpRunnable +
+      this.threadStats.threadDumpWaiting +
+      this.threadStats.threadDumpTimedWaiting +
+      this.threadStats.threadDumpBlocked;
+  }
 
-    return stats;
-  });
+  get threads(): Thread[] | undefined {
+    return this._threads;
+  }
 
-  private readonly modalService = inject(NgbModal);
+  private _threads: Thread[] | undefined;
+
+  constructor(private modalService: NgbModal) {}
 
   open(): void {
     const modalRef = this.modalService.open(MetricsModalThreadsComponent);
-    modalRef.componentInstance.threads = this.threads();
+    modalRef.componentInstance.threads = this.threads;
   }
 }

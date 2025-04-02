@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { HttpResponse } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { Subject, from, of } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of, Subject, from } from 'rxjs';
 
 import { ILocation } from 'app/entities/location/location.model';
 import { LocationService } from 'app/entities/location/service/location.service';
@@ -22,9 +24,8 @@ describe('Department Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [DepartmentUpdateComponent],
+      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([]), DepartmentUpdateComponent],
       providers: [
-        provideHttpClient(),
         FormBuilder,
         {
           provide: ActivatedRoute,
@@ -47,12 +48,12 @@ describe('Department Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should call location query and add missing value', () => {
-      const department: IDepartment = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
-      const location: ILocation = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
+    it('Should call location query and add missing value', () => {
+      const department: IDepartment = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+      const location: ILocation = { id: 'ec166707-f435-49db-98f7-461ed5993f91' };
       department.location = location;
 
-      const locationCollection: ILocation[] = [{ id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' }];
+      const locationCollection: ILocation[] = [{ id: 'bc97ff8b-3e9b-4bb4-bbfe-7f06236ad9fe' }];
       jest.spyOn(locationService, 'query').mockReturnValue(of(new HttpResponse({ body: locationCollection })));
       const expectedCollection: ILocation[] = [location, ...locationCollection];
       jest.spyOn(locationService, 'addLocationToCollectionIfMissing').mockReturnValue(expectedCollection);
@@ -65,24 +66,24 @@ describe('Department Management Update Component', () => {
       expect(comp.locationsCollection).toEqual(expectedCollection);
     });
 
-    it('should update editForm', () => {
-      const department: IDepartment = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
-      const location: ILocation = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
+    it('Should update editForm', () => {
+      const department: IDepartment = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
+      const location: ILocation = { id: '9409e314-4ef0-44fd-9dde-5cb64b1d3017' };
       department.location = location;
 
       activatedRoute.data = of({ department });
       comp.ngOnInit();
 
-      expect(comp.locationsCollection).toContainEqual(location);
+      expect(comp.locationsCollection).toContain(location);
       expect(comp.department).toEqual(department);
     });
   });
 
   describe('save', () => {
-    it('should call update service on save for existing entity', () => {
+    it('Should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IDepartment>>();
-      const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
+      const department = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
       jest.spyOn(departmentFormService, 'getDepartment').mockReturnValue(department);
       jest.spyOn(departmentService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -102,10 +103,10 @@ describe('Department Management Update Component', () => {
       expect(comp.isSaving).toEqual(false);
     });
 
-    it('should call create service on save for new entity', () => {
+    it('Should call create service on save for new entity', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IDepartment>>();
-      const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
+      const department = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
       jest.spyOn(departmentFormService, 'getDepartment').mockReturnValue({ id: null });
       jest.spyOn(departmentService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -125,10 +126,10 @@ describe('Department Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
-    it('should set isSaving to false on error', () => {
+    it('Should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<HttpResponse<IDepartment>>();
-      const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
+      const department = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
       jest.spyOn(departmentService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ department });
@@ -148,9 +149,9 @@ describe('Department Management Update Component', () => {
 
   describe('Compare relationships', () => {
     describe('compareLocation', () => {
-      it('should forward to locationService', () => {
-        const entity = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
-        const entity2 = { id: 'a63537fe-865d-41e2-bc62-b6de781e4f03' };
+      it('Should forward to locationService', () => {
+        const entity = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
         jest.spyOn(locationService, 'compareLocation');
         comp.compareLocation(entity, entity2);
         expect(locationService.compareLocation).toHaveBeenCalledWith(entity, entity2);

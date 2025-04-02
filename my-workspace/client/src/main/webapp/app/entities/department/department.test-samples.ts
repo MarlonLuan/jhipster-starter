@@ -1,22 +1,22 @@
 import { IDepartment, NewDepartment } from './department.model';
 
 export const sampleWithRequiredData: IDepartment = {
-  id: 'f23b36c6-ce8e-4ad7-8d51-94a265e96c72',
-  departmentName: 'lest responsible helplessly',
+  id: 'ba015a18-f470-41e0-94cb-8cf97424358e',
+  departmentName: 'muffled readily skewer',
 };
 
 export const sampleWithPartialData: IDepartment = {
-  id: '9d4bb317-d3c3-429d-bc01-dd072ab73650',
-  departmentName: 'yak gadzooks',
+  id: '4ad06897-bd4b-4856-9645-35635c9190f4',
+  departmentName: 'legitimate happy',
 };
 
 export const sampleWithFullData: IDepartment = {
-  id: '63d14aac-49b6-4112-bf61-1fbd9c070203',
-  departmentName: 'onto yowza lest',
+  id: '62198ee6-ee57-4af3-bc48-be5d93626cc8',
+  departmentName: 'zowie subsidence',
 };
 
 export const sampleWithNewData: NewDepartment = {
-  departmentName: 'peaceful if',
+  departmentName: 'even absentmindedly',
   id: null,
 };
 

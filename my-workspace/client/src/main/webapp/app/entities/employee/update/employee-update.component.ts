@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -11,9 +11,10 @@ import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
 import { IEmployee } from '../employee.model';
 import { EmployeeService } from '../service/employee.service';
-import { EmployeeFormGroup, EmployeeFormService } from './employee-form.service';
+import { EmployeeFormService, EmployeeFormGroup } from './employee-form.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-employee-update',
   templateUrl: './employee-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],
@@ -25,13 +26,14 @@ export class EmployeeUpdateComponent implements OnInit {
   employeesSharedCollection: IEmployee[] = [];
   departmentsSharedCollection: IDepartment[] = [];
 
-  protected employeeService = inject(EmployeeService);
-  protected employeeFormService = inject(EmployeeFormService);
-  protected departmentService = inject(DepartmentService);
-  protected activatedRoute = inject(ActivatedRoute);
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: EmployeeFormGroup = this.employeeFormService.createEmployeeFormGroup();
+
+  constructor(
+    protected employeeService: EmployeeService,
+    protected employeeFormService: EmployeeFormService,
+    protected departmentService: DepartmentService,
+    protected activatedRoute: ActivatedRoute,
+  ) {}
 
   compareEmployee = (o1: IEmployee | null, o2: IEmployee | null): boolean => this.employeeService.compareEmployee(o1, o2);
 

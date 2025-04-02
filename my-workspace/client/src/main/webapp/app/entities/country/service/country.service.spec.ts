@@ -1,9 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 import { ICountry } from '../country.model';
-import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../country.test-samples';
+import { sampleWithRequiredData, sampleWithNewData, sampleWithPartialData, sampleWithFullData } from '../country.test-samples';
 
 import { CountryService } from './country.service';
 
@@ -18,7 +17,7 @@ describe('Country Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      imports: [HttpClientTestingModule],
     });
     expectedResult = null;
     service = TestBed.inject(CountryService);
@@ -155,7 +154,7 @@ describe('Country Service', () => {
     });
 
     describe('compareCountry', () => {
-      it('should return true if both entities are null', () => {
+      it('Should return true if both entities are null', () => {
         const entity1 = null;
         const entity2 = null;
 
@@ -164,8 +163,8 @@ describe('Country Service', () => {
         expect(compareResult).toEqual(true);
       });
 
-      it('should return false if one entity is null', () => {
-        const entity1 = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
+      it('Should return false if one entity is null', () => {
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
         const entity2 = null;
 
         const compareResult1 = service.compareCountry(entity1, entity2);
@@ -175,9 +174,9 @@ describe('Country Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey differs', () => {
-        const entity1 = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
-        const entity2 = { id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' };
+      it('Should return false if primaryKey differs', () => {
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = { id: '1361f429-3817-4123-8ee3-fdf8943310b2' };
 
         const compareResult1 = service.compareCountry(entity1, entity2);
         const compareResult2 = service.compareCountry(entity2, entity1);
@@ -186,9 +185,9 @@ describe('Country Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
-        const entity1 = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
-        const entity2 = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
+      it('Should return false if primaryKey matches', () => {
+        const entity1 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+        const entity2 = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
         const compareResult1 = service.compareCountry(entity1, entity2);
         const compareResult2 = service.compareCountry(entity2, entity1);

@@ -150,7 +150,7 @@ public class JobHistory implements Serializable {
         if (!(o instanceof JobHistory)) {
             return false;
         }
-        return getId() != null && getId().equals(((JobHistory) o).getId());
+        return id != null && id.equals(((JobHistory) o).id);
     }
 
     @Override

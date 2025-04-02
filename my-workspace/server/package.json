@@ -5,14 +5,14 @@
   "description": "Description for jhipster",
   "license": "UNLICENSED",
   "scripts": {
-    "app:start": "./mvnw -ntp --batch-mode",
+    "app:start": "./mvnw",
     "app:up": "docker compose -f src/main/docker/app.yml up --wait",
-    "backend:build-cache": "./mvnw dependency:go-offline -ntp",
+    "backend:build-cache": "./mvnw dependency:go-offline",
     "backend:debug": "./mvnw -Dspring-boot.run.jvmArguments=\"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000\"",
     "backend:doc:test": "./mvnw -ntp javadoc:javadoc --batch-mode",
-    "backend:info": "./mvnw --version",
+    "backend:info": "./mvnw -ntp enforcer:display-info --batch-mode",
     "backend:nohttp:test": "./mvnw -ntp checkstyle:check --batch-mode",
-    "backend:start": "./mvnw -ntp --batch-mode",
+    "backend:start": "./mvnw",
     "backend:unit:test": "./mvnw -ntp verify --batch-mode -Dlogging.level.ROOT=OFF -Dlogging.level.tech.jhipster=OFF -Dlogging.level.com.mycompany.myapp=OFF -Dlogging.level.org.springframework=OFF -Dlogging.level.org.springframework.web=OFF -Dlogging.level.org.springframework.security=OFF",
     "ci:backend:test": "npm run backend:info && npm run backend:doc:test && npm run backend:nohttp:test && npm run backend:unit:test -- -P$npm_package_config_default_environment",
     "ci:e2e:package": "npm run java:$npm_package_config_packaging:$npm_package_config_default_environment -- -Pe2e -Denforcer.skip=true",
@@ -22,7 +22,6 @@
     "ci:e2e:server:start": "java -jar target/e2e.$npm_package_config_packaging --spring.profiles.active=e2e,$npm_package_config_default_environment -Dlogging.level.ROOT=OFF -Dlogging.level.tech.jhipster=OFF -Dlogging.level.com.mycompany.myapp=OFF -Dlogging.level.org.springframework=OFF -Dlogging.level.org.springframework.web=OFF -Dlogging.level.org.springframework.security=OFF --logging.level.org.springframework.web=ERROR",
     "ci:e2e:teardown": "npm run ci:e2e:teardown:docker --if-present",
     "ci:e2e:teardown:docker": "docker compose -f src/main/docker/services.yml down -v && docker ps -a",
-    "ci:server:await": "echo \"Waiting for server at port $npm_package_config_backend_port to start\" && wait-on -t 360000 http-get://127.0.0.1:$npm_package_config_backend_port/management/health && echo \"Server at port $npm_package_config_backend_port started\"",
     "docker:db:down": "docker compose -f src/main/docker/postgresql.yml down -v",
     "docker:db:up": "docker compose -f src/main/docker/postgresql.yml up --wait",
     "docker:keycloak:down": "docker compose -f src/main/docker/keycloak.yml down -v",
@@ -37,6 +36,8 @@
     "java:war": "./mvnw -ntp verify -DskipTests --batch-mode -Pwar",
     "java:war:dev": "npm run java:war -- -Pdev,webapp",
     "java:war:prod": "npm run java:war -- -Pprod",
+    "prettier:check": "prettier --check \"{,src/**/,.blueprint/**/}*.{md,json,yml,html,java}\"",
+    "prettier:format": "prettier --write \"{,src/**/,.blueprint/**/}*.{md,json,yml,html,java}\"",
     "services:up": "docker compose -f src/main/docker/services.yml up --wait"
   },
   "config": {
@@ -45,13 +46,13 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "8.10.0",
-    "prettier": "3.5.3",
-    "prettier-plugin-java": "2.6.7",
-    "prettier-plugin-packagejson": "2.5.10"
+    "generator-jhipster": "8.0.0-beta.3",
+    "prettier": "3.0.3",
+    "prettier-plugin-java": "2.3.1",
+    "prettier-plugin-packagejson": "2.4.5"
   },
   "engines": {
-    "node": ">=22.14.0"
+    "node": ">=18.17.1"
   },
   "cacheDirectories": [
     "node_modules"

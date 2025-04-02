@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class CountryServiceImpl implements CountryService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CountryServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
 
     private final CountryRepository countryRepository;
 
@@ -38,7 +38,7 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public CountryDTO save(CountryDTO countryDTO) {
-        LOG.debug("Request to save Country : {}", countryDTO);
+        log.debug("Request to save Country : {}", countryDTO);
         Country country = countryMapper.toEntity(countryDTO);
         country = countryRepository.save(country);
         return countryMapper.toDto(country);
@@ -46,7 +46,7 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public CountryDTO update(CountryDTO countryDTO) {
-        LOG.debug("Request to update Country : {}", countryDTO);
+        log.debug("Request to update Country : {}", countryDTO);
         Country country = countryMapper.toEntity(countryDTO);
         country = countryRepository.save(country);
         return countryMapper.toDto(country);
@@ -54,7 +54,7 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public Optional<CountryDTO> partialUpdate(CountryDTO countryDTO) {
-        LOG.debug("Request to partially update Country : {}", countryDTO);
+        log.debug("Request to partially update Country : {}", countryDTO);
 
         return countryRepository
             .findById(countryDTO.getId())
@@ -70,7 +70,7 @@ public class CountryServiceImpl implements CountryService {
     @Override
     @Transactional(readOnly = true)
     public Page<CountryDTO> findAll(Pageable pageable) {
-        LOG.debug("Request to get all Countries");
+        log.debug("Request to get all Countries");
         return countryRepository.findAll(pageable).map(countryMapper::toDto);
     }
 
@@ -80,8 +80,9 @@ public class CountryServiceImpl implements CountryService {
      */
     @Transactional(readOnly = true)
     public List<CountryDTO> findAllWhereLocationIsNull() {
-        LOG.debug("Request to get all countries where Location is null");
-        return StreamSupport.stream(countryRepository.findAll().spliterator(), false)
+        log.debug("Request to get all countries where Location is null");
+        return StreamSupport
+            .stream(countryRepository.findAll().spliterator(), false)
             .filter(country -> country.getLocation() == null)
             .map(countryMapper::toDto)
             .collect(Collectors.toCollection(LinkedList::new));
@@ -90,13 +91,13 @@ public class CountryServiceImpl implements CountryService {
     @Override
     @Transactional(readOnly = true)
     public Optional<CountryDTO> findOne(UUID id) {
-        LOG.debug("Request to get Country : {}", id);
+        log.debug("Request to get Country : {}", id);
         return countryRepository.findById(id).map(countryMapper::toDto);
     }
 
     @Override
     public void delete(UUID id) {
-        LOG.debug("Request to delete Country : {}", id);
+        log.debug("Request to delete Country : {}", id);
         countryRepository.deleteById(id);
     }
 }

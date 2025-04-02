@@ -38,7 +38,8 @@ class AccountResourceIT {
     @Test
     @Transactional
     void testGetExistingAccount() throws Exception {
-        TestSecurityContextHolder.getContext()
+        TestSecurityContextHolder
+            .getContext()
             .setAuthentication(registerAuthenticationToken(authorizedClientService, clientRegistration, testAuthenticationToken()));
 
         restAccountMockMvc
@@ -46,6 +47,7 @@ class AccountResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.login").value(TEST_USER_LOGIN))
+            .andExpect(jsonPath("$.email").value("john.doe@jhipster.com"))
             .andExpect(jsonPath("$.authorities").value(AuthoritiesConstants.ADMIN));
     }
 
@@ -57,12 +59,18 @@ class AccountResourceIT {
     @Test
     @WithUnauthenticatedMockUser
     void testNonAuthenticatedUser() throws Exception {
-        restAccountMockMvc.perform(get("/api/authenticate")).andExpect(status().isUnauthorized());
+        restAccountMockMvc
+            .perform(get("/api/authenticate").accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(""));
     }
 
     @Test
     @WithMockUser(TEST_USER_LOGIN)
     void testAuthenticatedUser() throws Exception {
-        restAccountMockMvc.perform(get("/api/authenticate").with(request -> request)).andExpect(status().isNoContent());
+        restAccountMockMvc
+            .perform(get("/api/authenticate").with(request -> request).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(TEST_USER_LOGIN));
     }
 }
