@@ -120,13 +120,15 @@ export default tseslint.config(
   {
     files: ['**/*.html'],
     extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
-    rules: {},
+    rules: {
+      '@angular-eslint/template/click-events-have-key-events': 'off',
+      '@angular-eslint/template/interactive-supports-focus': 'off',
+    },
   },
+  // jhipster-needle-eslint-add-config - JHipster will add additional config here
   {
     // Html templates require some work
     ignores: ['**/*.html'],
     extends: [prettier],
   },
-  // jhipster-needle-eslint-add-config - JHipster will add additional config here
-  prettier,
 );
