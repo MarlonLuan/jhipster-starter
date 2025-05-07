@@ -26,7 +26,7 @@ describe('Alert Component', () => {
     mockAlertService = TestBed.inject(AlertService);
   });
 
-  it('should call alertService.get on init', () => {
+  it('Should call alertService.get on init', () => {
     // WHEN
     comp.ngOnInit();
 
@@ -34,7 +34,7 @@ describe('Alert Component', () => {
     expect(mockAlertService.get).toHaveBeenCalled();
   });
 
-  it('should call alertService.clear on destroy', () => {
+  it('Should call alertService.clear on destroy', () => {
     // WHEN
     comp.ngOnDestroy();
 

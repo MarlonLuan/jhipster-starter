@@ -45,7 +45,7 @@ describe('Home Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should synchronize account variable with current account', () => {
+    it('Should synchronize account variable with current account', () => {
       // GIVEN
       mockAccountService.identity = jest.fn(() => of(account));
 
@@ -53,12 +53,12 @@ describe('Home Component', () => {
       comp.ngOnInit();
 
       // THEN
-      expect(comp.account()).toEqual(account);
+      expect(comp.account).toEqual(account);
     });
   });
 
   describe('login', () => {
-    it('should call loginService.login on login', () => {
+    it('Should call loginService.login on login', () => {
       // WHEN
       comp.login();
 

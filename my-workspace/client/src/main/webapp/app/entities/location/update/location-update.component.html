@@ -1,22 +1,20 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2 id="jhi-location-heading" data-cy="LocationCreateUpdateHeading" jhiTranslate="jhipsterApp.location.home.createOrEditLabel">
         Create or edit a Location
       </h2>
 
       <div>
-        <jhi-alert-error />
+        <jhi-alert-error></jhi-alert-error>
 
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id" jhiTranslate="jhipsterApp.location.id">Id</label>
-            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-          </div>
-        }
+        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" jhiTranslate="jhipsterApp.location.id" for="field_id">Id</label>
+          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_streetAddress" jhiTranslate="jhipsterApp.location.streetAddress">Street Address</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.location.streetAddress" for="field_streetAddress">Street Address</label>
           <input
             type="text"
             class="form-control"
@@ -28,7 +26,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_postalCode" jhiTranslate="jhipsterApp.location.postalCode">Postal Code</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.location.postalCode" for="field_postalCode">Postal Code</label>
           <input
             type="text"
             class="form-control"
@@ -40,12 +38,12 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_city" jhiTranslate="jhipsterApp.location.city">City</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.location.city" for="field_city">City</label>
           <input type="text" class="form-control" name="city" id="field_city" data-cy="city" formControlName="city" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_stateProvince" jhiTranslate="jhipsterApp.location.stateProvince">State Province</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.location.stateProvince" for="field_stateProvince">State Province</label>
           <input
             type="text"
             class="form-control"
@@ -57,7 +55,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_country" jhiTranslate="jhipsterApp.location.country">Country</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.location.country" for="field_country">Country</label>
           <select
             class="form-control"
             id="field_country"
@@ -67,9 +65,7 @@
             [compareWith]="compareCountry"
           >
             <option [ngValue]="null"></option>
-            @for (countryOption of countriesCollection; track $index) {
-              <option [ngValue]="countryOption">{{ countryOption.id }}</option>
-            }
+            <option [ngValue]="countryOption" *ngFor="let countryOption of countriesCollection">{{ countryOption.id }}</option>
           </select>
         </div>
       </div>

@@ -1,37 +1,35 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
       <h2 id="jhi-job-heading" data-cy="JobCreateUpdateHeading" jhiTranslate="jhipsterApp.job.home.createOrEditLabel">
         Create or edit a Job
       </h2>
 
       <div>
-        <jhi-alert-error />
+        <jhi-alert-error></jhi-alert-error>
 
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id" jhiTranslate="jhipsterApp.job.id">Id</label>
-            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-          </div>
-        }
+        <div class="mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" jhiTranslate="jhipsterApp.job.id" for="field_id">Id</label>
+          <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_jobTitle" jhiTranslate="jhipsterApp.job.jobTitle">Job Title</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.job.jobTitle" for="field_jobTitle">Job Title</label>
           <input type="text" class="form-control" name="jobTitle" id="field_jobTitle" data-cy="jobTitle" formControlName="jobTitle" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_minSalary" jhiTranslate="jhipsterApp.job.minSalary">Min Salary</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.job.minSalary" for="field_minSalary">Min Salary</label>
           <input type="number" class="form-control" name="minSalary" id="field_minSalary" data-cy="minSalary" formControlName="minSalary" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_maxSalary" jhiTranslate="jhipsterApp.job.maxSalary">Max Salary</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.job.maxSalary" for="field_maxSalary">Max Salary</label>
           <input type="number" class="form-control" name="maxSalary" id="field_maxSalary" data-cy="maxSalary" formControlName="maxSalary" />
         </div>
 
         <div class="mb-3">
-          <label for="field_tasks" jhiTranslate="jhipsterApp.job.task">Task</label>
+          <label jhiTranslate="jhipsterApp.job.task" for="field_tasks">Task</label>
           <select
             class="form-control"
             id="field_tasks"
@@ -41,14 +39,12 @@
             formControlName="tasks"
             [compareWith]="compareTask"
           >
-            @for (taskOption of tasksSharedCollection; track $index) {
-              <option [ngValue]="taskOption">{{ taskOption.title }}</option>
-            }
+            <option [ngValue]="taskOption" *ngFor="let taskOption of tasksSharedCollection">{{ taskOption.title }}</option>
           </select>
         </div>
 
         <div class="mb-3">
-          <label class="form-label" for="field_employee" jhiTranslate="jhipsterApp.job.employee">Employee</label>
+          <label class="form-label" jhiTranslate="jhipsterApp.job.employee" for="field_employee">Employee</label>
           <select
             class="form-control"
             id="field_employee"
@@ -58,9 +54,7 @@
             [compareWith]="compareEmployee"
           >
             <option [ngValue]="null"></option>
-            @for (employeeOption of employeesSharedCollection; track $index) {
-              <option [ngValue]="employeeOption">{{ employeeOption.id }}</option>
-            }
+            <option [ngValue]="employeeOption" *ngFor="let employeeOption of employeesSharedCollection">{{ employeeOption.id }}</option>
           </select>
         </div>
       </div>

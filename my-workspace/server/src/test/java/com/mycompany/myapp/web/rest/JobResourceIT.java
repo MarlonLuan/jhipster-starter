@@ -1,7 +1,5 @@
 package com.mycompany.myapp.web.rest;
 
-import static com.mycompany.myapp.domain.JobAsserts.*;
-import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.Mockito.*;
@@ -9,7 +7,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Job;
 import com.mycompany.myapp.repository.JobRepository;
@@ -18,8 +15,8 @@ import com.mycompany.myapp.service.dto.JobDTO;
 import com.mycompany.myapp.service.mapper.JobMapper;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,9 +53,6 @@ class JobResourceIT {
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
     @Autowired
-    private ObjectMapper om;
-
-    @Autowired
     private JobRepository jobRepository;
 
     @Mock
@@ -78,16 +72,15 @@ class JobResourceIT {
 
     private Job job;
 
-    private Job insertedJob;
-
     /**
      * Create an entity for this test.
      *
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Job createEntity() {
-        return new Job().jobTitle(DEFAULT_JOB_TITLE).minSalary(DEFAULT_MIN_SALARY).maxSalary(DEFAULT_MAX_SALARY);
+    public static Job createEntity(EntityManager em) {
+        Job job = new Job().jobTitle(DEFAULT_JOB_TITLE).minSalary(DEFAULT_MIN_SALARY).maxSalary(DEFAULT_MAX_SALARY);
+        return job;
     }
 
     /**
@@ -96,70 +89,63 @@ class JobResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Job createUpdatedEntity() {
-        return new Job().jobTitle(UPDATED_JOB_TITLE).minSalary(UPDATED_MIN_SALARY).maxSalary(UPDATED_MAX_SALARY);
+    public static Job createUpdatedEntity(EntityManager em) {
+        Job job = new Job().jobTitle(UPDATED_JOB_TITLE).minSalary(UPDATED_MIN_SALARY).maxSalary(UPDATED_MAX_SALARY);
+        return job;
     }
 
     @BeforeEach
-    void initTest() {
-        job = createEntity();
-    }
-
-    @AfterEach
-    void cleanup() {
-        if (insertedJob != null) {
-            jobRepository.delete(insertedJob);
-            insertedJob = null;
-        }
+    public void initTest() {
+        job = createEntity(em);
     }
 
     @Test
     @Transactional
     void createJob() throws Exception {
-        long databaseSizeBeforeCreate = getRepositoryCount();
+        int databaseSizeBeforeCreate = jobRepository.findAll().size();
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
-        var returnedJobDTO = om.readValue(
-            restJobMockMvc
-                .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(jobDTO)))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString(),
-            JobDTO.class
-        );
+        restJobMockMvc
+            .perform(
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(jobDTO))
+            )
+            .andExpect(status().isCreated());
 
         // Validate the Job in the database
-        assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
-        var returnedJob = jobMapper.toEntity(returnedJobDTO);
-        assertJobUpdatableFieldsEquals(returnedJob, getPersistedJob(returnedJob));
-
-        insertedJob = returnedJob;
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeCreate + 1);
+        Job testJob = jobList.get(jobList.size() - 1);
+        assertThat(testJob.getJobTitle()).isEqualTo(DEFAULT_JOB_TITLE);
+        assertThat(testJob.getMinSalary()).isEqualTo(DEFAULT_MIN_SALARY);
+        assertThat(testJob.getMaxSalary()).isEqualTo(DEFAULT_MAX_SALARY);
     }
 
     @Test
     @Transactional
     void createJobWithExistingId() throws Exception {
         // Create the Job with an existing ID
-        insertedJob = jobRepository.saveAndFlush(job);
+        jobRepository.saveAndFlush(job);
         JobDTO jobDTO = jobMapper.toDto(job);
 
-        long databaseSizeBeforeCreate = getRepositoryCount();
+        int databaseSizeBeforeCreate = jobRepository.findAll().size();
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restJobMockMvc
-            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(jobDTO)))
+            .perform(
+                post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(jobDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Job in the database
-        assertSameRepositoryCount(databaseSizeBeforeCreate);
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeCreate);
     }
 
     @Test
     @Transactional
     void getAllJobs() throws Exception {
         // Initialize the database
-        insertedJob = jobRepository.saveAndFlush(job);
+        jobRepository.saveAndFlush(job);
 
         // Get all the jobList
         restJobMockMvc
@@ -193,7 +179,7 @@ class JobResourceIT {
     @Transactional
     void getJob() throws Exception {
         // Initialize the database
-        insertedJob = jobRepository.saveAndFlush(job);
+        jobRepository.saveAndFlush(job);
 
         // Get the job
         restJobMockMvc
@@ -217,9 +203,9 @@ class JobResourceIT {
     @Transactional
     void putExistingJob() throws Exception {
         // Initialize the database
-        insertedJob = jobRepository.saveAndFlush(job);
+        jobRepository.saveAndFlush(job);
 
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = jobRepository.findAll().size();
 
         // Update the job
         Job updatedJob = jobRepository.findById(job.getId()).orElseThrow();
@@ -233,19 +219,23 @@ class JobResourceIT {
                 put(ENTITY_API_URL_ID, jobDTO.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(jobDTO))
+                    .content(TestUtil.convertObjectToJsonBytes(jobDTO))
             )
             .andExpect(status().isOk());
 
         // Validate the Job in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertPersistedJobToMatchAllProperties(updatedJob);
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
+        Job testJob = jobList.get(jobList.size() - 1);
+        assertThat(testJob.getJobTitle()).isEqualTo(UPDATED_JOB_TITLE);
+        assertThat(testJob.getMinSalary()).isEqualTo(UPDATED_MIN_SALARY);
+        assertThat(testJob.getMaxSalary()).isEqualTo(UPDATED_MAX_SALARY);
     }
 
     @Test
     @Transactional
     void putNonExistingJob() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = jobRepository.findAll().size();
         job.setId(UUID.randomUUID());
 
         // Create the Job
@@ -257,18 +247,19 @@ class JobResourceIT {
                 put(ENTITY_API_URL_ID, jobDTO.getId())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(jobDTO))
+                    .content(TestUtil.convertObjectToJsonBytes(jobDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Job in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void putWithIdMismatchJob() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = jobRepository.findAll().size();
         job.setId(UUID.randomUUID());
 
         // Create the Job
@@ -280,18 +271,19 @@ class JobResourceIT {
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(om.writeValueAsBytes(jobDTO))
+                    .content(TestUtil.convertObjectToJsonBytes(jobDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Job in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void putWithMissingIdPathParamJob() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = jobRepository.findAll().size();
         job.setId(UUID.randomUUID());
 
         // Create the Job
@@ -299,49 +291,55 @@ class JobResourceIT {
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobMockMvc
-            .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(jobDTO)))
+            .perform(
+                put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(jobDTO))
+            )
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Job in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void partialUpdateJobWithPatch() throws Exception {
         // Initialize the database
-        insertedJob = jobRepository.saveAndFlush(job);
+        jobRepository.saveAndFlush(job);
 
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = jobRepository.findAll().size();
 
         // Update the job using partial update
         Job partialUpdatedJob = new Job();
         partialUpdatedJob.setId(job.getId());
 
-        partialUpdatedJob.minSalary(UPDATED_MIN_SALARY).maxSalary(UPDATED_MAX_SALARY);
+        partialUpdatedJob.maxSalary(UPDATED_MAX_SALARY);
 
         restJobMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedJob.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedJob))
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedJob))
             )
             .andExpect(status().isOk());
 
         // Validate the Job in the database
-
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertJobUpdatableFieldsEquals(createUpdateProxyForBean(partialUpdatedJob, job), getPersistedJob(job));
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
+        Job testJob = jobList.get(jobList.size() - 1);
+        assertThat(testJob.getJobTitle()).isEqualTo(DEFAULT_JOB_TITLE);
+        assertThat(testJob.getMinSalary()).isEqualTo(DEFAULT_MIN_SALARY);
+        assertThat(testJob.getMaxSalary()).isEqualTo(UPDATED_MAX_SALARY);
     }
 
     @Test
     @Transactional
     void fullUpdateJobWithPatch() throws Exception {
         // Initialize the database
-        insertedJob = jobRepository.saveAndFlush(job);
+        jobRepository.saveAndFlush(job);
 
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = jobRepository.findAll().size();
 
         // Update the job using partial update
         Job partialUpdatedJob = new Job();
@@ -354,20 +352,23 @@ class JobResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedJob.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedJob))
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedJob))
             )
             .andExpect(status().isOk());
 
         // Validate the Job in the database
-
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
-        assertJobUpdatableFieldsEquals(partialUpdatedJob, getPersistedJob(partialUpdatedJob));
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
+        Job testJob = jobList.get(jobList.size() - 1);
+        assertThat(testJob.getJobTitle()).isEqualTo(UPDATED_JOB_TITLE);
+        assertThat(testJob.getMinSalary()).isEqualTo(UPDATED_MIN_SALARY);
+        assertThat(testJob.getMaxSalary()).isEqualTo(UPDATED_MAX_SALARY);
     }
 
     @Test
     @Transactional
     void patchNonExistingJob() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = jobRepository.findAll().size();
         job.setId(UUID.randomUUID());
 
         // Create the Job
@@ -379,18 +380,19 @@ class JobResourceIT {
                 patch(ENTITY_API_URL_ID, jobDTO.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(jobDTO))
+                    .content(TestUtil.convertObjectToJsonBytes(jobDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Job in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void patchWithIdMismatchJob() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = jobRepository.findAll().size();
         job.setId(UUID.randomUUID());
 
         // Create the Job
@@ -402,18 +404,19 @@ class JobResourceIT {
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(jobDTO))
+                    .content(TestUtil.convertObjectToJsonBytes(jobDTO))
             )
             .andExpect(status().isBadRequest());
 
         // Validate the Job in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void patchWithMissingIdPathParamJob() throws Exception {
-        long databaseSizeBeforeUpdate = getRepositoryCount();
+        int databaseSizeBeforeUpdate = jobRepository.findAll().size();
         job.setId(UUID.randomUUID());
 
         // Create the Job
@@ -421,20 +424,26 @@ class JobResourceIT {
 
         // If url ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobMockMvc
-            .perform(patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(jobDTO)))
+            .perform(
+                patch(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(jobDTO))
+            )
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Job in the database
-        assertSameRepositoryCount(databaseSizeBeforeUpdate);
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeUpdate);
     }
 
     @Test
     @Transactional
     void deleteJob() throws Exception {
         // Initialize the database
-        insertedJob = jobRepository.saveAndFlush(job);
+        jobRepository.saveAndFlush(job);
 
-        long databaseSizeBeforeDelete = getRepositoryCount();
+        int databaseSizeBeforeDelete = jobRepository.findAll().size();
 
         // Delete the job
         restJobMockMvc
@@ -442,34 +451,7 @@ class JobResourceIT {
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
-        assertDecrementedRepositoryCount(databaseSizeBeforeDelete);
-    }
-
-    protected long getRepositoryCount() {
-        return jobRepository.count();
-    }
-
-    protected void assertIncrementedRepositoryCount(long countBefore) {
-        assertThat(countBefore + 1).isEqualTo(getRepositoryCount());
-    }
-
-    protected void assertDecrementedRepositoryCount(long countBefore) {
-        assertThat(countBefore - 1).isEqualTo(getRepositoryCount());
-    }
-
-    protected void assertSameRepositoryCount(long countBefore) {
-        assertThat(countBefore).isEqualTo(getRepositoryCount());
-    }
-
-    protected Job getPersistedJob(Job job) {
-        return jobRepository.findById(job.getId()).orElseThrow();
-    }
-
-    protected void assertPersistedJobToMatchAllProperties(Job expectedJob) {
-        assertJobAllPropertiesEquals(expectedJob, getPersistedJob(expectedJob));
-    }
-
-    protected void assertPersistedJobToMatchUpdatableProperties(Job expectedJob) {
-        assertJobAllUpdatablePropertiesEquals(expectedJob, getPersistedJob(expectedJob));
+        List<Job> jobList = jobRepository.findAll();
+        assertThat(jobList).hasSize(databaseSizeBeforeDelete - 1);
     }
 }

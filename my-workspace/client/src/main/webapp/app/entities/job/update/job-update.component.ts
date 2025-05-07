@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -13,9 +13,10 @@ import { IEmployee } from 'app/entities/employee/employee.model';
 import { EmployeeService } from 'app/entities/employee/service/employee.service';
 import { JobService } from '../service/job.service';
 import { IJob } from '../job.model';
-import { JobFormGroup, JobFormService } from './job-form.service';
+import { JobFormService, JobFormGroup } from './job-form.service';
 
 @Component({
+  standalone: true,
   selector: 'jhi-job-update',
   templateUrl: './job-update.component.html',
   imports: [SharedModule, FormsModule, ReactiveFormsModule],
@@ -27,14 +28,15 @@ export class JobUpdateComponent implements OnInit {
   tasksSharedCollection: ITask[] = [];
   employeesSharedCollection: IEmployee[] = [];
 
-  protected jobService = inject(JobService);
-  protected jobFormService = inject(JobFormService);
-  protected taskService = inject(TaskService);
-  protected employeeService = inject(EmployeeService);
-  protected activatedRoute = inject(ActivatedRoute);
-
-  // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: JobFormGroup = this.jobFormService.createJobFormGroup();
+
+  constructor(
+    protected jobService: JobService,
+    protected jobFormService: JobFormService,
+    protected taskService: TaskService,
+    protected employeeService: EmployeeService,
+    protected activatedRoute: ActivatedRoute,
+  ) {}
 
   compareTask = (o1: ITask | null, o2: ITask | null): boolean => this.taskService.compareTask(o1, o2);
 
