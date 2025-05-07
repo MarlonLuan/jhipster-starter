@@ -36,7 +36,7 @@
   },
   "overrides": {
     "browser-sync": "3.0.4",
-    "webpack": "5.99.7"
+    "webpack": "5.99.8"
   },
   "dependencies": {
     "@angular/common": "19.2.9",
