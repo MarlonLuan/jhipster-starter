@@ -34,7 +34,7 @@ public class TaskResource {
 
     private static final String ENTITY_NAME = "task";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final TaskService taskService;
