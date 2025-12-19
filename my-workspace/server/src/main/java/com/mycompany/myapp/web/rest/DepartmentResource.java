@@ -37,7 +37,7 @@ public class DepartmentResource {
 
     private static final String ENTITY_NAME = "department";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final DepartmentService departmentService;

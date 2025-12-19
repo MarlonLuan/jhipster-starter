@@ -1,35 +1,38 @@
 # jhipster
 
-This application was generated using JHipster 8.11.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.11.0](https://www.jhipster.tech/documentation-archive/v8.11.0).
+This application was generated using JHipster 9.0.0-beta.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0).
 
 ## Project Structure
 
 ## Development
 
-The build system will install automatically the recommended version of Node and npm.
+Before you can build this project, you must install and configure the following dependencies on your machine:
 
-We provide a wrapper to launch npm.
+1. [Node.js](https://nodejs.org/): Node is used to run a development web server and build the project.
+   Depending on your system, you can install Node either from source or as a pre-packaged bundle.
+
+After installing Node, you should be able to run the following command to install development tools.
 You will only need to run this command when dependencies change in [package.json](package.json).
 
 ```
-./npmw install
+npm install
 ```
 
-We use npm scripts and [Angular CLI][] with [Webpack][] as our build system.
+We use npm scripts and [Angular CLI][] with [esbuild][] as our build system.
 
 Run the following commands in two separate terminals to create a blissful development experience where your browser
 auto-refreshes when files change on your hard drive.
 
 ```
-./mvnw
-./npmw start
+npm backend:start
+npm start
 ```
 
 Npm is also used to manage CSS and JavaScript dependencies used in this application. You can upgrade dependencies by
-specifying a newer version in [package.json](package.json). You can also run `./npmw update` and `./npmw install` to manage dependencies.
-Add the `help` flag on any command to see how you can use it. For example, `./npmw help update`.
+specifying a newer version in [package.json](package.json). You can also run `npm update` and `npm install` to manage dependencies.
+Add the `help` flag on any command to see how you can use it. For example, `npm help update`.
 
-The `./npmw run` command will list all the scripts available to run for this project.
+The `npm run` command will list all the scripts available to run for this project.
 
 ### PWA Support
 
@@ -43,19 +46,19 @@ ServiceWorkerModule.register('ngsw-worker.js', { enabled: false }),
 
 ### Managing dependencies
 
-For example, to add [Leaflet][] library as a runtime dependency of your application, you would run following command:
+For example, to add [Leaflet][] library as a runtime dependency of your application, you would run the following command:
 
 ```
-./npmw install --save --save-exact leaflet
+npm install --save --save-exact leaflet
 ```
 
-To benefit from TypeScript type definitions from [DefinitelyTyped][] repository in development, you would run following command:
+To benefit from TypeScript type definitions from [DefinitelyTyped][] repository in development, you would run the following command:
 
 ```
-./npmw install --save-dev --save-exact @types/leaflet
+npm install --save-dev --save-exact @types/leaflet
 ```
 
-Then you would import the JS and CSS files specified in library's installation instructions so that [Webpack][] knows about them:
+Then you would import the JS and CSS files specified in library's installation instructions so that [esbuild][] knows about them:
 Edit [src/main/webapp/app/app.config.ts](src/main/webapp/app/app.config.ts) file:
 
 ```
@@ -85,8 +88,8 @@ ng generate component my-component
 will generate few files:
 
 ```
-create src/main/webapp/app/my-component/my-component.component.html
-create src/main/webapp/app/my-component/my-component.component.ts
+create src/main/webapp/app/my-component/my-component.html
+create src/main/webapp/app/my-component/my-component.ts
 update src/main/webapp/app/app.config.ts
 ```
 
@@ -96,23 +99,22 @@ update src/main/webapp/app/app.config.ts
 
 ### Client tests
 
-Unit tests are run by [Jest][]. They're located near components and can be run with:
+Unit tests are run by [Vitest][]. They're located near components and can be run with:
 
 ```
-./npmw test
+npm test
 ```
 
-[JHipster Homepage and latest documentation]: https://www.jhipster.tech
-[JHipster 8.11.0 archive]: https://www.jhipster.tech/documentation-archive/v8.11.0
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v8.11.0/development/
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v8.11.0/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v8.11.0/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v8.11.0/running-tests/
-[Code quality page]: https://www.jhipster.tech/documentation-archive/v8.11.0/code-quality/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v8.11.0/setting-up-ci/
+[JHipster Homepage and latest documentation]: https://www.jhipster.tech/
+[JHipster 9.0.0-beta.0 archive]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0
+[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/development/
+[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/docker-compose
+[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/production/
+[Running tests page]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/running-tests/
+[Code quality page]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/code-quality/
+[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/setting-up-ci/
 [Node.js]: https://nodejs.org/
 [NPM]: https://www.npmjs.com/
-[Webpack]: https://webpack.github.io/
 [BrowserSync]: https://www.browsersync.io/
 [Jest]: https://jestjs.io
 [Leaflet]: https://leafletjs.com/

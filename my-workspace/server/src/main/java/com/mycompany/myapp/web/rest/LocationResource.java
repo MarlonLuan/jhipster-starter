@@ -35,7 +35,7 @@ public class LocationResource {
 
     private static final String ENTITY_NAME = "location";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final LocationService locationService;

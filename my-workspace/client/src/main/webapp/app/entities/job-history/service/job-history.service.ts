@@ -1,12 +1,12 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
 
 import dayjs from 'dayjs/esm';
+import { Observable, map } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IJobHistory, NewJobHistory } from '../job-history.model';
 
 export type PartialUpdateJobHistory = Partial<IJobHistory> & Pick<IJobHistory, 'id'>;
@@ -42,20 +42,24 @@ export class JobHistoryService {
   update(jobHistory: IJobHistory): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(jobHistory);
     return this.http
-      .put<RestJobHistory>(`${this.resourceUrl}/${this.getJobHistoryIdentifier(jobHistory)}`, copy, { observe: 'response' })
+      .put<RestJobHistory>(`${this.resourceUrl}/${encodeURIComponent(this.getJobHistoryIdentifier(jobHistory))}`, copy, {
+        observe: 'response',
+      })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   partialUpdate(jobHistory: PartialUpdateJobHistory): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(jobHistory);
     return this.http
-      .patch<RestJobHistory>(`${this.resourceUrl}/${this.getJobHistoryIdentifier(jobHistory)}`, copy, { observe: 'response' })
+      .patch<RestJobHistory>(`${this.resourceUrl}/${encodeURIComponent(this.getJobHistoryIdentifier(jobHistory))}`, copy, {
+        observe: 'response',
+      })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   find(id: string): Observable<EntityResponseType> {
     return this.http
-      .get<RestJobHistory>(`${this.resourceUrl}/${id}`, { observe: 'response' })
+      .get<RestJobHistory>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
@@ -67,7 +71,7 @@ export class JobHistoryService {
   }
 
   delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getJobHistoryIdentifier(jobHistory: Pick<IJobHistory, 'id'>): string {
