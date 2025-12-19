@@ -70,7 +70,7 @@
     "@angular/service-worker": "19.2.9",
     "@eslint/js": "9.26.0",
     "@types/jest": "29.5.14",
-    "@types/node": "20.11.25",
+    "@types/node": "20.11.30",
     "angular-eslint": "19.3.0",
     "browser-sync": "3.0.4",
     "browser-sync-webpack-plugin": "2.3.0",
