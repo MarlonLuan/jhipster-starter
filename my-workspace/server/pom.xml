@@ -34,7 +34,7 @@
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
         <run.addResources>false</run.addResources>
         <spring-boot.version>${project.parent.version}</spring-boot.version>
-        <archunit-junit5.version>1.4.0</archunit-junit5.version>
+        <archunit-junit5.version>1.4.1</archunit-junit5.version>
         <checkstyle.version>10.23.1</checkstyle.version>
         <git-commit-id-maven-plugin.version>9.0.1</git-commit-id-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
