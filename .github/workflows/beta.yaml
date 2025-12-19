@@ -44,7 +44,7 @@ jobs:
       - run: |
           sudo date -s "${{ steps.date.outputs.date }}"
 
-      - uses: peter-evans/create-pull-request@v7
+      - uses: peter-evans/create-pull-request@v6
         with:
           title: beta
           body:
