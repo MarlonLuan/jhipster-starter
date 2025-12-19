@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { IJobHistory } from '../job-history.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../job-history.test-samples';
@@ -102,8 +102,7 @@ describe('JobHistory Service', () => {
       it('should add a JobHistory to an empty array', () => {
         const jobHistory: IJobHistory = sampleWithRequiredData;
         expectedResult = service.addJobHistoryToCollectionIfMissing([], jobHistory);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(jobHistory);
+        expect(expectedResult).toEqual([jobHistory]);
       });
 
       it('should not add a JobHistory to an array that contains it', () => {
@@ -137,16 +136,13 @@ describe('JobHistory Service', () => {
         const jobHistory: IJobHistory = sampleWithRequiredData;
         const jobHistory2: IJobHistory = sampleWithPartialData;
         expectedResult = service.addJobHistoryToCollectionIfMissing([], jobHistory, jobHistory2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(jobHistory);
-        expect(expectedResult).toContain(jobHistory2);
+        expect(expectedResult).toEqual([jobHistory, jobHistory2]);
       });
 
       it('should accept null and undefined values', () => {
         const jobHistory: IJobHistory = sampleWithRequiredData;
         expectedResult = service.addJobHistoryToCollectionIfMissing([], null, jobHistory, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(jobHistory);
+        expect(expectedResult).toEqual([jobHistory]);
       });
 
       it('should return initial array if no JobHistory is added', () => {

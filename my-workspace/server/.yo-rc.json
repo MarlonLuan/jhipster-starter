@@ -5,13 +5,12 @@
     "cacheProvider": "no",
     "devDatabaseType": "postgresql",
     "entities": ["Region", "Country", "Location", "Department", "Task", "Employee", "Job", "JobHistory"],
-    "jhipsterVersion": "8.11.0",
+    "jhipsterVersion": "9.0.0-beta.0",
     "languages": ["en", "pt-br"],
     "lastLiquibaseTimestamp": 43683000,
     "monorepository": true,
     "nativeLanguage": "en",
     "skipClient": true,
-    "skipCommitHook": true,
-    "skipUserManagement": true
+    "skipCommitHook": true
   }
 }

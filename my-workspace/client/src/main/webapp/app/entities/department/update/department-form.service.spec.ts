@@ -8,7 +8,6 @@ describe('Department Form Service', () => {
   let service: DepartmentFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(DepartmentFormService);
   });
 
@@ -43,7 +42,7 @@ describe('Department Form Service', () => {
       it('should return NewDepartment for default Department initial value', () => {
         const formGroup = service.createDepartmentFormGroup(sampleWithNewData);
 
-        const department = service.getDepartment(formGroup) as any;
+        const department = service.getDepartment(formGroup);
 
         expect(department).toMatchObject(sampleWithNewData);
       });
@@ -51,7 +50,7 @@ describe('Department Form Service', () => {
       it('should return NewDepartment for empty Department initial value', () => {
         const formGroup = service.createDepartmentFormGroup();
 
-        const department = service.getDepartment(formGroup) as any;
+        const department = service.getDepartment(formGroup);
 
         expect(department).toMatchObject({});
       });
@@ -59,7 +58,7 @@ describe('Department Form Service', () => {
       it('should return IDepartment', () => {
         const formGroup = service.createDepartmentFormGroup(sampleWithRequiredData);
 
-        const department = service.getDepartment(formGroup) as any;
+        const department = service.getDepartment(formGroup);
 
         expect(department).toMatchObject(sampleWithRequiredData);
       });

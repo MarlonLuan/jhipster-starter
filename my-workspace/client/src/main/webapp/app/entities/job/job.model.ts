@@ -1,5 +1,5 @@
-import { ITask } from 'app/entities/task/task.model';
 import { IEmployee } from 'app/entities/employee/employee.model';
+import { ITask } from 'app/entities/task/task.model';
 
 export interface IJob {
   id: string;

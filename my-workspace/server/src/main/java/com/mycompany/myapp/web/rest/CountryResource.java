@@ -35,7 +35,7 @@ public class CountryResource {
 
     private static final String ENTITY_NAME = "country";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final CountryService countryService;

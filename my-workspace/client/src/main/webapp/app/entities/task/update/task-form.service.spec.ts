@@ -8,7 +8,6 @@ describe('Task Form Service', () => {
   let service: TaskFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(TaskFormService);
   });
 
@@ -43,7 +42,7 @@ describe('Task Form Service', () => {
       it('should return NewTask for default Task initial value', () => {
         const formGroup = service.createTaskFormGroup(sampleWithNewData);
 
-        const task = service.getTask(formGroup) as any;
+        const task = service.getTask(formGroup);
 
         expect(task).toMatchObject(sampleWithNewData);
       });
@@ -51,7 +50,7 @@ describe('Task Form Service', () => {
       it('should return NewTask for empty Task initial value', () => {
         const formGroup = service.createTaskFormGroup();
 
-        const task = service.getTask(formGroup) as any;
+        const task = service.getTask(formGroup);
 
         expect(task).toMatchObject({});
       });
@@ -59,7 +58,7 @@ describe('Task Form Service', () => {
       it('should return ITask', () => {
         const formGroup = service.createTaskFormGroup(sampleWithRequiredData);
 
-        const task = service.getTask(formGroup) as any;
+        const task = service.getTask(formGroup);
 
         expect(task).toMatchObject(sampleWithRequiredData);
       });
