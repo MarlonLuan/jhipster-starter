@@ -1,0 +1,30 @@
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
+import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
+import SharedModule from 'app/shared/shared.module';
+import { IEmployee } from '../employee.model';
+import { EmployeeService } from '../service/employee.service';
+
+@Component({
+  templateUrl: './employee-delete-dialog.html',
+  imports: [SharedModule, FormsModule],
+})
+export class EmployeeDeleteDialog {
+  employee?: IEmployee;
+
+  protected employeeService = inject(EmployeeService);
+  protected activeModal = inject(NgbActiveModal);
+
+  cancel(): void {
+    this.activeModal.dismiss();
+  }
+
+  confirmDelete(id: string): void {
+    this.employeeService.delete(id).subscribe(() => {
+      this.activeModal.close(ITEM_DELETED_EVENT);
+    });
+  }
+}
