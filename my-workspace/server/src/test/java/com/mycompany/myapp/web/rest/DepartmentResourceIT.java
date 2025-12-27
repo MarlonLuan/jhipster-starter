@@ -295,6 +295,8 @@ class DepartmentResourceIT {
         Department partialUpdatedDepartment = new Department();
         partialUpdatedDepartment.setId(department.getId());
 
+        partialUpdatedDepartment.departmentName(UPDATED_DEPARTMENT_NAME);
+
         restDepartmentMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedDepartment.getId())

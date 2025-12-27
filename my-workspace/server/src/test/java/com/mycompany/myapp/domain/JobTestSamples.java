@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class JobTestSamples {
 
     private static final Random random = new Random();
-    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2L * Integer.MAX_VALUE));
 
     public static Job getJobSample1() {
         return new Job().id(UUID.fromString("23d8dc04-a48b-45d9-a01d-4b728f0ad4aa")).jobTitle("jobTitle1").minSalary(1L).maxSalary(1L);

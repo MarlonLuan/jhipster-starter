@@ -305,8 +305,6 @@ class LocationResourceIT {
         Location partialUpdatedLocation = new Location();
         partialUpdatedLocation.setId(location.getId());
 
-        partialUpdatedLocation.city(UPDATED_CITY);
-
         restLocationMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedLocation.getId())
