@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import dayjs from 'dayjs/esm';
+
 import { DATE_TIME_FORMAT } from 'app/config/input.constants';
 import { IEmployee, NewEmployee } from '../employee.model';
 
@@ -46,10 +47,10 @@ export type EmployeeFormGroup = FormGroup<EmployeeFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class EmployeeFormService {
-  createEmployeeFormGroup(employee: EmployeeFormGroupInput = { id: null }): EmployeeFormGroup {
+  createEmployeeFormGroup(employee?: EmployeeFormGroupInput): EmployeeFormGroup {
     const employeeRawValue = this.convertEmployeeToEmployeeRawValue({
       ...this.getFormDefaults(),
-      ...employee,
+      ...(employee ?? { id: null }),
     });
     return new FormGroup<EmployeeFormGroupContent>({
       id: new FormControl(
@@ -77,12 +78,10 @@ export class EmployeeFormService {
 
   resetForm(form: EmployeeFormGroup, employee: EmployeeFormGroupInput): void {
     const employeeRawValue = this.convertEmployeeToEmployeeRawValue({ ...this.getFormDefaults(), ...employee });
-    form.reset(
-      {
-        ...employeeRawValue,
-        id: { value: employeeRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...employeeRawValue,
+      id: { value: employeeRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): EmployeeFormDefaults {

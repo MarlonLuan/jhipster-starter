@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 
 import { ApplicationConfigService } from './application-config.service';
@@ -6,7 +7,6 @@ describe('ApplicationConfigService', () => {
   let service: ApplicationConfigService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(ApplicationConfigService);
   });
 

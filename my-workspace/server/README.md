@@ -1,6 +1,6 @@
 # jhipster
 
-This application was generated using JHipster 8.11.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.11.0](https://www.jhipster.tech/documentation-archive/v8.11.0).
+This application was generated using JHipster 9.0.0-beta.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0).
 
 ## Project Structure
 
@@ -65,19 +65,7 @@ When using Kubernetes, importing should be done using init-containers (with a vo
 
 ### Okta
 
-If you'd like to use Okta instead of Keycloak, it's pretty quick using the [Okta CLI](https://cli.okta.com/). After you've installed it, run:
-
-```shell
-okta register
-```
-
-Then, in your JHipster app's directory, run `okta apps create` and select **JHipster**. This will set up an Okta app for you, create `ROLE_ADMIN` and `ROLE_USER` groups, create a `.okta.env` file with your Okta settings, and configure a `groups` claim in your ID token.
-
-Run `source .okta.env` and start your app with Maven or Gradle. You should be able to sign in with the credentials you registered with.
-
-If you're on Windows, you should install [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) so the `source` command will work.
-
-If you'd like to configure things manually through the Okta developer console, see the instructions below.
+If you'd like to use Okta instead of Keycloak, it's pretty quick.
 
 First, you'll need to create a free developer account at <https://developer.okta.com/signup/>. After doing so, you'll get your own Okta domain, that has a name like `https://dev-123456.okta.com`.
 
@@ -101,7 +89,7 @@ security:
 
 Create an OIDC App in Okta to get a `{clientId}` and `{clientSecret}`. To do this, log in to your Okta Developer account and navigate to **Applications** > **Add Application**. Click **Web** and click the **Next** button. Give the app a name you’ll remember, specify `http://localhost:8080` as a Base URI, and `http://localhost:8080/login/oauth2/code/oidc` as a Login Redirect URI. Click **Done**, then Edit and add `http://localhost:8080` as a Logout redirect URI. Copy and paste the client ID and secret into your `application.yml` file.
 
-Create a `ROLE_ADMIN` and `ROLE_USER` group and add users into them. Modify e2e tests to use this account when running integration tests. You'll need to change credentials in `src/test/javascript/e2e/account/account.spec.ts` and `src/test/javascript/e2e/admin/administration.spec.ts`.
+Create a `ROLE_ADMIN` and `ROLE_USER` group and add users into them. Modify e2e tests to use this account when running integration tests.
 
 Navigate to **API** > **Authorization Servers**, click the **Authorization Servers** tab and edit the default one. Click the **Claims** tab and **Add Claim**. Name it "groups", and include it in the ID Token. Set the value type to "Groups" and set the filter to be a Regex of `.*`.
 
@@ -279,7 +267,7 @@ To achieve this, first build a Docker image of your app by running:
 npm run java:docker
 ```
 
-Or build a arm64 Docker image when using an arm64 processor os like MacOS with M1 processor family running:
+Or build an arm64 Docker image when using an arm64 processor os like MacOS with M1 processor family running:
 
 ```sh
 npm run java:docker:arm64
@@ -297,13 +285,13 @@ For more information refer to [Using Docker and Docker-Compose][], this page als
 
 To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
 
-[JHipster Homepage and latest documentation]: https://www.jhipster.tech
-[JHipster 8.11.0 archive]: https://www.jhipster.tech/documentation-archive/v8.11.0
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v8.11.0/development/
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v8.11.0/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v8.11.0/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v8.11.0/running-tests/
-[Code quality page]: https://www.jhipster.tech/documentation-archive/v8.11.0/code-quality/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v8.11.0/setting-up-ci/
+[JHipster Homepage and latest documentation]: https://www.jhipster.tech/
+[JHipster 9.0.0-beta.0 archive]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0
+[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/development/
+[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/docker-compose
+[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/production/
+[Running tests page]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/running-tests/
+[Code quality page]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/code-quality/
+[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/setting-up-ci/
 [Node.js]: https://nodejs.org/
 [NPM]: https://www.npmjs.com/
