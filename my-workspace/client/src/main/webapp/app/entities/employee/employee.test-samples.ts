@@ -10,7 +10,7 @@ export const sampleWithPartialData: IEmployee = {
   id: 'e7bb318e-817b-4234-a44c-3feb57a7d003',
   firstName: 'Verla',
   lastName: 'Graham',
-  email: 'Tressie.Christiansen@hotmail.com',
+  email: 'Tressie.Christiansen@yahoo.com',
   phoneNumber: 'draft',
   salary: 5661,
 };
@@ -19,7 +19,7 @@ export const sampleWithFullData: IEmployee = {
   id: '9cc8c9f0-b708-4c46-b961-1f02c7e2a3bc',
   firstName: 'Trudie',
   lastName: 'Rippin',
-  email: 'Marcia.Littel73@yahoo.com',
+  email: 'Marcia.Littel73@hotmail.com',
   phoneNumber: 'pick brr glum',
   hireDate: dayjs('1969-12-31T13:23'),
   salary: 32028,

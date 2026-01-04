@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../location.test-samples';
@@ -8,7 +9,6 @@ describe('Location Form Service', () => {
   let service: LocationFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(LocationFormService);
   });
 
@@ -49,7 +49,7 @@ describe('Location Form Service', () => {
       it('should return NewLocation for default Location initial value', () => {
         const formGroup = service.createLocationFormGroup(sampleWithNewData);
 
-        const location = service.getLocation(formGroup) as any;
+        const location = service.getLocation(formGroup);
 
         expect(location).toMatchObject(sampleWithNewData);
       });
@@ -57,7 +57,7 @@ describe('Location Form Service', () => {
       it('should return NewLocation for empty Location initial value', () => {
         const formGroup = service.createLocationFormGroup();
 
-        const location = service.getLocation(formGroup) as any;
+        const location = service.getLocation(formGroup);
 
         expect(location).toMatchObject({});
       });
@@ -65,7 +65,7 @@ describe('Location Form Service', () => {
       it('should return ILocation', () => {
         const formGroup = service.createLocationFormGroup(sampleWithRequiredData);
 
-        const location = service.getLocation(formGroup) as any;
+        const location = service.getLocation(formGroup);
 
         expect(location).toMatchObject(sampleWithRequiredData);
       });
