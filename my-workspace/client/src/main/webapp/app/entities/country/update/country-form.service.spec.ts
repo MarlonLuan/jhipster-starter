@@ -8,7 +8,6 @@ describe('Country Form Service', () => {
   let service: CountryFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(CountryFormService);
   });
 
@@ -43,7 +42,7 @@ describe('Country Form Service', () => {
       it('should return NewCountry for default Country initial value', () => {
         const formGroup = service.createCountryFormGroup(sampleWithNewData);
 
-        const country = service.getCountry(formGroup) as any;
+        const country = service.getCountry(formGroup);
 
         expect(country).toMatchObject(sampleWithNewData);
       });
@@ -51,7 +50,7 @@ describe('Country Form Service', () => {
       it('should return NewCountry for empty Country initial value', () => {
         const formGroup = service.createCountryFormGroup();
 
-        const country = service.getCountry(formGroup) as any;
+        const country = service.getCountry(formGroup);
 
         expect(country).toMatchObject({});
       });
@@ -59,7 +58,7 @@ describe('Country Form Service', () => {
       it('should return ICountry', () => {
         const formGroup = service.createCountryFormGroup(sampleWithRequiredData);
 
-        const country = service.getCountry(formGroup) as any;
+        const country = service.getCountry(formGroup);
 
         expect(country).toMatchObject(sampleWithRequiredData);
       });
