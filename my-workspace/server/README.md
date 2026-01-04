@@ -1,6 +1,6 @@
 # jhipster
 
-This application was generated using JHipster 8.11.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.11.0](https://www.jhipster.tech/documentation-archive/v8.11.0).
+This application was generated using JHipster 9.0.0-beta.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0).
 
 ## Project Structure
 
@@ -21,7 +21,7 @@ In the project root, JHipster generates configuration files for tools like git, 
 
 To start your application in the dev profile, run:
 
-```
+```bash
 ./mvnw
 ```
 
@@ -33,7 +33,7 @@ Congratulations! You've selected an excellent way to secure your JHipster applic
 
 To log in to your app, you'll need to have [Keycloak](https://keycloak.org) up and running. The JHipster Team has created a Docker container for you that has the default users and roles. Start Keycloak using the following command.
 
-```
+```bash
 docker compose -f src/main/docker/keycloak.yml up
 ```
 
@@ -65,19 +65,7 @@ When using Kubernetes, importing should be done using init-containers (with a vo
 
 ### Okta
 
-If you'd like to use Okta instead of Keycloak, it's pretty quick using the [Okta CLI](https://cli.okta.com/). After you've installed it, run:
-
-```shell
-okta register
-```
-
-Then, in your JHipster app's directory, run `okta apps create` and select **JHipster**. This will set up an Okta app for you, create `ROLE_ADMIN` and `ROLE_USER` groups, create a `.okta.env` file with your Okta settings, and configure a `groups` claim in your ID token.
-
-Run `source .okta.env` and start your app with Maven or Gradle. You should be able to sign in with the credentials you registered with.
-
-If you're on Windows, you should install [WSL](https://docs.microsoft.com/en-us/windows/wsl/install-win10) so the `source` command will work.
-
-If you'd like to configure things manually through the Okta developer console, see the instructions below.
+If you'd like to use Okta instead of Keycloak, it's pretty quick.
 
 First, you'll need to create a free developer account at <https://developer.okta.com/signup/>. After doing so, you'll get your own Okta domain, that has a name like `https://dev-123456.okta.com`.
 
@@ -101,7 +89,7 @@ security:
 
 Create an OIDC App in Okta to get a `{clientId}` and `{clientSecret}`. To do this, log in to your Okta Developer account and navigate to **Applications** > **Add Application**. Click **Web** and click the **Next** button. Give the app a name you’ll remember, specify `http://localhost:8080` as a Base URI, and `http://localhost:8080/login/oauth2/code/oidc` as a Login Redirect URI. Click **Done**, then Edit and add `http://localhost:8080` as a Logout redirect URI. Copy and paste the client ID and secret into your `application.yml` file.
 
-Create a `ROLE_ADMIN` and `ROLE_USER` group and add users into them. Modify e2e tests to use this account when running integration tests. You'll need to change credentials in `src/test/javascript/e2e/account/account.spec.ts` and `src/test/javascript/e2e/admin/administration.spec.ts`.
+Create a `ROLE_ADMIN` and `ROLE_USER` group and add users into them. Modify e2e tests to use this account when running integration tests.
 
 Navigate to **API** > **Authorization Servers**, click the **Authorization Servers** tab and edit the default one. Click the **Claims** tab and **Add Claim**. Name it "groups", and include it in the ID Token. Set the value type to "Groups" and set the filter to be a Regex of `.*`.
 
@@ -111,7 +99,7 @@ After making these changes, you should be good to go! If you have any issues, pl
 
 If you'd like to use [Auth0](https://auth0.com/) instead of Keycloak, follow the configuration steps below:
 
-- Create a free developer account at <https://auth0.com/signup>. After successful sign-up, your account will be associated with a unique domain like `dev-xxx.us.auth0.com`
+- Create a free developer account at [Sign Up - Auth0](https://auth0.com/signup). After successful sign-up, your account will be associated with a unique domain like `dev-xxx.us.auth0.com`
 - Create a new application of type `Regular Web Applications`. Switch to the `Settings` tab, and configure your application settings like:
   - Allowed Callback URLs: `http://localhost:8080/login/oauth2/code/oidc`
   - Allowed Logout URLs: `http://localhost:8080/`
@@ -173,13 +161,13 @@ jhipster:
 
 To build the final jar and optimize the jhipster application for production, run:
 
-```
+```bash
 ./mvnw -Pprod clean verify
 ```
 
 To ensure everything worked, run:
 
-```
+```bash
 java -jar target/*.jar
 ```
 
@@ -189,7 +177,7 @@ Refer to [Using JHipster in production][] for more details.
 
 To package your application as a war in order to deploy it to an application server, run:
 
-```
+```bash
 ./mvnw -Pprod,war clean verify
 ```
 
@@ -197,7 +185,7 @@ To package your application as a war in order to deploy it to an application ser
 
 JHipster Control Center can help you manage and control your application(s). You can start a local control center server (accessible on http://localhost:7419) with:
 
-```
+```bash
 docker compose -f src/main/docker/jhipster-control-center.yml up
 ```
 
@@ -207,7 +195,7 @@ docker compose -f src/main/docker/jhipster-control-center.yml up
 
 To launch your application's tests, run:
 
-```
+```bash
 ./mvnw verify
 ```
 
@@ -217,7 +205,7 @@ To launch your application's tests, run:
 
 Sonar is used to analyse code quality. You can start a local Sonar server (accessible on http://localhost:9001) with:
 
-```
+```bash
 docker compose -f src/main/docker/sonar.yml up -d
 ```
 
@@ -227,19 +215,19 @@ You can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarqu
 
 Then, run a Sonar analysis:
 
-```
+```bash
 ./mvnw -Pprod clean verify sonar:sonar -Dsonar.login=admin -Dsonar.password=admin
 ```
 
 If you need to re-run the Sonar phase, please be sure to specify at least the `initialize` phase since Sonar properties are loaded from the sonar-project.properties file.
 
-```
+```bash
 ./mvnw initialize sonar:sonar -Dsonar.login=admin -Dsonar.password=admin
 ```
 
 Additionally, Instead of passing `sonar.password` and `sonar.login` as CLI arguments, these parameters can be configured from [sonar-project.properties](sonar-project.properties) as shown below:
 
-```
+```bash
 sonar.login=admin
 sonar.password=admin
 ```
@@ -252,17 +240,17 @@ JHipster generates a number of Docker Compose configuration files in the [src/ma
 
 For example, to start required services in Docker containers, run:
 
-```
+```bash
 docker compose -f src/main/docker/services.yml up -d
 ```
 
 To stop and remove the containers, run:
 
-```
+```bash
 docker compose -f src/main/docker/services.yml down
 ```
 
-[Spring Docker Compose Integration](https://docs.spring.io/spring-boot/reference/features/dev-services.html) is enabled by default. It's possible to disable it in application.yml:
+[Spring Docker Compose Integration](https://docs.spring.io/spring-boot/reference/features/dev-services.html) is enabled by default. It's possible to disable it in `application.yml`:
 
 ```yaml
 spring:
@@ -275,35 +263,37 @@ spring:
 You can also fully dockerize your application and all the services that it depends on.
 To achieve this, first build a Docker image of your app by running:
 
-```sh
+```bash
 npm run java:docker
 ```
 
-Or build a arm64 Docker image when using an arm64 processor os like MacOS with M1 processor family running:
+Or build an arm64 Docker image when using an arm64 processor OS, i.e., Apple Silicon chips (M\*), running:
 
-```sh
+```bash
 npm run java:docker:arm64
 ```
 
 Then run:
 
-```sh
+```bash
 docker compose -f src/main/docker/app.yml up -d
 ```
 
-For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the Docker Compose sub-generator (`jhipster docker-compose`), which is able to generate Docker configurations for one or several JHipster applications.
+For more information refer to [Docker and Docker-Compose](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/docker-compose/), this page also contains information on the Docker Compose sub-generator (`jhipster docker-compose`), which is able to generate Docker configurations for one or several JHipster applications.
 
 ## Continuous Integration (optional)
 
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
+To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/setting-up-ci/) page for more information.
 
-[JHipster Homepage and latest documentation]: https://www.jhipster.tech
-[JHipster 8.11.0 archive]: https://www.jhipster.tech/documentation-archive/v8.11.0
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v8.11.0/development/
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v8.11.0/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v8.11.0/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v8.11.0/running-tests/
-[Code quality page]: https://www.jhipster.tech/documentation-archive/v8.11.0/code-quality/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v8.11.0/setting-up-ci/
-[Node.js]: https://nodejs.org/
-[NPM]: https://www.npmjs.com/
+## References
+
+- [JHipster Homepage and latest documentation](https://www.jhipster.tech/)
+- [JHipster 9.0.0-beta.0 archive](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0)
+- [Using JHipster in development](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/development/)
+- [Using Docker and Docker-Compose](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/docker-compose)
+- [Using JHipster in production](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/production/)
+- [Running tests page](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/running-tests/)
+- [Code quality page](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/code-quality/)
+- [Setting up Continuous Integration](https://www.jhipster.tech/documentation-archive/v9.0.0-beta.0/setting-up-ci/)
+- [Node.js](https://nodejs.org/)
+- [NPM](https://www.npmjs.com/)

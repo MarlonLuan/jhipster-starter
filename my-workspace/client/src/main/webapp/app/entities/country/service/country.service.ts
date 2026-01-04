@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { ICountry, NewCountry } from '../country.model';
 
 export type PartialUpdateCountry = Partial<ICountry> & Pick<ICountry, 'id'>;
@@ -24,15 +25,19 @@ export class CountryService {
   }
 
   update(country: ICountry): Observable<EntityResponseType> {
-    return this.http.put<ICountry>(`${this.resourceUrl}/${this.getCountryIdentifier(country)}`, country, { observe: 'response' });
+    return this.http.put<ICountry>(`${this.resourceUrl}/${encodeURIComponent(this.getCountryIdentifier(country))}`, country, {
+      observe: 'response',
+    });
   }
 
   partialUpdate(country: PartialUpdateCountry): Observable<EntityResponseType> {
-    return this.http.patch<ICountry>(`${this.resourceUrl}/${this.getCountryIdentifier(country)}`, country, { observe: 'response' });
+    return this.http.patch<ICountry>(`${this.resourceUrl}/${encodeURIComponent(this.getCountryIdentifier(country))}`, country, {
+      observe: 'response',
+    });
   }
 
   find(id: string): Observable<EntityResponseType> {
-    return this.http.get<ICountry>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.get<ICountry>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -41,7 +46,7 @@ export class CountryService {
   }
 
   delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getCountryIdentifier(country: Pick<ICountry, 'id'>): string {
