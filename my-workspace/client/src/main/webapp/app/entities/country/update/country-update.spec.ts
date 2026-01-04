@@ -1,0 +1,160 @@
+import { HttpResponse, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
+
+import { TranslateModule } from '@ngx-translate/core';
+import { Subject, from, of } from 'rxjs';
+
+import { IRegion } from 'app/entities/region/region.model';
+import { RegionService } from 'app/entities/region/service/region.service';
+import { ICountry } from '../country.model';
+import { CountryService } from '../service/country.service';
+
+import { CountryFormService } from './country-form.service';
+import { CountryUpdate } from './country-update';
+
+describe('Country Management Update Component', () => {
+  let comp: CountryUpdate;
+  let fixture: ComponentFixture<CountryUpdate>;
+  let activatedRoute: ActivatedRoute;
+  let countryFormService: CountryFormService;
+  let countryService: CountryService;
+  let regionService: RegionService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [TranslateModule.forRoot()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: from([{}]),
+          },
+        },
+      ],
+    });
+
+    fixture = TestBed.createComponent(CountryUpdate);
+    activatedRoute = TestBed.inject(ActivatedRoute);
+    countryFormService = TestBed.inject(CountryFormService);
+    countryService = TestBed.inject(CountryService);
+    regionService = TestBed.inject(RegionService);
+
+    comp = fixture.componentInstance;
+  });
+
+  describe('ngOnInit', () => {
+    it('should call region query and add missing value', () => {
+      const country: ICountry = { id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' };
+      const region: IRegion = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
+      country.region = region;
+
+      const regionCollection: IRegion[] = [{ id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' }];
+      jest.spyOn(regionService, 'query').mockReturnValue(of(new HttpResponse({ body: regionCollection })));
+      const expectedCollection: IRegion[] = [region, ...regionCollection];
+      jest.spyOn(regionService, 'addRegionToCollectionIfMissing').mockReturnValue(expectedCollection);
+
+      activatedRoute.data = of({ country });
+      comp.ngOnInit();
+
+      expect(regionService.query).toHaveBeenCalled();
+      expect(regionService.addRegionToCollectionIfMissing).toHaveBeenCalledWith(regionCollection, region);
+      expect(comp.regionsCollection()).toEqual(expectedCollection);
+    });
+
+    it('should update editForm', () => {
+      const country: ICountry = { id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' };
+      const region: IRegion = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
+      country.region = region;
+
+      activatedRoute.data = of({ country });
+      comp.ngOnInit();
+
+      expect(comp.regionsCollection()).toContainEqual(region);
+      expect(comp.country).toEqual(country);
+    });
+  });
+
+  describe('save', () => {
+    it('should call update service on save for existing entity', () => {
+      // GIVEN
+      const saveSubject = new Subject<HttpResponse<ICountry>>();
+      const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
+      jest.spyOn(countryFormService, 'getCountry').mockReturnValue(country);
+      jest.spyOn(countryService, 'update').mockReturnValue(saveSubject);
+      jest.spyOn(comp, 'previousState');
+      activatedRoute.data = of({ country });
+      comp.ngOnInit();
+
+      // WHEN
+      comp.save();
+      expect(comp.isSaving).toEqual(true);
+      saveSubject.next(new HttpResponse({ body: country }));
+      saveSubject.complete();
+
+      // THEN
+      expect(countryFormService.getCountry).toHaveBeenCalled();
+      expect(comp.previousState).toHaveBeenCalled();
+      expect(countryService.update).toHaveBeenCalledWith(expect.objectContaining(country));
+      expect(comp.isSaving).toEqual(false);
+    });
+
+    it('should call create service on save for new entity', () => {
+      // GIVEN
+      const saveSubject = new Subject<HttpResponse<ICountry>>();
+      const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
+      jest.spyOn(countryFormService, 'getCountry').mockReturnValue({ id: null });
+      jest.spyOn(countryService, 'create').mockReturnValue(saveSubject);
+      jest.spyOn(comp, 'previousState');
+      activatedRoute.data = of({ country: null });
+      comp.ngOnInit();
+
+      // WHEN
+      comp.save();
+      expect(comp.isSaving).toEqual(true);
+      saveSubject.next(new HttpResponse({ body: country }));
+      saveSubject.complete();
+
+      // THEN
+      expect(countryFormService.getCountry).toHaveBeenCalled();
+      expect(countryService.create).toHaveBeenCalled();
+      expect(comp.isSaving).toEqual(false);
+      expect(comp.previousState).toHaveBeenCalled();
+    });
+
+    it('should set isSaving to false on error', () => {
+      // GIVEN
+      const saveSubject = new Subject<HttpResponse<ICountry>>();
+      const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
+      jest.spyOn(countryService, 'update').mockReturnValue(saveSubject);
+      jest.spyOn(comp, 'previousState');
+      activatedRoute.data = of({ country });
+      comp.ngOnInit();
+
+      // WHEN
+      comp.save();
+      expect(comp.isSaving).toEqual(true);
+      saveSubject.error('This is an error!');
+
+      // THEN
+      expect(countryService.update).toHaveBeenCalled();
+      expect(comp.isSaving).toEqual(false);
+      expect(comp.previousState).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Compare relationships', () => {
+    describe('compareRegion', () => {
+      it('should forward to regionService', () => {
+        const entity = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
+        const entity2 = { id: '08490cb2-dd41-43f2-95f0-554d7eff5216' };
+        jest.spyOn(regionService, 'compareRegion');
+        comp.compareRegion(entity, entity2);
+        expect(regionService.compareRegion).toHaveBeenCalledWith(entity, entity2);
+      });
+    });
+  });
+});

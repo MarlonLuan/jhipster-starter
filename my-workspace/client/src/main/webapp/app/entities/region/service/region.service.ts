@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IRegion, NewRegion } from '../region.model';
 
 export type PartialUpdateRegion = Partial<IRegion> & Pick<IRegion, 'id'>;
@@ -24,15 +25,19 @@ export class RegionService {
   }
 
   update(region: IRegion): Observable<EntityResponseType> {
-    return this.http.put<IRegion>(`${this.resourceUrl}/${this.getRegionIdentifier(region)}`, region, { observe: 'response' });
+    return this.http.put<IRegion>(`${this.resourceUrl}/${encodeURIComponent(this.getRegionIdentifier(region))}`, region, {
+      observe: 'response',
+    });
   }
 
   partialUpdate(region: PartialUpdateRegion): Observable<EntityResponseType> {
-    return this.http.patch<IRegion>(`${this.resourceUrl}/${this.getRegionIdentifier(region)}`, region, { observe: 'response' });
+    return this.http.patch<IRegion>(`${this.resourceUrl}/${encodeURIComponent(this.getRegionIdentifier(region))}`, region, {
+      observe: 'response',
+    });
   }
 
   find(id: string): Observable<EntityResponseType> {
-    return this.http.get<IRegion>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.get<IRegion>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -41,7 +46,7 @@ export class RegionService {
   }
 
   delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getRegionIdentifier(region: Pick<IRegion, 'id'>): string {

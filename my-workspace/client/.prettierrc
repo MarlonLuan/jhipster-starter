@@ -4,5 +4,9 @@ tabWidth: 2
 useTabs: false
 arrowParens: avoid
 bracketSameLine: false
+overrides:
+  - files: "*.html"
+    options:
+      parser: angular
 plugins:
   - prettier-plugin-packagejson
