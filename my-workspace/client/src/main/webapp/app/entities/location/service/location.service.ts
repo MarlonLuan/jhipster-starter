@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { ILocation, NewLocation } from '../location.model';
 
 export type PartialUpdateLocation = Partial<ILocation> & Pick<ILocation, 'id'>;
@@ -24,15 +25,19 @@ export class LocationService {
   }
 
   update(location: ILocation): Observable<EntityResponseType> {
-    return this.http.put<ILocation>(`${this.resourceUrl}/${this.getLocationIdentifier(location)}`, location, { observe: 'response' });
+    return this.http.put<ILocation>(`${this.resourceUrl}/${encodeURIComponent(this.getLocationIdentifier(location))}`, location, {
+      observe: 'response',
+    });
   }
 
   partialUpdate(location: PartialUpdateLocation): Observable<EntityResponseType> {
-    return this.http.patch<ILocation>(`${this.resourceUrl}/${this.getLocationIdentifier(location)}`, location, { observe: 'response' });
+    return this.http.patch<ILocation>(`${this.resourceUrl}/${encodeURIComponent(this.getLocationIdentifier(location))}`, location, {
+      observe: 'response',
+    });
   }
 
   find(id: string): Observable<EntityResponseType> {
-    return this.http.get<ILocation>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.get<ILocation>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -41,7 +46,7 @@ export class LocationService {
   }
 
   delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getLocationIdentifier(location: Pick<ILocation, 'id'>): string {

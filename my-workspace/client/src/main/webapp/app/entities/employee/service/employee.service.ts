@@ -1,12 +1,12 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
 
 import dayjs from 'dayjs/esm';
+import { Observable, map } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IEmployee, NewEmployee } from '../employee.model';
 
 export type PartialUpdateEmployee = Partial<IEmployee> & Pick<IEmployee, 'id'>;
@@ -41,20 +41,20 @@ export class EmployeeService {
   update(employee: IEmployee): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(employee);
     return this.http
-      .put<RestEmployee>(`${this.resourceUrl}/${this.getEmployeeIdentifier(employee)}`, copy, { observe: 'response' })
+      .put<RestEmployee>(`${this.resourceUrl}/${encodeURIComponent(this.getEmployeeIdentifier(employee))}`, copy, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   partialUpdate(employee: PartialUpdateEmployee): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(employee);
     return this.http
-      .patch<RestEmployee>(`${this.resourceUrl}/${this.getEmployeeIdentifier(employee)}`, copy, { observe: 'response' })
+      .patch<RestEmployee>(`${this.resourceUrl}/${encodeURIComponent(this.getEmployeeIdentifier(employee))}`, copy, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   find(id: string): Observable<EntityResponseType> {
     return this.http
-      .get<RestEmployee>(`${this.resourceUrl}/${id}`, { observe: 'response' })
+      .get<RestEmployee>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
@@ -66,7 +66,7 @@ export class EmployeeService {
   }
 
   delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getEmployeeIdentifier(employee: Pick<IEmployee, 'id'>): string {

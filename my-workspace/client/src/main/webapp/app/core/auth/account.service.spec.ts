@@ -1,14 +1,12 @@
-jest.mock('app/core/auth/state-storage.service');
-
-import { Router } from '@angular/router';
+import { Mock, afterEach, beforeEach, describe, expect, it, vitest } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { InterpolatableTranslationObject, TranslateModule, TranslateService } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import { Router } from '@angular/router';
 
-import { Account } from 'app/core/auth/account.model';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
 import { Authority } from 'app/config/authority.constants';
+import { Account } from 'app/core/auth/account.model';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 
 import { AccountService } from './account.service';
@@ -26,7 +24,7 @@ function accountWithAuthorities(authorities: string[]): Account {
   };
 }
 
-const mockFn = (value: string | null): jest.Mock<string | null> => jest.fn(() => value);
+const mockFn = (value: string | null): Mock => vitest.fn(() => value);
 
 describe('Account Service', () => {
   let service: AccountService;
@@ -38,17 +36,26 @@ describe('Account Service', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TranslateModule.forRoot()],
-      providers: [provideHttpClient(), provideHttpClientTesting(), StateStorageService],
+      providers: [
+        provideHttpClientTesting(),
+        {
+          provide: StateStorageService,
+          useValue: {
+            clearUrl: vitest.fn(),
+            getUrl: vitest.fn(),
+          },
+        },
+      ],
     });
 
     service = TestBed.inject(AccountService);
     httpMock = TestBed.inject(HttpTestingController);
     mockStorageService = TestBed.inject(StateStorageService);
     mockRouter = TestBed.inject(Router);
-    jest.spyOn(mockRouter, 'navigateByUrl').mockImplementation(() => Promise.resolve(true));
+    vitest.spyOn(mockRouter, 'navigateByUrl');
 
     mockTranslateService = TestBed.inject(TranslateService);
-    jest.spyOn(mockTranslateService, 'use').mockImplementation(() => of({} as InterpolatableTranslationObject));
+    vitest.spyOn(mockTranslateService, 'use');
   });
 
   afterEach(() => {
@@ -91,7 +98,8 @@ describe('Account Service', () => {
       // Once more
       service.identity().subscribe();
       // Then there is only request
-      httpMock.expectOne({ method: 'GET' });
+      const requests = httpMock.match({ method: 'GET' });
+      expect(requests.length).toBe(1);
     });
 
     it('should call /account only once if not logged out after first authentication and should call /account again if user has logged out', () => {
@@ -111,7 +119,8 @@ describe('Account Service', () => {
       service.identity().subscribe();
 
       // Then there is a new request
-      httpMock.expectOne({ method: 'GET' });
+      const requests = httpMock.match({ method: 'GET' });
+      expect(requests.length).toBe(1);
     });
 
     describe('should change the language on authentication if necessary', () => {

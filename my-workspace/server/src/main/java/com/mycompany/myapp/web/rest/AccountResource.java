@@ -2,6 +2,7 @@ package com.mycompany.myapp.web.rest;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.mycompany.myapp.security.SecurityUtils;
+import java.io.Serial;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class AccountResource {
 
     private static class AccountResourceException extends RuntimeException {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private AccountResourceException(String message) {

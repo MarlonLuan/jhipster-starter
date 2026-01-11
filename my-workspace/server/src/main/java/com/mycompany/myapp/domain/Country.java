@@ -2,6 +2,7 @@ package com.mycompany.myapp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class Country implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
