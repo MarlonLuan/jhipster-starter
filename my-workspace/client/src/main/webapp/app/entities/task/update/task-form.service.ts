@@ -26,10 +26,10 @@ export type TaskFormGroup = FormGroup<TaskFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class TaskFormService {
-  createTaskFormGroup(task: TaskFormGroupInput = { id: null }): TaskFormGroup {
+  createTaskFormGroup(task?: TaskFormGroupInput): TaskFormGroup {
     const taskRawValue = {
       ...this.getFormDefaults(),
-      ...task,
+      ...(task ?? { id: null }),
     };
     return new FormGroup<TaskFormGroupContent>({
       id: new FormControl(
@@ -50,12 +50,10 @@ export class TaskFormService {
 
   resetForm(form: TaskFormGroup, task: TaskFormGroupInput): void {
     const taskRawValue = { ...this.getFormDefaults(), ...task };
-    form.reset(
-      {
-        ...taskRawValue,
-        id: { value: taskRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...taskRawValue,
+      id: { value: taskRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): TaskFormDefaults {

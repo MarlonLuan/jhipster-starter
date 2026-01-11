@@ -26,10 +26,10 @@ export type CountryFormGroup = FormGroup<CountryFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class CountryFormService {
-  createCountryFormGroup(country: CountryFormGroupInput = { id: null }): CountryFormGroup {
+  createCountryFormGroup(country?: CountryFormGroupInput): CountryFormGroup {
     const countryRawValue = {
       ...this.getFormDefaults(),
-      ...country,
+      ...(country ?? { id: null }),
     };
     return new FormGroup<CountryFormGroupContent>({
       id: new FormControl(
@@ -50,12 +50,10 @@ export class CountryFormService {
 
   resetForm(form: CountryFormGroup, country: CountryFormGroupInput): void {
     const countryRawValue = { ...this.getFormDefaults(), ...country };
-    form.reset(
-      {
-        ...countryRawValue,
-        id: { value: countryRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...countryRawValue,
+      id: { value: countryRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): CountryFormDefaults {

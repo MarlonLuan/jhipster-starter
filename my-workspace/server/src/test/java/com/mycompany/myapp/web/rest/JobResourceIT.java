@@ -318,7 +318,7 @@ class JobResourceIT {
         Job partialUpdatedJob = new Job();
         partialUpdatedJob.setId(job.getId());
 
-        partialUpdatedJob.minSalary(UPDATED_MIN_SALARY).maxSalary(UPDATED_MAX_SALARY);
+        partialUpdatedJob.maxSalary(UPDATED_MAX_SALARY);
 
         restJobMockMvc
             .perform(

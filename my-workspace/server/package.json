@@ -4,6 +4,7 @@
   "private": true,
   "description": "Description for jhipster",
   "license": "UNLICENSED",
+  "type": "module",
   "scripts": {
     "app:start": "./mvnw -ntp --batch-mode",
     "app:up": "docker compose -f src/main/docker/app.yml up --wait",
@@ -45,15 +46,12 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "8.11.0",
-    "prettier": "3.5.3",
-    "prettier-plugin-java": "2.6.7",
-    "prettier-plugin-packagejson": "2.5.11"
+    "generator-jhipster": "9.0.0-beta.0",
+    "prettier": "3.7.4",
+    "prettier-plugin-java": "2.7.7",
+    "prettier-plugin-packagejson": "2.5.20"
   },
   "engines": {
-    "node": ">=22.15.0"
-  },
-  "cacheDirectories": [
-    "node_modules"
-  ]
+    "node": ">=24.11.1"
+  }
 }
