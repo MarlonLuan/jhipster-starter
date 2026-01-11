@@ -35,7 +35,7 @@ public class EmployeeResource {
 
     private static final String ENTITY_NAME = "employee";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final EmployeeService employeeService;

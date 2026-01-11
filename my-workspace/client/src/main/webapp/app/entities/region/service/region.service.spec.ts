@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
 
 import { IRegion } from '../region.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../region.test-samples';
@@ -18,7 +18,7 @@ describe('Region Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClientTesting()],
     });
     expectedResult = null;
     service = TestBed.inject(RegionService);
@@ -100,8 +100,7 @@ describe('Region Service', () => {
       it('should add a Region to an empty array', () => {
         const region: IRegion = sampleWithRequiredData;
         expectedResult = service.addRegionToCollectionIfMissing([], region);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(region);
+        expect(expectedResult).toEqual([region]);
       });
 
       it('should not add a Region to an array that contains it', () => {
@@ -135,16 +134,13 @@ describe('Region Service', () => {
         const region: IRegion = sampleWithRequiredData;
         const region2: IRegion = sampleWithPartialData;
         expectedResult = service.addRegionToCollectionIfMissing([], region, region2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(region);
-        expect(expectedResult).toContain(region2);
+        expect(expectedResult).toEqual([region, region2]);
       });
 
       it('should accept null and undefined values', () => {
         const region: IRegion = sampleWithRequiredData;
         expectedResult = service.addRegionToCollectionIfMissing([], null, region, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(region);
+        expect(expectedResult).toEqual([region]);
       });
 
       it('should return initial array if no Region is added', () => {

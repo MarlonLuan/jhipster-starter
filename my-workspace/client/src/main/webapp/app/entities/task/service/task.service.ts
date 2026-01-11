@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { ITask, NewTask } from '../task.model';
 
 export type PartialUpdateTask = Partial<ITask> & Pick<ITask, 'id'>;
@@ -24,15 +25,15 @@ export class TaskService {
   }
 
   update(task: ITask): Observable<EntityResponseType> {
-    return this.http.put<ITask>(`${this.resourceUrl}/${this.getTaskIdentifier(task)}`, task, { observe: 'response' });
+    return this.http.put<ITask>(`${this.resourceUrl}/${encodeURIComponent(this.getTaskIdentifier(task))}`, task, { observe: 'response' });
   }
 
   partialUpdate(task: PartialUpdateTask): Observable<EntityResponseType> {
-    return this.http.patch<ITask>(`${this.resourceUrl}/${this.getTaskIdentifier(task)}`, task, { observe: 'response' });
+    return this.http.patch<ITask>(`${this.resourceUrl}/${encodeURIComponent(this.getTaskIdentifier(task))}`, task, { observe: 'response' });
   }
 
   find(id: string): Observable<EntityResponseType> {
-    return this.http.get<ITask>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.get<ITask>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -41,7 +42,7 @@ export class TaskService {
   }
 
   delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getTaskIdentifier(task: Pick<ITask, 'id'>): string {
