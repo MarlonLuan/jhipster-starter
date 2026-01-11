@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { IEmployee } from '../employee.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../employee.test-samples';
@@ -101,8 +101,7 @@ describe('Employee Service', () => {
       it('should add a Employee to an empty array', () => {
         const employee: IEmployee = sampleWithRequiredData;
         expectedResult = service.addEmployeeToCollectionIfMissing([], employee);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(employee);
+        expect(expectedResult).toEqual([employee]);
       });
 
       it('should not add a Employee to an array that contains it', () => {
@@ -136,16 +135,13 @@ describe('Employee Service', () => {
         const employee: IEmployee = sampleWithRequiredData;
         const employee2: IEmployee = sampleWithPartialData;
         expectedResult = service.addEmployeeToCollectionIfMissing([], employee, employee2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(employee);
-        expect(expectedResult).toContain(employee2);
+        expect(expectedResult).toEqual([employee, employee2]);
       });
 
       it('should accept null and undefined values', () => {
         const employee: IEmployee = sampleWithRequiredData;
         expectedResult = service.addEmployeeToCollectionIfMissing([], null, employee, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(employee);
+        expect(expectedResult).toEqual([employee]);
       });
 
       it('should return initial array if no Employee is added', () => {

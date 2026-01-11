@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 
 import { ICountry } from '../country.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../country.test-samples';
@@ -100,8 +100,7 @@ describe('Country Service', () => {
       it('should add a Country to an empty array', () => {
         const country: ICountry = sampleWithRequiredData;
         expectedResult = service.addCountryToCollectionIfMissing([], country);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(country);
+        expect(expectedResult).toEqual([country]);
       });
 
       it('should not add a Country to an array that contains it', () => {
@@ -135,16 +134,13 @@ describe('Country Service', () => {
         const country: ICountry = sampleWithRequiredData;
         const country2: ICountry = sampleWithPartialData;
         expectedResult = service.addCountryToCollectionIfMissing([], country, country2);
-        expect(expectedResult).toHaveLength(2);
-        expect(expectedResult).toContain(country);
-        expect(expectedResult).toContain(country2);
+        expect(expectedResult).toEqual([country, country2]);
       });
 
       it('should accept null and undefined values', () => {
         const country: ICountry = sampleWithRequiredData;
         expectedResult = service.addCountryToCollectionIfMissing([], null, country, undefined);
-        expect(expectedResult).toHaveLength(1);
-        expect(expectedResult).toContain(country);
+        expect(expectedResult).toEqual([country]);
       });
 
       it('should return initial array if no Country is added', () => {

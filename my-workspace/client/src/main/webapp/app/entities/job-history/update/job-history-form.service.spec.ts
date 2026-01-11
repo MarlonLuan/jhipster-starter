@@ -8,7 +8,6 @@ describe('JobHistory Form Service', () => {
   let service: JobHistoryFormService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(JobHistoryFormService);
   });
 
@@ -51,7 +50,7 @@ describe('JobHistory Form Service', () => {
       it('should return NewJobHistory for default JobHistory initial value', () => {
         const formGroup = service.createJobHistoryFormGroup(sampleWithNewData);
 
-        const jobHistory = service.getJobHistory(formGroup) as any;
+        const jobHistory = service.getJobHistory(formGroup);
 
         expect(jobHistory).toMatchObject(sampleWithNewData);
       });
@@ -59,7 +58,7 @@ describe('JobHistory Form Service', () => {
       it('should return NewJobHistory for empty JobHistory initial value', () => {
         const formGroup = service.createJobHistoryFormGroup();
 
-        const jobHistory = service.getJobHistory(formGroup) as any;
+        const jobHistory = service.getJobHistory(formGroup);
 
         expect(jobHistory).toMatchObject({});
       });
@@ -67,7 +66,7 @@ describe('JobHistory Form Service', () => {
       it('should return IJobHistory', () => {
         const formGroup = service.createJobHistoryFormGroup(sampleWithRequiredData);
 
-        const jobHistory = service.getJobHistory(formGroup) as any;
+        const jobHistory = service.getJobHistory(formGroup);
 
         expect(jobHistory).toMatchObject(sampleWithRequiredData);
       });
