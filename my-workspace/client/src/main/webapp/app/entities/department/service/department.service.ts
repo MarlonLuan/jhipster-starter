@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IDepartment, NewDepartment } from '../department.model';
 
 export type PartialUpdateDepartment = Partial<IDepartment> & Pick<IDepartment, 'id'>;
@@ -24,19 +25,19 @@ export class DepartmentService {
   }
 
   update(department: IDepartment): Observable<EntityResponseType> {
-    return this.http.put<IDepartment>(`${this.resourceUrl}/${this.getDepartmentIdentifier(department)}`, department, {
+    return this.http.put<IDepartment>(`${this.resourceUrl}/${encodeURIComponent(this.getDepartmentIdentifier(department))}`, department, {
       observe: 'response',
     });
   }
 
   partialUpdate(department: PartialUpdateDepartment): Observable<EntityResponseType> {
-    return this.http.patch<IDepartment>(`${this.resourceUrl}/${this.getDepartmentIdentifier(department)}`, department, {
+    return this.http.patch<IDepartment>(`${this.resourceUrl}/${encodeURIComponent(this.getDepartmentIdentifier(department))}`, department, {
       observe: 'response',
     });
   }
 
   find(id: string): Observable<EntityResponseType> {
-    return this.http.get<IDepartment>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.get<IDepartment>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
@@ -45,7 +46,7 @@ export class DepartmentService {
   }
 
   delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getDepartmentIdentifier(department: Pick<IDepartment, 'id'>): string {

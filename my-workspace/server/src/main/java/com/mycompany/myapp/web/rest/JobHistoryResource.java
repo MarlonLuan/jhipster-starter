@@ -34,7 +34,7 @@ public class JobHistoryResource {
 
     private static final String ENTITY_NAME = "jobHistory";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final JobHistoryService jobHistoryService;
