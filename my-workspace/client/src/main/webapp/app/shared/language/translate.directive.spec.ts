@@ -1,32 +1,34 @@
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import TranslateDirective from './translate.directive';
 
 @Component({
   imports: [TranslateDirective],
-  template: ` <div jhiTranslate="test"></div> `,
+  template: `<div jhiTranslate="test"></div>`,
 })
-class TestTranslateDirectiveComponent {}
+class TestTranslateDirective {}
 
 describe('TranslateDirective Tests', () => {
-  let fixture: ComponentFixture<TestTranslateDirectiveComponent>;
+  let fixture: ComponentFixture<TestTranslateDirective>;
   let translateService: TranslateService;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot(), TestTranslateDirectiveComponent],
+      imports: [TranslateModule.forRoot()],
     });
-  }));
+  });
 
   beforeEach(() => {
     translateService = TestBed.inject(TranslateService);
-    fixture = TestBed.createComponent(TestTranslateDirectiveComponent);
+    fixture = TestBed.createComponent(TestTranslateDirective);
   });
 
   it('should change HTML', () => {
-    const spy = jest.spyOn(translateService, 'get');
+    const spy = vitest.spyOn(translateService, 'get');
 
     fixture.detectChanges();
 

@@ -1,11 +1,12 @@
-import { inject } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
+
 import { EMPTY, Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { ITask } from '../task.model';
 import { TaskService } from '../service/task.service';
+import { ITask } from '../task.model';
 
 const taskResolve = (route: ActivatedRouteSnapshot): Observable<null | ITask> => {
   const id = route.params.id;
