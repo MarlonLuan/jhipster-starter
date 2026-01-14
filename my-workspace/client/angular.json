@@ -18,25 +18,42 @@
       "prefix": "jhi",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-builders/custom-esbuild:application",
           "options": {
-            "customWebpackConfig": {
-              "path": "./webpack/webpack.custom.js"
+            "plugins": ["build-plugins/i18n-esbuild.ts", "build-plugins/define-esbuild.ts"],
+            "outputPath": {
+              "base": "target/classes/static/",
+              "browser": "",
+              "server": "node-server",
+              "media": "resources"
             },
-            "outputPath": "target/classes/static/",
             "index": "src/main/webapp/index.html",
-            "main": "src/main/webapp/main.ts",
-            "polyfills": ["zone.js"],
+            "browser": "src/main/webapp/main.ts",
+            "polyfills": ["@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/main/webapp/content",
               "src/main/webapp/favicon.ico",
               "src/main/webapp/manifest.webapp",
-              "src/main/webapp/robots.txt"
+              "src/main/webapp/robots.txt",
+              "src/main/webapp/swagger-ui",
+              {
+                "glob": "axios.min.js",
+                "input": "node_modules/axios/dist/",
+                "output": "swagger-ui/"
+              },
+              {
+                "glob": "{*.{png,css},swagger-ui-{bundle,standalone-preset}.js}",
+                "input": "node_modules/swagger-ui-dist/",
+                "output": "swagger-ui/"
+              }
             ],
             "styles": ["src/main/webapp/content/scss/vendor.scss", "src/main/webapp/content/scss/global.scss"],
-            "scripts": []
+            "scripts": [],
+            "define": {
+              "SERVER_API_URL": "''"
+            }
           },
           "configurations": {
             "production": {
@@ -45,10 +62,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -63,9 +76,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
@@ -80,9 +91,11 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular-builders/custom-esbuild:dev-server",
           "options": {
             "buildTarget": "jhipster:build:development",
+            "open": true,
+            "proxyConfig": "proxy.config.mjs",
             "port": 4200
           },
           "configurations": {

@@ -26,10 +26,10 @@ export type DepartmentFormGroup = FormGroup<DepartmentFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class DepartmentFormService {
-  createDepartmentFormGroup(department: DepartmentFormGroupInput = { id: null }): DepartmentFormGroup {
+  createDepartmentFormGroup(department?: DepartmentFormGroupInput): DepartmentFormGroup {
     const departmentRawValue = {
       ...this.getFormDefaults(),
-      ...department,
+      ...(department ?? { id: null }),
     };
     return new FormGroup<DepartmentFormGroupContent>({
       id: new FormControl(
@@ -52,12 +52,10 @@ export class DepartmentFormService {
 
   resetForm(form: DepartmentFormGroup, department: DepartmentFormGroupInput): void {
     const departmentRawValue = { ...this.getFormDefaults(), ...department };
-    form.reset(
-      {
-        ...departmentRawValue,
-        id: { value: departmentRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...departmentRawValue,
+      id: { value: departmentRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): DepartmentFormDefaults {
