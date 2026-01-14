@@ -78,7 +78,7 @@
     "concurrently": "9.1.2",
     "copy-webpack-plugin": "13.0.0",
     "eslint": "9.26.0",
-    "eslint-config-prettier": "10.1.2",
+    "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.4.0",
     "folder-hash": "4.1.1",
     "generator-jhipster": "8.11.0",
