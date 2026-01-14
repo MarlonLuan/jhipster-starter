@@ -331,12 +331,7 @@ class EmployeeResourceIT {
         Employee partialUpdatedEmployee = new Employee();
         partialUpdatedEmployee.setId(employee.getId());
 
-        partialUpdatedEmployee
-            .firstName(UPDATED_FIRST_NAME)
-            .lastName(UPDATED_LAST_NAME)
-            .email(UPDATED_EMAIL)
-            .salary(UPDATED_SALARY)
-            .commissionPct(UPDATED_COMMISSION_PCT);
+        partialUpdatedEmployee.lastName(UPDATED_LAST_NAME).hireDate(UPDATED_HIRE_DATE);
 
         restEmployeeMockMvc
             .perform(
