@@ -35,7 +35,7 @@ public class RegionResource {
 
     private static final String ENTITY_NAME = "region";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final RegionService regionService;
