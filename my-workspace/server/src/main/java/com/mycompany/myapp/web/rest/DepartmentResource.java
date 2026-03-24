@@ -37,7 +37,7 @@ public class DepartmentResource {
 
     private static final String ENTITY_NAME = "department";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final DepartmentService departmentService;
@@ -138,11 +138,11 @@ public class DepartmentResource {
     }
 
     /**
-     * {@code GET  /departments} : get all the departments.
+     * {@code GET  /departments} : get all the Departments.
      *
      * @param pageable the pagination information.
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of departments in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Departments in body.
      */
     @GetMapping("")
     public ResponseEntity<List<DepartmentDTO>> getAllDepartments(

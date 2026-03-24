@@ -1,9 +1,10 @@
+import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { ActivatedRoute, ActivatedRouteSnapshot, Router, convertToParamMap } from '@angular/router';
-import { of } from 'rxjs';
 
-import { ITask } from '../task.model';
+import { lastValueFrom, of, throwError } from 'rxjs';
+
 import { TaskService } from '../service/task.service';
 
 import taskResolve from './task-routing-resolve.service';
@@ -12,12 +13,10 @@ describe('Task routing resolve service', () => {
   let mockRouter: Router;
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
   let service: TaskService;
-  let resultTask: ITask | null | undefined;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClient(),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -29,69 +28,80 @@ describe('Task routing resolve service', () => {
       ],
     });
     mockRouter = TestBed.inject(Router);
-    jest.spyOn(mockRouter, 'navigate').mockImplementation(() => Promise.resolve(true));
+    vitest.spyOn(mockRouter, 'navigate');
     mockActivatedRouteSnapshot = TestBed.inject(ActivatedRoute).snapshot;
     service = TestBed.inject(TaskService);
-    resultTask = undefined;
   });
 
   describe('resolve', () => {
-    it('should return ITask returned by find', () => {
+    it('should return ITask returned by find', async () => {
       // GIVEN
-      service.find = jest.fn(id => of(new HttpResponse({ body: { id } })));
+      service.find = vitest.fn(id => of({ id }));
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN
-      TestBed.runInInjectionContext(() => {
-        taskResolve(mockActivatedRouteSnapshot).subscribe({
-          next(result) {
-            resultTask = result;
-          },
+      await new Promise<void>(resolve => {
+        TestBed.runInInjectionContext(() => {
+          taskResolve(mockActivatedRouteSnapshot).subscribe({
+            next(result) {
+              // THEN
+              expect(service.find).toHaveBeenCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
+              expect(result).toEqual({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
+              resolve();
+            },
+          });
         });
       });
-
-      // THEN
-      expect(service.find).toHaveBeenCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
-      expect(resultTask).toEqual({ id: '9fec3727-3421-4967-b213-ba36557ca194' });
     });
 
-    it('should return null if id is not provided', () => {
+    it('should return null if id is not provided', async () => {
       // GIVEN
-      service.find = jest.fn();
+      service.find = vitest.fn();
       mockActivatedRouteSnapshot.params = {};
 
       // WHEN
-      TestBed.runInInjectionContext(() => {
-        taskResolve(mockActivatedRouteSnapshot).subscribe({
-          next(result) {
-            resultTask = result;
-          },
+      await new Promise<void>(resolve => {
+        TestBed.runInInjectionContext(() => {
+          taskResolve(mockActivatedRouteSnapshot).subscribe({
+            next(result) {
+              // THEN
+              expect(service.find).not.toHaveBeenCalled();
+              expect(result).toEqual(null);
+              resolve();
+            },
+          });
         });
       });
-
-      // THEN
-      expect(service.find).not.toHaveBeenCalled();
-      expect(resultTask).toEqual(null);
     });
 
-    it('should route to 404 page if data not found in server', () => {
+    it('should route to 404 page if data not found in server', async () => {
       // GIVEN
-      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse<ITask>({ body: null })));
+      vitest.spyOn(service, 'find').mockReturnValue(throwError(() => new HttpErrorResponse({ status: 404, statusText: 'Not Found' })));
       mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
 
       // WHEN
-      TestBed.runInInjectionContext(() => {
-        taskResolve(mockActivatedRouteSnapshot).subscribe({
-          next(result) {
-            resultTask = result;
-          },
-        });
+      await TestBed.runInInjectionContext(async () => {
+        await expect(lastValueFrom(taskResolve(mockActivatedRouteSnapshot))).rejects.toThrow('no elements in sequence');
+        // THEN
+        expect(service.find).toHaveBeenCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['404']);
       });
+    });
 
-      // THEN
-      expect(service.find).toHaveBeenCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
-      expect(resultTask).toEqual(undefined);
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['404']);
+    it('should route to error page if server returns an error other than 404', async () => {
+      // GIVEN
+      vitest
+        .spyOn(service, 'find')
+        .mockReturnValue(throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Internal Server Error' })));
+      mockActivatedRouteSnapshot.params = { id: '9fec3727-3421-4967-b213-ba36557ca194' };
+
+      // WHEN
+      await TestBed.runInInjectionContext(async () => {
+        await expect(lastValueFrom(taskResolve(mockActivatedRouteSnapshot))).rejects.toThrow('no elements in sequence');
+        // THEN
+        expect(service.find).toHaveBeenCalledWith('9fec3727-3421-4967-b213-ba36557ca194');
+        expect(mockRouter.navigate).toHaveBeenCalledWith(['error']);
+      });
     });
   });
 });

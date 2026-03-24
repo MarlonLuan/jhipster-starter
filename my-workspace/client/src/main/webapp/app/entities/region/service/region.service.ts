@@ -1,47 +1,63 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+
 import { Observable } from 'rxjs';
 
-import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
+import { isPresent } from 'app/core/util/operators';
 import { IRegion, NewRegion } from '../region.model';
 
 export type PartialUpdateRegion = Partial<IRegion> & Pick<IRegion, 'id'>;
 
-export type EntityResponseType = HttpResponse<IRegion>;
-export type EntityArrayResponseType = HttpResponse<IRegion[]>;
+@Injectable()
+export class RegionsService {
+  readonly regionsParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
+    undefined,
+  );
+  readonly regionsResource = httpResource<IRegion[]>(() => {
+    const params = this.regionsParams();
+    if (!params) {
+      return undefined;
+    }
+    return { url: this.resourceUrl, params };
+  });
+  /**
+   * This signal holds the list of region that have been fetched. It is updated when the regionsResource emits a new value.
+   * In case of error while fetching the regions, the signal is set to an empty array.
+   */
+  readonly regions = computed(() => (this.regionsResource.hasValue() ? this.regionsResource.value() : []));
+  protected readonly applicationConfigService = inject(ApplicationConfigService);
+  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/regions');
+}
 
 @Injectable({ providedIn: 'root' })
-export class RegionService {
+export class RegionService extends RegionsService {
   protected readonly http = inject(HttpClient);
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/regions');
-
-  create(region: NewRegion): Observable<EntityResponseType> {
-    return this.http.post<IRegion>(this.resourceUrl, region, { observe: 'response' });
+  create(region: NewRegion): Observable<IRegion> {
+    return this.http.post<IRegion>(this.resourceUrl, region);
   }
 
-  update(region: IRegion): Observable<EntityResponseType> {
-    return this.http.put<IRegion>(`${this.resourceUrl}/${this.getRegionIdentifier(region)}`, region, { observe: 'response' });
+  update(region: IRegion): Observable<IRegion> {
+    return this.http.put<IRegion>(`${this.resourceUrl}/${encodeURIComponent(this.getRegionIdentifier(region))}`, region);
   }
 
-  partialUpdate(region: PartialUpdateRegion): Observable<EntityResponseType> {
-    return this.http.patch<IRegion>(`${this.resourceUrl}/${this.getRegionIdentifier(region)}`, region, { observe: 'response' });
+  partialUpdate(region: PartialUpdateRegion): Observable<IRegion> {
+    return this.http.patch<IRegion>(`${this.resourceUrl}/${encodeURIComponent(this.getRegionIdentifier(region))}`, region);
   }
 
-  find(id: string): Observable<EntityResponseType> {
-    return this.http.get<IRegion>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  find(id: string): Observable<IRegion> {
+    return this.http.get<IRegion>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
-  query(req?: any): Observable<EntityArrayResponseType> {
+  query(req?: any): Observable<HttpResponse<IRegion[]>> {
     const options = createRequestOption(req);
     return this.http.get<IRegion[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<HttpResponse<{}>> {
-    return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  delete(id: string): Observable<undefined> {
+    return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
   }
 
   getRegionIdentifier(region: Pick<IRegion, 'id'>): string {

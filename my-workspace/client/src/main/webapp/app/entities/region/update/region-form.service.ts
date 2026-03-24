@@ -25,10 +25,10 @@ export type RegionFormGroup = FormGroup<RegionFormGroupContent>;
 
 @Injectable({ providedIn: 'root' })
 export class RegionFormService {
-  createRegionFormGroup(region: RegionFormGroupInput = { id: null }): RegionFormGroup {
+  createRegionFormGroup(region?: RegionFormGroupInput): RegionFormGroup {
     const regionRawValue = {
       ...this.getFormDefaults(),
-      ...region,
+      ...(region ?? { id: null }),
     };
     return new FormGroup<RegionFormGroupContent>({
       id: new FormControl(
@@ -48,12 +48,10 @@ export class RegionFormService {
 
   resetForm(form: RegionFormGroup, region: RegionFormGroupInput): void {
     const regionRawValue = { ...this.getFormDefaults(), ...region };
-    form.reset(
-      {
-        ...regionRawValue,
-        id: { value: regionRawValue.id, disabled: true },
-      } as any /* cast to workaround https://github.com/angular/angular/issues/46458 */,
-    );
+    form.reset({
+      ...regionRawValue,
+      id: { value: regionRawValue.id, disabled: true },
+    });
   }
 
   private getFormDefaults(): RegionFormDefaults {
