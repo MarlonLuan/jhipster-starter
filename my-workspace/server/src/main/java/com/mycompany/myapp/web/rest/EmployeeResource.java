@@ -35,7 +35,7 @@ public class EmployeeResource {
 
     private static final String ENTITY_NAME = "employee";
 
-    @Value("${jhipster.clientApp.name}")
+    @Value("${jhipster.clientApp.name:jhipster}")
     private String applicationName;
 
     private final EmployeeService employeeService;
@@ -136,11 +136,11 @@ public class EmployeeResource {
     }
 
     /**
-     * {@code GET  /employees} : get all the employees.
+     * {@code GET  /employees} : get all the Employees.
      *
      * @param pageable the pagination information.
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of employees in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Employees in body.
      */
     @GetMapping("")
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees(
