@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
@@ -20,10 +21,10 @@ import { DepartmentFormGroup, DepartmentFormService } from './department-form.se
 @Component({
   selector: 'jhi-department-update',
   templateUrl: './department-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslateModule, NgbModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class DepartmentUpdate implements OnInit {
-  readonly isSaving = signal(false);
+  isSaving = signal(false);
   department: IDepartment | null = null;
 
   locationsCollection = signal<ILocation[]>([]);
@@ -63,7 +64,7 @@ export class DepartmentUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<IDepartment | null>): void {
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<IDepartment>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),

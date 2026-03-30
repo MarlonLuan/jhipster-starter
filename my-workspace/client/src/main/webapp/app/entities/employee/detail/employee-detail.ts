@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { Alert } from 'app/shared/alert/alert';
@@ -14,10 +14,10 @@ import { IEmployee } from '../employee.model';
 @Component({
   selector: 'jhi-employee-detail',
   templateUrl: './employee-detail.html',
-  imports: [FontAwesomeModule, NgbTooltip, Alert, AlertError, TranslateDirective, TranslateModule, RouterLink, FormatMediumDatetimePipe],
+  imports: [FontAwesomeModule, NgbModule, Alert, AlertError, TranslateDirective, TranslateModule, RouterLink, FormatMediumDatetimePipe],
 })
 export class EmployeeDetail {
-  readonly employee = input<IEmployee | null>(null);
+  employee = input<IEmployee | null>(null);
 
   previousState(): void {
     globalThis.history.back();

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { HttpResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
@@ -55,7 +56,7 @@ describe('Task Management Update Component', () => {
   describe('save', () => {
     it('should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<ITask>();
+      const saveSubject = new Subject<HttpResponse<ITask>>();
       const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
       vitest.spyOn(taskFormService, 'getTask').mockReturnValue(task);
       vitest.spyOn(taskService, 'update').mockReturnValue(saveSubject);
@@ -66,7 +67,7 @@ describe('Task Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(task);
+      saveSubject.next(new HttpResponse({ body: task }));
       saveSubject.complete();
 
       // THEN
@@ -78,7 +79,7 @@ describe('Task Management Update Component', () => {
 
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<ITask>();
+      const saveSubject = new Subject<HttpResponse<ITask>>();
       const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
       vitest.spyOn(taskFormService, 'getTask').mockReturnValue({ id: null });
       vitest.spyOn(taskService, 'create').mockReturnValue(saveSubject);
@@ -89,7 +90,7 @@ describe('Task Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(task);
+      saveSubject.next(new HttpResponse({ body: task }));
       saveSubject.complete();
 
       // THEN
@@ -101,7 +102,7 @@ describe('Task Management Update Component', () => {
 
     it('should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<ITask>();
+      const saveSubject = new Subject<HttpResponse<ITask>>();
       const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
       vitest.spyOn(taskService, 'update').mockReturnValue(saveSubject);
       vitest.spyOn(comp, 'previousState');

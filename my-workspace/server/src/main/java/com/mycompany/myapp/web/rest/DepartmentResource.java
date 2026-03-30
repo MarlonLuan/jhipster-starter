@@ -138,11 +138,11 @@ public class DepartmentResource {
     }
 
     /**
-     * {@code GET  /departments} : get all the Departments.
+     * {@code GET  /departments} : get all the departments.
      *
      * @param pageable the pagination information.
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Departments in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of departments in body.
      */
     @GetMapping("")
     public ResponseEntity<List<DepartmentDTO>> getAllDepartments(

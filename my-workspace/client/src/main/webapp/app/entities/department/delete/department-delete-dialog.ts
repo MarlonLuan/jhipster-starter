@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
@@ -18,8 +18,8 @@ import { DepartmentService } from '../service/department.service';
 export class DepartmentDeleteDialog {
   department?: IDepartment;
 
-  protected readonly departmentService = inject(DepartmentService);
-  protected readonly activeModal = inject(NgbActiveModal);
+  protected departmentService = inject(DepartmentService);
+  protected activeModal = inject(NgbActiveModal);
 
   cancel(): void {
     this.activeModal.dismiss();

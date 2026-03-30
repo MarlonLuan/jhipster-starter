@@ -8,7 +8,7 @@
     <!--
         Added the constraints for entity Employee.
     -->
-    <changeSet id="20260324133841-2" author="jhipster">
+    <changeSet id="20260330082912-2" author="jhipster">
 
         <addForeignKeyConstraint baseColumnNames="manager_id"
                                  baseTableName="employee"

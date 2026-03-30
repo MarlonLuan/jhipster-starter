@@ -1,13 +1,12 @@
 import { HttpHeaders } from '@angular/common/http';
-import { Component, OnInit, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Data, ParamMap, Router, RouterLink } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
-import { NgbPagination } from '@ng-bootstrap/ng-bootstrap/pagination';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
-import { Subscription, combineLatest, filter, tap } from 'rxjs';
+import { Observable, Subscription, combineLatest, filter, finalize, tap } from 'rxjs';
 
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'app/config/pagination.constants';
@@ -18,7 +17,7 @@ import { ItemCount } from 'app/shared/pagination';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { ICountry } from '../country.model';
 import { CountryDeleteDialog } from '../delete/country-delete-dialog';
-import { CountryService } from '../service/country.service';
+import { CountryService, EntityArrayResponseType } from '../service/country.service';
 
 @Component({
   selector: 'jhi-country',
@@ -27,45 +26,32 @@ import { CountryService } from '../service/country.service';
     RouterLink,
     FormsModule,
     FontAwesomeModule,
+    NgbModule,
     AlertError,
     Alert,
     SortDirective,
     SortByDirective,
     TranslateDirective,
     TranslateModule,
-    NgbPagination,
     ItemCount,
   ],
 })
 export class Country implements OnInit {
   subscription: Subscription | null = null;
-  readonly countries = signal<ICountry[]>([]);
+  countries = signal<ICountry[]>([]);
+  isLoading = signal(false);
 
   sortState = sortStateSignal({});
 
-  readonly itemsPerPage = signal(ITEMS_PER_PAGE);
-  readonly totalItems = signal(0);
-  readonly page = signal(1);
+  itemsPerPage = signal(ITEMS_PER_PAGE);
+  totalItems = signal(0);
+  page = signal(1);
 
   readonly router = inject(Router);
   protected readonly countryService = inject(CountryService);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  readonly isLoading = this.countryService.countriesResource.isLoading;
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
-
-  constructor() {
-    effect(() => {
-      const headers = this.countryService.countriesResource.headers();
-      if (headers) {
-        this.fillComponentAttributesFromResponseHeader(headers);
-      }
-    });
-    effect(() => {
-      this.countries.set(this.fillComponentAttributesFromResponseBody([...this.countryService.countries()]));
-    });
-  }
 
   trackId = (item: ICountry): string => this.countryService.getCountryIdentifier(item);
 
@@ -91,7 +77,7 @@ export class Country implements OnInit {
   }
 
   load(): void {
-    this.queryBackend();
+    this.queryBackend().subscribe((res: EntityArrayResponseType) => this.onResponseSuccess(res));
   }
 
   navigateToWithComponentValues(event: SortState): void {
@@ -108,22 +94,29 @@ export class Country implements OnInit {
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
   }
 
-  protected fillComponentAttributesFromResponseBody(data: ICountry[]): ICountry[] {
-    return data;
+  protected onResponseSuccess(response: EntityArrayResponseType): void {
+    this.fillComponentAttributesFromResponseHeader(response.headers);
+    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
+    this.countries.set(dataFromBody);
+  }
+
+  protected fillComponentAttributesFromResponseBody(data: ICountry[] | null): ICountry[] {
+    return data ?? [];
   }
 
   protected fillComponentAttributesFromResponseHeader(headers: HttpHeaders): void {
     this.totalItems.set(Number(headers.get(TOTAL_COUNT_RESPONSE_HEADER)));
   }
 
-  protected queryBackend(): void {
+  protected queryBackend(): Observable<EntityArrayResponseType> {
+    this.isLoading.set(true);
     const pageToLoad: number = this.page();
     const queryObject: any = {
       page: pageToLoad - 1,
       size: this.itemsPerPage(),
       sort: this.sortService.buildSortParam(this.sortState()),
     };
-    this.countryService.countriesParams.set(queryObject);
+    return this.countryService.query(queryObject).pipe(finalize(() => this.isLoading.set(false)));
   }
 
   protected handleNavigation(page: number, sortState: SortState): void {

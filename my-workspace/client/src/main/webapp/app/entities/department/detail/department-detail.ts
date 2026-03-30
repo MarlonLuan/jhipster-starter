@@ -2,6 +2,7 @@ import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { Alert } from 'app/shared/alert/alert';
@@ -12,10 +13,10 @@ import { IDepartment } from '../department.model';
 @Component({
   selector: 'jhi-department-detail',
   templateUrl: './department-detail.html',
-  imports: [FontAwesomeModule, Alert, AlertError, TranslateDirective, TranslateModule, RouterLink],
+  imports: [FontAwesomeModule, NgbModule, Alert, AlertError, TranslateDirective, TranslateModule, RouterLink],
 })
 export class DepartmentDetail {
-  readonly department = input<IDepartment | null>(null);
+  department = input<IDepartment | null>(null);
 
   previousState(): void {
     globalThis.history.back();

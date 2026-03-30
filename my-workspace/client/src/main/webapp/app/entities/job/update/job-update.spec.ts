@@ -114,7 +114,7 @@ describe('Job Management Update Component', () => {
   describe('save', () => {
     it('should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<IJob>();
+      const saveSubject = new Subject<HttpResponse<IJob>>();
       const job = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
       vitest.spyOn(jobFormService, 'getJob').mockReturnValue(job);
       vitest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
@@ -125,7 +125,7 @@ describe('Job Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(job);
+      saveSubject.next(new HttpResponse({ body: job }));
       saveSubject.complete();
 
       // THEN
@@ -137,7 +137,7 @@ describe('Job Management Update Component', () => {
 
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<IJob>();
+      const saveSubject = new Subject<HttpResponse<IJob>>();
       const job = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
       vitest.spyOn(jobFormService, 'getJob').mockReturnValue({ id: null });
       vitest.spyOn(jobService, 'create').mockReturnValue(saveSubject);
@@ -148,7 +148,7 @@ describe('Job Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(job);
+      saveSubject.next(new HttpResponse({ body: job }));
       saveSubject.complete();
 
       // THEN
@@ -160,7 +160,7 @@ describe('Job Management Update Component', () => {
 
     it('should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<IJob>();
+      const saveSubject = new Subject<HttpResponse<IJob>>();
       const job = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
       vitest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
       vitest.spyOn(comp, 'previousState');

@@ -135,10 +135,10 @@ public class JobHistoryResource {
     }
 
     /**
-     * {@code GET  /job-histories} : get all the Job Histories.
+     * {@code GET  /job-histories} : get all the jobHistories.
      *
      * @param pageable the pagination information.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Job Histories in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of jobHistories in body.
      */
     @GetMapping("")
     public ResponseEntity<List<JobHistoryDTO>> getAllJobHistories(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
