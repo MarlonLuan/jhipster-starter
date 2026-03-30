@@ -55,8 +55,8 @@
   },
   "devDependencies": {
     "@angular-builders/custom-esbuild": "21.0.3",
-    "@angular/build": "21.2.1",
-    "@angular/cli": "21.2.1",
+    "@angular/build": "21.2.5",
+    "@angular/cli": "21.2.5",
     "@angular/compiler-cli": "21.2.2",
     "@angular/service-worker": "21.2.2",
     "@eslint/js": "10.0.1",
