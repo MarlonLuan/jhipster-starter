@@ -1,6 +1,6 @@
 {
   "annotations": {
-    "changelogDate": "20260324133741"
+    "changelogDate": "20260330082812"
   },
   "applications": ["jhipster"],
   "documentation": "Task entity.\\n@author The JHipster team.",

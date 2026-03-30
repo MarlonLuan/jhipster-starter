@@ -104,7 +104,6 @@ spring:
     active: '@spring.profiles.active@'
     group:
       dev:
-        - secret-samples
         - api-docs
         # Uncomment to activate TLS for the dev profile
         #- tls
@@ -146,9 +145,14 @@ spring:
   security:
     oauth2:
       client:
+        provider:
+          oidc:
+            issuer-uri: http://localhost:9080/realms/jhipster
         registration:
           oidc:
-            scope: openid, profile
+            client-id: web_app
+            client-secret: web_app
+            scope: openid, profile, email, offline_access # last one for refresh tokens
   task:
     execution:
       thread-name-prefix: jhipster-task-

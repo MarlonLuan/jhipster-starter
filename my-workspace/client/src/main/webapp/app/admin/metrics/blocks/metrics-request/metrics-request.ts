@@ -1,7 +1,7 @@
 import { DecimalPipe, KeyValuePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-import { NgbProgressbar } from '@ng-bootstrap/ng-bootstrap/progressbar';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { HttpServerRequests } from 'app/admin/metrics/metrics.model';
@@ -12,18 +12,18 @@ import { TranslateDirective } from 'app/shared/language';
   selector: 'jhi-metrics-request',
   templateUrl: './metrics-request.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgbProgressbar, KeyValuePipe, DecimalPipe, TranslateDirective, TranslateModule],
+  imports: [NgbModule, KeyValuePipe, DecimalPipe, TranslateDirective, TranslateModule],
 })
 export class MetricsRequest {
   /**
    * Object containing http request related metrics
    */
-  readonly requestMetrics = input<HttpServerRequests>();
+  requestMetrics = input<HttpServerRequests>();
 
   /**
    * Boolean field saying if the metrics are in the process of being updated
    */
-  readonly updating = input<boolean>();
+  updating = input<boolean>();
 
-  filterNaN = filterNaN;
+  filterNaN = (n: number): number => filterNaN(n);
 }

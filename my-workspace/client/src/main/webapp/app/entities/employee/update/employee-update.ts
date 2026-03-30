@@ -4,7 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
@@ -21,10 +21,10 @@ import { EmployeeFormGroup, EmployeeFormService } from './employee-form.service'
 @Component({
   selector: 'jhi-employee-update',
   templateUrl: './employee-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule, NgbTooltip],
+  imports: [TranslateDirective, TranslateModule, NgbModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class EmployeeUpdate implements OnInit {
-  readonly isSaving = signal(false);
+  isSaving = signal(false);
   employee: IEmployee | null = null;
 
   employeesSharedCollection = signal<IEmployee[]>([]);
@@ -67,7 +67,7 @@ export class EmployeeUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<IEmployee | null>): void {
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<IEmployee>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
@@ -90,11 +90,11 @@ export class EmployeeUpdate implements OnInit {
     this.employee = employee;
     this.employeeFormService.resetForm(this.editForm, employee);
 
-    this.employeesSharedCollection.update(employees =>
-      this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, employee.manager),
+    this.employeesSharedCollection.set(
+      this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(this.employeesSharedCollection(), employee.manager),
     );
-    this.departmentsSharedCollection.update(departments =>
-      this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(departments, employee.department),
+    this.departmentsSharedCollection.set(
+      this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(this.departmentsSharedCollection(), employee.department),
     );
   }
 

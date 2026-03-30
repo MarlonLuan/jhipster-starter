@@ -6,7 +6,7 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
   selector: '[jhiActiveMenu]',
 })
 export default class ActiveMenuDirective implements OnInit {
-  readonly jhiActiveMenu = input();
+  jhiActiveMenu = input();
 
   private readonly el = inject(ElementRef);
   private readonly renderer = inject(Renderer2);

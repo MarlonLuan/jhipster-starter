@@ -81,7 +81,7 @@ describe('Department Management Update Component', () => {
   describe('save', () => {
     it('should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<IDepartment>();
+      const saveSubject = new Subject<HttpResponse<IDepartment>>();
       const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
       vitest.spyOn(departmentFormService, 'getDepartment').mockReturnValue(department);
       vitest.spyOn(departmentService, 'update').mockReturnValue(saveSubject);
@@ -92,7 +92,7 @@ describe('Department Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(department);
+      saveSubject.next(new HttpResponse({ body: department }));
       saveSubject.complete();
 
       // THEN
@@ -104,7 +104,7 @@ describe('Department Management Update Component', () => {
 
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<IDepartment>();
+      const saveSubject = new Subject<HttpResponse<IDepartment>>();
       const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
       vitest.spyOn(departmentFormService, 'getDepartment').mockReturnValue({ id: null });
       vitest.spyOn(departmentService, 'create').mockReturnValue(saveSubject);
@@ -115,7 +115,7 @@ describe('Department Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(department);
+      saveSubject.next(new HttpResponse({ body: department }));
       saveSubject.complete();
 
       // THEN
@@ -127,7 +127,7 @@ describe('Department Management Update Component', () => {
 
     it('should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<IDepartment>();
+      const saveSubject = new Subject<HttpResponse<IDepartment>>();
       const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
       vitest.spyOn(departmentService, 'update').mockReturnValue(saveSubject);
       vitest.spyOn(comp, 'previousState');

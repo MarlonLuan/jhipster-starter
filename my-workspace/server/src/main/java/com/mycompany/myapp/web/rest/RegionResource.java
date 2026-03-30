@@ -136,11 +136,11 @@ public class RegionResource {
     }
 
     /**
-     * {@code GET  /regions} : get all the Regions.
+     * {@code GET  /regions} : get all the regions.
      *
      * @param pageable the pagination information.
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Regions in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of regions in body.
      */
     @GetMapping("")
     public ResponseEntity<List<RegionDTO>> getAllRegions(

@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
@@ -18,8 +18,8 @@ import { ITask } from '../task.model';
 export class TaskDeleteDialog {
   task?: ITask;
 
-  protected readonly taskService = inject(TaskService);
-  protected readonly activeModal = inject(NgbActiveModal);
+  protected taskService = inject(TaskService);
+  protected activeModal = inject(NgbActiveModal);
 
   cancel(): void {
     this.activeModal.dismiss();

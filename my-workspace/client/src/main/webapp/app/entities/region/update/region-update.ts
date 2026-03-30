@@ -1,8 +1,10 @@
+import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
@@ -17,10 +19,10 @@ import { RegionFormGroup, RegionFormService } from './region-form.service';
 @Component({
   selector: 'jhi-region-update',
   templateUrl: './region-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslateModule, NgbModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class RegionUpdate implements OnInit {
-  readonly isSaving = signal(false);
+  isSaving = signal(false);
   region: IRegion | null = null;
 
   protected regionService = inject(RegionService);
@@ -53,7 +55,7 @@ export class RegionUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<IRegion | null>): void {
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<IRegion>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
