@@ -8,20 +8,20 @@ export const sampleWithRequiredData: IEmployee = {
 
 export const sampleWithPartialData: IEmployee = {
   id: 'e7bb318e-817b-4234-a44c-3feb57a7d003',
-  firstName: 'Edgar',
+  firstName: 'Earl',
   lastName: 'McGlynn',
-  email: 'Katherine.Harvey@gmail.com',
+  email: 'Kathleen.Harvey@gmail.com',
   phoneNumber: 'awareness to',
   salary: 31027,
 };
 
 export const sampleWithFullData: IEmployee = {
   id: '9cc8c9f0-b708-4c46-b961-1f02c7e2a3bc',
-  firstName: 'Myrna',
+  firstName: 'Morton',
   lastName: 'VonRueden',
-  email: 'Daisy49@hotmail.com',
+  email: 'Dagmar49@hotmail.com',
   phoneNumber: 'regarding rigid roughly',
-  hireDate: dayjs('2026-03-24T11:18'),
+  hireDate: dayjs('2026-03-30T07:00'),
   salary: 14746,
   commissionPct: 15920,
 };
