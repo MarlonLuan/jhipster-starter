@@ -1,6 +1,6 @@
 {
   "annotations": {
-    "changelogDate": "20260324134041"
+    "changelogDate": "20260330092022"
   },
   "applications": ["jhipster"],
   "dto": "mapstruct",
