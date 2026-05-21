@@ -45,7 +45,7 @@ export class TaskFormService {
   }
 
   getTask(form: TaskFormGroup): ITask | NewTask {
-    return form.getRawValue() as ITask | NewTask;
+    return form.getRawValue();
   }
 
   resetForm(form: TaskFormGroup, task: TaskFormGroupInput): void {

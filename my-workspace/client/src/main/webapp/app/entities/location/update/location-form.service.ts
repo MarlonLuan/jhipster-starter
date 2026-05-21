@@ -51,7 +51,7 @@ export class LocationFormService {
   }
 
   getLocation(form: LocationFormGroup): ILocation | NewLocation {
-    return form.getRawValue() as ILocation | NewLocation;
+    return form.getRawValue();
   }
 
   resetForm(form: LocationFormGroup, location: LocationFormGroupInput): void {

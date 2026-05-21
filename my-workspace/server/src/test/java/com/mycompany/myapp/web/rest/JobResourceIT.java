@@ -172,7 +172,7 @@ class JobResourceIT {
             .andExpect(jsonPath("$.[*].maxSalary").value(hasItem(DEFAULT_MAX_SALARY.intValue())));
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     void getAllJobsWithEagerRelationshipsIsEnabled() throws Exception {
         when(jobServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
@@ -181,7 +181,7 @@ class JobResourceIT {
         verify(jobServiceMock, times(1)).findAllWithEagerRelationships(any());
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     void getAllJobsWithEagerRelationshipsIsNotEnabled() throws Exception {
         when(jobServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 

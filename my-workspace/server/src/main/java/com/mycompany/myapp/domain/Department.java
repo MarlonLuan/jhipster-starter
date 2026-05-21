@@ -29,7 +29,7 @@ public class Department implements Serializable {
     @Column(name = "department_name", nullable = false)
     private String departmentName;
 
-    @JsonIgnoreProperties(value = { "country", "department" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"country", "department"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Location location;
@@ -38,10 +38,10 @@ public class Department implements Serializable {
      * A relationship
      */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "department")
-    @JsonIgnoreProperties(value = { "jobs", "manager", "department", "jobHistory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"jobs", "manager", "department", "jobHistory"}, allowSetters = true)
     private Set<Employee> employees = new HashSet<>();
 
-    @JsonIgnoreProperties(value = { "job", "department", "employee" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"job", "department", "employee"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "department")
     private JobHistory jobHistory;
 

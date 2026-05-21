@@ -50,21 +50,21 @@ public class Employee implements Serializable {
     private Long commissionPct;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "employee")
-    @JsonIgnoreProperties(value = { "tasks", "employee", "jobHistory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"tasks", "employee", "jobHistory"}, allowSetters = true)
     private Set<Job> jobs = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "jobs", "manager", "department", "jobHistory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"jobs", "manager", "department", "jobHistory"}, allowSetters = true)
     private Employee manager;
 
     /**
      * Another side of the same relationship
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "location", "employees", "jobHistory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"location", "employees", "jobHistory"}, allowSetters = true)
     private Department department;
 
-    @JsonIgnoreProperties(value = { "job", "department", "employee" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"job", "department", "employee"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "employee")
     private JobHistory jobHistory;
 

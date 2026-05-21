@@ -32,7 +32,7 @@ public class Task implements Serializable {
     private String description;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tasks")
-    @JsonIgnoreProperties(value = { "tasks", "employee", "jobHistory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"tasks", "employee", "jobHistory"}, allowSetters = true)
     private Set<Job> jobs = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

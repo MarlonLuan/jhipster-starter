@@ -34,17 +34,17 @@ public class JobHistory implements Serializable {
     @Column(name = "language")
     private Language language;
 
-    @JsonIgnoreProperties(value = { "tasks", "employee", "jobHistory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"tasks", "employee", "jobHistory"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Job job;
 
-    @JsonIgnoreProperties(value = { "location", "employees", "jobHistory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"location", "employees", "jobHistory"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Department department;
 
-    @JsonIgnoreProperties(value = { "jobs", "manager", "department", "jobHistory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"jobs", "manager", "department", "jobHistory"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Employee employee;

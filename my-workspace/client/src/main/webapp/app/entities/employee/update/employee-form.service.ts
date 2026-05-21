@@ -73,7 +73,7 @@ export class EmployeeFormService {
   }
 
   getEmployee(form: EmployeeFormGroup): IEmployee | NewEmployee {
-    return this.convertEmployeeRawValueToEmployee(form.getRawValue() as EmployeeFormRawValue | NewEmployeeFormRawValue);
+    return this.convertEmployeeRawValueToEmployee(form.getRawValue());
   }
 
   resetForm(form: EmployeeFormGroup, employee: EmployeeFormGroupInput): void {

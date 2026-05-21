@@ -68,7 +68,7 @@ export class JobHistoryFormService {
   }
 
   getJobHistory(form: JobHistoryFormGroup): IJobHistory | NewJobHistory {
-    return this.convertJobHistoryRawValueToJobHistory(form.getRawValue() as JobHistoryFormRawValue | NewJobHistoryFormRawValue);
+    return this.convertJobHistoryRawValueToJobHistory(form.getRawValue());
   }
 
   resetForm(form: JobHistoryFormGroup, jobHistory: JobHistoryFormGroupInput): void {

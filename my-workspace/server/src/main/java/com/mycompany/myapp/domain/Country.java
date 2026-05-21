@@ -25,12 +25,12 @@ public class Country implements Serializable {
     @Column(name = "country_name")
     private String countryName;
 
-    @JsonIgnoreProperties(value = { "country" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"country"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Region region;
 
-    @JsonIgnoreProperties(value = { "country", "department" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"country", "department"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "country")
     private Location location;
 

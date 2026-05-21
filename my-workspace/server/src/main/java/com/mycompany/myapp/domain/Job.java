@@ -35,14 +35,14 @@ public class Job implements Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "rel_job__task", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "task_id"))
-    @JsonIgnoreProperties(value = { "jobs" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"jobs"}, allowSetters = true)
     private Set<Task> tasks = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "jobs", "manager", "department", "jobHistory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"jobs", "manager", "department", "jobHistory"}, allowSetters = true)
     private Employee employee;
 
-    @JsonIgnoreProperties(value = { "job", "department", "employee" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"job", "department", "employee"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "job")
     private JobHistory jobHistory;
 

@@ -25,7 +25,7 @@ public class Region implements Serializable {
     @Column(name = "region_name")
     private String regionName;
 
-    @JsonIgnoreProperties(value = { "region", "location" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"region", "location"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "region")
     private Country country;
 

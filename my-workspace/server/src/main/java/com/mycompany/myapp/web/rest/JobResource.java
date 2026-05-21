@@ -108,7 +108,7 @@ public class JobResource {
      * or with status {@code 500 (Internal Server Error)} if the jobDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<JobDTO> partialUpdateJob(@PathVariable(value = "id", required = false) final UUID id, @RequestBody JobDTO jobDTO)
         throws URISyntaxException {
         LOG.debug("REST request to partial update Job partially : {}, {}", id, jobDTO);

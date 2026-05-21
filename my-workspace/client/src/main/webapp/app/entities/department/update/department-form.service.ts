@@ -47,7 +47,7 @@ export class DepartmentFormService {
   }
 
   getDepartment(form: DepartmentFormGroup): IDepartment | NewDepartment {
-    return form.getRawValue() as IDepartment | NewDepartment;
+    return form.getRawValue();
   }
 
   resetForm(form: DepartmentFormGroup, department: DepartmentFormGroupInput): void {

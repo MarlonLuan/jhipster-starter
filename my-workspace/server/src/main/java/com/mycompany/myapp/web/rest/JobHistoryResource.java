@@ -109,7 +109,7 @@ public class JobHistoryResource {
      * or with status {@code 500 (Internal Server Error)} if the jobHistoryDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<JobHistoryDTO> partialUpdateJobHistory(
         @PathVariable(value = "id", required = false) final UUID id,
         @RequestBody JobHistoryDTO jobHistoryDTO

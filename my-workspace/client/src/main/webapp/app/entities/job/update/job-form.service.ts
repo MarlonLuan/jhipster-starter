@@ -51,7 +51,7 @@ export class JobFormService {
   }
 
   getJob(form: JobFormGroup): IJob | NewJob {
-    return form.getRawValue() as IJob | NewJob;
+    return form.getRawValue();
   }
 
   resetForm(form: JobFormGroup, job: JobFormGroupInput): void {

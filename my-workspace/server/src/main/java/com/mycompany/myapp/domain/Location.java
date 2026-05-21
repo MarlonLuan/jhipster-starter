@@ -34,12 +34,12 @@ public class Location implements Serializable {
     @Column(name = "state_province")
     private String stateProvince;
 
-    @JsonIgnoreProperties(value = { "region", "location" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"region", "location"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private Country country;
 
-    @JsonIgnoreProperties(value = { "location", "employees", "jobHistory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = {"location", "employees", "jobHistory"}, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "location")
     private Department department;
 
