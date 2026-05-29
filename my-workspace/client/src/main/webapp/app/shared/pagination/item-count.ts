@@ -17,13 +17,13 @@ export default class ItemCount {
    *                    totalItems    Total number of items
    *                    itemsPerPage  Number of items per page
    */
-  readonly params = input<{
+  params = input<{
     page?: number;
     totalItems?: number;
     itemsPerPage?: number;
   }>();
 
-  readonly first = computed(() => {
+  first = computed(() => {
     const params = this.params();
     if (params?.page && params.totalItems !== undefined && params.itemsPerPage) {
       return (params.page - 1) * params.itemsPerPage + 1;
@@ -31,7 +31,7 @@ export default class ItemCount {
     return undefined;
   });
 
-  readonly second = computed(() => {
+  second = computed(() => {
     const params = this.params();
     if (params?.page && params.totalItems !== undefined && params.itemsPerPage) {
       return Math.min(params.page * params.itemsPerPage, params.totalItems);
@@ -39,5 +39,5 @@ export default class ItemCount {
     return undefined;
   });
 
-  readonly total = computed(() => this.params()?.totalItems);
+  total = computed(() => this.params()?.totalItems);
 }

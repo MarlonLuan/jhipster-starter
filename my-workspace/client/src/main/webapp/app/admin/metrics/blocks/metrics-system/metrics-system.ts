@@ -1,7 +1,7 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-import { NgbProgressbar } from '@ng-bootstrap/ng-bootstrap/progressbar';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { ProcessMetrics } from 'app/admin/metrics/metrics.model';
 
@@ -9,18 +9,18 @@ import { ProcessMetrics } from 'app/admin/metrics/metrics.model';
   selector: 'jhi-metrics-system',
   templateUrl: './metrics-system.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgbProgressbar, DecimalPipe, DatePipe],
+  imports: [NgbModule, DecimalPipe, DatePipe],
 })
 export class MetricsSystem {
   /**
    * Object containing thread related metrics
    */
-  readonly systemMetrics = input<ProcessMetrics>();
+  systemMetrics = input<ProcessMetrics>();
 
   /**
    * Boolean field saying if the metrics are in the process of being updated
    */
-  readonly updating = input<boolean>();
+  updating = input<boolean>();
 
   convertMillisecondsToDuration(ms: number): string {
     const times = {

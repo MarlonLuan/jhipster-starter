@@ -52,7 +52,7 @@ describe('Employee Management Detail Component', () => {
 
   describe('PreviousState', () => {
     it('should navigate to previous state', () => {
-      vitest.spyOn(globalThis.history, 'back');
+      vitest.spyOn(window.history, 'back');
       comp.previousState();
       expect(globalThis.history.back).toHaveBeenCalled();
     });

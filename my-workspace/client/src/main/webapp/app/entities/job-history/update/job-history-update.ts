@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
@@ -25,10 +26,10 @@ import { JobHistoryFormGroup, JobHistoryFormService } from './job-history-form.s
 @Component({
   selector: 'jhi-job-history-update',
   templateUrl: './job-history-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslateModule, NgbModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class JobHistoryUpdate implements OnInit {
-  readonly isSaving = signal(false);
+  isSaving = signal(false);
   jobHistory: IJobHistory | null = null;
   languageValues = Object.keys(Language);
 
@@ -77,7 +78,7 @@ export class JobHistoryUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<IJobHistory | null>): void {
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<IJobHistory>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),

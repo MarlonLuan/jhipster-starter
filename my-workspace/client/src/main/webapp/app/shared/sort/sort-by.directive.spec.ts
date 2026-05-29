@@ -29,7 +29,7 @@ class TestSortByDirective {
   sortState = sortStateSignal({ predicate: 'name' });
   transition = vitest.fn();
 
-  private readonly library = inject(FaIconLibrary);
+  private library = inject(FaIconLibrary);
 
   constructor() {
     this.library.addIconPacks(fas);

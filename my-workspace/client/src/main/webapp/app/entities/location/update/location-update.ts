@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
@@ -20,10 +21,10 @@ import { LocationFormGroup, LocationFormService } from './location-form.service'
 @Component({
   selector: 'jhi-location-update',
   templateUrl: './location-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslateModule, NgbModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class LocationUpdate implements OnInit {
-  readonly isSaving = signal(false);
+  isSaving = signal(false);
   location: ILocation | null = null;
 
   countriesCollection = signal<ICountry[]>([]);
@@ -63,7 +64,7 @@ export class LocationUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<ILocation | null>): void {
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<ILocation>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),

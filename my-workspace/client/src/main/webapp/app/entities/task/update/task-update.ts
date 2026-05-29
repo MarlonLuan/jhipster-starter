@@ -1,8 +1,10 @@
+import { HttpResponse } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
@@ -17,10 +19,10 @@ import { TaskFormGroup, TaskFormService } from './task-form.service';
 @Component({
   selector: 'jhi-task-update',
   templateUrl: './task-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslateModule, NgbModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class TaskUpdate implements OnInit {
-  readonly isSaving = signal(false);
+  isSaving = signal(false);
   task: ITask | null = null;
 
   protected taskService = inject(TaskService);
@@ -53,7 +55,7 @@ export class TaskUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<ITask | null>): void {
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<ITask>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),

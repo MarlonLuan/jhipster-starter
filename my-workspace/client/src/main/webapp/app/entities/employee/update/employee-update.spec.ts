@@ -110,7 +110,7 @@ describe('Employee Management Update Component', () => {
   describe('save', () => {
     it('should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<IEmployee>();
+      const saveSubject = new Subject<HttpResponse<IEmployee>>();
       const employee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       vitest.spyOn(employeeFormService, 'getEmployee').mockReturnValue(employee);
       vitest.spyOn(employeeService, 'update').mockReturnValue(saveSubject);
@@ -121,7 +121,7 @@ describe('Employee Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(employee);
+      saveSubject.next(new HttpResponse({ body: employee }));
       saveSubject.complete();
 
       // THEN
@@ -133,7 +133,7 @@ describe('Employee Management Update Component', () => {
 
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<IEmployee>();
+      const saveSubject = new Subject<HttpResponse<IEmployee>>();
       const employee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       vitest.spyOn(employeeFormService, 'getEmployee').mockReturnValue({ id: null });
       vitest.spyOn(employeeService, 'create').mockReturnValue(saveSubject);
@@ -144,7 +144,7 @@ describe('Employee Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(employee);
+      saveSubject.next(new HttpResponse({ body: employee }));
       saveSubject.complete();
 
       // THEN
@@ -156,7 +156,7 @@ describe('Employee Management Update Component', () => {
 
     it('should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<IEmployee>();
+      const saveSubject = new Subject<HttpResponse<IEmployee>>();
       const employee = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
       vitest.spyOn(employeeService, 'update').mockReturnValue(saveSubject);
       vitest.spyOn(comp, 'previousState');

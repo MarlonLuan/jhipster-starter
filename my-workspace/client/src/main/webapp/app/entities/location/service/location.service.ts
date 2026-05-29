@@ -1,5 +1,5 @@
-import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
@@ -10,54 +10,43 @@ import { ILocation, NewLocation } from '../location.model';
 
 export type PartialUpdateLocation = Partial<ILocation> & Pick<ILocation, 'id'>;
 
-@Injectable()
-export class LocationsService {
-  readonly locationsParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
-    undefined,
-  );
-  readonly locationsResource = httpResource<ILocation[]>(() => {
-    const params = this.locationsParams();
-    if (!params) {
-      return undefined;
-    }
-    return { url: this.resourceUrl, params };
-  });
-  /**
-   * This signal holds the list of location that have been fetched. It is updated when the locationsResource emits a new value.
-   * In case of error while fetching the locations, the signal is set to an empty array.
-   */
-  readonly locations = computed(() => (this.locationsResource.hasValue() ? this.locationsResource.value() : []));
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/locations');
-}
+export type EntityResponseType = HttpResponse<ILocation>;
+export type EntityArrayResponseType = HttpResponse<ILocation[]>;
 
 @Injectable({ providedIn: 'root' })
-export class LocationService extends LocationsService {
+export class LocationService {
   protected readonly http = inject(HttpClient);
+  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  create(location: NewLocation): Observable<ILocation> {
-    return this.http.post<ILocation>(this.resourceUrl, location);
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/locations');
+
+  create(location: NewLocation): Observable<EntityResponseType> {
+    return this.http.post<ILocation>(this.resourceUrl, location, { observe: 'response' });
   }
 
-  update(location: ILocation): Observable<ILocation> {
-    return this.http.put<ILocation>(`${this.resourceUrl}/${encodeURIComponent(this.getLocationIdentifier(location))}`, location);
+  update(location: ILocation): Observable<EntityResponseType> {
+    return this.http.put<ILocation>(`${this.resourceUrl}/${encodeURIComponent(this.getLocationIdentifier(location))}`, location, {
+      observe: 'response',
+    });
   }
 
-  partialUpdate(location: PartialUpdateLocation): Observable<ILocation> {
-    return this.http.patch<ILocation>(`${this.resourceUrl}/${encodeURIComponent(this.getLocationIdentifier(location))}`, location);
+  partialUpdate(location: PartialUpdateLocation): Observable<EntityResponseType> {
+    return this.http.patch<ILocation>(`${this.resourceUrl}/${encodeURIComponent(this.getLocationIdentifier(location))}`, location, {
+      observe: 'response',
+    });
   }
 
-  find(id: string): Observable<ILocation> {
-    return this.http.get<ILocation>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
+  find(id: string): Observable<EntityResponseType> {
+    return this.http.get<ILocation>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
-  query(req?: any): Observable<HttpResponse<ILocation[]>> {
+  query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http.get<ILocation[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<undefined> {
-    return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
+  delete(id: string): Observable<HttpResponse<{}>> {
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getLocationIdentifier(location: Pick<ILocation, 'id'>): string {

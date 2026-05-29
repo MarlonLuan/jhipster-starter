@@ -1,5 +1,5 @@
-import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
@@ -10,54 +10,43 @@ import { IDepartment, NewDepartment } from '../department.model';
 
 export type PartialUpdateDepartment = Partial<IDepartment> & Pick<IDepartment, 'id'>;
 
-@Injectable()
-export class DepartmentsService {
-  readonly departmentsParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
-    undefined,
-  );
-  readonly departmentsResource = httpResource<IDepartment[]>(() => {
-    const params = this.departmentsParams();
-    if (!params) {
-      return undefined;
-    }
-    return { url: this.resourceUrl, params };
-  });
-  /**
-   * This signal holds the list of department that have been fetched. It is updated when the departmentsResource emits a new value.
-   * In case of error while fetching the departments, the signal is set to an empty array.
-   */
-  readonly departments = computed(() => (this.departmentsResource.hasValue() ? this.departmentsResource.value() : []));
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/departments');
-}
+export type EntityResponseType = HttpResponse<IDepartment>;
+export type EntityArrayResponseType = HttpResponse<IDepartment[]>;
 
 @Injectable({ providedIn: 'root' })
-export class DepartmentService extends DepartmentsService {
+export class DepartmentService {
   protected readonly http = inject(HttpClient);
+  protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  create(department: NewDepartment): Observable<IDepartment> {
-    return this.http.post<IDepartment>(this.resourceUrl, department);
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/departments');
+
+  create(department: NewDepartment): Observable<EntityResponseType> {
+    return this.http.post<IDepartment>(this.resourceUrl, department, { observe: 'response' });
   }
 
-  update(department: IDepartment): Observable<IDepartment> {
-    return this.http.put<IDepartment>(`${this.resourceUrl}/${encodeURIComponent(this.getDepartmentIdentifier(department))}`, department);
+  update(department: IDepartment): Observable<EntityResponseType> {
+    return this.http.put<IDepartment>(`${this.resourceUrl}/${encodeURIComponent(this.getDepartmentIdentifier(department))}`, department, {
+      observe: 'response',
+    });
   }
 
-  partialUpdate(department: PartialUpdateDepartment): Observable<IDepartment> {
-    return this.http.patch<IDepartment>(`${this.resourceUrl}/${encodeURIComponent(this.getDepartmentIdentifier(department))}`, department);
+  partialUpdate(department: PartialUpdateDepartment): Observable<EntityResponseType> {
+    return this.http.patch<IDepartment>(`${this.resourceUrl}/${encodeURIComponent(this.getDepartmentIdentifier(department))}`, department, {
+      observe: 'response',
+    });
   }
 
-  find(id: string): Observable<IDepartment> {
-    return this.http.get<IDepartment>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
+  find(id: string): Observable<EntityResponseType> {
+    return this.http.get<IDepartment>(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
-  query(req?: any): Observable<HttpResponse<IDepartment[]>> {
+  query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http.get<IDepartment[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-  delete(id: string): Observable<undefined> {
-    return this.http.delete<undefined>(`${this.resourceUrl}/${encodeURIComponent(id)}`);
+  delete(id: string): Observable<HttpResponse<{}>> {
+    return this.http.delete(`${this.resourceUrl}/${encodeURIComponent(id)}`, { observe: 'response' });
   }
 
   getDepartmentIdentifier(department: Pick<IDepartment, 'id'>): string {

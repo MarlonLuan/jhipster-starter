@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
@@ -22,10 +23,10 @@ import { JobFormGroup, JobFormService } from './job-form.service';
 @Component({
   selector: 'jhi-job-update',
   templateUrl: './job-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslateModule, NgbModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class JobUpdate implements OnInit {
-  readonly isSaving = signal(false);
+  isSaving = signal(false);
   job: IJob | null = null;
 
   tasksSharedCollection = signal<ITask[]>([]);
@@ -69,7 +70,7 @@ export class JobUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<IJob | null>): void {
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<IJob>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
@@ -92,9 +93,11 @@ export class JobUpdate implements OnInit {
     this.job = job;
     this.jobFormService.resetForm(this.editForm, job);
 
-    this.tasksSharedCollection.update(tasks => this.taskService.addTaskToCollectionIfMissing<ITask>(tasks, ...(job.tasks ?? [])));
-    this.employeesSharedCollection.update(employees =>
-      this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, job.employee),
+    this.tasksSharedCollection.set(
+      this.taskService.addTaskToCollectionIfMissing<ITask>(this.tasksSharedCollection(), ...(job.tasks ?? [])),
+    );
+    this.employeesSharedCollection.set(
+      this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(this.employeesSharedCollection(), job.employee),
     );
   }
 

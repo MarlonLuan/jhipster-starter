@@ -2,8 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap/collapse';
-import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { environment } from 'environments/environment';
 
@@ -26,10 +25,7 @@ import ActiveMenuDirective from './active-menu.directive';
     RouterLink,
     RouterLinkActive,
     FontAwesomeModule,
-    NgbCollapse,
-    NgbDropdown,
-    NgbDropdownMenu,
-    NgbDropdownToggle,
+    NgbModule,
     HasAnyAuthorityDirective,
     ActiveMenuDirective,
     FindLanguageFromKeyPipe,
@@ -38,12 +34,12 @@ import ActiveMenuDirective from './active-menu.directive';
   ],
 })
 export default class Navbar implements OnInit {
-  readonly inProduction = signal(true);
-  readonly isNavbarCollapsed = signal(true);
+  inProduction = signal(true);
+  isNavbarCollapsed = signal(true);
   readonly languages = LANGUAGES;
-  readonly openAPIEnabled = signal(false);
+  openAPIEnabled = signal(false);
   readonly version: string;
-  readonly account = inject(AccountService).account;
+  account = inject(AccountService).trackCurrentAccount();
 
   private readonly loginService = inject(LoginService);
   private readonly translateService = inject(TranslateService);
@@ -84,5 +80,9 @@ export default class Navbar implements OnInit {
     this.collapseNavbar();
     this.loginService.logout();
     this.router.navigate(['']);
+  }
+
+  toggleNavbar(): void {
+    this.isNavbarCollapsed.update(isNavbarCollapsed => !isNavbarCollapsed);
   }
 }

@@ -2,6 +2,7 @@ import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { Alert } from 'app/shared/alert/alert';
@@ -13,10 +14,10 @@ import { IJobHistory } from '../job-history.model';
 @Component({
   selector: 'jhi-job-history-detail',
   templateUrl: './job-history-detail.html',
-  imports: [FontAwesomeModule, Alert, AlertError, TranslateDirective, TranslateModule, RouterLink, FormatMediumDatetimePipe],
+  imports: [FontAwesomeModule, NgbModule, Alert, AlertError, TranslateDirective, TranslateModule, RouterLink, FormatMediumDatetimePipe],
 })
 export class JobHistoryDetail {
-  readonly jobHistory = input<IJobHistory | null>(null);
+  jobHistory = input<IJobHistory | null>(null);
 
   previousState(): void {
     globalThis.history.back();

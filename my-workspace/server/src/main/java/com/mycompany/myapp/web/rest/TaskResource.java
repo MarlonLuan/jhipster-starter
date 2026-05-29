@@ -133,10 +133,10 @@ public class TaskResource {
     }
 
     /**
-     * {@code GET  /tasks} : get all the Tasks.
+     * {@code GET  /tasks} : get all the tasks.
      *
      * @param pageable the pagination information.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Tasks in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of tasks in body.
      */
     @GetMapping("")
     public ResponseEntity<List<TaskDTO>> getAllTasks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {

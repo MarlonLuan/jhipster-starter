@@ -136,11 +136,11 @@ public class CountryResource {
     }
 
     /**
-     * {@code GET  /countries} : get all the Countries.
+     * {@code GET  /countries} : get all the countries.
      *
      * @param pageable the pagination information.
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Countries in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of countries in body.
      */
     @GetMapping("")
     public ResponseEntity<List<CountryDTO>> getAllCountries(

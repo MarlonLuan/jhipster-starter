@@ -136,11 +136,11 @@ public class LocationResource {
     }
 
     /**
-     * {@code GET  /locations} : get all the Locations.
+     * {@code GET  /locations} : get all the locations.
      *
      * @param pageable the pagination information.
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Locations in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of locations in body.
      */
     @GetMapping("")
     public ResponseEntity<List<LocationDTO>> getAllLocations(

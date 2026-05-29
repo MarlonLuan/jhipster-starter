@@ -1,13 +1,12 @@
 import { HttpHeaders } from '@angular/common/http';
-import { Component, OnInit, effect, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Data, ParamMap, Router, RouterLink } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
-import { NgbPagination } from '@ng-bootstrap/ng-bootstrap/pagination';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
-import { Subscription, combineLatest, filter, tap } from 'rxjs';
+import { Observable, Subscription, combineLatest, filter, finalize, tap } from 'rxjs';
 
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
 import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'app/config/pagination.constants';
@@ -19,7 +18,7 @@ import { ItemCount } from 'app/shared/pagination';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal } from 'app/shared/sort';
 import { EmployeeDeleteDialog } from '../delete/employee-delete-dialog';
 import { IEmployee } from '../employee.model';
-import { EmployeeService } from '../service/employee.service';
+import { EmployeeService, EntityArrayResponseType } from '../service/employee.service';
 
 @Component({
   selector: 'jhi-employee',
@@ -28,6 +27,7 @@ import { EmployeeService } from '../service/employee.service';
     RouterLink,
     FormsModule,
     FontAwesomeModule,
+    NgbModule,
     AlertError,
     Alert,
     SortDirective,
@@ -35,39 +35,25 @@ import { EmployeeService } from '../service/employee.service';
     TranslateDirective,
     TranslateModule,
     FormatMediumDatetimePipe,
-    NgbPagination,
     ItemCount,
   ],
 })
 export class Employee implements OnInit {
   subscription: Subscription | null = null;
-  readonly employees = signal<IEmployee[]>([]);
+  employees = signal<IEmployee[]>([]);
+  isLoading = signal(false);
 
   sortState = sortStateSignal({});
 
-  readonly itemsPerPage = signal(ITEMS_PER_PAGE);
-  readonly totalItems = signal(0);
-  readonly page = signal(1);
+  itemsPerPage = signal(ITEMS_PER_PAGE);
+  totalItems = signal(0);
+  page = signal(1);
 
   readonly router = inject(Router);
   protected readonly employeeService = inject(EmployeeService);
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  readonly isLoading = this.employeeService.employeesResource.isLoading;
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly sortService = inject(SortService);
   protected modalService = inject(NgbModal);
-
-  constructor() {
-    effect(() => {
-      const headers = this.employeeService.employeesResource.headers();
-      if (headers) {
-        this.fillComponentAttributesFromResponseHeader(headers);
-      }
-    });
-    effect(() => {
-      this.employees.set(this.fillComponentAttributesFromResponseBody([...this.employeeService.employees()]));
-    });
-  }
 
   trackId = (item: IEmployee): string => this.employeeService.getEmployeeIdentifier(item);
 
@@ -93,7 +79,7 @@ export class Employee implements OnInit {
   }
 
   load(): void {
-    this.queryBackend();
+    this.queryBackend().subscribe((res: EntityArrayResponseType) => this.onResponseSuccess(res));
   }
 
   navigateToWithComponentValues(event: SortState): void {
@@ -110,22 +96,29 @@ export class Employee implements OnInit {
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
   }
 
-  protected fillComponentAttributesFromResponseBody(data: IEmployee[]): IEmployee[] {
-    return data;
+  protected onResponseSuccess(response: EntityArrayResponseType): void {
+    this.fillComponentAttributesFromResponseHeader(response.headers);
+    const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
+    this.employees.set(dataFromBody);
+  }
+
+  protected fillComponentAttributesFromResponseBody(data: IEmployee[] | null): IEmployee[] {
+    return data ?? [];
   }
 
   protected fillComponentAttributesFromResponseHeader(headers: HttpHeaders): void {
     this.totalItems.set(Number(headers.get(TOTAL_COUNT_RESPONSE_HEADER)));
   }
 
-  protected queryBackend(): void {
+  protected queryBackend(): Observable<EntityArrayResponseType> {
+    this.isLoading.set(true);
     const pageToLoad: number = this.page();
     const queryObject: any = {
       page: pageToLoad - 1,
       size: this.itemsPerPage(),
       sort: this.sortService.buildSortParam(this.sortState()),
     };
-    this.employeeService.employeesParams.set(queryObject);
+    return this.employeeService.query(queryObject).pipe(finalize(() => this.isLoading.set(false)));
   }
 
   protected handleNavigation(page: number, sortState: SortState): void {
