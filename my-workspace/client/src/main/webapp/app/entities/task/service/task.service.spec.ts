@@ -30,7 +30,7 @@ describe('Task Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp));
+      service.find('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(returnedFromService);
@@ -42,7 +42,7 @@ describe('Task Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.create(task).subscribe(resp => (expectedResult = resp));
+      service.create(task).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'POST' });
       req.flush(returnedFromService);
@@ -54,7 +54,7 @@ describe('Task Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.update(task).subscribe(resp => (expectedResult = resp));
+      service.update(task).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'PUT' });
       req.flush(returnedFromService);
@@ -66,7 +66,7 @@ describe('Task Service', () => {
       const returnedFromService = { ...requireRestSample };
       const expected = { ...sampleWithRequiredData };
 
-      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp));
+      service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'PATCH' });
       req.flush(returnedFromService);
@@ -87,10 +87,13 @@ describe('Task Service', () => {
     });
 
     it('should delete a Task', () => {
-      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe();
+      const expected = true;
 
-      const requests = httpMock.match({ method: 'DELETE' });
-      expect(requests.length).toBe(1);
+      service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe(resp => (expectedResult = resp.ok));
+
+      const req = httpMock.expectOne({ method: 'DELETE' });
+      req.flush({ status: 200 });
+      expect(expectedResult).toBe(expected);
     });
 
     describe('addTaskToCollectionIfMissing', () => {

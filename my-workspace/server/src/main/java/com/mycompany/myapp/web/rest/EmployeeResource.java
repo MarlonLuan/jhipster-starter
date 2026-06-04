@@ -136,11 +136,11 @@ public class EmployeeResource {
     }
 
     /**
-     * {@code GET  /employees} : get all the Employees.
+     * {@code GET  /employees} : get all the employees.
      *
      * @param pageable the pagination information.
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of Employees in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of employees in body.
      */
     @GetMapping("")
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees(

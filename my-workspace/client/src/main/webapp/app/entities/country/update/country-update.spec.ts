@@ -81,7 +81,7 @@ describe('Country Management Update Component', () => {
   describe('save', () => {
     it('should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<ICountry>();
+      const saveSubject = new Subject<HttpResponse<ICountry>>();
       const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
       vitest.spyOn(countryFormService, 'getCountry').mockReturnValue(country);
       vitest.spyOn(countryService, 'update').mockReturnValue(saveSubject);
@@ -92,7 +92,7 @@ describe('Country Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(country);
+      saveSubject.next(new HttpResponse({ body: country }));
       saveSubject.complete();
 
       // THEN
@@ -104,7 +104,7 @@ describe('Country Management Update Component', () => {
 
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<ICountry>();
+      const saveSubject = new Subject<HttpResponse<ICountry>>();
       const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
       vitest.spyOn(countryFormService, 'getCountry').mockReturnValue({ id: null });
       vitest.spyOn(countryService, 'create').mockReturnValue(saveSubject);
@@ -115,7 +115,7 @@ describe('Country Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(country);
+      saveSubject.next(new HttpResponse({ body: country }));
       saveSubject.complete();
 
       // THEN
@@ -127,7 +127,7 @@ describe('Country Management Update Component', () => {
 
     it('should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<ICountry>();
+      const saveSubject = new Subject<HttpResponse<ICountry>>();
       const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
       vitest.spyOn(countryService, 'update').mockReturnValue(saveSubject);
       vitest.spyOn(comp, 'previousState');

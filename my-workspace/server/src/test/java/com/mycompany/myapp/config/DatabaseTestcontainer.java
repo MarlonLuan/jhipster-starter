@@ -9,7 +9,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 
 public interface DatabaseTestcontainer {
     @Container
-    PostgreSQLContainer databaseContainer = new PostgreSQLContainer("postgres:18.3")
+    PostgreSQLContainer databaseContainer = new PostgreSQLContainer("postgres:18.1")
         .withDatabaseName("jhipster")
         .withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(DatabaseTestcontainer.class)))
         .withReuse(true);

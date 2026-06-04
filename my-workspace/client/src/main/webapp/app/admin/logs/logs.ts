@@ -18,11 +18,11 @@ import { LogsService } from './logs.service';
   imports: [TranslateDirective, TranslateModule, FontAwesomeModule, FormsModule, SortDirective, SortByDirective, SlicePipe],
 })
 export default class Logs implements OnInit {
-  readonly loggers = signal<Log[] | undefined>(undefined);
-  readonly isLoading = signal(false);
-  readonly filter = signal('');
+  loggers = signal<Log[] | undefined>(undefined);
+  isLoading = signal(false);
+  filter = signal('');
   sortState = sortStateSignal({ predicate: 'name', order: 'asc' });
-  readonly filteredAndOrderedLoggers = computed<Log[] | undefined>(() => {
+  filteredAndOrderedLoggers = computed<Log[] | undefined>(() => {
     let data = this.loggers() ?? [];
     const filter = this.filter();
     if (filter) {

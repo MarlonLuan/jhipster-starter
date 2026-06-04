@@ -1,16 +1,16 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 
-import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AlertModel, AlertService } from 'app/core/util/alert.service';
 
 @Component({
   selector: 'jhi-alert',
   templateUrl: './alert.html',
-  imports: [NgbAlert],
+  imports: [NgbModule],
 })
 export class Alert implements OnInit, OnDestroy {
-  readonly alerts = signal<AlertModel[]>([]);
+  alerts = signal<AlertModel[]>([]);
 
   private readonly alertService = inject(AlertService);
 

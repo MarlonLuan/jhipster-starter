@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
@@ -20,10 +21,10 @@ import { CountryFormGroup, CountryFormService } from './country-form.service';
 @Component({
   selector: 'jhi-country-update',
   templateUrl: './country-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslateModule, NgbModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class CountryUpdate implements OnInit {
-  readonly isSaving = signal(false);
+  isSaving = signal(false);
   country: ICountry | null = null;
 
   regionsCollection = signal<IRegion[]>([]);
@@ -63,7 +64,7 @@ export class CountryUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<ICountry | null>): void {
+  protected subscribeToSaveResponse(result: Observable<HttpResponse<ICountry>>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),

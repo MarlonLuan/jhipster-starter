@@ -17,12 +17,12 @@ export class MetricsDatasource {
   /**
    * Object containing all datasource related metrics
    */
-  readonly datasourceMetrics = input<Databases>();
+  datasourceMetrics = input<Databases>();
 
   /**
    * Boolean field saying if the metrics are in the process of being updated
    */
-  readonly updating = input<boolean>();
+  updating = input<boolean>();
 
-  filterNaN = filterNaN;
+  filterNaN = (n: number): number => filterNaN(n);
 }

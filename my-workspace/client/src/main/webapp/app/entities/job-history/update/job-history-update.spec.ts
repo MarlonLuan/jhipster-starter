@@ -131,7 +131,7 @@ describe('JobHistory Management Update Component', () => {
   describe('save', () => {
     it('should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<IJobHistory>();
+      const saveSubject = new Subject<HttpResponse<IJobHistory>>();
       const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
       vitest.spyOn(jobHistoryFormService, 'getJobHistory').mockReturnValue(jobHistory);
       vitest.spyOn(jobHistoryService, 'update').mockReturnValue(saveSubject);
@@ -142,7 +142,7 @@ describe('JobHistory Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(jobHistory);
+      saveSubject.next(new HttpResponse({ body: jobHistory }));
       saveSubject.complete();
 
       // THEN
@@ -154,7 +154,7 @@ describe('JobHistory Management Update Component', () => {
 
     it('should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<IJobHistory>();
+      const saveSubject = new Subject<HttpResponse<IJobHistory>>();
       const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
       vitest.spyOn(jobHistoryFormService, 'getJobHistory').mockReturnValue({ id: null });
       vitest.spyOn(jobHistoryService, 'create').mockReturnValue(saveSubject);
@@ -165,7 +165,7 @@ describe('JobHistory Management Update Component', () => {
       // WHEN
       comp.save();
       expect(comp.isSaving()).toEqual(true);
-      saveSubject.next(jobHistory);
+      saveSubject.next(new HttpResponse({ body: jobHistory }));
       saveSubject.complete();
 
       // THEN
@@ -177,7 +177,7 @@ describe('JobHistory Management Update Component', () => {
 
     it('should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<IJobHistory>();
+      const saveSubject = new Subject<HttpResponse<IJobHistory>>();
       const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
       vitest.spyOn(jobHistoryService, 'update').mockReturnValue(saveSubject);
       vitest.spyOn(comp, 'previousState');
