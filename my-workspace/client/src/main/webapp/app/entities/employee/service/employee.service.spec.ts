@@ -91,7 +91,7 @@ describe('Employee Service', () => {
       service.delete('9fec3727-3421-4967-b213-ba36557ca194').subscribe();
 
       const requests = httpMock.match({ method: 'DELETE' });
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
     });
 
     describe('addEmployeeToCollectionIfMissing', () => {

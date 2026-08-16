@@ -1,8 +1,8 @@
 import { type Mock, beforeEach, describe, expect, it, vitest } from 'vitest';
-import { Component, ElementRef, WritableSignal, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, WritableSignal, signal, viewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 
 import { Account } from 'app/core/auth/account.model';
 import { AccountService } from 'app/core/auth/account.service';
@@ -10,6 +10,7 @@ import { AccountService } from 'app/core/auth/account.service';
 import HasAnyAuthorityDirective from './has-any-authority.directive';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [HasAnyAuthorityDirective],
   template: `<div *jhiHasAnyAuthority="'ROLE_ADMIN'" #content></div>`,
 })
@@ -26,8 +27,8 @@ describe('HasAnyAuthorityDirective tests', () => {
     hasAnyAuthority = vitest.fn((): boolean => Boolean(currentAccount()));
 
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
+        provideTranslateService(),
         {
           provide: AccountService,
           useValue: {

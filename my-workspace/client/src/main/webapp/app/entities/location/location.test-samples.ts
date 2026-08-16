@@ -7,15 +7,15 @@ export const sampleWithRequiredData: ILocation = {
 export const sampleWithPartialData: ILocation = {
   id: 'e2220cbb-f906-4139-a68c-186411dc05cb',
   postalCode: 'deserted',
-  city: 'Altenwerthport',
+  city: 'Smithamhaven',
 };
 
 export const sampleWithFullData: ILocation = {
   id: 'a5652600-0907-448a-97c0-6de60e5bf02c',
   streetAddress: 'hastily fatal er',
   postalCode: 'against because peninsula',
-  city: 'Vonton',
-  stateProvince: 'from sophisticated even',
+  city: 'Runteworth',
+  stateProvince: 'of trench',
 };
 
 export const sampleWithNewData: NewLocation = {

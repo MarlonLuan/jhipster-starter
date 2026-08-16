@@ -16,7 +16,6 @@ import com.mycompany.myapp.service.dto.EmployeeDTO;
 import com.mycompany.myapp.service.mapper.EmployeeMapper;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +48,7 @@ class EmployeeResourceIT {
     private static final String UPDATED_PHONE_NUMBER = "BBBBBBBBBB";
 
     private static final Instant DEFAULT_HIRE_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_HIRE_DATE = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+    private static final Instant UPDATED_HIRE_DATE = Instant.ofEpochMilli(1703440313582L);
 
     private static final Long DEFAULT_SALARY = 1L;
     private static final Long UPDATED_SALARY = 2L;
