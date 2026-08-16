@@ -4,7 +4,6 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { TranslateDirective } from 'app/shared/language';
 
@@ -15,7 +14,7 @@ import HealthModal from './modal/health-modal';
 @Component({
   selector: 'jhi-health',
   templateUrl: './health.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, KeyValuePipe],
+  imports: [TranslateDirective, FontAwesomeModule, KeyValuePipe],
 })
 export default class Health implements OnInit {
   readonly health = signal<HealthModel | null>(null);

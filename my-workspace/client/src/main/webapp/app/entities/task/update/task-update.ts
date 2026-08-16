@@ -3,9 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslateModule } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { Observable, finalize } from 'rxjs';
 
 import { AlertError } from 'app/shared/alert/alert-error';
 import { TranslateDirective } from 'app/shared/language';
@@ -17,7 +15,7 @@ import { TaskFormGroup, TaskFormService } from './task-form.service';
 @Component({
   selector: 'jhi-task-update',
   templateUrl: './task-update.html',
-  imports: [TranslateDirective, TranslateModule, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class TaskUpdate implements OnInit {
   readonly isSaving = signal(false);

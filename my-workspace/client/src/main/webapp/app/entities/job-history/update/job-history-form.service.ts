@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import dayjs from 'dayjs/esm';
@@ -43,13 +43,14 @@ type JobHistoryFormGroupContent = {
 
 export type JobHistoryFormGroup = FormGroup<JobHistoryFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class JobHistoryFormService {
   createJobHistoryFormGroup(jobHistory?: JobHistoryFormGroupInput): JobHistoryFormGroup {
     const jobHistoryRawValue = this.convertJobHistoryToJobHistoryRawValue({
       ...this.getFormDefaults(),
       ...(jobHistory ?? { id: null }),
     });
+
     return new FormGroup<JobHistoryFormGroupContent>({
       id: new FormControl(
         { value: jobHistoryRawValue.id, disabled: true },
@@ -68,7 +69,7 @@ export class JobHistoryFormService {
   }
 
   getJobHistory(form: JobHistoryFormGroup): IJobHistory | NewJobHistory {
-    return this.convertJobHistoryRawValueToJobHistory(form.getRawValue() as JobHistoryFormRawValue | NewJobHistoryFormRawValue);
+    return this.convertJobHistoryRawValueToJobHistory(form.getRawValue());
   }
 
   resetForm(form: JobHistoryFormGroup, jobHistory: JobHistoryFormGroupInput): void {

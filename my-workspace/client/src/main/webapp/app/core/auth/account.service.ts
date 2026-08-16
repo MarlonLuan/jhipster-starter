@@ -1,16 +1,15 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { Service, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, of } from 'rxjs';
-import { catchError, shareReplay, tap } from 'rxjs/operators';
+import { Observable, catchError, of, shareReplay, tap } from 'rxjs';
 
 import { Account } from 'app/core/auth/account.model';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 import { ApplicationConfigService } from '../config/application-config.service';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AccountService {
   private readonly userIdentity = signal<Account | null>(null);
   // eslint-disable-next-line @typescript-eslint/member-ordering

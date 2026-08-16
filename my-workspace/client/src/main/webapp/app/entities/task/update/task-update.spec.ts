@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { Subject, from, of } from 'rxjs';
 
 import { TaskService } from '../service/task.service';
@@ -21,8 +21,8 @@ describe('Task Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
+        provideTranslateService(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
@@ -57,9 +57,9 @@ describe('Task Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<ITask>();
       const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
-      vitest.spyOn(taskFormService, 'getTask').mockReturnValue(task);
-      vitest.spyOn(taskService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(taskFormService, 'getTask').mockReturnValue(task);
+      vi.spyOn(taskService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ task });
       comp.ngOnInit();
 
@@ -80,9 +80,9 @@ describe('Task Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<ITask>();
       const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
-      vitest.spyOn(taskFormService, 'getTask').mockReturnValue({ id: null });
-      vitest.spyOn(taskService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(taskFormService, 'getTask').mockReturnValue({ id: null });
+      vi.spyOn(taskService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ task: null });
       comp.ngOnInit();
 
@@ -103,8 +103,8 @@ describe('Task Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<ITask>();
       const task = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
-      vitest.spyOn(taskService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(taskService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ task });
       comp.ngOnInit();
 

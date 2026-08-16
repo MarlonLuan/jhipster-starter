@@ -1,12 +1,12 @@
-import { MockInstance, afterEach, beforeEach, describe, expect, it, vitest } from 'vitest';
+import { MockInstance, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faEye, faPencilAlt, faPlus, faSort, faSortDown, faSortUp, faSync, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { Subject, of } from 'rxjs';
 
 import { sampleWithRequiredData } from '../job.test-samples';
@@ -14,7 +14,7 @@ import { JobService } from '../service/job.service';
 
 import { Job } from './job';
 
-vitest.useFakeTimers();
+vi.useFakeTimers();
 
 describe('Job Management Component', () => {
   let httpMock: HttpTestingController;
@@ -25,8 +25,8 @@ describe('Job Management Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
+        provideTranslateService(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
@@ -57,7 +57,7 @@ describe('Job Management Component', () => {
     fixture = TestBed.createComponent(Job);
     comp = fixture.componentInstance;
     service = TestBed.inject(JobService);
-    routerNavigateSpy = vitest.spyOn(comp.router, 'navigate');
+    routerNavigateSpy = vi.spyOn(comp.router, 'navigate');
 
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faEye, faPencilAlt, faPlus, faSort, faSortDown, faSortUp, faSync, faTimes);
@@ -76,7 +76,7 @@ describe('Job Management Component', () => {
     req.flush([{ id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' }], {
       headers: { link: '<http://localhost/api/foo?page=1&size=20>; rel="next"' },
     });
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     // THEN
     expect(comp.isLoading()).toEqual(false);
@@ -87,16 +87,16 @@ describe('Job Management Component', () => {
     // WHEN
     TestBed.tick();
     const req = httpMock.expectOne({ method: 'GET' });
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     comp.page.set(3);
     comp.load();
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
     const req2 = httpMock.expectOne({ method: 'GET' });
     req2.flush([{ id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' }], {
       headers: { link: '<http://localhost/api/foo?page=1&size=20>; rel="next"' },
     });
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     // THEN
     expect(req.cancelled).toBeTruthy();
@@ -109,7 +109,7 @@ describe('Job Management Component', () => {
     TestBed.tick();
     const errorReq = httpMock.expectOne({ method: 'GET' });
     errorReq.flush('error', { status: 500, statusText: 'Server Error' });
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     // THEN - loading state was reset and list is empty
     expect(comp.isLoading()).toBe(false);
@@ -122,7 +122,7 @@ describe('Job Management Component', () => {
     successReq.flush([{ id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' }], {
       headers: { link: '<http://localhost/api/foo?page=1&size=20>; rel="next"' },
     });
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     // THEN - subscription is still alive and second load succeeds
     expect(comp.jobs()[0]).toEqual(expect.objectContaining({ id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' }));
@@ -131,7 +131,7 @@ describe('Job Management Component', () => {
   describe('trackId', () => {
     it('should forward to jobService', () => {
       const entity = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
-      vitest.spyOn(service, 'getJobIdentifier');
+      vi.spyOn(service, 'getJobIdentifier');
       const id = comp.trackId(entity);
       expect(service.getJobIdentifier).toHaveBeenCalledWith(entity);
       expect(id).toBe(entity.id);
@@ -167,7 +167,7 @@ describe('Job Management Component', () => {
     httpMock.expectOne({ method: 'GET' });
 
     // THEN
-    expect(service.jobsParams()).toMatchObject(expect.objectContaining({ sort: ['id,desc'] }));
+    expect(service.jobsParams()).toMatchObject({ sort: ['id,desc'] });
   });
 
   describe('delete', () => {
@@ -178,13 +178,13 @@ describe('Job Management Component', () => {
       deleteModalMock = { componentInstance: {}, closed: new Subject() };
       // NgbModal is not a singleton using TestBed.inject.
       // ngbModal = TestBed.inject(NgbModal);
-      ngbModal = (comp as any).modalService;
-      vitest.spyOn(ngbModal, 'open').mockReturnValue(deleteModalMock);
+      ngbModal = (comp as unknown as { modalService: NgbModal }).modalService;
+      vi.spyOn(ngbModal, 'open').mockReturnValue(deleteModalMock);
     });
 
-    it('on confirm should call load', inject([], () => {
+    it('on confirm should call load', () => {
       // GIVEN
-      vitest.spyOn(comp, 'load');
+      vi.spyOn(comp, 'load');
 
       // WHEN
       comp.delete(sampleWithRequiredData);
@@ -193,11 +193,11 @@ describe('Job Management Component', () => {
       // THEN
       expect(ngbModal.open).toHaveBeenCalled();
       expect(comp.load).toHaveBeenCalled();
-    }));
+    });
 
-    it('on dismiss should call load', inject([], () => {
+    it('on dismiss should call load', () => {
       // GIVEN
-      vitest.spyOn(comp, 'load');
+      vi.spyOn(comp, 'load');
 
       // WHEN
       comp.delete(sampleWithRequiredData);
@@ -206,6 +206,6 @@ describe('Job Management Component', () => {
       // THEN
       expect(ngbModal.open).toHaveBeenCalled();
       expect(comp.load).not.toHaveBeenCalled();
-    }));
+    });
   });
 });

@@ -31,24 +31,28 @@ public class LoggingAspect {
      * Pointcut that matches all repositories, services and Web REST endpoints.
      */
     @Pointcut(
-        "within(@org.springframework.stereotype.Repository *)" +
-            " || within(@org.springframework.stereotype.Service *)" +
-            " || within(@org.springframework.web.bind.annotation.RestController *)"
+        """
+        within(@org.springframework.stereotype.Repository *)
+        || within(@org.springframework.stereotype.Service *)
+        || within(@org.springframework.web.bind.annotation.RestController *)
+        """
     )
     public void springBeanPointcut() {
-        // Method is empty as this is just a Pointcut, the implementations are in the advices.
+        // Method is empty as this is just a Pointcut, the implementations are in the advice methods.
     }
 
     /**
      * Pointcut that matches all Spring beans in the application's main packages.
      */
     @Pointcut(
-        "within(com.mycompany.myapp.repository..*)" +
-            " || within(com.mycompany.myapp.service..*)" +
-            " || within(com.mycompany.myapp.web.rest..*)"
+        """
+        within(com.mycompany.myapp.repository..*)
+        || within(com.mycompany.myapp.service..*)
+        || within(com.mycompany.myapp.web.rest..*)
+        """
     )
     public void applicationPackagePointcut() {
-        // Method is empty as this is just a Pointcut, the implementations are in the advices.
+        // Method is empty as this is just a Pointcut, the implementations are in the advice methods.
     }
 
     /**

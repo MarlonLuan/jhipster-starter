@@ -1,16 +1,15 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
 import { IDepartment, NewDepartment } from '../department.model';
 
 export type PartialUpdateDepartment = Partial<IDepartment> & Pick<IDepartment, 'id'>;
 
-@Injectable()
+@Service()
 export class DepartmentsService {
   readonly departmentsParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
     undefined,
@@ -31,7 +30,7 @@ export class DepartmentsService {
   protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/departments');
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DepartmentService extends DepartmentsService {
   protected readonly http = inject(HttpClient);
 
@@ -72,7 +71,7 @@ export class DepartmentService extends DepartmentsService {
     departmentCollection: Type[],
     ...departmentsToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const departments: Type[] = departmentsToCheck.filter(isPresent);
+    const departments: Type[] = departmentsToCheck.filter(departmentItem => departmentItem !== null && departmentItem !== undefined);
     if (departments.length > 0) {
       const departmentCollectionIdentifiers = departmentCollection.map(departmentItem => this.getDepartmentIdentifier(departmentItem));
       const departmentsToAdd = departments.filter(departmentItem => {

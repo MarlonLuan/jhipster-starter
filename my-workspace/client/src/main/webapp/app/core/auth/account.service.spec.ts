@@ -1,9 +1,9 @@
-import { Mock, afterEach, beforeEach, describe, expect, it, vitest } from 'vitest';
+import { Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService, provideTranslateService } from '@ngx-translate/core';
 
 import { Account } from 'app/core/auth/account.model';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
@@ -24,7 +24,7 @@ function accountWithAuthorities(authorities: string[]): Account {
   };
 }
 
-const mockFn = (value: string | null): Mock => vitest.fn(() => value);
+const mockFn = (value: string | null): Mock => vi.fn(() => value);
 
 describe('Account Service', () => {
   let service: AccountService;
@@ -35,14 +35,14 @@ describe('Account Service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
+        provideTranslateService(),
         provideHttpClientTesting(),
         {
           provide: StateStorageService,
           useValue: {
-            clearUrl: vitest.fn(),
-            getUrl: vitest.fn(),
+            clearUrl: vi.fn(),
+            getUrl: vi.fn(),
           },
         },
       ],
@@ -52,10 +52,10 @@ describe('Account Service', () => {
     httpMock = TestBed.inject(HttpTestingController);
     mockStorageService = TestBed.inject(StateStorageService);
     mockRouter = TestBed.inject(Router);
-    vitest.spyOn(mockRouter, 'navigateByUrl');
+    vi.spyOn(mockRouter, 'navigateByUrl');
 
     mockTranslateService = TestBed.inject(TranslateService);
-    vitest.spyOn(mockTranslateService, 'use');
+    vi.spyOn(mockTranslateService, 'use');
   });
 
   afterEach(() => {
@@ -80,7 +80,7 @@ describe('Account Service', () => {
       service.identity().subscribe();
       // Then there is only request
       const requests = httpMock.match({ method: 'GET' });
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
     });
 
     it('should call /account only once if not logged out after first authentication and should call /account again if user has logged out', () => {
@@ -101,7 +101,7 @@ describe('Account Service', () => {
 
       // Then there is a new request
       const requests = httpMock.match({ method: 'GET' });
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
     });
 
     describe('should change the language on authentication if necessary', () => {
@@ -179,7 +179,7 @@ describe('Account Service', () => {
         expect(hasAuthority).toBe(false);
       });
 
-      it('should return false if user is logged and has not authority', () => {
+      it('should return false if user is logged and has no authority', () => {
         service.authenticate(accountWithAuthorities([Authority.USER]));
 
         const hasAuthority = service.hasAnyAuthority(Authority.ADMIN);
@@ -202,7 +202,7 @@ describe('Account Service', () => {
         expect(hasAuthority).toBeFalsy();
       });
 
-      it('should return false if user is logged and has not authority', () => {
+      it('should return false if user is logged and has no authority', () => {
         service.authenticate(accountWithAuthorities([Authority.USER]));
 
         const hasAuthority = service.hasAnyAuthority([Authority.ADMIN]);

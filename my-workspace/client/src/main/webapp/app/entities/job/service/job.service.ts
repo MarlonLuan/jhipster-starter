@@ -1,16 +1,15 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
 import { IJob, NewJob } from '../job.model';
 
 export type PartialUpdateJob = Partial<IJob> & Pick<IJob, 'id'>;
 
-@Injectable()
+@Service()
 export class JobsService {
   readonly jobsParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(undefined);
   readonly jobsResource = httpResource<IJob[]>(() => {
@@ -29,7 +28,7 @@ export class JobsService {
   protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/jobs');
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class JobService extends JobsService {
   protected readonly http = inject(HttpClient);
 
@@ -67,7 +66,7 @@ export class JobService extends JobsService {
   }
 
   addJobToCollectionIfMissing<Type extends Pick<IJob, 'id'>>(jobCollection: Type[], ...jobsToCheck: (Type | null | undefined)[]): Type[] {
-    const jobs: Type[] = jobsToCheck.filter(isPresent);
+    const jobs: Type[] = jobsToCheck.filter(jobItem => jobItem !== null && jobItem !== undefined);
     if (jobs.length > 0) {
       const jobCollectionIdentifiers = jobCollection.map(jobItem => this.getJobIdentifier(jobItem));
       const jobsToAdd = jobs.filter(jobItem => {

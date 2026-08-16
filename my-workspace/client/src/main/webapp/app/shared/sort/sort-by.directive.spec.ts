@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Component, DebugElement, Type, inject } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -27,7 +27,7 @@ import { SortDirective } from './sort.directive';
 })
 class TestSortByDirective {
   sortState = sortStateSignal({ predicate: 'name' });
-  transition = vitest.fn();
+  transition = vi.fn();
 
   private readonly library = inject(FaIconLibrary);
 
@@ -103,7 +103,7 @@ describe('Directive: SortByDirective', () => {
   it('multiple clicks at same component, should call SortDirective sort', () => {
     // GIVEN
     const sortDirective = tableHead.injector.get(SortDirective as Type<SortDirective>);
-    sortDirective.sort = vitest.fn();
+    sortDirective.sort = vi.fn();
 
     // WHEN
     fixture.detectChanges();

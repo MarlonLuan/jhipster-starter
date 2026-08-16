@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { userRouteAccessService } from 'app/core/auth/user-route-access.service';
 
 import EmployeeResolve from './route/employee-routing-resolve.service';
 
@@ -9,7 +9,7 @@ const employeeRoute: Routes = [
     path: '',
     loadComponent: () => import('./list/employee').then(m => m.Employee),
     data: {},
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
   {
     path: ':id/view',
@@ -17,7 +17,7 @@ const employeeRoute: Routes = [
     resolve: {
       employee: EmployeeResolve,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
   {
     path: 'new',
@@ -25,7 +25,7 @@ const employeeRoute: Routes = [
     resolve: {
       employee: EmployeeResolve,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
   {
     path: ':id/edit',
@@ -33,7 +33,7 @@ const employeeRoute: Routes = [
     resolve: {
       employee: EmployeeResolve,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
 ];
 

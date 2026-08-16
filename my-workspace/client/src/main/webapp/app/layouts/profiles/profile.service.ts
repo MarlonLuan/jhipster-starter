@@ -1,14 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 
-import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { Observable, map, shareReplay } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
 import { InfoResponse, ProfileInfo } from './profile-info.model';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ProfileService {
   private readonly http = inject(HttpClient);
   private readonly applicationConfigService = inject(ApplicationConfigService);
@@ -23,14 +22,15 @@ export class ProfileService {
 
     this.profileInfo$ = this.http.get<InfoResponse>(this.infoUrl).pipe(
       map((response: InfoResponse) => {
+        const { activeProfiles } = response;
         const profileInfo: ProfileInfo = {
-          activeProfiles: response.activeProfiles,
-          inProduction: response.activeProfiles?.includes('prod'),
-          openAPIEnabled: response.activeProfiles?.includes('api-docs'),
+          activeProfiles,
+          inProduction: activeProfiles?.includes('prod'),
+          openAPIEnabled: activeProfiles?.includes('api-docs'),
         };
-        if (response.activeProfiles && response['display-ribbon-on-profiles']) {
+        if (activeProfiles && response['display-ribbon-on-profiles']) {
           const displayRibbonOnProfiles = response['display-ribbon-on-profiles'].split(',');
-          const ribbonProfiles = displayRibbonOnProfiles.filter(profile => response.activeProfiles?.includes(profile));
+          const ribbonProfiles = displayRibbonOnProfiles.filter(profile => activeProfiles.includes(profile));
           if (ribbonProfiles.length > 0) {
             profileInfo.ribbonEnv = ribbonProfiles[0];
           }

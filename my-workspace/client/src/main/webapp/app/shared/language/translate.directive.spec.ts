@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateService, provideTranslateService } from '@ngx-translate/core';
 
 import TranslateDirective from './translate.directive';
 
@@ -18,7 +18,7 @@ describe('TranslateDirective Tests', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
+      providers: [provideTranslateService()],
     });
   });
 
@@ -28,7 +28,7 @@ describe('TranslateDirective Tests', () => {
   });
 
   it('should change HTML', () => {
-    const spy = vitest.spyOn(translateService, 'get');
+    const spy = vi.spyOn(translateService, 'get');
 
     fixture.detectChanges();
 

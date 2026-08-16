@@ -4,7 +4,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.oauth2.core.oidc.StandardClaimNames.PREFERRED_USERNAME;
 
 import com.mycompany.myapp.security.*;
-import com.mycompany.myapp.security.SecurityUtils;
 import com.mycompany.myapp.security.oauth2.AudienceValidator;
 import com.mycompany.myapp.security.oauth2.CustomClaimConverter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,8 +51,7 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
-        http
-            .cors(withDefaults())
+        http.cors(withDefaults())
             .csrf(csrf ->
                 csrf
                     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -116,8 +114,7 @@ public class SecurityConfiguration {
             authorities.forEach(authority -> {
                 // Check for OidcUserAuthority because Spring Security 5.2 returns
                 // each scope as a GrantedAuthority, which we don't care about.
-                if (authority instanceof OidcUserAuthority) {
-                    OidcUserAuthority oidcUserAuthority = (OidcUserAuthority) authority;
+                if (authority instanceof OidcUserAuthority oidcUserAuthority) {
                     mappedAuthorities.addAll(SecurityUtils.extractAuthorityFromClaims(oidcUserAuthority.getUserInfo().getClaims()));
                 }
             });

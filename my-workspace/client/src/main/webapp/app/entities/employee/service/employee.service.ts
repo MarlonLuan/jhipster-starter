@@ -1,12 +1,11 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import dayjs from 'dayjs/esm';
 import { Observable, map } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
 import { IEmployee, NewEmployee } from '../employee.model';
 
 export type PartialUpdateEmployee = Partial<IEmployee> & Pick<IEmployee, 'id'>;
@@ -21,7 +20,7 @@ export type NewRestEmployee = RestOf<NewEmployee>;
 
 export type PartialUpdateRestEmployee = RestOf<PartialUpdateEmployee>;
 
-@Injectable()
+@Service()
 export class EmployeesService {
   readonly employeesParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
     undefined,
@@ -51,7 +50,7 @@ export class EmployeesService {
   }
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class EmployeeService extends EmployeesService {
   protected readonly http = inject(HttpClient);
 
@@ -103,7 +102,7 @@ export class EmployeeService extends EmployeesService {
     employeeCollection: Type[],
     ...employeesToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const employees: Type[] = employeesToCheck.filter(isPresent);
+    const employees: Type[] = employeesToCheck.filter(employeeItem => employeeItem !== null && employeeItem !== undefined);
     if (employees.length > 0) {
       const employeeCollectionIdentifiers = employeeCollection.map(employeeItem => this.getEmployeeIdentifier(employeeItem));
       const employeesToAdd = employees.filter(employeeItem => {

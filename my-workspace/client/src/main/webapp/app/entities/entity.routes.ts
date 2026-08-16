@@ -41,7 +41,7 @@ const routes: Routes = [
     data: { pageTitle: 'jhipsterApp.jobHistory.home.title' },
     loadChildren: () => import('./job-history/job-history.routes'),
   },
-  /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
+  // jhipster-needle-add-entity-route - JHipster will add entity modules routes here
 ];
 
 export default routes;

@@ -1,16 +1,15 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
 import { ITask, NewTask } from '../task.model';
 
 export type PartialUpdateTask = Partial<ITask> & Pick<ITask, 'id'>;
 
-@Injectable()
+@Service()
 export class TasksService {
   readonly tasksParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(undefined);
   readonly tasksResource = httpResource<ITask[]>(() => {
@@ -29,7 +28,7 @@ export class TasksService {
   protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/tasks');
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TaskService extends TasksService {
   protected readonly http = inject(HttpClient);
 
@@ -70,7 +69,7 @@ export class TaskService extends TasksService {
     taskCollection: Type[],
     ...tasksToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const tasks: Type[] = tasksToCheck.filter(isPresent);
+    const tasks: Type[] = tasksToCheck.filter(taskItem => taskItem !== null && taskItem !== undefined);
     if (tasks.length > 0) {
       const taskCollectionIdentifiers = taskCollection.map(taskItem => this.getTaskIdentifier(taskItem));
       const tasksToAdd = tasks.filter(taskItem => {

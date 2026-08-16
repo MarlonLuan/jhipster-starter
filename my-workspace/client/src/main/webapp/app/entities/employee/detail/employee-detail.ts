@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { Alert } from 'app/shared/alert/alert';
 import { AlertError } from 'app/shared/alert/alert-error';
@@ -14,7 +14,7 @@ import { IEmployee } from '../employee.model';
 @Component({
   selector: 'jhi-employee-detail',
   templateUrl: './employee-detail.html',
-  imports: [FontAwesomeModule, NgbTooltip, Alert, AlertError, TranslateDirective, TranslateModule, RouterLink, FormatMediumDatetimePipe],
+  imports: [FontAwesomeModule, NgbTooltip, Alert, AlertError, TranslateDirective, TranslatePipe, RouterLink, FormatMediumDatetimePipe],
 })
 export class EmployeeDetail {
   readonly employee = input<IEmployee | null>(null);

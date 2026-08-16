@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import dayjs from 'dayjs/esm';
@@ -45,13 +45,14 @@ type EmployeeFormGroupContent = {
 
 export type EmployeeFormGroup = FormGroup<EmployeeFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class EmployeeFormService {
   createEmployeeFormGroup(employee?: EmployeeFormGroupInput): EmployeeFormGroup {
     const employeeRawValue = this.convertEmployeeToEmployeeRawValue({
       ...this.getFormDefaults(),
       ...(employee ?? { id: null }),
     });
+
     return new FormGroup<EmployeeFormGroupContent>({
       id: new FormControl(
         { value: employeeRawValue.id, disabled: true },
@@ -73,7 +74,7 @@ export class EmployeeFormService {
   }
 
   getEmployee(form: EmployeeFormGroup): IEmployee | NewEmployee {
-    return this.convertEmployeeRawValueToEmployee(form.getRawValue() as EmployeeFormRawValue | NewEmployeeFormRawValue);
+    return this.convertEmployeeRawValueToEmployee(form.getRawValue());
   }
 
   resetForm(form: EmployeeFormGroup, employee: EmployeeFormGroupInput): void {

@@ -44,8 +44,8 @@ public class AccountResource {
      */
     @GetMapping("/account")
     public UserVM getAccount(Principal principal) {
-        if (principal instanceof AbstractAuthenticationToken) {
-            return getUserFromAuthentication((AbstractAuthenticationToken) principal);
+        if (principal instanceof AbstractAuthenticationToken authToken) {
+            return getUserFromAuthentication(authToken);
         } else {
             throw new AccountResourceException("User could not be found");
         }
@@ -95,10 +95,10 @@ public class AccountResource {
 
     private static UserVM getUserFromAuthentication(AbstractAuthenticationToken authToken) {
         Map<String, Object> attributes;
-        if (authToken instanceof JwtAuthenticationToken) {
-            attributes = ((JwtAuthenticationToken) authToken).getTokenAttributes();
-        } else if (authToken instanceof OAuth2AuthenticationToken) {
-            attributes = ((OAuth2AuthenticationToken) authToken).getPrincipal().getAttributes();
+        if (authToken instanceof JwtAuthenticationToken jwtToken) {
+            attributes = jwtToken.getTokenAttributes();
+        } else if (authToken instanceof OAuth2AuthenticationToken oauthToken) {
+            attributes = oauthToken.getPrincipal().getAttributes();
         } else {
             throw new IllegalArgumentException("AuthenticationToken is not OAuth2 or JWT!");
         }

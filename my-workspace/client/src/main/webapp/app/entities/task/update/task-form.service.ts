@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ITask, NewTask } from '../task.model';
@@ -24,13 +24,14 @@ type TaskFormGroupContent = {
 
 export type TaskFormGroup = FormGroup<TaskFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TaskFormService {
   createTaskFormGroup(task?: TaskFormGroupInput): TaskFormGroup {
     const taskRawValue = {
       ...this.getFormDefaults(),
       ...(task ?? { id: null }),
     };
+
     return new FormGroup<TaskFormGroupContent>({
       id: new FormControl(
         { value: taskRawValue.id, disabled: true },
@@ -45,7 +46,7 @@ export class TaskFormService {
   }
 
   getTask(form: TaskFormGroup): ITask | NewTask {
-    return form.getRawValue() as ITask | NewTask;
+    return form.getRawValue();
   }
 
   resetForm(form: TaskFormGroup, task: TaskFormGroupInput): void {

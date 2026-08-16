@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 import { AccountService } from 'app/core/auth/account.service';
@@ -17,18 +17,18 @@ describe('Home Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
+        provideTranslateService(),
         {
           provide: AccountService,
           useValue: {
-            isAuthenticated: vitest.fn(),
+            isAuthenticated: vi.fn(),
           },
         },
         {
           provide: LoginService,
           useValue: {
-            login: vitest.fn(),
+            login: vi.fn(),
           },
         },
       ],
@@ -39,7 +39,7 @@ describe('Home Component', () => {
     fixture = TestBed.createComponent(Home);
     comp = fixture.componentInstance;
     mockAccountService = TestBed.inject(AccountService);
-    mockAccountService.identity = vitest.fn(() => of(null));
+    mockAccountService.identity = vi.fn(() => of(null));
     mockLoginService = TestBed.inject(LoginService);
   });
 

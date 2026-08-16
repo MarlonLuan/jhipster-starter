@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DOCUMENT } from '@angular/common';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { Router, TitleStrategy } from '@angular/router';
 
-import { InterpolatableTranslationObject, LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { Subject, of } from 'rxjs';
 
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
@@ -19,19 +19,18 @@ describe('Main', () => {
   let titleService: Title;
   let translateService: TranslateService;
   let langChangeSubject: Subject<LangChangeEvent>;
-  const routerState: any = { snapshot: { root: { data: {} } } };
   let router: Router;
   let document: Document;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
+        provideTranslateService(),
         Title,
         {
           provide: AccountService,
           useValue: {
-            identity: vitest.fn(() => of(null)),
+            identity: vi.fn(() => of(null)),
           },
         },
         { provide: TitleStrategy, useClass: AppPageTitleStrategy },
@@ -57,13 +56,12 @@ describe('Main', () => {
     const defaultPageTitle = 'global.title';
     const parentRoutePageTitle = 'parentTitle';
     const childRoutePageTitle = 'childTitle';
-    const langChangeEvent: LangChangeEvent = { lang: 'en', translations: {} as InterpolatableTranslationObject };
+    const langChangeEvent: LangChangeEvent = { lang: 'en', translations: {} };
 
     beforeEach(() => {
-      routerState.snapshot.root = { data: {} };
-      vitest.spyOn(translateService, 'get').mockImplementation((key: string | string[]) => of(`${key as string} translated`));
-      vitest.spyOn(translateService, 'getCurrentLang').mockReturnValue('en');
-      vitest.spyOn(titleService, 'setTitle');
+      vi.spyOn(translateService, 'get').mockImplementation((key: string | string[]) => of(`${key as string} translated`));
+      vi.spyOn(translateService, 'getCurrentLang').mockReturnValue('en');
+      vi.spyOn(titleService, 'setTitle');
       comp.ngOnInit();
     });
 
@@ -133,7 +131,6 @@ describe('Main', () => {
 
       it('should set page title to root route pageTitle if there is no child routes', async () => {
         // GIVEN
-        routerState.snapshot.root.data = { pageTitle: parentRoutePageTitle };
         router.resetConfig([{ path: '', title: parentRoutePageTitle, component: Blank }]);
 
         // WHEN
@@ -212,13 +209,13 @@ describe('Main', () => {
       comp.ngOnInit();
 
       // WHEN
-      langChangeSubject.next({ lang: 'lang1', translations: {} as InterpolatableTranslationObject });
+      langChangeSubject.next({ lang: 'lang1', translations: {} });
 
       // THEN
       expect(document.querySelector('html')?.getAttribute('lang')).toEqual('lang1');
 
       // WHEN
-      langChangeSubject.next({ lang: 'lang2', translations: {} as InterpolatableTranslationObject });
+      langChangeSubject.next({ lang: 'lang2', translations: {} });
 
       // THEN
       expect(document.querySelector('html')?.getAttribute('lang')).toEqual('lang2');

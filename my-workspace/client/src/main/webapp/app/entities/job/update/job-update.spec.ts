@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { Subject, from, of } from 'rxjs';
 
 import { IEmployee } from 'app/entities/employee/employee.model';
@@ -28,8 +28,8 @@ describe('Job Management Update Component', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot()],
       providers: [
+        provideTranslateService(),
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
@@ -57,10 +57,10 @@ describe('Job Management Update Component', () => {
       job.tasks = tasks;
 
       const taskCollection: ITask[] = [{ id: 'ca341530-545c-46df-8582-8232c8c59bdb' }];
-      vitest.spyOn(taskService, 'query').mockReturnValue(of(new HttpResponse({ body: taskCollection })));
+      vi.spyOn(taskService, 'query').mockReturnValue(of(new HttpResponse({ body: taskCollection })));
       const additionalTasks = [...tasks];
       const expectedCollection: ITask[] = [...additionalTasks, ...taskCollection];
-      vitest.spyOn(taskService, 'addTaskToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(taskService, 'addTaskToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ job });
       comp.ngOnInit();
@@ -79,10 +79,10 @@ describe('Job Management Update Component', () => {
       job.employee = employee;
 
       const employeeCollection: IEmployee[] = [{ id: '004a716c-7d58-420f-b029-f644967e1d69' }];
-      vitest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
+      vi.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [employee];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
-      vitest.spyOn(employeeService, 'addEmployeeToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(employeeService, 'addEmployeeToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ job });
       comp.ngOnInit();
@@ -116,9 +116,9 @@ describe('Job Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IJob>();
       const job = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
-      vitest.spyOn(jobFormService, 'getJob').mockReturnValue(job);
-      vitest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(jobFormService, 'getJob').mockReturnValue(job);
+      vi.spyOn(jobService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ job });
       comp.ngOnInit();
 
@@ -139,9 +139,9 @@ describe('Job Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IJob>();
       const job = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
-      vitest.spyOn(jobFormService, 'getJob').mockReturnValue({ id: null });
-      vitest.spyOn(jobService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(jobFormService, 'getJob').mockReturnValue({ id: null });
+      vi.spyOn(jobService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ job: null });
       comp.ngOnInit();
 
@@ -162,8 +162,8 @@ describe('Job Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IJob>();
       const job = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
-      vitest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(jobService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ job });
       comp.ngOnInit();
 
@@ -184,7 +184,7 @@ describe('Job Management Update Component', () => {
       it('should forward to taskService', () => {
         const entity = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
         const entity2 = { id: '59358286-4c96-4301-945b-e60ba7cd5403' };
-        vitest.spyOn(taskService, 'compareTask');
+        vi.spyOn(taskService, 'compareTask');
         comp.compareTask(entity, entity2);
         expect(taskService.compareTask).toHaveBeenCalledWith(entity, entity2);
       });
@@ -194,7 +194,7 @@ describe('Job Management Update Component', () => {
       it('should forward to employeeService', () => {
         const entity = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
         const entity2 = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
-        vitest.spyOn(employeeService, 'compareEmployee');
+        vi.spyOn(employeeService, 'compareEmployee');
         comp.compareEmployee(entity, entity2);
         expect(employeeService.compareEmployee).toHaveBeenCalledWith(entity, entity2);
       });

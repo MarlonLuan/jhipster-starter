@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IDepartment, NewDepartment } from '../department.model';
@@ -24,13 +24,14 @@ type DepartmentFormGroupContent = {
 
 export type DepartmentFormGroup = FormGroup<DepartmentFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DepartmentFormService {
   createDepartmentFormGroup(department?: DepartmentFormGroupInput): DepartmentFormGroup {
     const departmentRawValue = {
       ...this.getFormDefaults(),
       ...(department ?? { id: null }),
     };
+
     return new FormGroup<DepartmentFormGroupContent>({
       id: new FormControl(
         { value: departmentRawValue.id, disabled: true },
@@ -47,7 +48,7 @@ export class DepartmentFormService {
   }
 
   getDepartment(form: DepartmentFormGroup): IDepartment | NewDepartment {
-    return form.getRawValue() as IDepartment | NewDepartment;
+    return form.getRawValue();
   }
 
   resetForm(form: DepartmentFormGroup, department: DepartmentFormGroupInput): void {

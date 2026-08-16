@@ -3,7 +3,6 @@ package com.mycompany.myapp.repository;
 import com.mycompany.myapp.domain.Job;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +33,7 @@ public class JobRepositoryWithBagRelationshipsImpl implements JobRepositoryWithB
 
     @Override
     public List<Job> fetchBagRelationships(List<Job> jobs) {
-        return Optional.of(jobs).map(this::fetchTasks).orElse(Collections.emptyList());
+        return Optional.of(jobs).map(this::fetchTasks).orElse(List.of());
     }
 
     Job fetchTasks(Job result) {
@@ -51,7 +50,7 @@ public class JobRepositoryWithBagRelationshipsImpl implements JobRepositoryWithB
             .createQuery("select job from Job job left join fetch job.tasks where job in :jobs", Job.class)
             .setParameter(JOBS_PARAMETER, jobs)
             .getResultList();
-        Collections.sort(result, (o1, o2) -> Integer.compare(order.get(o1.getId()), order.get(o2.getId())));
+        result.sort((o1, o2) -> Integer.compare(order.get(o1.getId()), order.get(o2.getId())));
         return result;
     }
 }

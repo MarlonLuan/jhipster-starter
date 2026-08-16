@@ -1,7 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-
-import { TranslateModule } from '@ngx-translate/core';
+import { Component, input } from '@angular/core';
 
 import { Databases } from 'app/admin/metrics/metrics.model';
 import { filterNaN } from 'app/core/util/operators';
@@ -10,8 +8,7 @@ import { TranslateDirective } from 'app/shared/language';
 @Component({
   selector: 'jhi-metrics-datasource',
   templateUrl: './metrics-datasource.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DecimalPipe, TranslateDirective, TranslateModule],
+  imports: [DecimalPipe, TranslateDirective],
 })
 export class MetricsDatasource {
   /**
