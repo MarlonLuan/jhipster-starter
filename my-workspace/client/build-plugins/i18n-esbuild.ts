@@ -6,7 +6,7 @@ import type { Plugin } from 'esbuild';
 import { hashElement } from 'folder-hash';
 import { glob } from 'tinyglobby';
 
-const i18nSourceDir = join(__dirname, '../src/main/webapp/i18n/');
+const i18nSourceDir = join(import.meta.dirname, '../src/main/webapp/i18n/');
 
 export const prepareLanguage = async (language: string) => {
   const files = await glob('*.json', { cwd: join(i18nSourceDir, language) });
