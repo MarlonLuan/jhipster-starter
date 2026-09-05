@@ -1,16 +1,15 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
+import { serverApiUrl } from 'app/config';
+import { createRequestOption } from 'app/core/request';
 import { ICountry, NewCountry } from '../country.model';
 
 export type PartialUpdateCountry = Partial<ICountry> & Pick<ICountry, 'id'>;
 
-@Injectable()
+@Service()
 export class CountriesService {
   readonly countriesParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
     undefined,
@@ -27,11 +26,10 @@ export class CountriesService {
    * In case of error while fetching the countries, the signal is set to an empty array.
    */
   readonly countries = computed(() => (this.countriesResource.hasValue() ? this.countriesResource.value() : []));
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/countries');
+  protected readonly resourceUrl = `${serverApiUrl}api/countries`;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CountryService extends CountriesService {
   protected readonly http = inject(HttpClient);
 
@@ -72,7 +70,7 @@ export class CountryService extends CountriesService {
     countryCollection: Type[],
     ...countriesToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const countries: Type[] = countriesToCheck.filter(isPresent);
+    const countries: Type[] = countriesToCheck.filter(countryItem => countryItem !== null && countryItem !== undefined);
     if (countries.length > 0) {
       const countryCollectionIdentifiers = countryCollection.map(countryItem => this.getCountryIdentifier(countryItem));
       const countriesToAdd = countries.filter(countryItem => {

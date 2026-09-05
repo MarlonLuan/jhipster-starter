@@ -1,17 +1,16 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
 import { Observable, finalize, map } from 'rxjs';
 
 import { IEmployee } from 'app/entities/employee/employee.model';
 import { EmployeeService } from 'app/entities/employee/service/employee.service';
 import { TaskService } from 'app/entities/task/service/task.service';
 import { ITask } from 'app/entities/task/task.model';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
 import { TranslateDirective } from 'app/shared/language';
 import { IJob } from '../job.model';
 import { JobService } from '../service/job.service';
@@ -19,10 +18,9 @@ import { JobService } from '../service/job.service';
 import { JobFormGroup, JobFormService } from './job-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-job-update',
   templateUrl: './job-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class JobUpdate implements OnInit {
   readonly isSaving = signal(false);
