@@ -36,28 +36,24 @@
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.job.id">Id</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="jobTitle">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.job.jobTitle">Job Title</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="minSalary">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.job.minSalary">Min Salary</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="maxSalary">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.job.maxSalary">Max Salary</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
@@ -98,7 +94,7 @@
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
                   </a>
 
-                  <button type="submit" (click)="delete(job)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                  <button type="button" (click)="delete(job)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times" />
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
                   </button>

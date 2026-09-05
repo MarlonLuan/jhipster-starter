@@ -1,5 +1,5 @@
 @if (jobHistory) {
-  <form name="deleteForm" (ngSubmit)="confirmDelete(jobHistory.id!)">
+  <form name="deleteForm" (ngSubmit)="confirmDelete(jobHistory.id)">
     <div class="modal-header">
       <h4 class="modal-title" data-cy="jobHistoryDeleteDialogHeading" jhiTranslate="entity.delete.title">Confirm delete operation</h4>
     </div>
