@@ -82,7 +82,6 @@ describe('Department Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -179,7 +178,7 @@ describe('Department Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
         const entity2 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
 

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { userRouteAccessService } from 'app/core/auth';
 
 import TaskResolve from './route/task-routing-resolve.service';
 
@@ -9,7 +9,7 @@ const taskRoute: Routes = [
     path: '',
     loadComponent: () => import('./list/task').then(m => m.Task),
     data: {},
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
   {
     path: ':id/view',
@@ -17,7 +17,7 @@ const taskRoute: Routes = [
     resolve: {
       task: TaskResolve,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
   {
     path: 'new',
@@ -25,7 +25,7 @@ const taskRoute: Routes = [
     resolve: {
       task: TaskResolve,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
   {
     path: ':id/edit',
@@ -33,7 +33,7 @@ const taskRoute: Routes = [
     resolve: {
       task: TaskResolve,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
 ];
 
