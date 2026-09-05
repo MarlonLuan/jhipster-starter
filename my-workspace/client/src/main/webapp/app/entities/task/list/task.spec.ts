@@ -1,6 +1,6 @@
-import { MockInstance, afterEach, beforeEach, describe, expect, it, vitest } from 'vitest';
+import { MockInstance, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, inject } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -14,7 +14,7 @@ import { sampleWithRequiredData } from '../task.test-samples';
 
 import { Task } from './task';
 
-vitest.useFakeTimers();
+vi.useFakeTimers();
 
 describe('Task Management Component', () => {
   let httpMock: HttpTestingController;
@@ -57,7 +57,7 @@ describe('Task Management Component', () => {
     fixture = TestBed.createComponent(Task);
     comp = fixture.componentInstance;
     service = TestBed.inject(TaskService);
-    routerNavigateSpy = vitest.spyOn(comp.router, 'navigate');
+    routerNavigateSpy = vi.spyOn(comp.router, 'navigate');
 
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faEye, faPencilAlt, faPlus, faSort, faSortDown, faSortUp, faSync, faTimes);
@@ -76,7 +76,7 @@ describe('Task Management Component', () => {
     req.flush([{ id: 'ca341530-545c-46df-8582-8232c8c59bdb' }], {
       headers: { link: '<http://localhost/api/foo?page=1&size=20>; rel="next"' },
     });
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     // THEN
     expect(comp.isLoading()).toEqual(false);
@@ -87,16 +87,16 @@ describe('Task Management Component', () => {
     // WHEN
     TestBed.tick();
     const req = httpMock.expectOne({ method: 'GET' });
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     comp.page.set(3);
     comp.load();
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
     const req2 = httpMock.expectOne({ method: 'GET' });
     req2.flush([{ id: 'ca341530-545c-46df-8582-8232c8c59bdb' }], {
       headers: { link: '<http://localhost/api/foo?page=1&size=20>; rel="next"' },
     });
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     // THEN
     expect(req.cancelled).toBeTruthy();
@@ -109,7 +109,7 @@ describe('Task Management Component', () => {
     TestBed.tick();
     const errorReq = httpMock.expectOne({ method: 'GET' });
     errorReq.flush('error', { status: 500, statusText: 'Server Error' });
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     // THEN - loading state was reset and list is empty
     expect(comp.isLoading()).toBe(false);
@@ -122,7 +122,7 @@ describe('Task Management Component', () => {
     successReq.flush([{ id: 'ca341530-545c-46df-8582-8232c8c59bdb' }], {
       headers: { link: '<http://localhost/api/foo?page=1&size=20>; rel="next"' },
     });
-    await vitest.runAllTimersAsync();
+    await vi.runAllTimersAsync();
 
     // THEN - subscription is still alive and second load succeeds
     expect(comp.tasks()[0]).toEqual(expect.objectContaining({ id: 'ca341530-545c-46df-8582-8232c8c59bdb' }));
@@ -131,7 +131,7 @@ describe('Task Management Component', () => {
   describe('trackId', () => {
     it('should forward to taskService', () => {
       const entity = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
-      vitest.spyOn(service, 'getTaskIdentifier');
+      vi.spyOn(service, 'getTaskIdentifier');
       const id = comp.trackId(entity);
       expect(service.getTaskIdentifier).toHaveBeenCalledWith(entity);
       expect(id).toBe(entity.id);
@@ -167,7 +167,7 @@ describe('Task Management Component', () => {
     httpMock.expectOne({ method: 'GET' });
 
     // THEN
-    expect(service.tasksParams()).toMatchObject(expect.objectContaining({ sort: ['id,desc'] }));
+    expect(service.tasksParams()).toMatchObject({ sort: ['id,desc'] });
   });
 
   describe('delete', () => {
@@ -178,13 +178,13 @@ describe('Task Management Component', () => {
       deleteModalMock = { componentInstance: {}, closed: new Subject() };
       // NgbModal is not a singleton using TestBed.inject.
       // ngbModal = TestBed.inject(NgbModal);
-      ngbModal = (comp as any).modalService;
-      vitest.spyOn(ngbModal, 'open').mockReturnValue(deleteModalMock);
+      ngbModal = (comp as unknown as { modalService: NgbModal }).modalService;
+      vi.spyOn(ngbModal, 'open').mockReturnValue(deleteModalMock);
     });
 
-    it('on confirm should call load', inject([], () => {
+    it('on confirm should call load', () => {
       // GIVEN
-      vitest.spyOn(comp, 'load');
+      vi.spyOn(comp, 'load');
 
       // WHEN
       comp.delete(sampleWithRequiredData);
@@ -193,11 +193,11 @@ describe('Task Management Component', () => {
       // THEN
       expect(ngbModal.open).toHaveBeenCalled();
       expect(comp.load).toHaveBeenCalled();
-    }));
+    });
 
-    it('on dismiss should call load', inject([], () => {
+    it('on dismiss should call load', () => {
       // GIVEN
-      vitest.spyOn(comp, 'load');
+      vi.spyOn(comp, 'load');
 
       // WHEN
       comp.delete(sampleWithRequiredData);
@@ -206,6 +206,6 @@ describe('Task Management Component', () => {
       // THEN
       expect(ngbModal.open).toHaveBeenCalled();
       expect(comp.load).not.toHaveBeenCalled();
-    }));
+    });
   });
 });

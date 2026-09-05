@@ -1,12 +1,11 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import dayjs from 'dayjs/esm';
 import { Observable, map } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
+import { serverApiUrl } from 'app/config';
+import { createRequestOption } from 'app/core/request';
 import { IJobHistory, NewJobHistory } from '../job-history.model';
 
 export type PartialUpdateJobHistory = Partial<IJobHistory> & Pick<IJobHistory, 'id'>;
@@ -22,7 +21,7 @@ export type NewRestJobHistory = RestOf<NewJobHistory>;
 
 export type PartialUpdateRestJobHistory = RestOf<PartialUpdateJobHistory>;
 
-@Injectable()
+@Service()
 export class JobHistoriesService {
   readonly jobHistoriesParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
     undefined,
@@ -41,8 +40,7 @@ export class JobHistoriesService {
   readonly jobHistories = computed(() =>
     (this.jobHistoriesResource.hasValue() ? this.jobHistoriesResource.value() : []).map(item => this.convertValueFromServer(item)),
   );
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/job-histories');
+  protected readonly resourceUrl = `${serverApiUrl}api/job-histories`;
 
   protected convertValueFromServer(restJobHistory: RestJobHistory): IJobHistory {
     return {
@@ -53,7 +51,7 @@ export class JobHistoriesService {
   }
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class JobHistoryService extends JobHistoriesService {
   protected readonly http = inject(HttpClient);
 
@@ -105,7 +103,7 @@ export class JobHistoryService extends JobHistoriesService {
     jobHistoryCollection: Type[],
     ...jobHistoriesToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const jobHistories: Type[] = jobHistoriesToCheck.filter(isPresent);
+    const jobHistories: Type[] = jobHistoriesToCheck.filter(jobHistoryItem => jobHistoryItem !== null && jobHistoryItem !== undefined);
     if (jobHistories.length > 0) {
       const jobHistoryCollectionIdentifiers = jobHistoryCollection.map(jobHistoryItem => this.getJobHistoryIdentifier(jobHistoryItem));
       const jobHistoriesToAdd = jobHistories.filter(jobHistoryItem => {
