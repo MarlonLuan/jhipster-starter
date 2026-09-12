@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IJob, NewJob } from '../job.model';
@@ -27,7 +27,7 @@ type JobFormGroupContent = {
 
 export type JobFormGroup = FormGroup<JobFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class JobFormService {
   createJobFormGroup(job?: JobFormGroupInput): JobFormGroup {
     const jobRawValue = {

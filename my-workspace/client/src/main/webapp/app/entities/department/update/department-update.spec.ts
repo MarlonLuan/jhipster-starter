@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -53,9 +53,9 @@ describe('Department Management Update Component', () => {
       department.location = location;
 
       const locationCollection: ILocation[] = [{ id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' }];
-      vitest.spyOn(locationService, 'query').mockReturnValue(of(new HttpResponse({ body: locationCollection })));
+      vi.spyOn(locationService, 'query').mockReturnValue(of(new HttpResponse({ body: locationCollection })));
       const expectedCollection: ILocation[] = [location, ...locationCollection];
-      vitest.spyOn(locationService, 'addLocationToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(locationService, 'addLocationToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ department });
       comp.ngOnInit();
@@ -83,9 +83,9 @@ describe('Department Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IDepartment>();
       const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
-      vitest.spyOn(departmentFormService, 'getDepartment').mockReturnValue(department);
-      vitest.spyOn(departmentService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(departmentFormService, 'getDepartment').mockReturnValue(department);
+      vi.spyOn(departmentService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ department });
       comp.ngOnInit();
 
@@ -106,9 +106,9 @@ describe('Department Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IDepartment>();
       const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
-      vitest.spyOn(departmentFormService, 'getDepartment').mockReturnValue({ id: null });
-      vitest.spyOn(departmentService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(departmentFormService, 'getDepartment').mockReturnValue({ id: null });
+      vi.spyOn(departmentService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ department: null });
       comp.ngOnInit();
 
@@ -129,8 +129,8 @@ describe('Department Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IDepartment>();
       const department = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
-      vitest.spyOn(departmentService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(departmentService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ department });
       comp.ngOnInit();
 
@@ -151,7 +151,7 @@ describe('Department Management Update Component', () => {
       it('should forward to locationService', () => {
         const entity = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
         const entity2 = { id: 'a63537fe-865d-41e2-bc62-b6de781e4f03' };
-        vitest.spyOn(locationService, 'compareLocation');
+        vi.spyOn(locationService, 'compareLocation');
         comp.compareLocation(entity, entity2);
         expect(locationService.compareLocation).toHaveBeenCalledWith(entity, entity2);
       });

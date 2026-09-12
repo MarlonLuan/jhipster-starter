@@ -36,56 +36,48 @@
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.employee.id">Id</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="firstName">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.employee.firstName">First Name</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="lastName">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.employee.lastName">Last Name</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="email">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.employee.email">Email</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="phoneNumber">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.employee.phoneNumber">Phone Number</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="hireDate">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.employee.hireDate">Hire Date</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="salary">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.employee.salary">Salary</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="commissionPct">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.employee.commissionPct">Commission Pct</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
@@ -143,7 +135,7 @@
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
                   </a>
 
-                  <button type="submit" (click)="delete(employee)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                  <button type="button" (click)="delete(employee)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times" />
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
                   </button>

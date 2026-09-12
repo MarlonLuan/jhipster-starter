@@ -26,8 +26,8 @@ spring:
       enabled: true
       additional-exclude: static/**
     livereload:
-      enabled: false # we use Webpack dev server + BrowserSync for livereload
-  jackson2:
+      enabled: false # we use bundler for livereload
+  jackson:
     serialization:
       indent-output: true
   datasource:

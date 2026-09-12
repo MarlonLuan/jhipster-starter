@@ -1,15 +1,14 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
 import { Observable, finalize, map } from 'rxjs';
 
 import { ILocation } from 'app/entities/location/location.model';
 import { LocationService } from 'app/entities/location/service/location.service';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
 import { TranslateDirective } from 'app/shared/language';
 import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
@@ -17,10 +16,9 @@ import { DepartmentService } from '../service/department.service';
 import { DepartmentFormGroup, DepartmentFormService } from './department-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-department-update',
   templateUrl: './department-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class DepartmentUpdate implements OnInit {
   readonly isSaving = signal(false);
