@@ -36,14 +36,12 @@
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.department.id">Id</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="departmentName">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.department.departmentName">Department Name</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
@@ -82,7 +80,7 @@
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
                   </a>
 
-                  <button type="submit" (click)="delete(department)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                  <button type="button" (click)="delete(department)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times" />
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
                   </button>

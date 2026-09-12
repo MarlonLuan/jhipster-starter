@@ -1,12 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
 import { Observable, finalize } from 'rxjs';
 
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
 import { TranslateDirective } from 'app/shared/language';
 import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
@@ -14,10 +13,9 @@ import { RegionService } from '../service/region.service';
 import { RegionFormGroup, RegionFormService } from './region-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-region-update',
   templateUrl: './region-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class RegionUpdate implements OnInit {
   readonly isSaving = signal(false);
