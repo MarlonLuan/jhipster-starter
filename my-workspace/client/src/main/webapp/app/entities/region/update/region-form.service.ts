@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { IRegion, NewRegion } from '../region.model';
@@ -23,7 +23,7 @@ type RegionFormGroupContent = {
 
 export type RegionFormGroup = FormGroup<RegionFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class RegionFormService {
   createRegionFormGroup(region?: RegionFormGroupInput): RegionFormGroup {
     const regionRawValue = {

@@ -1,16 +1,15 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
+import { serverApiUrl } from 'app/config';
+import { createRequestOption } from 'app/core/request';
 import { ILocation, NewLocation } from '../location.model';
 
 export type PartialUpdateLocation = Partial<ILocation> & Pick<ILocation, 'id'>;
 
-@Injectable()
+@Service()
 export class LocationsService {
   readonly locationsParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
     undefined,
@@ -27,11 +26,10 @@ export class LocationsService {
    * In case of error while fetching the locations, the signal is set to an empty array.
    */
   readonly locations = computed(() => (this.locationsResource.hasValue() ? this.locationsResource.value() : []));
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/locations');
+  protected readonly resourceUrl = `${serverApiUrl}api/locations`;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LocationService extends LocationsService {
   protected readonly http = inject(HttpClient);
 
@@ -72,7 +70,7 @@ export class LocationService extends LocationsService {
     locationCollection: Type[],
     ...locationsToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const locations: Type[] = locationsToCheck.filter(isPresent);
+    const locations: Type[] = locationsToCheck.filter(locationItem => locationItem !== null && locationItem !== undefined);
     if (locations.length > 0) {
       const locationCollectionIdentifiers = locationCollection.map(locationItem => this.getLocationIdentifier(locationItem));
       const locationsToAdd = locations.filter(locationItem => {

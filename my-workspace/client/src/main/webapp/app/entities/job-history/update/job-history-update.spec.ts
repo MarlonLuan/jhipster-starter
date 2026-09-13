@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -61,9 +61,9 @@ describe('JobHistory Management Update Component', () => {
       jobHistory.job = job;
 
       const jobCollection: IJob[] = [{ id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' }];
-      vitest.spyOn(jobService, 'query').mockReturnValue(of(new HttpResponse({ body: jobCollection })));
+      vi.spyOn(jobService, 'query').mockReturnValue(of(new HttpResponse({ body: jobCollection })));
       const expectedCollection: IJob[] = [job, ...jobCollection];
-      vitest.spyOn(jobService, 'addJobToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(jobService, 'addJobToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ jobHistory });
       comp.ngOnInit();
@@ -79,9 +79,9 @@ describe('JobHistory Management Update Component', () => {
       jobHistory.department = department;
 
       const departmentCollection: IDepartment[] = [{ id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' }];
-      vitest.spyOn(departmentService, 'query').mockReturnValue(of(new HttpResponse({ body: departmentCollection })));
+      vi.spyOn(departmentService, 'query').mockReturnValue(of(new HttpResponse({ body: departmentCollection })));
       const expectedCollection: IDepartment[] = [department, ...departmentCollection];
-      vitest.spyOn(departmentService, 'addDepartmentToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(departmentService, 'addDepartmentToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ jobHistory });
       comp.ngOnInit();
@@ -97,9 +97,9 @@ describe('JobHistory Management Update Component', () => {
       jobHistory.employee = employee;
 
       const employeeCollection: IEmployee[] = [{ id: '004a716c-7d58-420f-b029-f644967e1d69' }];
-      vitest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
+      vi.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const expectedCollection: IEmployee[] = [employee, ...employeeCollection];
-      vitest.spyOn(employeeService, 'addEmployeeToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(employeeService, 'addEmployeeToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ jobHistory });
       comp.ngOnInit();
@@ -133,9 +133,9 @@ describe('JobHistory Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IJobHistory>();
       const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
-      vitest.spyOn(jobHistoryFormService, 'getJobHistory').mockReturnValue(jobHistory);
-      vitest.spyOn(jobHistoryService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(jobHistoryFormService, 'getJobHistory').mockReturnValue(jobHistory);
+      vi.spyOn(jobHistoryService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ jobHistory });
       comp.ngOnInit();
 
@@ -156,9 +156,9 @@ describe('JobHistory Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IJobHistory>();
       const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
-      vitest.spyOn(jobHistoryFormService, 'getJobHistory').mockReturnValue({ id: null });
-      vitest.spyOn(jobHistoryService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(jobHistoryFormService, 'getJobHistory').mockReturnValue({ id: null });
+      vi.spyOn(jobHistoryService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ jobHistory: null });
       comp.ngOnInit();
 
@@ -179,8 +179,8 @@ describe('JobHistory Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IJobHistory>();
       const jobHistory = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
-      vitest.spyOn(jobHistoryService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(jobHistoryService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ jobHistory });
       comp.ngOnInit();
 
@@ -201,7 +201,7 @@ describe('JobHistory Management Update Component', () => {
       it('should forward to jobService', () => {
         const entity = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
         const entity2 = { id: 'ee3221b5-0074-405f-9c0c-4e29fb63663c' };
-        vitest.spyOn(jobService, 'compareJob');
+        vi.spyOn(jobService, 'compareJob');
         comp.compareJob(entity, entity2);
         expect(jobService.compareJob).toHaveBeenCalledWith(entity, entity2);
       });
@@ -211,7 +211,7 @@ describe('JobHistory Management Update Component', () => {
       it('should forward to departmentService', () => {
         const entity = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
         const entity2 = { id: 'c54b4791-0036-4b84-8040-f2c2b23e0727' };
-        vitest.spyOn(departmentService, 'compareDepartment');
+        vi.spyOn(departmentService, 'compareDepartment');
         comp.compareDepartment(entity, entity2);
         expect(departmentService.compareDepartment).toHaveBeenCalledWith(entity, entity2);
       });
@@ -221,7 +221,7 @@ describe('JobHistory Management Update Component', () => {
       it('should forward to employeeService', () => {
         const entity = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
         const entity2 = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
-        vitest.spyOn(employeeService, 'compareEmployee');
+        vi.spyOn(employeeService, 'compareEmployee');
         comp.compareEmployee(entity, entity2);
         expect(employeeService.compareEmployee).toHaveBeenCalledWith(entity, entity2);
       });
