@@ -1,16 +1,15 @@
 import { HttpClient, HttpResponse, httpResource } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Service, computed, inject, signal } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { createRequestOption } from 'app/core/request/request-util';
-import { isPresent } from 'app/core/util/operators';
+import { serverApiUrl } from 'app/config';
+import { createRequestOption } from 'app/core/request';
 import { IRegion, NewRegion } from '../region.model';
 
 export type PartialUpdateRegion = Partial<IRegion> & Pick<IRegion, 'id'>;
 
-@Injectable()
+@Service()
 export class RegionsService {
   readonly regionsParams = signal<Record<string, string | number | boolean | readonly (string | number | boolean)[]> | undefined>(
     undefined,
@@ -27,11 +26,10 @@ export class RegionsService {
    * In case of error while fetching the regions, the signal is set to an empty array.
    */
   readonly regions = computed(() => (this.regionsResource.hasValue() ? this.regionsResource.value() : []));
-  protected readonly applicationConfigService = inject(ApplicationConfigService);
-  protected readonly resourceUrl = this.applicationConfigService.getEndpointFor('api/regions');
+  protected readonly resourceUrl = `${serverApiUrl}api/regions`;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class RegionService extends RegionsService {
   protected readonly http = inject(HttpClient);
 
@@ -72,7 +70,7 @@ export class RegionService extends RegionsService {
     regionCollection: Type[],
     ...regionsToCheck: (Type | null | undefined)[]
   ): Type[] {
-    const regions: Type[] = regionsToCheck.filter(isPresent);
+    const regions: Type[] = regionsToCheck.filter(regionItem => regionItem !== null && regionItem !== undefined);
     if (regions.length > 0) {
       const regionCollectionIdentifiers = regionCollection.map(regionItem => this.getRegionIdentifier(regionItem));
       const regionsToAdd = regions.filter(regionItem => {
