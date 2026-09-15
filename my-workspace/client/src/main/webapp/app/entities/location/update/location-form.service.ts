@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ILocation, NewLocation } from '../location.model';
@@ -27,7 +27,7 @@ type LocationFormGroupContent = {
 
 export type LocationFormGroup = FormGroup<LocationFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LocationFormService {
   createLocationFormGroup(location?: LocationFormGroupInput): LocationFormGroup {
     const locationRawValue = {
