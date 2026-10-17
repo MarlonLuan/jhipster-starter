@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
+import type { TranslationObject } from '@ngx-translate/core';
+
 const angularLanguages = {
   en: async (): Promise<void> => import('@angular/common/locales/en'),
   'pt-br': async (): Promise<void> => import('@angular/common/locales/pt'),
@@ -12,7 +14,7 @@ const languagesData = {
   // jhipster-needle-i18n-language-loader - JHipster will add languages in this object
 };
 
-export const loadLocale = (locale: keyof typeof angularLanguages): Promise<any> => {
+export const loadLocale = (locale: keyof typeof angularLanguages): Promise<TranslationObject> => {
   angularLanguages[locale]();
   return languagesData[locale]();
 };

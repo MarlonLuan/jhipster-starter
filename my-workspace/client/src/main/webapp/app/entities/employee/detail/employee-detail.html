@@ -49,23 +49,23 @@
           </dd>
           <dt><span jhiTranslate="jhipsterApp.employee.manager">Manager</span></dt>
           <dd>
-            @if (employee()!.manager) {
+            @if (employeeRef.manager) {
               <div>
-                <a [routerLink]="['/employee', employee()!.manager?.id, 'view']">{{ employeeRef.manager?.id }}</a>
+                <a [routerLink]="['/employee', employeeRef.manager.id, 'view']">{{ employeeRef.manager.id }}</a>
               </div>
             }
           </dd>
           <dt><span jhiTranslate="jhipsterApp.employee.department">Department</span></dt>
           <dd>
-            @if (employee()!.department) {
+            @if (employeeRef.department) {
               <div>
-                <a [routerLink]="['/department', employee()!.department?.id, 'view']">{{ employeeRef.department?.id }}</a>
+                <a [routerLink]="['/department', employeeRef.department.id, 'view']">{{ employeeRef.department.id }}</a>
               </div>
             }
           </dd>
         </dl>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <button type="button" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 

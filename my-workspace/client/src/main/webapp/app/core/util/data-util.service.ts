@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { Observable, Observer } from 'rxjs';
 
-import { byteSize, openFile, toBase64 } from 'app/shared/jhipster/data-utils';
+import { type BlobType, byteSize, openFile, toBase64 } from 'app/shared/jhipster/data-utils';
 
 export type FileLoadErrorType = 'not.image' | 'could.not.extract';
 
@@ -16,9 +16,7 @@ export interface FileLoadError {
 /**
  * A utility service for data.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class DataUtils {
   /**
    * Method to find the byte size of the string provides
@@ -30,8 +28,8 @@ export class DataUtils {
   /**
    * Method to open file
    */
-  openFile(data: string, contentType: string | null | undefined): void {
-    openFile(data, contentType);
+  openFile(data: string, contentType: string | null | undefined, blobType?: BlobType): void {
+    openFile(data, contentType, blobType);
   }
 
   /**

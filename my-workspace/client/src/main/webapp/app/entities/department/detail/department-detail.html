@@ -21,15 +21,15 @@
           </dd>
           <dt><span jhiTranslate="jhipsterApp.department.location">Location</span></dt>
           <dd>
-            @if (department()!.location) {
+            @if (departmentRef.location) {
               <div>
-                <a [routerLink]="['/location', department()!.location?.id, 'view']">{{ departmentRef.location?.id }}</a>
+                <a [routerLink]="['/location', departmentRef.location.id, 'view']">{{ departmentRef.location.id }}</a>
               </div>
             }
           </dd>
         </dl>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <button type="button" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 

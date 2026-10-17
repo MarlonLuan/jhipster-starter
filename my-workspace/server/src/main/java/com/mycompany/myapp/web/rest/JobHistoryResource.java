@@ -4,6 +4,7 @@ import com.mycompany.myapp.repository.JobHistoryRepository;
 import com.mycompany.myapp.service.JobHistoryService;
 import com.mycompany.myapp.service.dto.JobHistoryDTO;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
+import jakarta.persistence.EntityManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -16,12 +17,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * REST controller for managing {@link com.mycompany.myapp.domain.JobHistory}.
@@ -41,23 +47,34 @@ public class JobHistoryResource {
 
     private final JobHistoryRepository jobHistoryRepository;
 
-    public JobHistoryResource(JobHistoryService jobHistoryService, JobHistoryRepository jobHistoryRepository) {
+    private final ObjectMapper om;
+
+    private final EntityManager em;
+
+    public JobHistoryResource(
+        JobHistoryService jobHistoryService,
+        JobHistoryRepository jobHistoryRepository,
+        ObjectMapper om,
+        EntityManager em
+    ) {
         this.jobHistoryService = jobHistoryService;
         this.jobHistoryRepository = jobHistoryRepository;
+        this.om = om;
+        this.em = em;
     }
 
     /**
      * {@code POST  /job-histories} : Create a new jobHistory.
      *
      * @param jobHistoryDTO the jobHistoryDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new jobHistoryDTO, or with status {@code 400 (Bad Request)} if the jobHistory has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new jobHistoryDTO, or with status {@code 400 (Bad Request)} if the jobHistory already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
     public ResponseEntity<JobHistoryDTO> createJobHistory(@RequestBody JobHistoryDTO jobHistoryDTO) throws URISyntaxException {
         LOG.debug("REST request to save JobHistory : {}", jobHistoryDTO);
         if (jobHistoryDTO.getId() != null) {
-            throw new BadRequestAlertException("A new jobHistory cannot already have an ID", ENTITY_NAME, "idexists");
+            throw BadRequestAlertException.idexists(ENTITY_NAME);
         }
         jobHistoryDTO = jobHistoryService.save(jobHistoryDTO);
         return ResponseEntity.created(new URI("/api/job-histories/" + jobHistoryDTO.getId()))
@@ -82,14 +99,14 @@ public class JobHistoryResource {
     ) throws URISyntaxException {
         LOG.debug("REST request to update JobHistory : {}, {}", id, jobHistoryDTO);
         if (jobHistoryDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
         if (!Objects.equals(id, jobHistoryDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
         if (!jobHistoryRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+            throw BadRequestAlertException.idnotfound(ENTITY_NAME);
         }
 
         jobHistoryDTO = jobHistoryService.update(jobHistoryDTO);
@@ -112,26 +129,42 @@ public class JobHistoryResource {
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<JobHistoryDTO> partialUpdateJobHistory(
         @PathVariable(value = "id", required = false) final UUID id,
-        @RequestBody JobHistoryDTO jobHistoryDTO
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @io.swagger.v3.oas.annotations.media.Content(
+                schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = JobHistoryDTO.class)
+            )
+        ) @RequestBody ObjectNode jobHistoryDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update JobHistory partially : {}, {}", id, jobHistoryDTO);
-        if (jobHistoryDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        LOG.debug("REST request to partially update JobHistory : {}, {}", id, jobHistoryDTO);
+        var idNode = jobHistoryDTO.remove("id");
+        if (idNode == null || idNode.isNull()) {
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
-        if (!Objects.equals(id, jobHistoryDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        if (!idNode.isString()) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
+        }
+        if (!Objects.equals(id.toString(), idNode.stringValue())) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
-        if (!jobHistoryRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<JobHistoryDTO> result = jobHistoryService.partialUpdate(jobHistoryDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, jobHistoryDTO.getId().toString())
-        );
+        return jobHistoryService
+            .findOne(id)
+            .map(existingJobHistory -> {
+                try {
+                    em.clear();
+                    existingJobHistory = this.om.readerForUpdating(existingJobHistory).readValue(jobHistoryDTO);
+                    return existingJobHistory;
+                } catch (JacksonException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid jobHistory", e);
+                }
+            })
+            .map(jobHistoryService::update)
+            .map(res ->
+                ResponseEntity.ok()
+                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId().toString()))
+                    .body(res)
+            )
+            .orElseThrow(() -> BadRequestAlertException.idnotfound(ENTITY_NAME));
     }
 
     /**
