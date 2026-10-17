@@ -33,15 +33,15 @@
           </dd>
           <dt><span jhiTranslate="jhipsterApp.location.country">Country</span></dt>
           <dd>
-            @if (location()!.country) {
+            @if (locationRef.country) {
               <div>
-                <a [routerLink]="['/country', location()!.country?.id, 'view']">{{ locationRef.country?.id }}</a>
+                <a [routerLink]="['/country', locationRef.country.id, 'view']">{{ locationRef.country.id }}</a>
               </div>
             }
           </dd>
         </dl>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <button type="button" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 

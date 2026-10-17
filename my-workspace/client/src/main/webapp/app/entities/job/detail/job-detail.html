@@ -31,22 +31,22 @@
           <dd>
             @for (task of jobRef.tasks; track $index; let last = $last) {
               <span>
-                <a [routerLink]="['/task', task.id, 'view']">{{ task?.title }}</a
+                <a [routerLink]="['/task', task.id, 'view']">{{ task.title }}</a
                 >{{ last ? '' : ', ' }}
               </span>
             }
           </dd>
           <dt><span jhiTranslate="jhipsterApp.job.employee">Employee</span></dt>
           <dd>
-            @if (job()!.employee) {
+            @if (jobRef.employee) {
               <div>
-                <a [routerLink]="['/employee', job()!.employee?.id, 'view']">{{ jobRef.employee?.id }}</a>
+                <a [routerLink]="['/employee', jobRef.employee.id, 'view']">{{ jobRef.employee.id }}</a>
               </div>
             }
           </dd>
         </dl>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <button type="button" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 

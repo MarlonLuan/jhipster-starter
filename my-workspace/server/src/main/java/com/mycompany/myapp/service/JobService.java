@@ -28,14 +28,6 @@ public interface JobService {
     JobDTO update(JobDTO jobDTO);
 
     /**
-     * Partially updates a job.
-     *
-     * @param jobDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<JobDTO> partialUpdate(JobDTO jobDTO);
-
-    /**
      * Get all the jobs.
      *
      * @param pageable the pagination information.

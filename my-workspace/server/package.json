@@ -15,6 +15,7 @@
     "backend:nohttp:test": "./mvnw -ntp checkstyle:check --batch-mode",
     "backend:start": "./mvnw -ntp --batch-mode",
     "backend:unit:test": "./mvnw -ntp verify --batch-mode -Dlogging.level.ROOT=OFF -Dlogging.level.tech.jhipster=OFF -Dlogging.level.com.mycompany.myapp=OFF -Dlogging.level.org.springframework=OFF -Dlogging.level.org.springframework.web=OFF -Dlogging.level.org.springframework.security=OFF",
+    "build-watch": "concurrently npm:backend:start",
     "ci:backend:test": "npm run backend:info && npm run backend:doc:test && npm run backend:nohttp:test && npm run backend:unit:test -- -P$npm_package_config_default_environment",
     "ci:e2e:package": "npm run java:$npm_package_config_packaging:$npm_package_config_default_environment -- -Pe2e -Denforcer.skip=true",
     "ci:e2e:prepare": "npm run ci:e2e:prepare:docker",
@@ -24,12 +25,13 @@
     "ci:e2e:teardown": "npm run ci:e2e:teardown:docker --if-present",
     "ci:e2e:teardown:docker": "docker compose -f src/main/docker/services.yml down -v && docker ps -a",
     "ci:server:await": "echo \"Waiting for server at port $npm_package_config_backend_port to start\" && wait-on -t 360000 http-get://127.0.0.1:$npm_package_config_backend_port/management/health && echo \"Server at port $npm_package_config_backend_port started\"",
+    "docker:build": "npm run java:docker",
     "docker:db:down": "docker compose -f src/main/docker/postgresql.yml down -v",
     "docker:db:up": "docker compose -f src/main/docker/postgresql.yml up --wait",
     "docker:keycloak:down": "docker compose -f src/main/docker/keycloak.yml down -v",
     "docker:keycloak:up": "docker compose -f src/main/docker/keycloak.yml up --wait",
     "java:docker": "./mvnw -ntp verify -DskipTests -Pprod jib:dockerBuild",
-    "java:docker:arm64": "npm run java:docker -- -Djib-maven-plugin.architecture=arm64",
+    "java:docker:arm64": "npm run java:docker",
     "java:docker:dev": "npm run java:docker -- -Pdev,webapp",
     "java:docker:prod": "npm run java:docker -- -Pprod",
     "java:jar": "./mvnw -ntp verify -DskipTests --batch-mode",
@@ -38,7 +40,11 @@
     "java:war": "./mvnw -ntp verify -DskipTests --batch-mode -Pwar",
     "java:war:dev": "npm run java:war -- -Pdev,webapp",
     "java:war:prod": "npm run java:war -- -Pprod",
-    "services:up": "docker compose -f src/main/docker/services.yml up --wait"
+    "prepare": "husky",
+    "prettier:check": "prettier --check \"{,.blueprint/**/,src/**/}*.{md,json,yml,js,cjs,mjs,ts,cts,mts,java}\"",
+    "prettier:format": "prettier --write \"{,.blueprint/**/,src/**/}*.{md,json,yml,js,cjs,mjs,ts,cts,mts,java}\"",
+    "services:up": "docker compose -f src/main/docker/services.yml up --wait",
+    "watch": "concurrently npm:backend:start"
   },
   "config": {
     "backend_port": 8080,
@@ -46,12 +52,16 @@
     "packaging": "jar"
   },
   "devDependencies": {
-    "generator-jhipster": "9.2.0",
-    "prettier": "3.9.5",
-    "prettier-plugin-java": "2.10.2",
-    "prettier-plugin-packagejson": "3.0.2"
+    "concurrently": "10.0.6",
+    "generator-jhipster": "9.4.0",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
+    "prettier": "3.9.10",
+    "prettier-plugin-java": "2.11.0",
+    "prettier-plugin-packagejson": "3.0.2",
+    "wait-on": "9.5.1"
   },
   "engines": {
-    "node": ">=24.18.0"
+    "node": ">=24.22.0"
   }
 }

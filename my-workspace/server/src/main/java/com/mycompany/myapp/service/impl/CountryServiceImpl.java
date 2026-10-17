@@ -27,9 +27,9 @@ public class CountryServiceImpl implements CountryService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CountryServiceImpl.class);
 
-    private final CountryRepository countryRepository;
+    protected final CountryRepository countryRepository;
 
-    private final CountryMapper countryMapper;
+    protected final CountryMapper countryMapper;
 
     public CountryServiceImpl(CountryRepository countryRepository, CountryMapper countryMapper) {
         this.countryRepository = countryRepository;
@@ -50,21 +50,6 @@ public class CountryServiceImpl implements CountryService {
         Country country = countryMapper.toEntity(countryDTO);
         country = countryRepository.save(country);
         return countryMapper.toDto(country);
-    }
-
-    @Override
-    public Optional<CountryDTO> partialUpdate(CountryDTO countryDTO) {
-        LOG.debug("Request to partially update Country : {}", countryDTO);
-
-        return countryRepository
-            .findById(countryDTO.getId())
-            .map(existingCountry -> {
-                countryMapper.partialUpdate(existingCountry, countryDTO);
-
-                return existingCountry;
-            })
-            .map(countryRepository::save)
-            .map(countryMapper::toDto);
     }
 
     @Override
