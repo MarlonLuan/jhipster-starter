@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ITask, NewTask } from '../task.model';
@@ -24,7 +24,7 @@ type TaskFormGroupContent = {
 
 export type TaskFormGroup = FormGroup<TaskFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TaskFormService {
   createTaskFormGroup(task?: TaskFormGroupInput): TaskFormGroup {
     const taskRawValue = {

@@ -15,9 +15,9 @@ const regionResolve = (route: ActivatedRouteSnapshot): Observable<null | IRegion
     return service.find(id).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 404) {
-          router.navigate(['404']);
+          void router.navigate(['404']);
         } else {
-          router.navigate(['error']);
+          void router.navigate(['error']);
         }
         return EMPTY;
       }),

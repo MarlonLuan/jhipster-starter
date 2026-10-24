@@ -4,6 +4,7 @@ import com.mycompany.myapp.repository.RegionRepository;
 import com.mycompany.myapp.service.RegionService;
 import com.mycompany.myapp.service.dto.RegionDTO;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
+import jakarta.persistence.EntityManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -19,10 +20,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * REST controller for managing {@link com.mycompany.myapp.domain.Region}.
@@ -42,23 +47,29 @@ public class RegionResource {
 
     private final RegionRepository regionRepository;
 
-    public RegionResource(RegionService regionService, RegionRepository regionRepository) {
+    private final ObjectMapper om;
+
+    private final EntityManager em;
+
+    public RegionResource(RegionService regionService, RegionRepository regionRepository, ObjectMapper om, EntityManager em) {
         this.regionService = regionService;
         this.regionRepository = regionRepository;
+        this.om = om;
+        this.em = em;
     }
 
     /**
      * {@code POST  /regions} : Create a new region.
      *
      * @param regionDTO the regionDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new regionDTO, or with status {@code 400 (Bad Request)} if the region has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new regionDTO, or with status {@code 400 (Bad Request)} if the region already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
     public ResponseEntity<RegionDTO> createRegion(@RequestBody RegionDTO regionDTO) throws URISyntaxException {
         LOG.debug("REST request to save Region : {}", regionDTO);
         if (regionDTO.getId() != null) {
-            throw new BadRequestAlertException("A new region cannot already have an ID", ENTITY_NAME, "idexists");
+            throw BadRequestAlertException.idexists(ENTITY_NAME);
         }
         regionDTO = regionService.save(regionDTO);
         return ResponseEntity.created(new URI("/api/regions/" + regionDTO.getId()))
@@ -83,14 +94,14 @@ public class RegionResource {
     ) throws URISyntaxException {
         LOG.debug("REST request to update Region : {}, {}", id, regionDTO);
         if (regionDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
         if (!Objects.equals(id, regionDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
         if (!regionRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+            throw BadRequestAlertException.idnotfound(ENTITY_NAME);
         }
 
         regionDTO = regionService.update(regionDTO);
@@ -113,26 +124,42 @@ public class RegionResource {
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<RegionDTO> partialUpdateRegion(
         @PathVariable(value = "id", required = false) final UUID id,
-        @RequestBody RegionDTO regionDTO
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @io.swagger.v3.oas.annotations.media.Content(
+                schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = RegionDTO.class)
+            )
+        ) @RequestBody ObjectNode regionDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Region partially : {}, {}", id, regionDTO);
-        if (regionDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        LOG.debug("REST request to partially update Region : {}, {}", id, regionDTO);
+        var idNode = regionDTO.remove("id");
+        if (idNode == null || idNode.isNull()) {
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
-        if (!Objects.equals(id, regionDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        if (!idNode.isString()) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
+        }
+        if (!Objects.equals(id.toString(), idNode.stringValue())) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
-        if (!regionRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<RegionDTO> result = regionService.partialUpdate(regionDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, regionDTO.getId().toString())
-        );
+        return regionService
+            .findOne(id)
+            .map(existingRegion -> {
+                try {
+                    em.clear();
+                    existingRegion = this.om.readerForUpdating(existingRegion).readValue(regionDTO);
+                    return existingRegion;
+                } catch (JacksonException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid region", e);
+                }
+            })
+            .map(regionService::update)
+            .map(res ->
+                ResponseEntity.ok()
+                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId().toString()))
+                    .body(res)
+            )
+            .orElseThrow(() -> BadRequestAlertException.idnotfound(ENTITY_NAME));
     }
 
     /**

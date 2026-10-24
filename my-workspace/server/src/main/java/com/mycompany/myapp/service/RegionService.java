@@ -28,14 +28,6 @@ public interface RegionService {
     RegionDTO update(RegionDTO regionDTO);
 
     /**
-     * Partially updates a region.
-     *
-     * @param regionDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<RegionDTO> partialUpdate(RegionDTO regionDTO);
-
-    /**
      * Get all the regions.
      *
      * @param pageable the pagination information.

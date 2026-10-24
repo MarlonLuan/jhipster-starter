@@ -1,7 +1,9 @@
+endOfLine: auto
 printWidth: 140
 singleQuote: true
 tabWidth: 2
 useTabs: false
+
 arrowParens: avoid
 bracketSameLine: false
 plugins:

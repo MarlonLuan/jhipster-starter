@@ -1,18 +1,15 @@
 import { HttpHeaders } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, effect, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, effect, inject, linkedSignal, signal, untracked } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Data, ParamMap, Router, RouterLink } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { NgbPagination } from '@ng-bootstrap/ng-bootstrap/pagination';
-import { TranslatePipe } from '@ngx-translate/core';
-import { Subscription, combineLatest, filter, tap } from 'rxjs';
+import { combineLatest, filter, map, tap } from 'rxjs';
 
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigation.constants';
-import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'app/config/pagination.constants';
-import { Alert } from 'app/shared/alert/alert';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { DEFAULT_SORT_DATA, ITEMS_PER_PAGE, ITEM_DELETED_EVENT, PAGE_HEADER, SORT, TOTAL_COUNT_RESPONSE_HEADER } from 'app/config';
+import { Alert, AlertError } from 'app/shared/alert';
 import { FormatMediumDatetimePipe } from 'app/shared/date';
 import { TranslateDirective } from 'app/shared/language';
 import { ItemCount } from 'app/shared/pagination';
@@ -22,27 +19,23 @@ import { IJobHistory } from '../job-history.model';
 import { JobHistoryService } from '../service/job-history.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-job-history',
   templateUrl: './job-history.html',
   imports: [
     RouterLink,
-    FormsModule,
     FontAwesomeModule,
     AlertError,
     Alert,
     SortDirective,
     SortByDirective,
     TranslateDirective,
-    TranslatePipe,
     FormatMediumDatetimePipe,
     NgbPagination,
     ItemCount,
   ],
 })
-export class JobHistory implements OnInit {
-  subscription: Subscription | null = null;
-  readonly jobHistories = signal<IJobHistory[]>([]);
+export class JobHistory {
+  readonly jobHistories = linkedSignal(() => this.fillComponentAttributesFromResponseBody([...this.jobHistoryService.jobHistories()]));
 
   sortState = sortStateSignal({});
 
@@ -51,12 +44,18 @@ export class JobHistory implements OnInit {
   readonly page = signal(1);
 
   readonly router = inject(Router);
-  protected readonly jobHistoryService = inject(JobHistoryService);
+  private readonly jobHistoryService = inject(JobHistoryService);
   // eslint-disable-next-line @typescript-eslint/member-ordering
   readonly isLoading = this.jobHistoryService.jobHistoriesResource.isLoading;
-  protected readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly sortService = inject(SortService);
-  protected modalService = inject(NgbModal);
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly activatedRouteState = toSignal(
+    combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data]).pipe(
+      map(([queryParamMap, data]) => ({ queryParamMap, data })),
+    ),
+    { initialValue: { queryParamMap: this.activatedRoute.snapshot.queryParamMap, data: this.activatedRoute.snapshot.data } },
+  );
+  private readonly sortService = inject(SortService);
+  private readonly modalService = inject(NgbModal);
 
   constructor() {
     effect(() => {
@@ -66,20 +65,16 @@ export class JobHistory implements OnInit {
       }
     });
     effect(() => {
-      this.jobHistories.set(this.fillComponentAttributesFromResponseBody([...this.jobHistoryService.jobHistories()]));
+      const activatedRouteState = this.activatedRouteState();
+      untracked(() => {
+        // Only watch for route changes. Other signals should be ignored.
+        this.fillComponentAttributeFromRoute(activatedRouteState.queryParamMap, activatedRouteState.data);
+        this.load();
+      });
     });
   }
 
   trackId = (item: IJobHistory): string => this.jobHistoryService.getJobHistoryIdentifier(item);
-
-  ngOnInit(): void {
-    this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
-      .pipe(
-        tap(([params, data]) => this.fillComponentAttributeFromRoute(params, data)),
-        tap(() => this.load()),
-      )
-      .subscribe();
-  }
 
   delete(jobHistory: IJobHistory): void {
     const modalRef = this.modalService.open(JobHistoryDeleteDialog, { size: 'lg', backdrop: 'static' });
@@ -105,21 +100,21 @@ export class JobHistory implements OnInit {
     this.handleNavigation(page, this.sortState());
   }
 
-  protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
+  private fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {
     const page = params.get(PAGE_HEADER);
     this.page.set(+(page ?? 1));
     this.sortState.set(this.sortService.parseSortParam(params.get(SORT) ?? data[DEFAULT_SORT_DATA]));
   }
 
-  protected fillComponentAttributesFromResponseBody(data: IJobHistory[]): IJobHistory[] {
+  private fillComponentAttributesFromResponseBody(data: IJobHistory[]): IJobHistory[] {
     return data;
   }
 
-  protected fillComponentAttributesFromResponseHeader(headers: HttpHeaders): void {
+  private fillComponentAttributesFromResponseHeader(headers: HttpHeaders): void {
     this.totalItems.set(Number(headers.get(TOTAL_COUNT_RESPONSE_HEADER)));
   }
 
-  protected queryBackend(): void {
+  private queryBackend(): void {
     const pageToLoad: number = this.page();
     const queryObject: any = {
       page: pageToLoad - 1,
@@ -129,14 +124,14 @@ export class JobHistory implements OnInit {
     this.jobHistoryService.jobHistoriesParams.set(queryObject);
   }
 
-  protected handleNavigation(page: number, sortState: SortState): void {
+  private handleNavigation(page: number, sortState: SortState): void {
     const queryParamsObj = {
       page,
       size: this.itemsPerPage(),
       sort: this.sortService.buildSortParam(sortState),
     };
 
-    this.router.navigate(['./'], {
+    void this.router.navigate(['./'], {
       relativeTo: this.activatedRoute,
       queryParams: queryParamsObj,
     });

@@ -4,6 +4,7 @@ import com.mycompany.myapp.repository.LocationRepository;
 import com.mycompany.myapp.service.LocationService;
 import com.mycompany.myapp.service.dto.LocationDTO;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
+import jakarta.persistence.EntityManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -19,10 +20,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * REST controller for managing {@link com.mycompany.myapp.domain.Location}.
@@ -42,23 +47,29 @@ public class LocationResource {
 
     private final LocationRepository locationRepository;
 
-    public LocationResource(LocationService locationService, LocationRepository locationRepository) {
+    private final ObjectMapper om;
+
+    private final EntityManager em;
+
+    public LocationResource(LocationService locationService, LocationRepository locationRepository, ObjectMapper om, EntityManager em) {
         this.locationService = locationService;
         this.locationRepository = locationRepository;
+        this.om = om;
+        this.em = em;
     }
 
     /**
      * {@code POST  /locations} : Create a new location.
      *
      * @param locationDTO the locationDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new locationDTO, or with status {@code 400 (Bad Request)} if the location has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new locationDTO, or with status {@code 400 (Bad Request)} if the location already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
     public ResponseEntity<LocationDTO> createLocation(@RequestBody LocationDTO locationDTO) throws URISyntaxException {
         LOG.debug("REST request to save Location : {}", locationDTO);
         if (locationDTO.getId() != null) {
-            throw new BadRequestAlertException("A new location cannot already have an ID", ENTITY_NAME, "idexists");
+            throw BadRequestAlertException.idexists(ENTITY_NAME);
         }
         locationDTO = locationService.save(locationDTO);
         return ResponseEntity.created(new URI("/api/locations/" + locationDTO.getId()))
@@ -83,14 +94,14 @@ public class LocationResource {
     ) throws URISyntaxException {
         LOG.debug("REST request to update Location : {}, {}", id, locationDTO);
         if (locationDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
         if (!Objects.equals(id, locationDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
         if (!locationRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+            throw BadRequestAlertException.idnotfound(ENTITY_NAME);
         }
 
         locationDTO = locationService.update(locationDTO);
@@ -113,26 +124,42 @@ public class LocationResource {
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<LocationDTO> partialUpdateLocation(
         @PathVariable(value = "id", required = false) final UUID id,
-        @RequestBody LocationDTO locationDTO
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @io.swagger.v3.oas.annotations.media.Content(
+                schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = LocationDTO.class)
+            )
+        ) @RequestBody ObjectNode locationDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Location partially : {}, {}", id, locationDTO);
-        if (locationDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        LOG.debug("REST request to partially update Location : {}, {}", id, locationDTO);
+        var idNode = locationDTO.remove("id");
+        if (idNode == null || idNode.isNull()) {
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
-        if (!Objects.equals(id, locationDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        if (!idNode.isString()) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
+        }
+        if (!Objects.equals(id.toString(), idNode.stringValue())) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
-        if (!locationRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<LocationDTO> result = locationService.partialUpdate(locationDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, locationDTO.getId().toString())
-        );
+        return locationService
+            .findOne(id)
+            .map(existingLocation -> {
+                try {
+                    em.clear();
+                    existingLocation = this.om.readerForUpdating(existingLocation).readValue(locationDTO);
+                    return existingLocation;
+                } catch (JacksonException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid location", e);
+                }
+            })
+            .map(locationService::update)
+            .map(res ->
+                ResponseEntity.ok()
+                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId().toString()))
+                    .body(res)
+            )
+            .orElseThrow(() -> BadRequestAlertException.idnotfound(ENTITY_NAME));
     }
 
     /**

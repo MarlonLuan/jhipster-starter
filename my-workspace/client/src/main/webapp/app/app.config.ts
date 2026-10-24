@@ -21,7 +21,7 @@ import { errorHandlerInterceptor } from 'app/core/interceptor/error-handler.inte
 import { notificationInterceptor } from 'app/core/interceptor/notification.interceptor';
 
 import './config/dayjs';
-import { provideTranslation } from 'app/shared/language/translation.provider';
+import { provideTranslation } from 'app/shared/language';
 
 import { AppPageTitleStrategy } from './app-page-title-strategy';
 import routes from './app.routes';
@@ -32,13 +32,13 @@ const routerFeatures: RouterFeatures[] = [
   withNavigationErrorHandler((e: NavigationError) => {
     const router = inject(Router);
     if (e.error.status === 403) {
-      router.navigate(['/accessdenied']);
+      void router.navigate(['/accessdenied']);
     } else if (e.error.status === 404) {
-      router.navigate(['/404']);
+      void router.navigate(['/404']);
     } else if (e.error.status === 401) {
-      router.navigate(['/login']);
+      void router.navigate(['/login']);
     } else {
-      router.navigate(['/error']);
+      void router.navigate(['/error']);
     }
   }),
 ];

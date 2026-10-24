@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Refresh oauth2 tokens.
+ * Refresh OAuth2 tokens.
  */
 @Component
 public class OAuth2RefreshTokensWebFilter extends OncePerRequestFilter {
