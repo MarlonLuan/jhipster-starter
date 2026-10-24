@@ -25,12 +25,16 @@
           </dd>
         </dl>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <button type="button" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
         <button type="button" [routerLink]="['/task', taskRef.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+
+        <button type="button" (click)="delete(taskRef)" class="btn btn-danger" data-cy="entityDeleteButton">
+          <fa-icon icon="times" />&nbsp;<span jhiTranslate="entity.action.delete">Delete</span>
         </button>
       </div>
     }

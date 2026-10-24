@@ -28,14 +28,6 @@ public interface EmployeeService {
     EmployeeDTO update(EmployeeDTO employeeDTO);
 
     /**
-     * Partially updates a employee.
-     *
-     * @param employeeDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<EmployeeDTO> partialUpdate(EmployeeDTO employeeDTO);
-
-    /**
      * Get all the employees.
      *
      * @param pageable the pagination information.

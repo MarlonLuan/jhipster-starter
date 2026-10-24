@@ -1,6 +1,8 @@
 package com.mycompany.myapp.web.rest;
 
+import static com.mycompany.myapp.domain.DepartmentTestSamples.*;
 import static com.mycompany.myapp.domain.EmployeeAsserts.*;
+import static com.mycompany.myapp.web.rest.TestUtil.convertObjectToPartialUpdateBody;
 import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -8,9 +10,9 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Employee;
+import com.mycompany.myapp.repository.DepartmentRepository;
 import com.mycompany.myapp.repository.EmployeeRepository;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
 import com.mycompany.myapp.service.mapper.EmployeeMapper;
@@ -26,6 +28,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Integration tests for the {@link EmployeeResource} REST controller.
@@ -77,6 +81,9 @@ class EmployeeResourceIT {
     private Employee employee;
 
     private Employee insertedEmployee;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     /**
      * Create an entity for this test.
@@ -286,7 +293,7 @@ class EmployeeResourceIT {
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -309,13 +316,59 @@ class EmployeeResourceIT {
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(employeeDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Employee in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void shouldNotUpdateRelatedEntitiesThroughEmployee() throws Exception {
+        // Persist the related entities and a employee related to them
+        var relatedDepartment = DepartmentResourceIT.createEntity();
+        em.persist(relatedDepartment);
+        var relatedDepartmentValue = relatedDepartment.getDepartmentName();
+        employee.setDepartment(relatedDepartment);
+        em.flush();
+        insertedEmployee = employeeRepository.saveAndFlush(employee);
+
+        // Each nested related object carries another value, which must stay in the request
+        var relatedDepartmentJson = om.createObjectNode();
+        relatedDepartmentJson.set("id", om.valueToTree(relatedDepartment.getId()));
+        relatedDepartmentJson.set("departmentName", om.valueToTree(getDepartmentSample2().getDepartmentName()));
+
+        ObjectNode updateJson = om.valueToTree(employeeMapper.toDto(insertedEmployee));
+        updateJson.set("department", relatedDepartmentJson);
+        restEmployeeMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, insertedEmployee.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(updateJson))
+            )
+            .andExpect(status().isOk());
+
+        var patchJson = om.createObjectNode();
+        patchJson.set("id", om.valueToTree(insertedEmployee.getId()));
+        patchJson.set("department", relatedDepartmentJson);
+        restEmployeeMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, insertedEmployee.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(patchJson))
+            )
+            .andExpect(status().isOk());
+
+        em.flush();
+        em.clear();
+        assertThat(departmentRepository.findById(relatedDepartment.getId()).orElseThrow().getDepartmentName()).isEqualTo(
+            relatedDepartmentValue
+        );
     }
 
     @Test
@@ -337,7 +390,7 @@ class EmployeeResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedEmployee.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedEmployee))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedEmployee))
             )
             .andExpect(status().isOk());
 
@@ -373,7 +426,7 @@ class EmployeeResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedEmployee.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedEmployee))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedEmployee))
             )
             .andExpect(status().isOk());
 
@@ -415,7 +468,7 @@ class EmployeeResourceIT {
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -438,7 +491,7 @@ class EmployeeResourceIT {
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(
                 patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(employeeDTO))
