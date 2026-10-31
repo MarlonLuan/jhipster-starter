@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 @import 'bootstrap-variables';
 @import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
@@ -27,7 +29,7 @@ a:not([href]):not([tabindex]):hover.dropdown-item {
 
 /* override .dropdown-item.active background-color on hover */
 .dropdown-item.active:hover {
-  background-color: mix($dropdown-link-hover-bg, $dropdown-link-active-bg, 50%);
+  background-color: color.mix($dropdown-link-hover-bg, $dropdown-link-active-bg, 50%);
 }
 
 a:hover {
@@ -41,13 +43,27 @@ a:hover {
 }
 
 /* ==========================================================================
-Browser Upgrade Prompt
+Main page styles
 ========================================================================== */
-.browserupgrade {
-  margin: 0.2em 0;
-  background: #ccc;
-  color: #000;
-  padding: 0.2em 0;
+
+.hipster {
+  display: inline-block;
+  width: 347px;
+  height: 497px;
+  background: url('../images/jhipster_family_member_3.svg') no-repeat center top;
+  background-size: contain;
+}
+
+/* wait autoprefixer update to allow simple generation of high pixel density media query */
+@media only screen and (-webkit-min-device-pixel-ratio: 2),
+  only screen and (-moz-min-device-pixel-ratio: 2),
+  only screen and (-o-min-device-pixel-ratio: 2/1),
+  only screen and (min-resolution: 192dpi),
+  only screen and (min-resolution: 2dppx) {
+  .hipster {
+    background: url('../images/jhipster_family_member_3.svg') no-repeat center top;
+    background-size: contain;
+  }
 }
 
 /* ==========================================================================
@@ -218,10 +234,6 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
 /* page-ribbon.scss */
 .ribbon {
   left: -3.5em;
-  -moz-transform: rotate(-45deg);
-  -ms-transform: rotate(-45deg);
-  -o-transform: rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
   transform: rotate(-45deg);
 }
 

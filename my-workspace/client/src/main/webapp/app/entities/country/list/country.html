@@ -32,18 +32,16 @@
     <div class="table-responsive table-entities" id="entities">
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
-          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+          <tr jhiSort [(sortState)]="sortState" (sortStateChange)="navigateToWithComponentValues($event)">
             <th scope="col" jhiSortBy="id">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.country.id">Id</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
             <th scope="col" jhiSortBy="countryName">
               <div class="d-flex">
                 <span jhiTranslate="jhipsterApp.country.countryName">Country Name</span>
-
                 <fa-icon class="p-1" icon="sort" />
               </div>
             </th>
@@ -82,8 +80,8 @@
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
                   </a>
 
-                  <button type="submit" (click)="delete(country)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                    <fa-icon icon="times" />
+                  <button type="button" (click)="delete(country)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="trash" />
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
                   </button>
                 </div>

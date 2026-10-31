@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import dayjs from 'dayjs/esm';
 
-import { DATE_TIME_FORMAT } from 'app/config/input.constants';
+import { DATE_TIME_FORMAT } from 'app/config';
 import { IJobHistory, NewJobHistory } from '../job-history.model';
 
 /**
@@ -43,7 +43,7 @@ type JobHistoryFormGroupContent = {
 
 export type JobHistoryFormGroup = FormGroup<JobHistoryFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class JobHistoryFormService {
   createJobHistoryFormGroup(jobHistory?: JobHistoryFormGroupInput): JobHistoryFormGroup {
     const jobHistoryRawValue = this.convertJobHistoryToJobHistoryRawValue({

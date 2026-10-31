@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ICountry, NewCountry } from '../country.model';
@@ -24,7 +24,7 @@ type CountryFormGroupContent = {
 
 export type CountryFormGroup = FormGroup<CountryFormGroupContent>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CountryFormService {
   createCountryFormGroup(country?: CountryFormGroupInput): CountryFormGroup {
     const countryRawValue = {

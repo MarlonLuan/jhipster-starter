@@ -1,10 +1,12 @@
 import eslint from '@eslint/js';
+import stylistic from '@stylistic/eslint-plugin';
+import vitest from '@vitest/eslint-plugin';
 import angular from 'angular-eslint';
 import { defineConfig } from 'eslint/config';
 import prettier from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-// For a detailed explanation, visit: https://github.com/angular-eslint/angular-eslint/blob/main/docs/CONFIGURING_FLAT_CONFIG.md
+// For a detailed explanation, visit: https://github.com/angular-eslint/angular-eslint/blob/main/docs/CONFIGURING_ESLINT.md
 // jhipster-needle-eslint-add-import - JHipster will add additional import here
 
 export default defineConfig(
@@ -26,6 +28,9 @@ export default defineConfig(
   {
     files: ['src/main/webapp/**/*.ts'],
     extends: [...tseslint.configs.strictTypeChecked, ...tseslint.configs.stylistic, ...angular.configs.tsRecommended],
+    plugins: {
+      '@stylistic': stylistic,
+    },
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -108,11 +113,12 @@ export default defineConfig(
       'no-new-wrappers': 'error',
       'object-shorthand': ['error', 'always', { avoidExplicitReturnArrows: true }],
       radix: 'error',
-      'spaced-comment': ['warn', 'always'],
+      '@stylistic/spaced-comment': ['warn', 'always'],
     },
   },
   {
     files: ['src/main/webapp/**/*.spec.ts'],
+    extends: [vitest.configs.recommended],
     rules: {
       '@typescript-eslint/no-empty-function': 'off',
     },

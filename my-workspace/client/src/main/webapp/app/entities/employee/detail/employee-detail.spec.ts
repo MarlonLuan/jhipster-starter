@@ -1,12 +1,16 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { Router, provideRouter, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faArrowLeft, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
+
+import { ITEM_DELETED_EVENT } from 'app/config';
+import { EmployeeDeleteDialog } from '../delete/employee-delete-dialog';
 
 import { EmployeeDetail } from './employee-detail';
 
@@ -17,6 +21,8 @@ describe('Employee Management Detail Component', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        { provide: NgbModal, useValue: { open: vi.fn() } },
+
         provideTranslateService(),
         provideRouter(
           [
@@ -33,6 +39,8 @@ describe('Employee Management Detail Component', () => {
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faArrowLeft);
     library.addIcons(faPencilAlt);
+
+    library.addIcons(faTrash);
   });
 
   beforeEach(() => {
@@ -52,9 +60,23 @@ describe('Employee Management Detail Component', () => {
 
   describe('PreviousState', () => {
     it('should navigate to previous state', () => {
-      vitest.spyOn(globalThis.history, 'back');
+      vi.spyOn(globalThis.history, 'back');
       comp.previousState();
       expect(globalThis.history.back).toHaveBeenCalled();
+    });
+  });
+
+  describe('Delete', () => {
+    it('should open the delete dialog and navigate to the list when the entity is deleted', () => {
+      const modalRef = { componentInstance: {}, closed: of(ITEM_DELETED_EVENT) };
+      const modalService = TestBed.inject(NgbModal);
+      const openSpy = vi.spyOn(modalService, 'open').mockReturnValue(modalRef as unknown as ReturnType<NgbModal['open']>);
+      const navigateSpy = vi.spyOn(TestBed.inject(Router), 'navigate');
+
+      comp.delete({ id: '004a716c-7d58-420f-b029-f644967e1d69' });
+
+      expect(openSpy).toHaveBeenCalledWith(EmployeeDeleteDialog, { size: 'lg', backdrop: 'static' });
+      expect(navigateSpy).toHaveBeenCalledWith(['/employee']);
     });
   });
 });

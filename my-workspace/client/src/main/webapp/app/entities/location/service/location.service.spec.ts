@@ -82,7 +82,6 @@ describe('Location Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -179,7 +178,7 @@ describe('Location Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
         const entity2 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
 
