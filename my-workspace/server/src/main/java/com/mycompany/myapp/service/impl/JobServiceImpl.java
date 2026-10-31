@@ -27,9 +27,9 @@ public class JobServiceImpl implements JobService {
 
     private static final Logger LOG = LoggerFactory.getLogger(JobServiceImpl.class);
 
-    private final JobRepository jobRepository;
+    protected final JobRepository jobRepository;
 
-    private final JobMapper jobMapper;
+    protected final JobMapper jobMapper;
 
     public JobServiceImpl(JobRepository jobRepository, JobMapper jobMapper) {
         this.jobRepository = jobRepository;
@@ -50,21 +50,6 @@ public class JobServiceImpl implements JobService {
         Job job = jobMapper.toEntity(jobDTO);
         job = jobRepository.save(job);
         return jobMapper.toDto(job);
-    }
-
-    @Override
-    public Optional<JobDTO> partialUpdate(JobDTO jobDTO) {
-        LOG.debug("Request to partially update Job : {}", jobDTO);
-
-        return jobRepository
-            .findById(jobDTO.getId())
-            .map(existingJob -> {
-                jobMapper.partialUpdate(existingJob, jobDTO);
-
-                return existingJob;
-            })
-            .map(jobRepository::save)
-            .map(jobMapper::toDto);
     }
 
     @Override

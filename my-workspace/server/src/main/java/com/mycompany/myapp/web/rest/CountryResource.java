@@ -4,6 +4,7 @@ import com.mycompany.myapp.repository.CountryRepository;
 import com.mycompany.myapp.service.CountryService;
 import com.mycompany.myapp.service.dto.CountryDTO;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
+import jakarta.persistence.EntityManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -19,10 +20,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * REST controller for managing {@link com.mycompany.myapp.domain.Country}.
@@ -42,23 +47,29 @@ public class CountryResource {
 
     private final CountryRepository countryRepository;
 
-    public CountryResource(CountryService countryService, CountryRepository countryRepository) {
+    private final ObjectMapper om;
+
+    private final EntityManager em;
+
+    public CountryResource(CountryService countryService, CountryRepository countryRepository, ObjectMapper om, EntityManager em) {
         this.countryService = countryService;
         this.countryRepository = countryRepository;
+        this.om = om;
+        this.em = em;
     }
 
     /**
      * {@code POST  /countries} : Create a new country.
      *
      * @param countryDTO the countryDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new countryDTO, or with status {@code 400 (Bad Request)} if the country has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new countryDTO, or with status {@code 400 (Bad Request)} if the country already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
     public ResponseEntity<CountryDTO> createCountry(@RequestBody CountryDTO countryDTO) throws URISyntaxException {
         LOG.debug("REST request to save Country : {}", countryDTO);
         if (countryDTO.getId() != null) {
-            throw new BadRequestAlertException("A new country cannot already have an ID", ENTITY_NAME, "idexists");
+            throw BadRequestAlertException.idexists(ENTITY_NAME);
         }
         countryDTO = countryService.save(countryDTO);
         return ResponseEntity.created(new URI("/api/countries/" + countryDTO.getId()))
@@ -83,14 +94,14 @@ public class CountryResource {
     ) throws URISyntaxException {
         LOG.debug("REST request to update Country : {}, {}", id, countryDTO);
         if (countryDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
         if (!Objects.equals(id, countryDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
         if (!countryRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+            throw BadRequestAlertException.idnotfound(ENTITY_NAME);
         }
 
         countryDTO = countryService.update(countryDTO);
@@ -113,26 +124,42 @@ public class CountryResource {
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<CountryDTO> partialUpdateCountry(
         @PathVariable(value = "id", required = false) final UUID id,
-        @RequestBody CountryDTO countryDTO
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @io.swagger.v3.oas.annotations.media.Content(
+                schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = CountryDTO.class)
+            )
+        ) @RequestBody ObjectNode countryDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Country partially : {}, {}", id, countryDTO);
-        if (countryDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        LOG.debug("REST request to partially update Country : {}, {}", id, countryDTO);
+        var idNode = countryDTO.remove("id");
+        if (idNode == null || idNode.isNull()) {
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
-        if (!Objects.equals(id, countryDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        if (!idNode.isString()) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
+        }
+        if (!Objects.equals(id.toString(), idNode.stringValue())) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
-        if (!countryRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<CountryDTO> result = countryService.partialUpdate(countryDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, countryDTO.getId().toString())
-        );
+        return countryService
+            .findOne(id)
+            .map(existingCountry -> {
+                try {
+                    em.clear();
+                    existingCountry = this.om.readerForUpdating(existingCountry).readValue(countryDTO);
+                    return existingCountry;
+                } catch (JacksonException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid country", e);
+                }
+            })
+            .map(countryService::update)
+            .map(res ->
+                ResponseEntity.ok()
+                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId().toString()))
+                    .body(res)
+            )
+            .orElseThrow(() -> BadRequestAlertException.idnotfound(ENTITY_NAME));
     }
 
     /**

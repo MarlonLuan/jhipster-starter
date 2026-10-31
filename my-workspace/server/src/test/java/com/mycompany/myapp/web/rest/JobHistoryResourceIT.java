@@ -1,6 +1,10 @@
 package com.mycompany.myapp.web.rest;
 
+import static com.mycompany.myapp.domain.DepartmentTestSamples.*;
+import static com.mycompany.myapp.domain.EmployeeTestSamples.*;
 import static com.mycompany.myapp.domain.JobHistoryAsserts.*;
+import static com.mycompany.myapp.domain.JobTestSamples.*;
+import static com.mycompany.myapp.web.rest.TestUtil.convertObjectToPartialUpdateBody;
 import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -8,11 +12,13 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.JobHistory;
 import com.mycompany.myapp.domain.enumeration.Language;
+import com.mycompany.myapp.repository.DepartmentRepository;
+import com.mycompany.myapp.repository.EmployeeRepository;
 import com.mycompany.myapp.repository.JobHistoryRepository;
+import com.mycompany.myapp.repository.JobRepository;
 import com.mycompany.myapp.service.dto.JobHistoryDTO;
 import com.mycompany.myapp.service.mapper.JobHistoryMapper;
 import jakarta.persistence.EntityManager;
@@ -27,6 +33,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Integration tests for the {@link JobHistoryResource} REST controller.
@@ -66,6 +74,15 @@ class JobHistoryResourceIT {
     private JobHistory jobHistory;
 
     private JobHistory insertedJobHistory;
+
+    @Autowired
+    private JobRepository jobRepository;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     /**
      * Create an entity for this test.
@@ -246,7 +263,7 @@ class JobHistoryResourceIT {
         // Create the JobHistory
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobHistoryMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -269,13 +286,79 @@ class JobHistoryResourceIT {
         // Create the JobHistory
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobHistoryMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(jobHistoryDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the JobHistory in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void shouldNotUpdateRelatedEntitiesThroughJobHistory() throws Exception {
+        // Persist the related entities and a jobHistory related to them
+        var relatedJob = JobResourceIT.createEntity();
+        em.persist(relatedJob);
+        var relatedJobValue = relatedJob.getJobTitle();
+        jobHistory.setJob(relatedJob);
+        var relatedDepartment = DepartmentResourceIT.createEntity();
+        em.persist(relatedDepartment);
+        var relatedDepartmentValue = relatedDepartment.getDepartmentName();
+        jobHistory.setDepartment(relatedDepartment);
+        var relatedEmployee = EmployeeResourceIT.createEntity();
+        em.persist(relatedEmployee);
+        var relatedEmployeeValue = relatedEmployee.getFirstName();
+        jobHistory.setEmployee(relatedEmployee);
+        em.flush();
+        insertedJobHistory = jobHistoryRepository.saveAndFlush(jobHistory);
+
+        // Each nested related object carries another value, which must stay in the request
+        var relatedJobJson = om.createObjectNode();
+        relatedJobJson.set("id", om.valueToTree(relatedJob.getId()));
+        relatedJobJson.set("jobTitle", om.valueToTree(getJobSample2().getJobTitle()));
+        var relatedDepartmentJson = om.createObjectNode();
+        relatedDepartmentJson.set("id", om.valueToTree(relatedDepartment.getId()));
+        relatedDepartmentJson.set("departmentName", om.valueToTree(getDepartmentSample2().getDepartmentName()));
+        var relatedEmployeeJson = om.createObjectNode();
+        relatedEmployeeJson.set("id", om.valueToTree(relatedEmployee.getId()));
+        relatedEmployeeJson.set("firstName", om.valueToTree(getEmployeeSample2().getFirstName()));
+
+        ObjectNode updateJson = om.valueToTree(jobHistoryMapper.toDto(insertedJobHistory));
+        updateJson.set("job", relatedJobJson);
+        updateJson.set("department", relatedDepartmentJson);
+        updateJson.set("employee", relatedEmployeeJson);
+        restJobHistoryMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, insertedJobHistory.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(updateJson))
+            )
+            .andExpect(status().isOk());
+
+        var patchJson = om.createObjectNode();
+        patchJson.set("id", om.valueToTree(insertedJobHistory.getId()));
+        patchJson.set("job", relatedJobJson);
+        patchJson.set("department", relatedDepartmentJson);
+        patchJson.set("employee", relatedEmployeeJson);
+        restJobHistoryMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, insertedJobHistory.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(patchJson))
+            )
+            .andExpect(status().isOk());
+
+        em.flush();
+        em.clear();
+        assertThat(jobRepository.findById(relatedJob.getId()).orElseThrow().getJobTitle()).isEqualTo(relatedJobValue);
+        assertThat(departmentRepository.findById(relatedDepartment.getId()).orElseThrow().getDepartmentName()).isEqualTo(
+            relatedDepartmentValue
+        );
+        assertThat(employeeRepository.findById(relatedEmployee.getId()).orElseThrow().getFirstName()).isEqualTo(relatedEmployeeValue);
     }
 
     @Test
@@ -297,7 +380,7 @@ class JobHistoryResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedJobHistory.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedJobHistory))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedJobHistory))
             )
             .andExpect(status().isOk());
 
@@ -329,7 +412,7 @@ class JobHistoryResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedJobHistory.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedJobHistory))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedJobHistory))
             )
             .andExpect(status().isOk());
 
@@ -371,7 +454,7 @@ class JobHistoryResourceIT {
         // Create the JobHistory
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobHistoryMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -394,7 +477,7 @@ class JobHistoryResourceIT {
         // Create the JobHistory
         JobHistoryDTO jobHistoryDTO = jobHistoryMapper.toDto(jobHistory);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobHistoryMockMvc
             .perform(
                 patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(jobHistoryDTO))

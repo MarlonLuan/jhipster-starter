@@ -23,9 +23,9 @@ public class JobHistoryServiceImpl implements JobHistoryService {
 
     private static final Logger LOG = LoggerFactory.getLogger(JobHistoryServiceImpl.class);
 
-    private final JobHistoryRepository jobHistoryRepository;
+    protected final JobHistoryRepository jobHistoryRepository;
 
-    private final JobHistoryMapper jobHistoryMapper;
+    protected final JobHistoryMapper jobHistoryMapper;
 
     public JobHistoryServiceImpl(JobHistoryRepository jobHistoryRepository, JobHistoryMapper jobHistoryMapper) {
         this.jobHistoryRepository = jobHistoryRepository;
@@ -46,21 +46,6 @@ public class JobHistoryServiceImpl implements JobHistoryService {
         JobHistory jobHistory = jobHistoryMapper.toEntity(jobHistoryDTO);
         jobHistory = jobHistoryRepository.save(jobHistory);
         return jobHistoryMapper.toDto(jobHistory);
-    }
-
-    @Override
-    public Optional<JobHistoryDTO> partialUpdate(JobHistoryDTO jobHistoryDTO) {
-        LOG.debug("Request to partially update JobHistory : {}", jobHistoryDTO);
-
-        return jobHistoryRepository
-            .findById(jobHistoryDTO.getId())
-            .map(existingJobHistory -> {
-                jobHistoryMapper.partialUpdate(existingJobHistory, jobHistoryDTO);
-
-                return existingJobHistory;
-            })
-            .map(jobHistoryRepository::save)
-            .map(jobHistoryMapper::toDto);
     }
 
     @Override

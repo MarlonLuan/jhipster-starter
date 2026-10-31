@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
@@ -10,7 +10,7 @@ import { Observable, finalize, map } from 'rxjs';
 
 import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
 import { TranslateDirective } from 'app/shared/language';
 import { IEmployee } from '../employee.model';
 import { EmployeeService } from '../service/employee.service';
@@ -18,7 +18,6 @@ import { EmployeeService } from '../service/employee.service';
 import { EmployeeFormGroup, EmployeeFormService } from './employee-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-employee-update',
   templateUrl: './employee-update.html',
   imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule, NgbTooltip],
@@ -30,10 +29,10 @@ export class EmployeeUpdate implements OnInit {
   employeesSharedCollection = signal<IEmployee[]>([]);
   departmentsSharedCollection = signal<IDepartment[]>([]);
 
-  protected employeeService = inject(EmployeeService);
-  protected employeeFormService = inject(EmployeeFormService);
-  protected departmentService = inject(DepartmentService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly employeeService = inject(EmployeeService);
+  private readonly employeeFormService = inject(EmployeeFormService);
+  private readonly departmentService = inject(DepartmentService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: EmployeeFormGroup = this.employeeFormService.createEmployeeFormGroup();
@@ -67,26 +66,26 @@ export class EmployeeUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<IEmployee | null>): void {
+  private subscribeToSaveResponse(result: Observable<IEmployee | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
     });
   }
 
-  protected onSaveSuccess(): void {
+  private onSaveSuccess(): void {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  private onSaveError(): void {
+    // API for inheritance.
   }
 
-  protected onSaveFinalize(): void {
+  private onSaveFinalize(): void {
     this.isSaving.set(false);
   }
 
-  protected updateForm(employee: IEmployee): void {
+  private updateForm(employee: IEmployee): void {
     this.employee = employee;
     this.employeeFormService.resetForm(this.editForm, employee);
 
@@ -98,7 +97,7 @@ export class EmployeeUpdate implements OnInit {
     );
   }
 
-  protected loadRelationshipsOptions(): void {
+  private loadRelationshipsOptions(): void {
     this.employeeService
       .query()
       .pipe(map((res: HttpResponse<IEmployee[]>) => res.body ?? []))

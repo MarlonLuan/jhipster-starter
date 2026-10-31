@@ -1,6 +1,6 @@
 # jhipster
 
-This application was generated using JHipster 9.2.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v9.2.0](https://www.jhipster.tech/documentation-archive/v9.2.0).
+This application was generated using JHipster 9.4.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v9.4.0](https://www.jhipster.tech/documentation-archive/v9.4.0).
 
 ## Project Structure
 
@@ -15,7 +15,7 @@ In the project root, JHipster generates configuration files for tools like git, 
 - `.yo-resolve` (optional) - Yeoman conflict resolver
   Allows to use a specific action when conflicts are found skipping prompts for files that matches a pattern. Each line should match `[pattern] [action]` with pattern been a [Minimatch](https://github.com/isaacs/minimatch#minimatch) pattern and action been one of skip (default if omitted) or force. Lines starting with `#` are considered comments and are ignored.
 - `.jhipster/*.json` - JHipster entity configuration files
-- `/src/main/docker` - Docker configurations for the application and services that the application depends on
+- `/src/main/docker/` - Docker configurations for the application and services that the application depends on
 
 ## Development
 
@@ -211,25 +211,24 @@ docker compose -f src/main/docker/sonar.yml up -d
 
 Note: we have turned off forced authentication redirect for UI in [src/main/docker/sonar.yml](src/main/docker/sonar.yml) for out of the box experience while trying out SonarQube, for real use cases turn it back on.
 
-You can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) or by using the maven plugin.
+You can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarsource.com/sonarqube-server/latest/analyzing-source-code/scanners/sonarscanner/) or by using the maven plugin.
+
+The scanner needs a token. Log in at http://localhost:9001 as `admin`/`admin`, create a global analysis token under **My Account > Security**, and export it:
+
+```bash
+export SONAR_TOKEN=<your-token>
+```
 
 Then, run a Sonar analysis:
 
 ```bash
-./mvnw -Pprod clean verify sonar:sonar -Dsonar.login=admin -Dsonar.password=admin
+./mvnw -Pprod clean verify sonar:sonar
 ```
 
 If you need to re-run the Sonar phase, please be sure to specify at least the `initialize` phase since Sonar properties are loaded from the sonar-project.properties file.
 
 ```bash
-./mvnw initialize sonar:sonar -Dsonar.login=admin -Dsonar.password=admin
-```
-
-Additionally, Instead of passing `sonar.password` and `sonar.login` as CLI arguments, these parameters can be configured from [sonar-project.properties](sonar-project.properties) as shown below:
-
-```bash
-sonar.login=admin
-sonar.password=admin
+./mvnw initialize sonar:sonar
 ```
 
 For more information, refer to the [Code quality page][].
@@ -267,11 +266,7 @@ To achieve this, first build a Docker image of your app by running:
 npm run java:docker
 ```
 
-Or build an arm64 Docker image when using an arm64 processor OS, i.e., Apple Silicon chips (M*), running:
-
-```bash
-npm run java:docker:arm64
-```
+The image is built for the architecture of your Docker daemon, arm64 on Apple Silicon chips (M\*) for instance.
 
 Then run:
 
@@ -279,21 +274,21 @@ Then run:
 docker compose -f src/main/docker/app.yml up -d
 ```
 
-For more information refer to [Docker and Docker-Compose](https://www.jhipster.tech/documentation-archive/v9.2.0/docker-compose/), this page also contains information on the Docker Compose sub-generator (`jhipster docker-compose`), which is able to generate Docker configurations for one or several JHipster applications.
+For more information refer to [Docker and Docker-Compose](https://www.jhipster.tech/documentation-archive/v9.4.0/docker-compose/), this page also contains information on the Docker Compose sub-generator (`jhipster docker-compose`), which is able to generate Docker configurations for one or several JHipster applications.
 
 ## Continuous Integration (optional)
 
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration](https://www.jhipster.tech/documentation-archive/v9.2.0/setting-up-ci/) page for more information.
+To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration](https://www.jhipster.tech/documentation-archive/v9.4.0/setting-up-ci/) page for more information.
 
 ## References
 
 - [JHipster Homepage and latest documentation](https://www.jhipster.tech/)
-- [JHipster 9.2.0 archive](https://www.jhipster.tech/documentation-archive/v9.2.0)
-- [Using JHipster in development](https://www.jhipster.tech/documentation-archive/v9.2.0/development/)
-- [Using Docker and Docker-Compose](https://www.jhipster.tech/documentation-archive/v9.2.0/docker-compose)
-- [Using JHipster in production](https://www.jhipster.tech/documentation-archive/v9.2.0/production/)
-- [Running tests page](https://www.jhipster.tech/documentation-archive/v9.2.0/running-tests/)
-- [Code quality page](https://www.jhipster.tech/documentation-archive/v9.2.0/code-quality/)
-- [Setting up Continuous Integration](https://www.jhipster.tech/documentation-archive/v9.2.0/setting-up-ci/)
+- [JHipster 9.4.0 archive](https://www.jhipster.tech/documentation-archive/v9.4.0)
+- [Using JHipster in development](https://www.jhipster.tech/documentation-archive/v9.4.0/development/)
+- [Using Docker and Docker-Compose](https://www.jhipster.tech/documentation-archive/v9.4.0/docker-compose)
+- [Using JHipster in production](https://www.jhipster.tech/documentation-archive/v9.4.0/production/)
+- [Running tests page](https://www.jhipster.tech/documentation-archive/v9.4.0/running-tests/)
+- [Code quality page](https://www.jhipster.tech/documentation-archive/v9.4.0/code-quality/)
+- [Setting up Continuous Integration](https://www.jhipster.tech/documentation-archive/v9.4.0/setting-up-ci/)
 - [Node.js](https://nodejs.org/)
 - [NPM](https://www.npmjs.com/)
