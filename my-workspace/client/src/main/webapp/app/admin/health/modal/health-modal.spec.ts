@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
@@ -45,7 +45,7 @@ describe('HealthModal', () => {
       expect(result).toEqual('jhipster');
     });
 
-    it('should return storage space in a human readable unit (GB)', () => {
+    it('should return storage space in a human-readable unit (GB)', () => {
       // GIVEN
       comp.health = {
         key: 'diskSpace',
@@ -61,7 +61,7 @@ describe('HealthModal', () => {
       expect(result).toEqual('1.00 GB');
     });
 
-    it('should return storage space in a human readable unit (MB)', () => {
+    it('should return storage space in a human-readable unit (MB)', () => {
       // GIVEN
       comp.health = {
         key: 'diskSpace',
@@ -97,7 +97,7 @@ describe('HealthModal', () => {
   describe('dismiss', () => {
     it('should call dismiss when dismiss modal is called', () => {
       // GIVEN
-      const spy = vitest.spyOn(mockActiveModal, 'dismiss');
+      const spy = vi.spyOn(mockActiveModal, 'dismiss');
 
       // WHEN
       comp.dismiss();

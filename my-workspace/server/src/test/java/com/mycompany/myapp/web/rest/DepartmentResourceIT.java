@@ -1,6 +1,8 @@
 package com.mycompany.myapp.web.rest;
 
 import static com.mycompany.myapp.domain.DepartmentAsserts.*;
+import static com.mycompany.myapp.domain.LocationTestSamples.*;
+import static com.mycompany.myapp.web.rest.TestUtil.convertObjectToPartialUpdateBody;
 import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -8,10 +10,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Department;
 import com.mycompany.myapp.repository.DepartmentRepository;
+import com.mycompany.myapp.repository.LocationRepository;
 import com.mycompany.myapp.service.dto.DepartmentDTO;
 import com.mycompany.myapp.service.mapper.DepartmentMapper;
 import jakarta.persistence.EntityManager;
@@ -19,12 +21,16 @@ import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Integration tests for the {@link DepartmentResource} REST controller.
@@ -58,6 +64,9 @@ class DepartmentResourceIT {
     private Department department;
 
     private Department insertedDepartment;
+
+    @Autowired
+    private LocationRepository locationRepository;
 
     /**
      * Create an entity for this test.
@@ -151,6 +160,27 @@ class DepartmentResourceIT {
             .andExpect(status().isBadRequest());
 
         assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "departmentName" })
+    @Transactional
+    void checkFieldIsRequiredOnPatch(String fieldName) throws Exception {
+        // Initialize the database
+        insertedDepartment = departmentRepository.saveAndFlush(department);
+
+        // Patch the field to null, which fails.
+        ObjectNode departmentDTOPatch = om.valueToTree(departmentMapper.toDto(department));
+        departmentDTOPatch.putNull(fieldName);
+
+        restDepartmentMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, department.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(departmentDTOPatch))
+            )
+            .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -251,7 +281,7 @@ class DepartmentResourceIT {
         // Create the Department
         DepartmentDTO departmentDTO = departmentMapper.toDto(department);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restDepartmentMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -274,13 +304,57 @@ class DepartmentResourceIT {
         // Create the Department
         DepartmentDTO departmentDTO = departmentMapper.toDto(department);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restDepartmentMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(departmentDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Department in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void shouldNotUpdateRelatedEntitiesThroughDepartment() throws Exception {
+        // Persist the related entities and a department related to them
+        var relatedLocation = LocationResourceIT.createEntity();
+        em.persist(relatedLocation);
+        var relatedLocationValue = relatedLocation.getStreetAddress();
+        department.setLocation(relatedLocation);
+        em.flush();
+        insertedDepartment = departmentRepository.saveAndFlush(department);
+
+        // Each nested related object carries another value, which must stay in the request
+        var relatedLocationJson = om.createObjectNode();
+        relatedLocationJson.set("id", om.valueToTree(relatedLocation.getId()));
+        relatedLocationJson.set("streetAddress", om.valueToTree(getLocationSample2().getStreetAddress()));
+
+        ObjectNode updateJson = om.valueToTree(departmentMapper.toDto(insertedDepartment));
+        updateJson.set("location", relatedLocationJson);
+        restDepartmentMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, insertedDepartment.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(updateJson))
+            )
+            .andExpect(status().isOk());
+
+        var patchJson = om.createObjectNode();
+        patchJson.set("id", om.valueToTree(insertedDepartment.getId()));
+        patchJson.set("location", relatedLocationJson);
+        restDepartmentMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, insertedDepartment.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(patchJson))
+            )
+            .andExpect(status().isOk());
+
+        em.flush();
+        em.clear();
+        assertThat(locationRepository.findById(relatedLocation.getId()).orElseThrow().getStreetAddress()).isEqualTo(relatedLocationValue);
     }
 
     @Test
@@ -302,7 +376,7 @@ class DepartmentResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedDepartment.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedDepartment))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedDepartment))
             )
             .andExpect(status().isOk());
 
@@ -334,7 +408,7 @@ class DepartmentResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedDepartment.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedDepartment))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedDepartment))
             )
             .andExpect(status().isOk());
 
@@ -376,7 +450,7 @@ class DepartmentResourceIT {
         // Create the Department
         DepartmentDTO departmentDTO = departmentMapper.toDto(department);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restDepartmentMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -399,7 +473,7 @@ class DepartmentResourceIT {
         // Create the Department
         DepartmentDTO departmentDTO = departmentMapper.toDto(department);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restDepartmentMockMvc
             .perform(
                 patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(departmentDTO))

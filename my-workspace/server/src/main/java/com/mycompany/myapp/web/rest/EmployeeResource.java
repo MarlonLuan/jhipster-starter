@@ -4,6 +4,7 @@ import com.mycompany.myapp.repository.EmployeeRepository;
 import com.mycompany.myapp.service.EmployeeService;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
+import jakarta.persistence.EntityManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -19,10 +20,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * REST controller for managing {@link com.mycompany.myapp.domain.Employee}.
@@ -42,23 +47,29 @@ public class EmployeeResource {
 
     private final EmployeeRepository employeeRepository;
 
-    public EmployeeResource(EmployeeService employeeService, EmployeeRepository employeeRepository) {
+    private final ObjectMapper om;
+
+    private final EntityManager em;
+
+    public EmployeeResource(EmployeeService employeeService, EmployeeRepository employeeRepository, ObjectMapper om, EntityManager em) {
         this.employeeService = employeeService;
         this.employeeRepository = employeeRepository;
+        this.om = om;
+        this.em = em;
     }
 
     /**
      * {@code POST  /employees} : Create a new employee.
      *
      * @param employeeDTO the employeeDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new employeeDTO, or with status {@code 400 (Bad Request)} if the employee has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new employeeDTO, or with status {@code 400 (Bad Request)} if the employee already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
     public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody EmployeeDTO employeeDTO) throws URISyntaxException {
         LOG.debug("REST request to save Employee : {}", employeeDTO);
         if (employeeDTO.getId() != null) {
-            throw new BadRequestAlertException("A new employee cannot already have an ID", ENTITY_NAME, "idexists");
+            throw BadRequestAlertException.idexists(ENTITY_NAME);
         }
         employeeDTO = employeeService.save(employeeDTO);
         return ResponseEntity.created(new URI("/api/employees/" + employeeDTO.getId()))
@@ -83,14 +94,14 @@ public class EmployeeResource {
     ) throws URISyntaxException {
         LOG.debug("REST request to update Employee : {}, {}", id, employeeDTO);
         if (employeeDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
         if (!Objects.equals(id, employeeDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
         if (!employeeRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+            throw BadRequestAlertException.idnotfound(ENTITY_NAME);
         }
 
         employeeDTO = employeeService.update(employeeDTO);
@@ -113,26 +124,42 @@ public class EmployeeResource {
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<EmployeeDTO> partialUpdateEmployee(
         @PathVariable(value = "id", required = false) final UUID id,
-        @RequestBody EmployeeDTO employeeDTO
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @io.swagger.v3.oas.annotations.media.Content(
+                schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = EmployeeDTO.class)
+            )
+        ) @RequestBody ObjectNode employeeDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Employee partially : {}, {}", id, employeeDTO);
-        if (employeeDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        LOG.debug("REST request to partially update Employee : {}, {}", id, employeeDTO);
+        var idNode = employeeDTO.remove("id");
+        if (idNode == null || idNode.isNull()) {
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
-        if (!Objects.equals(id, employeeDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        if (!idNode.isString()) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
+        }
+        if (!Objects.equals(id.toString(), idNode.stringValue())) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
-        if (!employeeRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<EmployeeDTO> result = employeeService.partialUpdate(employeeDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, employeeDTO.getId().toString())
-        );
+        return employeeService
+            .findOne(id)
+            .map(existingEmployee -> {
+                try {
+                    em.clear();
+                    existingEmployee = this.om.readerForUpdating(existingEmployee).readValue(employeeDTO);
+                    return existingEmployee;
+                } catch (JacksonException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid employee", e);
+                }
+            })
+            .map(employeeService::update)
+            .map(res ->
+                ResponseEntity.ok()
+                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId().toString()))
+                    .body(res)
+            )
+            .orElseThrow(() -> BadRequestAlertException.idnotfound(ENTITY_NAME));
     }
 
     /**

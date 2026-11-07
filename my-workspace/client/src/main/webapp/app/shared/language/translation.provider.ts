@@ -2,8 +2,8 @@ import { EnvironmentProviders, Provider, inject, provideAppInitializer } from '@
 
 import { MissingTranslationHandler, TranslateLoader, TranslateService, provideTranslateService } from '@ngx-translate/core';
 
-import { missingTranslationHandler, translatePartialLoader } from 'app/config/translation.config';
-import { StateStorageService } from 'app/core/auth/state-storage.service';
+import { missingTranslationHandler, translatePartialLoader } from 'app/config';
+import { StateStorageService } from 'app/core/auth';
 
 export function provideTranslation(): (Provider | EnvironmentProviders)[] {
   return [

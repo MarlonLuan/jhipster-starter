@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Strings;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +18,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -40,7 +41,7 @@ import tech.jhipster.web.rest.errors.ProblemDetailWithCause.ProblemDetailWithCau
 import tech.jhipster.web.util.HeaderUtil;
 
 /**
- * Controller advice to translate the server side exceptions to client-friendly json structures.
+ * Controller advice to translate the server side exceptions to client-friendly JSON structures.
  * The error response follows RFC7807 - Problem Details for HTTP APIs (https://tools.ietf.org/html/rfc7807).
  */
 @ControllerAdvice
@@ -49,7 +50,8 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
     private static final String MESSAGE_KEY = "message";
     private static final String PATH_KEY = "path";
-    private static final boolean CASUAL_CHAIN_ENABLED = false;
+    private static final boolean CAUSAL_CHAIN_ENABLED = false;
+    private static final Pattern QUALIFIED_CLASS_NAME = Pattern.compile("\\b[a-z_][a-z0-9_]*+(?:\\.[a-z_][a-z0-9_]*+)*+\\.[A-Z]");
 
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionTranslator.class);
 
@@ -119,14 +121,21 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
         if (problemProperties == null || !problemProperties.containsKey(PATH_KEY)) problem.setProperty(PATH_KEY, getPathValue(request));
 
-        if (
-            err instanceof MethodArgumentNotValidException fieldException &&
-            (problemProperties == null || !problemProperties.containsKey(FIELD_ERRORS_KEY))
-        ) problem.setProperty(FIELD_ERRORS_KEY, getFieldErrors(fieldException));
+        setFieldErrors(problem, err, problemProperties);
 
         problem.setCause(buildCause(err.getCause(), request).orElse(null));
 
         return problem;
+    }
+
+    private void setFieldErrors(ProblemDetailWithCause problem, Throwable err, Map<String, Object> problemProperties) {
+        if (problemProperties != null && problemProperties.containsKey(FIELD_ERRORS_KEY)) return;
+
+        if (err instanceof MethodArgumentNotValidException fieldException) {
+            problem.setProperty(FIELD_ERRORS_KEY, getFieldErrors(fieldException));
+        } else if (err instanceof ConstraintViolationException constraintViolationException) {
+            problem.setProperty(FIELD_ERRORS_KEY, getFieldErrors(constraintViolationException));
+        }
     }
 
     private String extractTitle(Throwable err, int statusCode) {
@@ -142,7 +151,21 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
                 new FieldErrorVM(
                     f.getObjectName().replaceFirst("DTO$", ""),
                     f.getField(),
-                    StringUtils.isNotBlank(f.getDefaultMessage()) ? f.getDefaultMessage() : f.getCode()
+                    f.isBindingFailure() || StringUtils.isBlank(f.getDefaultMessage()) ? f.getCode() : f.getDefaultMessage()
+                )
+            )
+            .toList();
+    }
+
+    private List<FieldErrorVM> getFieldErrors(ConstraintViolationException ex) {
+        return ex
+            .getConstraintViolations()
+            .stream()
+            .map(violation ->
+                new FieldErrorVM(
+                    StringUtils.uncapitalize(violation.getRootBeanClass().getSimpleName()).replaceFirst("DTO$", ""),
+                    violation.getPropertyPath().toString(),
+                    violation.getMessage()
                 )
             )
             .toList();
@@ -200,10 +223,14 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     }
 
     private String getCustomizedErrorDetails(Throwable err) {
+        // The message of such an exception is its whole body, the message key of the problem tells the error
+        if (err instanceof ErrorResponseException exp && exp.getBody() instanceof ProblemDetailWithCause) return null;
+
         Collection<String> activeProfiles = List.of(env.getActiveProfiles());
         if (activeProfiles.contains(JHipsterConstants.SPRING_PROFILE_PRODUCTION)) {
             if (err instanceof HttpMessageConversionException) return "Unable to convert http message";
             if (err instanceof DataAccessException) return "Failure during data access";
+            if (err instanceof PropertyReferenceException) return "Invalid sort property";
             if (containsPackageName(err.getMessage())) return "Unexpected runtime exception";
         }
         return err.getCause() != null ? err.getCause().getMessage() : err.getMessage();
@@ -213,8 +240,9 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         // Where we disagree with Spring defaults
         if (err instanceof AccessDeniedException) return HttpStatus.FORBIDDEN;
         if (err instanceof ConcurrencyFailureException) return HttpStatus.CONFLICT;
-        if (err instanceof BadCredentialsException) return HttpStatus.UNAUTHORIZED;
+        if (err instanceof AuthenticationException) return HttpStatus.UNAUTHORIZED;
         if (err instanceof ConstraintViolationException) return HttpStatus.BAD_REQUEST;
+        if (err instanceof PropertyReferenceException) return HttpStatus.BAD_REQUEST;
         return null;
     }
 
@@ -236,19 +264,18 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     }
 
     public Optional<ProblemDetailWithCause> buildCause(final Throwable throwable, NativeWebRequest request) {
-        if (throwable != null && isCasualChainEnabled()) {
+        if (throwable != null && isCausalChainEnabled()) {
             return Optional.of(customizeProblem(getProblemDetailWithCause(throwable), throwable, request));
         }
-        return Optional.ofNullable(null);
+        return Optional.empty();
     }
 
-    private boolean isCasualChainEnabled() {
+    private boolean isCausalChainEnabled() {
         // Customize as per the needs
-        return CASUAL_CHAIN_ENABLED;
+        return CAUSAL_CHAIN_ENABLED;
     }
 
     private boolean containsPackageName(String message) {
-        // This list is for sure not complete
-        return Strings.CS.containsAny(message, "org.", "java.", "net.", "jakarta.", "javax.", "com.", "io.", "de.", "com.mycompany.myapp");
+        return message != null && QUALIFIED_CLASS_NAME.matcher(message).find();
     }
 }

@@ -1,5 +1,5 @@
 @if (location) {
-  <form name="deleteForm" (ngSubmit)="confirmDelete(location.id!)">
+  <form name="deleteForm" (ngSubmit)="confirmDelete(location.id)">
     <div class="modal-header">
       <h4 class="modal-title" data-cy="locationDeleteDialogHeading" jhiTranslate="entity.delete.title">Confirm delete operation</h4>
     </div>
@@ -12,12 +12,12 @@
     </div>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="cancel()">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
         <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
       </button>
 
       <button id="jhi-confirm-delete-location" data-cy="entityConfirmDeleteButton" type="submit" class="btn btn-danger">
-        <fa-icon icon="times" />&nbsp;<span jhiTranslate="entity.action.delete">Delete</span>
+        <fa-icon icon="trash" />&nbsp;<span jhiTranslate="entity.action.delete">Delete</span>
       </button>
     </div>
   </form>

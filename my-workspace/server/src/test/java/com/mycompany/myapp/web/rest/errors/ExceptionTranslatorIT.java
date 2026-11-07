@@ -89,6 +89,24 @@ class ExceptionTranslatorIT {
     }
 
     @Test
+    void testBadRequestAlert() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/bad-request-alert"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("error.testkey"))
+            .andExpect(jsonPath("$.detail").doesNotExist());
+    }
+
+    @Test
+    void testBindingFailure() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/binding-failure").param("number", "abc"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.fieldErrors.[0].field").value("number"))
+            .andExpect(jsonPath("$.fieldErrors.[0].message").value("typeMismatch"));
+    }
+
+    @Test
     void testMethodNotSupported() throws Exception {
         mockMvc
             .perform(post("/api/exception-translator-test/access-denied").with(csrf()))

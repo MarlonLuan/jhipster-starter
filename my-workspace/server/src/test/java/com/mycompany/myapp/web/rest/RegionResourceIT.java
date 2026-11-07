@@ -1,6 +1,7 @@
 package com.mycompany.myapp.web.rest;
 
 import static com.mycompany.myapp.domain.RegionAsserts.*;
+import static com.mycompany.myapp.web.rest.TestUtil.convertObjectToPartialUpdateBody;
 import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -8,7 +9,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Region;
 import com.mycompany.myapp.repository.RegionRepository;
@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Integration tests for the {@link RegionResource} REST controller.
@@ -232,7 +233,7 @@ class RegionResourceIT {
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restRegionMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -255,7 +256,7 @@ class RegionResourceIT {
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restRegionMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(regionDTO)))
             .andExpect(status().isMethodNotAllowed());
@@ -281,7 +282,7 @@ class RegionResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedRegion.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedRegion))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedRegion))
             )
             .andExpect(status().isOk());
 
@@ -310,7 +311,7 @@ class RegionResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedRegion.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedRegion))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedRegion))
             )
             .andExpect(status().isOk());
 
@@ -352,7 +353,7 @@ class RegionResourceIT {
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restRegionMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -375,7 +376,7 @@ class RegionResourceIT {
         // Create the Region
         RegionDTO regionDTO = regionMapper.toDto(region);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restRegionMockMvc
             .perform(
                 patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(regionDTO))

@@ -1,6 +1,8 @@
 package com.mycompany.myapp.web.rest;
 
 import static com.mycompany.myapp.domain.CountryAsserts.*;
+import static com.mycompany.myapp.domain.RegionTestSamples.*;
+import static com.mycompany.myapp.web.rest.TestUtil.convertObjectToPartialUpdateBody;
 import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -8,10 +10,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Country;
 import com.mycompany.myapp.repository.CountryRepository;
+import com.mycompany.myapp.repository.RegionRepository;
 import com.mycompany.myapp.service.dto.CountryDTO;
 import com.mycompany.myapp.service.mapper.CountryMapper;
 import jakarta.persistence.EntityManager;
@@ -25,6 +27,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Integration tests for the {@link CountryResource} REST controller.
@@ -58,6 +62,9 @@ class CountryResourceIT {
     private Country country;
 
     private Country insertedCountry;
+
+    @Autowired
+    private RegionRepository regionRepository;
 
     /**
      * Create an entity for this test.
@@ -234,7 +241,7 @@ class CountryResourceIT {
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restCountryMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -257,13 +264,57 @@ class CountryResourceIT {
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restCountryMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(countryDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Country in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void shouldNotUpdateRelatedEntitiesThroughCountry() throws Exception {
+        // Persist the related entities and a country related to them
+        var relatedRegion = RegionResourceIT.createEntity();
+        em.persist(relatedRegion);
+        var relatedRegionValue = relatedRegion.getRegionName();
+        country.setRegion(relatedRegion);
+        em.flush();
+        insertedCountry = countryRepository.saveAndFlush(country);
+
+        // Each nested related object carries another value, which must stay in the request
+        var relatedRegionJson = om.createObjectNode();
+        relatedRegionJson.set("id", om.valueToTree(relatedRegion.getId()));
+        relatedRegionJson.set("regionName", om.valueToTree(getRegionSample2().getRegionName()));
+
+        ObjectNode updateJson = om.valueToTree(countryMapper.toDto(insertedCountry));
+        updateJson.set("region", relatedRegionJson);
+        restCountryMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, insertedCountry.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(updateJson))
+            )
+            .andExpect(status().isOk());
+
+        var patchJson = om.createObjectNode();
+        patchJson.set("id", om.valueToTree(insertedCountry.getId()));
+        patchJson.set("region", relatedRegionJson);
+        restCountryMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, insertedCountry.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(patchJson))
+            )
+            .andExpect(status().isOk());
+
+        em.flush();
+        em.clear();
+        assertThat(regionRepository.findById(relatedRegion.getId()).orElseThrow().getRegionName()).isEqualTo(relatedRegionValue);
     }
 
     @Test
@@ -283,7 +334,7 @@ class CountryResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedCountry.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedCountry))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedCountry))
             )
             .andExpect(status().isOk());
 
@@ -312,7 +363,7 @@ class CountryResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedCountry.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedCountry))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedCountry))
             )
             .andExpect(status().isOk());
 
@@ -354,7 +405,7 @@ class CountryResourceIT {
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restCountryMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -377,7 +428,7 @@ class CountryResourceIT {
         // Create the Country
         CountryDTO countryDTO = countryMapper.toDto(country);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restCountryMockMvc
             .perform(
                 patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(countryDTO))
