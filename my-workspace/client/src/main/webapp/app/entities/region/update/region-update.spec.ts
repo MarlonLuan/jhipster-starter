@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
@@ -57,9 +57,9 @@ describe('Region Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IRegion>();
       const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
-      vitest.spyOn(regionFormService, 'getRegion').mockReturnValue(region);
-      vitest.spyOn(regionService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(regionFormService, 'getRegion').mockReturnValue(region);
+      vi.spyOn(regionService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ region });
       comp.ngOnInit();
 
@@ -80,9 +80,9 @@ describe('Region Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IRegion>();
       const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
-      vitest.spyOn(regionFormService, 'getRegion').mockReturnValue({ id: null });
-      vitest.spyOn(regionService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(regionFormService, 'getRegion').mockReturnValue({ id: null });
+      vi.spyOn(regionService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ region: null });
       comp.ngOnInit();
 
@@ -103,8 +103,8 @@ describe('Region Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IRegion>();
       const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
-      vitest.spyOn(regionService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(regionService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ region });
       comp.ngOnInit();
 

@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
@@ -14,7 +14,7 @@ import { EmployeeService } from 'app/entities/employee/service/employee.service'
 import { Language } from 'app/entities/enumerations/language.model';
 import { IJob } from 'app/entities/job/job.model';
 import { JobService } from 'app/entities/job/service/job.service';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
 import { TranslateDirective } from 'app/shared/language';
 import { IJobHistory } from '../job-history.model';
 import { JobHistoryService } from '../service/job-history.service';
@@ -22,7 +22,6 @@ import { JobHistoryService } from '../service/job-history.service';
 import { JobHistoryFormGroup, JobHistoryFormService } from './job-history-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-job-history-update',
   templateUrl: './job-history-update.html',
   imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
@@ -36,12 +35,12 @@ export class JobHistoryUpdate implements OnInit {
   departmentsCollection = signal<IDepartment[]>([]);
   employeesCollection = signal<IEmployee[]>([]);
 
-  protected jobHistoryService = inject(JobHistoryService);
-  protected jobHistoryFormService = inject(JobHistoryFormService);
-  protected jobService = inject(JobService);
-  protected departmentService = inject(DepartmentService);
-  protected employeeService = inject(EmployeeService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly jobHistoryService = inject(JobHistoryService);
+  private readonly jobHistoryFormService = inject(JobHistoryFormService);
+  private readonly jobService = inject(JobService);
+  private readonly departmentService = inject(DepartmentService);
+  private readonly employeeService = inject(EmployeeService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: JobHistoryFormGroup = this.jobHistoryFormService.createJobHistoryFormGroup();
@@ -77,26 +76,26 @@ export class JobHistoryUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<IJobHistory | null>): void {
+  private subscribeToSaveResponse(result: Observable<IJobHistory | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
     });
   }
 
-  protected onSaveSuccess(): void {
+  private onSaveSuccess(): void {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  private onSaveError(): void {
+    // API for inheritance.
   }
 
-  protected onSaveFinalize(): void {
+  private onSaveFinalize(): void {
     this.isSaving.set(false);
   }
 
-  protected updateForm(jobHistory: IJobHistory): void {
+  private updateForm(jobHistory: IJobHistory): void {
     this.jobHistory = jobHistory;
     this.jobHistoryFormService.resetForm(this.editForm, jobHistory);
 
@@ -109,7 +108,7 @@ export class JobHistoryUpdate implements OnInit {
     );
   }
 
-  protected loadRelationshipsOptions(): void {
+  private loadRelationshipsOptions(): void {
     this.jobService
       .query({ filter: 'jobhistory-is-null' })
       .pipe(map((res: HttpResponse<IJob[]>) => res.body ?? []))

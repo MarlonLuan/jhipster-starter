@@ -3,34 +3,33 @@ import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } fr
 
 import { map } from 'rxjs';
 
-import { AccountService } from 'app/core/auth/account.service';
-import { LoginService } from 'app/login/login.service';
-
+import { AccountService } from './account.service';
+import { AuthServerProvider } from './auth-session.service';
 import { StateStorageService } from './state-storage.service';
 
-export const UserRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const userRouteAccessService: CanActivateFn = (next: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const accountService = inject(AccountService);
   const router = inject(Router);
   const stateStorageService = inject(StateStorageService);
-  const loginService = inject(LoginService);
+  const authServerProvider = inject(AuthServerProvider);
   return accountService.identity().pipe(
     map(account => {
       if (account) {
         const { authorities } = next.data;
 
-        if (!authorities || authorities.length === 0 || accountService.hasAnyAuthority(authorities)) {
+        if (!authorities?.length || accountService.hasAnyAuthority(authorities)) {
           return true;
         }
 
         if (isDevMode()) {
           console.error('User does not have any of the required authorities:', authorities);
         }
-        router.navigate(['accessdenied']);
+        void router.navigate(['accessdenied']);
         return false;
       }
 
       stateStorageService.storeUrl(state.url);
-      loginService.login();
+      authServerProvider.login();
       return false;
     }),
   );

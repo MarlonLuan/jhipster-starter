@@ -1,10 +1,11 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { of } from 'rxjs';
 
-import { Log, LoggersResponse } from './log.model';
+import { Log, LoggersResponse } from 'app/shared/jhipster/logs';
+
 import Logs from './logs';
 import { LogsService } from './logs.service';
 
@@ -35,8 +36,8 @@ describe('Logs', () => {
 
     it('should call load all on init', () => {
       // GIVEN
-      const log = new Log('main', 'WARN');
-      vitest.spyOn(service, 'findAll').mockReturnValue(
+      const log: Log = { name: 'main', level: 'WARN' };
+      vi.spyOn(service, 'findAll').mockReturnValue(
         of({
           loggers: {
             main: {
@@ -58,9 +59,9 @@ describe('Logs', () => {
   describe('change log level', () => {
     it('should change log level correctly', () => {
       // GIVEN
-      const log = new Log('main', 'ERROR');
-      vitest.spyOn(service, 'changeLevel').mockReturnValue(of({}));
-      vitest.spyOn(service, 'findAll').mockReturnValue(
+      const log: Log = { name: 'main', level: 'ERROR' };
+      vi.spyOn(service, 'changeLevel').mockReturnValue(of({}));
+      vi.spyOn(service, 'findAll').mockReturnValue(
         of({
           loggers: {
             main: {

@@ -1,21 +1,19 @@
 import { SlicePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { finalize } from 'rxjs';
 
+import { Level, Log, LoggersResponse, toLogs } from 'app/shared/jhipster/logs';
 import { TranslateDirective } from 'app/shared/language';
 import { SortByDirective, SortDirective, SortService, sortStateSignal } from 'app/shared/sort';
 
-import { Level, Log, LoggersResponse } from './log.model';
 import { LogsService } from './logs.service';
 
 @Component({
   selector: 'jhi-logs',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './logs.html',
-  imports: [TranslateDirective, FontAwesomeModule, FormsModule, SortDirective, SortByDirective, SlicePipe],
+  imports: [TranslateDirective, FontAwesomeModule, SortDirective, SortByDirective, SlicePipe],
 })
 export default class Logs implements OnInit {
   readonly loggers = signal<Log[] | undefined>(undefined);
@@ -57,8 +55,7 @@ export default class Logs implements OnInit {
         }),
       )
       .subscribe({
-        next: (response: LoggersResponse) =>
-          this.loggers.set(Object.entries(response.loggers).map(([key, logger]) => new Log(key, logger.effectiveLevel))),
+        next: (response: LoggersResponse) => this.loggers.set(toLogs(response)),
         error: () => this.loggers.set([]),
       });
   }

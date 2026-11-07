@@ -4,6 +4,7 @@ import com.mycompany.myapp.repository.TaskRepository;
 import com.mycompany.myapp.service.TaskService;
 import com.mycompany.myapp.service.dto.TaskDTO;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
+import jakarta.persistence.EntityManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -16,12 +17,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * REST controller for managing {@link com.mycompany.myapp.domain.Task}.
@@ -41,23 +47,29 @@ public class TaskResource {
 
     private final TaskRepository taskRepository;
 
-    public TaskResource(TaskService taskService, TaskRepository taskRepository) {
+    private final ObjectMapper om;
+
+    private final EntityManager em;
+
+    public TaskResource(TaskService taskService, TaskRepository taskRepository, ObjectMapper om, EntityManager em) {
         this.taskService = taskService;
         this.taskRepository = taskRepository;
+        this.om = om;
+        this.em = em;
     }
 
     /**
      * {@code POST  /tasks} : Create a new task.
      *
      * @param taskDTO the taskDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new taskDTO, or with status {@code 400 (Bad Request)} if the task has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new taskDTO, or with status {@code 400 (Bad Request)} if the task already has an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
     public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) throws URISyntaxException {
         LOG.debug("REST request to save Task : {}", taskDTO);
         if (taskDTO.getId() != null) {
-            throw new BadRequestAlertException("A new task cannot already have an ID", ENTITY_NAME, "idexists");
+            throw BadRequestAlertException.idexists(ENTITY_NAME);
         }
         taskDTO = taskService.save(taskDTO);
         return ResponseEntity.created(new URI("/api/tasks/" + taskDTO.getId()))
@@ -80,14 +92,14 @@ public class TaskResource {
         throws URISyntaxException {
         LOG.debug("REST request to update Task : {}, {}", id, taskDTO);
         if (taskDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
         if (!Objects.equals(id, taskDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
         if (!taskRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+            throw BadRequestAlertException.idnotfound(ENTITY_NAME);
         }
 
         taskDTO = taskService.update(taskDTO);
@@ -110,26 +122,42 @@ public class TaskResource {
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<TaskDTO> partialUpdateTask(
         @PathVariable(value = "id", required = false) final UUID id,
-        @RequestBody TaskDTO taskDTO
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @io.swagger.v3.oas.annotations.media.Content(
+                schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = TaskDTO.class)
+            )
+        ) @RequestBody ObjectNode taskDTO
     ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Task partially : {}, {}", id, taskDTO);
-        if (taskDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        LOG.debug("REST request to partially update Task : {}, {}", id, taskDTO);
+        var idNode = taskDTO.remove("id");
+        if (idNode == null || idNode.isNull()) {
+            throw BadRequestAlertException.idnull(ENTITY_NAME);
         }
-        if (!Objects.equals(id, taskDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        if (!idNode.isString()) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
+        }
+        if (!Objects.equals(id.toString(), idNode.stringValue())) {
+            throw BadRequestAlertException.idinvalid(ENTITY_NAME);
         }
 
-        if (!taskRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<TaskDTO> result = taskService.partialUpdate(taskDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, taskDTO.getId().toString())
-        );
+        return taskService
+            .findOne(id)
+            .map(existingTask -> {
+                try {
+                    em.clear();
+                    existingTask = this.om.readerForUpdating(existingTask).readValue(taskDTO);
+                    return existingTask;
+                } catch (JacksonException e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid task", e);
+                }
+            })
+            .map(taskService::update)
+            .map(res ->
+                ResponseEntity.ok()
+                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, res.getId().toString()))
+                    .body(res)
+            )
+            .orElseThrow(() -> BadRequestAlertException.idnotfound(ENTITY_NAME));
     }
 
     /**

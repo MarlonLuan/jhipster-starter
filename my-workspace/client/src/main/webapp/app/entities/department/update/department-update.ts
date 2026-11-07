@@ -1,15 +1,14 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
 import { Observable, finalize, map } from 'rxjs';
 
 import { ILocation } from 'app/entities/location/location.model';
 import { LocationService } from 'app/entities/location/service/location.service';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
 import { TranslateDirective } from 'app/shared/language';
 import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
@@ -17,10 +16,9 @@ import { DepartmentService } from '../service/department.service';
 import { DepartmentFormGroup, DepartmentFormService } from './department-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-department-update',
   templateUrl: './department-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, ReactiveFormsModule],
 })
 export class DepartmentUpdate implements OnInit {
   readonly isSaving = signal(false);
@@ -28,10 +26,10 @@ export class DepartmentUpdate implements OnInit {
 
   locationsCollection = signal<ILocation[]>([]);
 
-  protected departmentService = inject(DepartmentService);
-  protected departmentFormService = inject(DepartmentFormService);
-  protected locationService = inject(LocationService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly departmentService = inject(DepartmentService);
+  private readonly departmentFormService = inject(DepartmentFormService);
+  private readonly locationService = inject(LocationService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
   editForm: DepartmentFormGroup = this.departmentFormService.createDepartmentFormGroup();
@@ -63,26 +61,26 @@ export class DepartmentUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<IDepartment | null>): void {
+  private subscribeToSaveResponse(result: Observable<IDepartment | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
     });
   }
 
-  protected onSaveSuccess(): void {
+  private onSaveSuccess(): void {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  private onSaveError(): void {
+    // API for inheritance.
   }
 
-  protected onSaveFinalize(): void {
+  private onSaveFinalize(): void {
     this.isSaving.set(false);
   }
 
-  protected updateForm(department: IDepartment): void {
+  private updateForm(department: IDepartment): void {
     this.department = department;
     this.departmentFormService.resetForm(this.editForm, department);
 
@@ -91,7 +89,7 @@ export class DepartmentUpdate implements OnInit {
     );
   }
 
-  protected loadRelationshipsOptions(): void {
+  private loadRelationshipsOptions(): void {
     this.locationService
       .query({ filter: 'department-is-null' })
       .pipe(map((res: HttpResponse<ILocation[]>) => res.body ?? []))

@@ -1,44 +1,43 @@
 package com.mycompany.myapp.web.rest;
 
+import static com.mycompany.myapp.domain.EmployeeTestSamples.*;
 import static com.mycompany.myapp.domain.JobAsserts.*;
+import static com.mycompany.myapp.domain.TaskTestSamples.*;
+import static com.mycompany.myapp.web.rest.TestUtil.convertObjectToPartialUpdateBody;
 import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Job;
+import com.mycompany.myapp.repository.EmployeeRepository;
 import com.mycompany.myapp.repository.JobRepository;
-import com.mycompany.myapp.service.JobService;
+import com.mycompany.myapp.repository.TaskRepository;
 import com.mycompany.myapp.service.dto.JobDTO;
 import com.mycompany.myapp.service.mapper.JobMapper;
 import jakarta.persistence.EntityManager;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Integration tests for the {@link JobResource} REST controller.
  */
 @IntegrationTest
-@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
 class JobResourceIT {
@@ -61,14 +60,8 @@ class JobResourceIT {
     @Autowired
     private JobRepository jobRepository;
 
-    @Mock
-    private JobRepository jobRepositoryMock;
-
     @Autowired
     private JobMapper jobMapper;
-
-    @Mock
-    private JobService jobServiceMock;
 
     @Autowired
     private EntityManager em;
@@ -79,6 +72,12 @@ class JobResourceIT {
     private Job job;
 
     private Job insertedJob;
+
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     /**
      * Create an entity for this test.
@@ -172,21 +171,17 @@ class JobResourceIT {
             .andExpect(jsonPath("$.[*].maxSalary").value(hasItem(DEFAULT_MAX_SALARY.intValue())));
     }
 
-    @SuppressWarnings({ "unchecked" })
-    void getAllJobsWithEagerRelationshipsIsEnabled() throws Exception {
-        when(jobServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
+    @Test
+    @Transactional
+    void getAllJobsWithoutEagerRelationships() throws Exception {
+        // Initialize the database
+        insertedJob = jobRepository.saveAndFlush(job);
 
-        restJobMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
-
-        verify(jobServiceMock, times(1)).findAllWithEagerRelationships(any());
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    void getAllJobsWithEagerRelationshipsIsNotEnabled() throws Exception {
-        when(jobServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
-
-        restJobMockMvc.perform(get(ENTITY_API_URL + "?eagerload=false")).andExpect(status().isOk());
-        verify(jobRepositoryMock, times(1)).findAll(any(Pageable.class));
+        // Get all the jobList without loading the relationships
+        restJobMockMvc
+            .perform(get(ENTITY_API_URL + "?eagerload=false&sort=id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.[*].id").value(hasItem(job.getId().toString())));
     }
 
     @Test
@@ -274,7 +269,7 @@ class JobResourceIT {
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -297,13 +292,67 @@ class JobResourceIT {
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(jobDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Job in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void shouldNotUpdateRelatedEntitiesThroughJob() throws Exception {
+        // Persist the related entities and a job related to them
+        var relatedTask = TaskResourceIT.createEntity();
+        em.persist(relatedTask);
+        var relatedTaskValue = relatedTask.getTitle();
+        job.setTasks(new HashSet<>(Set.of(relatedTask)));
+        var relatedEmployee = EmployeeResourceIT.createEntity();
+        em.persist(relatedEmployee);
+        var relatedEmployeeValue = relatedEmployee.getFirstName();
+        job.setEmployee(relatedEmployee);
+        em.flush();
+        insertedJob = jobRepository.saveAndFlush(job);
+
+        // Each nested related object carries another value, which must stay in the request
+        var relatedTaskJson = om.createObjectNode();
+        relatedTaskJson.set("id", om.valueToTree(relatedTask.getId()));
+        relatedTaskJson.set("title", om.valueToTree(getTaskSample2().getTitle()));
+        var relatedEmployeeJson = om.createObjectNode();
+        relatedEmployeeJson.set("id", om.valueToTree(relatedEmployee.getId()));
+        relatedEmployeeJson.set("firstName", om.valueToTree(getEmployeeSample2().getFirstName()));
+
+        ObjectNode updateJson = om.valueToTree(jobMapper.toDto(insertedJob));
+        updateJson.set("tasks", om.createArrayNode().add(relatedTaskJson));
+        updateJson.set("employee", relatedEmployeeJson);
+        restJobMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, insertedJob.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(updateJson))
+            )
+            .andExpect(status().isOk());
+
+        var patchJson = om.createObjectNode();
+        patchJson.set("id", om.valueToTree(insertedJob.getId()));
+        patchJson.set("tasks", om.createArrayNode().add(relatedTaskJson));
+        patchJson.set("employee", relatedEmployeeJson);
+        restJobMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, insertedJob.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(patchJson))
+            )
+            .andExpect(status().isOk());
+
+        em.flush();
+        em.clear();
+        assertThat(taskRepository.findById(relatedTask.getId()).orElseThrow().getTitle()).isEqualTo(relatedTaskValue);
+        assertThat(employeeRepository.findById(relatedEmployee.getId()).orElseThrow().getFirstName()).isEqualTo(relatedEmployeeValue);
     }
 
     @Test
@@ -325,7 +374,7 @@ class JobResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedJob.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedJob))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedJob))
             )
             .andExpect(status().isOk());
 
@@ -354,7 +403,7 @@ class JobResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedJob.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedJob))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedJob))
             )
             .andExpect(status().isOk());
 
@@ -396,7 +445,7 @@ class JobResourceIT {
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -419,7 +468,7 @@ class JobResourceIT {
         // Create the Job
         JobDTO jobDTO = jobMapper.toDto(job);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restJobMockMvc
             .perform(patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(jobDTO)))
             .andExpect(status().isMethodNotAllowed());

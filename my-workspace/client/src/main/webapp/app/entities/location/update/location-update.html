@@ -59,7 +59,7 @@
         <div class="mb-3">
           <label class="form-label" for="field_country" jhiTranslate="jhipsterApp.location.country">Country</label>
           <select
-            class="form-control"
+            class="form-select"
             id="field_country"
             data-cy="country"
             name="country"
@@ -75,8 +75,8 @@
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-info" (click)="previousState()">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
         <button

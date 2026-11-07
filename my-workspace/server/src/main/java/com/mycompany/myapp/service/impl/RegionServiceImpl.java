@@ -27,9 +27,9 @@ public class RegionServiceImpl implements RegionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RegionServiceImpl.class);
 
-    private final RegionRepository regionRepository;
+    protected final RegionRepository regionRepository;
 
-    private final RegionMapper regionMapper;
+    protected final RegionMapper regionMapper;
 
     public RegionServiceImpl(RegionRepository regionRepository, RegionMapper regionMapper) {
         this.regionRepository = regionRepository;
@@ -50,21 +50,6 @@ public class RegionServiceImpl implements RegionService {
         Region region = regionMapper.toEntity(regionDTO);
         region = regionRepository.save(region);
         return regionMapper.toDto(region);
-    }
-
-    @Override
-    public Optional<RegionDTO> partialUpdate(RegionDTO regionDTO) {
-        LOG.debug("Request to partially update Region : {}", regionDTO);
-
-        return regionRepository
-            .findById(regionDTO.getId())
-            .map(existingRegion -> {
-                regionMapper.partialUpdate(existingRegion, regionDTO);
-
-                return existingRegion;
-            })
-            .map(regionRepository::save)
-            .map(regionMapper::toDto);
     }
 
     @Override
