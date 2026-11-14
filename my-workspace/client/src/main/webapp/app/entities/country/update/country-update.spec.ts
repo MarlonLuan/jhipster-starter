@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -53,9 +53,9 @@ describe('Country Management Update Component', () => {
       country.region = region;
 
       const regionCollection: IRegion[] = [{ id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' }];
-      vitest.spyOn(regionService, 'query').mockReturnValue(of(new HttpResponse({ body: regionCollection })));
+      vi.spyOn(regionService, 'query').mockReturnValue(of(new HttpResponse({ body: regionCollection })));
       const expectedCollection: IRegion[] = [region, ...regionCollection];
-      vitest.spyOn(regionService, 'addRegionToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(regionService, 'addRegionToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ country });
       comp.ngOnInit();
@@ -79,13 +79,31 @@ describe('Country Management Update Component', () => {
   });
 
   describe('save', () => {
+    beforeEach(() => {
+      // The save is what is tested: the form is taken as valid, whatever the sample.
+      vi.spyOn(comp.editForm, 'invalid', 'get').mockReturnValue(false);
+    });
+
+    it('should mark the fields of an invalid form instead of saving it', () => {
+      // GIVEN
+      vi.spyOn(comp.editForm, 'invalid', 'get').mockReturnValue(true);
+      vi.spyOn(comp.editForm, 'markAllAsTouched');
+
+      // WHEN
+      comp.save();
+
+      // THEN
+      expect(comp.editForm.markAllAsTouched).toHaveBeenCalled();
+      expect(comp.isSaving()).toEqual(false);
+    });
+
     it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<ICountry>();
       const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
-      vitest.spyOn(countryFormService, 'getCountry').mockReturnValue(country);
-      vitest.spyOn(countryService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(countryFormService, 'getCountry').mockReturnValue(country);
+      vi.spyOn(countryService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ country });
       comp.ngOnInit();
 
@@ -106,9 +124,9 @@ describe('Country Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<ICountry>();
       const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
-      vitest.spyOn(countryFormService, 'getCountry').mockReturnValue({ id: null });
-      vitest.spyOn(countryService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(countryFormService, 'getCountry').mockReturnValue({ id: null });
+      vi.spyOn(countryService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ country: null });
       comp.ngOnInit();
 
@@ -129,8 +147,8 @@ describe('Country Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<ICountry>();
       const country = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
-      vitest.spyOn(countryService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(countryService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ country });
       comp.ngOnInit();
 
@@ -151,7 +169,7 @@ describe('Country Management Update Component', () => {
       it('should forward to regionService', () => {
         const entity = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
         const entity2 = { id: '08490cb2-dd41-43f2-95f0-554d7eff5216' };
-        vitest.spyOn(regionService, 'compareRegion');
+        vi.spyOn(regionService, 'compareRegion');
         comp.compareRegion(entity, entity2);
         expect(regionService.compareRegion).toHaveBeenCalledWith(entity, entity2);
       });

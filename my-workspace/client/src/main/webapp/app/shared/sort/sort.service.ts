@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 
-import { SortState } from './sort-state';
+import { type SortState, buildSortParam, parseSortParam } from 'app/shared/jhipster/pagination';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SortService {
   private readonly collator = new Intl.Collator(undefined, {
     numeric: true,
@@ -21,20 +21,10 @@ export class SortService {
   }
 
   parseSortParam(sortParam: string | undefined): SortState {
-    if (sortParam?.includes(',')) {
-      const split = sortParam.split(',');
-      if (split[0]) {
-        return { predicate: split[0], order: split[1] as any };
-      }
-    }
-    return { predicate: sortParam?.length ? sortParam : undefined };
+    return parseSortParam(sortParam);
   }
 
-  buildSortParam({ predicate, order }: SortState, fallback?: string): string[] {
-    const sortParam = predicate && order ? [`${predicate},${order}`] : [];
-    if (fallback && predicate !== fallback) {
-      sortParam.push(`${fallback},asc`);
-    }
-    return sortParam;
+  buildSortParam(sortState: SortState, fallback?: string): string[] {
+    return buildSortParam(sortState, fallback);
   }
 }

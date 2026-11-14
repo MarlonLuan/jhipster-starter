@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { ITask } from '../task.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../task.test-samples';
 
-import { TaskService } from './task.service';
+import { TaskService, TasksService } from './task.service';
 
 const requireRestSample: ITask = {
   ...sampleWithRequiredData,
@@ -82,7 +82,6 @@ describe('Task Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -179,7 +178,7 @@ describe('Task Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
         const entity2 = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
 
@@ -188,6 +187,21 @@ describe('Task Service', () => {
 
         expect(compareResult1).toEqual(true);
         expect(compareResult2).toEqual(true);
+      });
+    });
+  });
+
+  describe('TasksService', () => {
+    it('should list the tasks of the params', async () => {
+      const tasksService = TestBed.inject(TasksService);
+      tasksService.tasksParams.set({ page: 0 });
+      TestBed.tick();
+
+      httpMock.expectOne({ method: 'GET' }).flush([requireRestSample]);
+
+      await vi.waitFor(() => {
+        TestBed.tick();
+        expect(tasksService.tasks()).toMatchObject([sampleWithRequiredData]);
       });
     });
   });

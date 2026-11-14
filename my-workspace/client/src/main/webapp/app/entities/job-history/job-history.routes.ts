@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
+import { userRouteAccessService } from 'app/core/auth';
 
 import JobHistoryResolve from './route/job-history-routing-resolve.service';
 
@@ -9,7 +9,7 @@ const jobHistoryRoute: Routes = [
     path: '',
     loadComponent: () => import('./list/job-history').then(m => m.JobHistory),
     data: {},
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
   {
     path: ':id/view',
@@ -17,7 +17,7 @@ const jobHistoryRoute: Routes = [
     resolve: {
       jobHistory: JobHistoryResolve,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
   {
     path: 'new',
@@ -25,7 +25,7 @@ const jobHistoryRoute: Routes = [
     resolve: {
       jobHistory: JobHistoryResolve,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
   {
     path: ':id/edit',
@@ -33,7 +33,7 @@ const jobHistoryRoute: Routes = [
     resolve: {
       jobHistory: JobHistoryResolve,
     },
-    canActivate: [UserRouteAccessService],
+    canActivate: [userRouteAccessService],
   },
 ];
 

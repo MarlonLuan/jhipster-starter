@@ -1,48 +1,39 @@
-import { JsonPipe, KeyValuePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TranslatePipe } from '@ngx-translate/core';
 
+import { ConfigurationSection } from 'app/shared/jhipster/configuration.model';
 import { TranslateDirective } from 'app/shared/language';
 import { SortByDirective, SortDirective, SortService, sortStateSignal } from 'app/shared/sort';
 
-import { Bean, PropertySource } from './configuration.model';
 import { ConfigurationService } from './configuration.service';
 
 @Component({
   selector: 'jhi-configuration',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './configuration.html',
-  imports: [FontAwesomeModule, FormsModule, SortDirective, SortByDirective, KeyValuePipe, JsonPipe, TranslateDirective],
+  imports: [FontAwesomeModule, SortDirective, SortByDirective, TranslateDirective, TranslatePipe],
 })
 export default class Configuration implements OnInit {
-  readonly allBeans = signal<Bean[] | undefined>(undefined);
-  readonly beansFilter = signal('');
-  readonly propertySources = signal<PropertySource[]>([]);
-  sortState = sortStateSignal({ predicate: 'prefix', order: 'asc' });
-  readonly beans = computed(() => {
-    let data = this.allBeans() ?? [];
-    const beansFilter = this.beansFilter();
-    if (beansFilter) {
-      data = data.filter(bean => bean.prefix.toLowerCase().includes(beansFilter.toLowerCase()));
-    }
-
+  readonly allSections = signal<ConfigurationSection[] | undefined>(undefined);
+  readonly filter = signal('');
+  sortState = sortStateSignal({ predicate: 'key', order: 'asc' });
+  readonly sections = computed(() => {
+    const filter = this.filter().toLowerCase();
     const { order, predicate } = this.sortState();
-    if (predicate && order) {
-      data = data.sort(this.sortService.startSort({ predicate, order }));
-    }
-    return data;
+    return (this.allSections() ?? []).map(section => {
+      const rows = section.rows.filter(row => row.key.toLowerCase().includes(filter));
+      if (predicate && order) {
+        rows.sort(this.sortService.startSort({ predicate, order }));
+      }
+      return { ...section, rows };
+    });
   });
 
   private readonly sortService = inject(SortService);
   private readonly configurationService = inject(ConfigurationService);
 
   ngOnInit(): void {
-    this.configurationService.getBeans().subscribe(beans => {
-      this.allBeans.set(beans);
-    });
-
-    this.configurationService.getPropertySources().subscribe(propertySources => this.propertySources.set(propertySources));
+    this.configurationService.getConfiguration().subscribe(sections => this.allSections.set(sections));
   }
 }

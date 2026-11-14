@@ -1,4 +1,4 @@
-import { Directive, model, output } from '@angular/core';
+import { Directive, model } from '@angular/core';
 
 import { SortOrder, SortState } from './sort-state';
 
@@ -8,13 +8,10 @@ import { SortOrder, SortState } from './sort-state';
 export class SortDirective {
   readonly sortState = model.required<SortState>();
 
-  readonly sortChange = output<SortState>();
-
   sort(field: string): void {
     const { predicate, order } = this.sortState();
     const toggle = (): SortOrder => (order === 'asc' ? 'desc' : 'asc');
     const newSortState = { predicate: field, order: field === predicate ? toggle() : 'asc' };
-    this.sortState.update(() => newSortState);
-    this.sortChange.emit(newSortState);
+    this.sortState.set(newSortState);
   }
 }

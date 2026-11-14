@@ -45,6 +45,17 @@ describe('JobHistory Form Service', () => {
           }),
         );
       });
+
+      it('passing IJobHistory without dates should create a new form with empty values', () => {
+        const formGroup = service.createJobHistoryFormGroup({
+          ...sampleWithRequiredData,
+          startDate: null,
+          endDate: null,
+        });
+
+        expect(formGroup.controls.startDate.value).toBeNull();
+        expect(formGroup.controls.endDate.value).toBeNull();
+      });
     });
 
     describe('getJobHistory', () => {

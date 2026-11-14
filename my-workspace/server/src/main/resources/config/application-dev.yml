@@ -26,8 +26,8 @@ spring:
       enabled: true
       additional-exclude: static/**
     livereload:
-      enabled: false # we use Webpack dev server + BrowserSync for livereload
-  jackson2:
+      enabled: false # we use bundler for livereload
+  jackson:
     serialization:
       indent-output: true
   datasource:
@@ -64,11 +64,11 @@ jhipster:
     allowed-origin-patterns: 'https://*.githubpreview.dev'
     allowed-methods: '*'
     allowed-headers: '*'
-    exposed-headers: 'Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name}-alert,X-${jhipster.clientApp.name}-error,X-${jhipster.clientApp.name}-params'
+    exposed-headers: 'Authorization,Link,X-Total-Count,X-${jhipster.clientApp.name:jhipster}-alert,X-${jhipster.clientApp.name:jhipster}-error,X-${jhipster.clientApp.name:jhipster}-params'
     allow-credentials: true
     max-age: 1800
   logging:
-    use-json-format: false # By default, logs are not in Json format
+    use-json-format: false # By default, logs are not in JSON format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
       enabled: false
       host: localhost

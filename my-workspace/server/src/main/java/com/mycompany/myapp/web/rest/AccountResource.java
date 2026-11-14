@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -75,10 +74,6 @@ public class AccountResource {
             this.details = details;
         }
 
-        public boolean isActivated() {
-            return true;
-        }
-
         public Set<String> getAuthorities() {
             return authorities;
         }
@@ -87,6 +82,7 @@ public class AccountResource {
             return login;
         }
 
+        /** The details of the token, activated included. */
         @JsonAnyGetter
         public Map<String, Object> getDetails() {
             return details;
@@ -105,7 +101,7 @@ public class AccountResource {
 
         return new UserVM(
             authToken.getName(),
-            authToken.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()),
+            SecurityUtils.getUserAuthorities(authToken).collect(Collectors.toSet()),
             SecurityUtils.extractDetailsFromTokenAttributes(attributes)
         );
     }

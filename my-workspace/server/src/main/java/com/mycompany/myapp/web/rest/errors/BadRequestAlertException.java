@@ -48,4 +48,24 @@ public class BadRequestAlertException extends ErrorResponseException {
     public ProblemDetailWithCause getProblemDetailWithCause() {
         return (ProblemDetailWithCause) this.getBody();
     }
+
+    public static BadRequestAlertException idinvalid(String entityName) {
+        return new BadRequestAlertException("Invalid id", entityName, "idinvalid");
+    }
+
+    public static BadRequestAlertException idnull(String entityName) {
+        return new BadRequestAlertException("Invalid id", entityName, "idnull");
+    }
+
+    public static BadRequestAlertException idnotfound(String entityName) {
+        return new BadRequestAlertException("Entity not found", entityName, "idnotfound");
+    }
+
+    public static BadRequestAlertException idexists(String entityName) {
+        return new BadRequestAlertException("A " + entityName + " with this id already exists", entityName, "idexists");
+    }
+
+    public static BadRequestAlertException notsortable(String entityName, String property) {
+        return new BadRequestAlertException("A " + entityName + " cannot be sorted by " + property, entityName, "notsortable");
+    }
 }

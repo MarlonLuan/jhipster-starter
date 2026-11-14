@@ -1,0 +1,81 @@
+@if (details; as modalDetails) {
+  <div class="modal-header">
+    <h4 class="modal-title">{{ modalDetails.label | label }}</h4>
+
+    <button type="button" class="btn-close" (click)="dismiss()">&nbsp;</button>
+  </div>
+
+  <div class="modal-body">
+    <div class="mb-3">
+      @for (filter of modalDetails.filters; track filter.value) {
+        <button class="badge hand me-1" [class]="'bg-' + filter.status" (click)="selectedValue.set(filter.value)">
+          @if (selectedValue() === filter.value) {
+            <fa-icon icon="check" />
+          }
+          {{ filter.label | label }}&nbsp;<span class="badge rounded-pill">{{ filter.count }}</span>
+        </button>
+      }
+    </div>
+
+    <label for="details-filter">Filter</label>
+    <input #termInput id="details-filter" type="text" class="form-control" [value]="term()" (input)="term.set(termInput.value)" />
+
+    @for (item of items(); track item.title) {
+      <div class="pad">
+        <h6>
+          <span class="badge" [class]="'bg-' + item.status">{{ item.value }}</span>
+
+          &nbsp;{{ item.title }}
+
+          @if (item.lines.length > 0) {
+            <a (click)="toggle(item.title)" href="javascript:void(0);">
+              @if (shownItems().has(item.title)) {
+                {{ modalDetails.hideLines | label }}
+              } @else {
+                {{ modalDetails.showLines | label }}
+              }
+            </a>
+          }
+        </h6>
+
+        @if (shownItems().has(item.title)) {
+          <div class="card">
+            <div class="card-body">
+              @for (line of item.lines; track $index) {
+                <div class="break">
+                  <samp>{{ line }}</samp>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <table class="table table-sm table-responsive">
+          <caption>
+            {{
+              item.title
+            }}
+          </caption>
+          <thead>
+            <tr>
+              @for (column of modalDetails.columns; track $index) {
+                <th scope="col">{{ column | label }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              @for (cell of item.cells; track $index) {
+                <td>{{ cell }}</td>
+              }
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary float-start" (click)="dismiss()">Close</button>
+  </div>
+}

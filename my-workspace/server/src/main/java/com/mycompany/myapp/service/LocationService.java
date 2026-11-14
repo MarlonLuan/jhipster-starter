@@ -28,14 +28,6 @@ public interface LocationService {
     LocationDTO update(LocationDTO locationDTO);
 
     /**
-     * Partially updates a location.
-     *
-     * @param locationDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<LocationDTO> partialUpdate(LocationDTO locationDTO);
-
-    /**
      * Get all the locations.
      *
      * @param pageable the pagination information.

@@ -51,6 +51,15 @@ describe('Employee Form Service', () => {
           }),
         );
       });
+
+      it('passing IEmployee without dates should create a new form with empty values', () => {
+        const formGroup = service.createEmployeeFormGroup({
+          ...sampleWithRequiredData,
+          hireDate: null,
+        });
+
+        expect(formGroup.controls.hireDate.value).toBeNull();
+      });
     });
 
     describe('getEmployee', () => {

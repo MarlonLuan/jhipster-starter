@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { IJob } from '../job.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../job.test-samples';
 
-import { JobService } from './job.service';
+import { JobService, JobsService } from './job.service';
 
 const requireRestSample: IJob = {
   ...sampleWithRequiredData,
@@ -82,7 +82,6 @@ describe('Job Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -179,7 +178,7 @@ describe('Job Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
         const entity2 = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
 
@@ -188,6 +187,21 @@ describe('Job Service', () => {
 
         expect(compareResult1).toEqual(true);
         expect(compareResult2).toEqual(true);
+      });
+    });
+  });
+
+  describe('JobsService', () => {
+    it('should list the jobs of the params', async () => {
+      const jobsService = TestBed.inject(JobsService);
+      jobsService.jobsParams.set({ page: 0 });
+      TestBed.tick();
+
+      httpMock.expectOne({ method: 'GET' }).flush([requireRestSample]);
+
+      await vi.waitFor(() => {
+        TestBed.tick();
+        expect(jobsService.jobs()).toMatchObject([sampleWithRequiredData]);
       });
     });
   });

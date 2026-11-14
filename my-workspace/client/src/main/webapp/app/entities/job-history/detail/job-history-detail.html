@@ -31,36 +31,40 @@
           </dd>
           <dt><span jhiTranslate="jhipsterApp.jobHistory.job">Job</span></dt>
           <dd>
-            @if (jobHistory()!.job) {
+            @if (jobHistoryRef.job) {
               <div>
-                <a [routerLink]="['/job', jobHistory()!.job?.id, 'view']">{{ jobHistoryRef.job?.id }}</a>
+                <a [routerLink]="['/job', jobHistoryRef.job.id, 'view']">{{ jobHistoryRef.job.id }}</a>
               </div>
             }
           </dd>
           <dt><span jhiTranslate="jhipsterApp.jobHistory.department">Department</span></dt>
           <dd>
-            @if (jobHistory()!.department) {
+            @if (jobHistoryRef.department) {
               <div>
-                <a [routerLink]="['/department', jobHistory()!.department?.id, 'view']">{{ jobHistoryRef.department?.id }}</a>
+                <a [routerLink]="['/department', jobHistoryRef.department.id, 'view']">{{ jobHistoryRef.department.id }}</a>
               </div>
             }
           </dd>
           <dt><span jhiTranslate="jhipsterApp.jobHistory.employee">Employee</span></dt>
           <dd>
-            @if (jobHistory()!.employee) {
+            @if (jobHistoryRef.employee) {
               <div>
-                <a [routerLink]="['/employee', jobHistory()!.employee?.id, 'view']">{{ jobHistoryRef.employee?.id }}</a>
+                <a [routerLink]="['/employee', jobHistoryRef.employee.id, 'view']">{{ jobHistoryRef.employee.id }}</a>
               </div>
             }
           </dd>
         </dl>
 
-        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <button type="button" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
         <button type="button" [routerLink]="['/job-history', jobHistoryRef.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt" />&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+
+        <button type="button" (click)="delete(jobHistoryRef)" class="btn btn-danger" data-cy="entityDeleteButton">
+          <fa-icon icon="trash" />&nbsp;<span jhiTranslate="entity.action.delete">Delete</span>
         </button>
       </div>
     }

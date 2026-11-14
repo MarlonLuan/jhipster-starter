@@ -28,14 +28,6 @@ public interface CountryService {
     CountryDTO update(CountryDTO countryDTO);
 
     /**
-     * Partially updates a country.
-     *
-     * @param countryDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<CountryDTO> partialUpdate(CountryDTO countryDTO);
-
-    /**
      * Get all the countries.
      *
      * @param pageable the pagination information.

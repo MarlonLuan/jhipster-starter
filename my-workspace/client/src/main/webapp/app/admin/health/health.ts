@@ -1,24 +1,21 @@
-import { KeyValuePipe } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 
-import { TranslateDirective } from 'app/shared/language';
+import { HealthCheck } from 'app/shared/jhipster/health.model';
+import { LabelPipe, TranslateDirective } from 'app/shared/language';
 
-import { HealthDetails, HealthModel, HealthStatus } from './health.model';
 import { HealthService } from './health.service';
 import HealthModal from './modal/health-modal';
 
 @Component({
   selector: 'jhi-health',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './health.html',
-  imports: [TranslateDirective, FontAwesomeModule, KeyValuePipe],
+  imports: [LabelPipe, TranslateDirective, FontAwesomeModule],
 })
 export default class Health implements OnInit {
-  readonly health = signal<HealthModel | null>(null);
+  readonly checks = signal<HealthCheck[] | null>(null);
 
   private readonly modalService = inject(NgbModal);
   private readonly healthService = inject(HealthService);
@@ -27,26 +24,12 @@ export default class Health implements OnInit {
     this.refresh();
   }
 
-  getBadgeClass(statusState: HealthStatus): string {
-    if (statusState === 'UP') {
-      return 'bg-success';
-    }
-    return 'bg-danger';
-  }
-
   refresh(): void {
-    this.healthService.checkHealth().subscribe({
-      next: health => this.health.set(health),
-      error: (error: HttpErrorResponse) => {
-        if (error.status === 503) {
-          this.health.set(error.error);
-        }
-      },
-    });
+    this.healthService.checkHealth().subscribe(checks => this.checks.set(checks));
   }
 
-  showHealth(health: { key: string; value: HealthDetails }): void {
+  showHealth(check: HealthCheck): void {
     const modalRef = this.modalService.open(HealthModal);
-    modalRef.componentInstance.health = health;
+    modalRef.componentInstance.check = check;
   }
 }

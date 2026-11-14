@@ -24,6 +24,10 @@ export const errorRoute: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/404',
+    loadComponent: () => import('./error'),
+    data: {
+      errorMessage: 'error.http.404',
+    },
+    title: 'error.title',
   },
 ];
