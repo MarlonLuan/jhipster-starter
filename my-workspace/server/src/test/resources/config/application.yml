@@ -19,9 +19,10 @@ spring:
   # Replace by 'prod, faker' to add the faker context and have sample data loaded in production
   liquibase:
     contexts: test
-  jackson2:
-    serialization:
-      write-durations-as-timestamps: false
+  jackson:
+    datatype:
+      datetime:
+        write-durations-as-timestamps: false
   mail:
     host: localhost
   main:
@@ -65,7 +66,7 @@ jhipster:
     from: jhipster@localhost.com
     base-url: http://127.0.0.1:8080
   logging:
-    # To test json console appender
+    # To test JSON console appender
     use-json-format: false
     logstash:
       enabled: false

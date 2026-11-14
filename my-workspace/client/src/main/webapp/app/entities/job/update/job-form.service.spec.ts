@@ -43,6 +43,15 @@ describe('Job Form Service', () => {
           }),
         );
       });
+
+      it('passing IJob without relationships should create a new form with empty values', () => {
+        const formGroup = service.createJobFormGroup({
+          ...sampleWithRequiredData,
+          tasks: null,
+        });
+
+        expect(formGroup.controls.tasks.value).toEqual([]);
+      });
     });
 
     describe('getJob', () => {

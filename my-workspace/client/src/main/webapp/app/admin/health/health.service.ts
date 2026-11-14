@@ -1,18 +1,21 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Service, inject } from '@angular/core';
 
-import { Observable } from 'rxjs';
+import { Observable, catchError, map, of, throwError } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { serverApiUrl } from 'app/config';
+import { healthEndpoint, toHealthChecks } from 'app/shared/jhipster/health';
+import { HealthCheck } from 'app/shared/jhipster/health.model';
 
-import { HealthModel } from './health.model';
-
-@Injectable({ providedIn: 'root' })
+@Service()
 export class HealthService {
   private readonly http = inject(HttpClient);
-  private readonly applicationConfigService = inject(ApplicationConfigService);
 
-  checkHealth(): Observable<HealthModel> {
-    return this.http.get<HealthModel>(this.applicationConfigService.getEndpointFor('management/health'));
+  checkHealth(): Observable<HealthCheck[]> {
+    return this.http.get<unknown>(`${serverApiUrl}${healthEndpoint}`).pipe(
+      // An unhealthy application answers with 503 and its health.
+      catchError((error: HttpErrorResponse) => (error.status === 503 ? of<unknown>(error.error) : throwError(() => error))),
+      map(toHealthChecks),
+    );
   }
 }

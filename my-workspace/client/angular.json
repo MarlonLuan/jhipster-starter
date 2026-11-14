@@ -52,6 +52,7 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
+              "serviceWorker": "ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -105,6 +106,13 @@
             "buildTarget": "::development",
             "runnerConfig": true,
             "coverageReporters": ["text", "lcov"],
+            "coverageThresholds": {
+              "statements": 95,
+              "branches": 95,
+              "functions": 95,
+              "lines": 95
+            },
+            "coverageExclude": ["src/main/webapp/i18n/**"],
             "reporters": ["default", ["vitest-sonar-reporter", { "outputFile": "./target/test-results/TESTS-results-sonar-vitest.xml" }]],
             "watch": false,
             "tsConfig": "tsconfig.spec.json"

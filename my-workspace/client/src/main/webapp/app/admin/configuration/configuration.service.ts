@@ -1,30 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 
-import { Observable, map } from 'rxjs';
+import { Observable, forkJoin, map } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { serverApiUrl } from 'app/config';
+import { configurationEndpoints, toConfiguration } from 'app/shared/jhipster/configuration';
+import { ConfigurationSection } from 'app/shared/jhipster/configuration.model';
 
-import { Bean, Beans, ConfigProps, Env, PropertySource } from './configuration.model';
-
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ConfigurationService {
   private readonly http = inject(HttpClient);
-  private readonly applicationConfigService = inject(ApplicationConfigService);
 
-  getBeans(): Observable<Bean[]> {
-    return this.http.get<ConfigProps>(this.applicationConfigService.getEndpointFor('management/configprops')).pipe(
-      map(configProps =>
-        Object.values(
-          Object.values(configProps.contexts)
-            .map(context => context.beans)
-            .reduce((allBeans: Beans, contextBeans: Beans) => ({ ...allBeans, ...contextBeans }), {}),
-        ),
-      ),
-    );
-  }
-
-  getPropertySources(): Observable<PropertySource[]> {
-    return this.http.get<Env>(this.applicationConfigService.getEndpointFor('management/env')).pipe(map(env => env.propertySources));
+  getConfiguration(): Observable<ConfigurationSection[]> {
+    return forkJoin(configurationEndpoints.map(endpoint => this.http.get(`${serverApiUrl}${endpoint}`))).pipe(map(toConfiguration));
   }
 }

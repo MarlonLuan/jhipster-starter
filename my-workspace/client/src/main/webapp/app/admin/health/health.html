@@ -16,39 +16,20 @@
           <th scope="col" class="text-center" jhiTranslate="health.details.details">Details</th>
         </tr>
       </thead>
-      @if (health(); as health) {
+      @if (checks(); as checks) {
         <tbody>
-          @for (componentHealth of health.components | keyvalue; track componentHealth.key) {
+          @for (check of checks; track check.id) {
             <tr>
-              <td [jhiTranslate]="'health.indicator.' + componentHealth.key">
-                {{
-                  {
-                    diskSpace: 'Disk space',
-                    ssl: 'SSL',
-                    mail: 'Email',
-                    livenessState: 'Liveness state',
-                    readinessState: 'Readiness state',
-                    ping: 'Application',
-                    db: 'Database',
-                  }[componentHealth.key] || componentHealth.key
-                }}
+              <td>
+                <span>{{ check.label | label }}</span
+                >{{ check.sublabel ? ' - ' + check.sublabel : '' }}
               </td>
               <td class="text-center">
-                <span
-                  class="badge"
-                  [class]="getBadgeClass(componentHealth.value!.status)"
-                  [jhiTranslate]="'health.status.' + (componentHealth.value?.status ?? 'UNKNOWN')"
-                >
-                  {{
-                    { UNKNOWN: 'UNKNOWN', UP: 'UP', OUT_OF_SERVICE: 'OUT_OF_SERVICE', DOWN: 'DOWN' }[
-                      componentHealth.value?.status ?? 'UNKNOWN'
-                    ]
-                  }}
-                </span>
+                <span class="badge" [class]="check.healthy ? 'bg-success' : 'bg-danger'">{{ check.status | label }}</span>
               </td>
               <td class="text-center">
-                @if (componentHealth.value!.details) {
-                  <a class="hand" (click)="showHealth({ key: componentHealth.key, value: componentHealth.value! })">
+                @if (check.details || check.error) {
+                  <a class="hand" (click)="showHealth(check)">
                     <fa-icon icon="eye" />
                   </a>
                 }

@@ -1,22 +1,17 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Service, inject } from '@angular/core';
 
-import { Observable } from 'rxjs';
+import { Observable, forkJoin, map } from 'rxjs';
 
-import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { serverApiUrl } from 'app/config';
+import { metricsEndpoints, toMetrics } from 'app/shared/jhipster/metrics';
+import { MetricsSection } from 'app/shared/jhipster/metrics.model';
 
-import { MetricsModel, ThreadDump } from './metrics.model';
-
-@Injectable({ providedIn: 'root' })
+@Service()
 export class MetricsService {
   private readonly http = inject(HttpClient);
-  private readonly applicationConfigService = inject(ApplicationConfigService);
 
-  getMetrics(): Observable<MetricsModel> {
-    return this.http.get<MetricsModel>(this.applicationConfigService.getEndpointFor('management/jhimetrics'));
-  }
-
-  threadDump(): Observable<ThreadDump> {
-    return this.http.get<ThreadDump>(this.applicationConfigService.getEndpointFor('management/threaddump'));
+  getMetrics(): Observable<MetricsSection[]> {
+    return forkJoin(metricsEndpoints.map(endpoint => this.http.get(`${serverApiUrl}${endpoint}`))).pipe(map(toMetrics));
   }
 }

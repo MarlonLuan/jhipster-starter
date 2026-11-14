@@ -1,13 +1,17 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
-import { HttpErrorResponse } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal';
 import { provideTranslateService } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
+
+import { fontAwesomeIcons } from 'app/config/font-awesome-icons';
+import { HealthCheck } from 'app/shared/jhipster/health.model';
 
 import Health from './health';
-import { HealthModel } from './health.model';
 import { HealthService } from './health.service';
+import HealthModal from './modal/health-modal';
 
 describe('Health', () => {
   let comp: Health;
@@ -21,45 +25,68 @@ describe('Health', () => {
   });
 
   beforeEach(() => {
+    TestBed.inject(FaIconLibrary).addIcons(...fontAwesomeIcons);
     fixture = TestBed.createComponent(Health);
     comp = fixture.componentInstance;
     service = TestBed.inject(HealthService);
   });
 
-  describe('getBadgeClass', () => {
-    it('should get badge class', () => {
-      const upBadgeClass = comp.getBadgeClass('UP');
-      const downBadgeClass = comp.getBadgeClass('DOWN');
-      expect(upBadgeClass).toEqual('bg-success');
-      expect(downBadgeClass).toEqual('bg-danger');
-    });
-  });
-
   describe('refresh', () => {
     it('should call refresh on init', () => {
       // GIVEN
-      const health: HealthModel = { status: 'UP', components: { mail: { status: 'UP', details: { mailDetail: 'mail' } } } };
-      vitest.spyOn(service, 'checkHealth').mockReturnValue(of(health));
+      const checks: HealthCheck[] = [{ id: 'mail', label: { text: 'Mail' }, status: { text: 'UP' }, healthy: true }];
+      vi.spyOn(service, 'checkHealth').mockReturnValue(of(checks));
 
       // WHEN
       comp.ngOnInit();
 
       // THEN
       expect(service.checkHealth).toHaveBeenCalled();
-      expect(comp.health()).toEqual(health);
+      expect(comp.checks()).toEqual(checks);
+    });
+  });
+
+  describe('view', () => {
+    const checks: HealthCheck[] = [
+      { id: 'db', label: { text: 'Database' }, sublabel: 'H2', status: { text: 'UP' }, healthy: true, details: [{ key: 'a', value: 'b' }] },
+      { id: 'mail', label: { text: 'Email' }, status: { text: 'DOWN' }, healthy: false, error: 'refused' },
+      { id: 'ping', label: { text: 'Ping' }, status: { text: 'UP' }, healthy: true },
+    ];
+
+    beforeEach(async () => {
+      vi.spyOn(service, 'checkHealth').mockReturnValue(of(checks));
+      await fixture.whenStable();
     });
 
-    it('should handle a 503 on refreshing health data', () => {
-      // GIVEN
-      const health: HealthModel = { status: 'DOWN', components: { mail: { status: 'DOWN' } } };
-      vitest.spyOn(service, 'checkHealth').mockReturnValue(throwError(() => new HttpErrorResponse({ status: 503, error: health })));
+    it('should render the checks', () => {
+      const element = fixture.nativeElement as HTMLElement;
+      expect(element.textContent).toContain(' - H2');
+      expect(element.querySelectorAll('.bg-danger')).toHaveLength(1);
+      expect(element.querySelectorAll('tbody a.hand')).toHaveLength(2);
+    });
 
-      // WHEN
-      comp.refresh();
+    it('should refresh the checks', () => {
+      (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>('h2 button')!.click();
 
-      // THEN
-      expect(service.checkHealth).toHaveBeenCalled();
-      expect(comp.health()).toEqual(health);
+      expect(service.checkHealth).toHaveBeenCalledTimes(2);
+    });
+
+    it('should render no check before they load', async () => {
+      vi.mocked(service.checkHealth).mockReturnValue(EMPTY);
+      comp.checks.set(null);
+      await fixture.whenStable();
+
+      expect((fixture.nativeElement as HTMLElement).querySelector('tbody')).toBeNull();
+    });
+
+    it('should show a check in a modal', () => {
+      const modalRef = { componentInstance: {} };
+      const open = vi.spyOn(TestBed.inject(NgbModal), 'open').mockReturnValue(modalRef as never);
+
+      (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('tbody a.hand')!.click();
+
+      expect(open).toHaveBeenCalledWith(HealthModal);
+      expect(modalRef.componentInstance).toEqual({ check: checks[0] });
     });
   });
 });

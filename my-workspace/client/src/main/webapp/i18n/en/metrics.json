@@ -32,14 +32,10 @@
         }
       },
       "gc": {
-        "title": "Garbage collections",
-        "marksweepcount": "Mark Sweep count",
-        "marksweeptime": "Mark Sweep time",
-        "scavengecount": "Scavenge count",
-        "scavengetime": "Scavenge time"
+        "title": "Garbage collections"
       },
       "http": {
-        "title": "HTTP requests (time in millisecond)",
+        "title": "HTTP requests (time in milliseconds)",
         "active": "Active requests:",
         "total": "Total requests:",
         "table": {
@@ -57,7 +53,7 @@
       }
     },
     "servicesstats": {
-      "title": "Services statistics (time in millisecond)",
+      "title": "Services statistics (time in milliseconds)",
       "table": {
         "name": "Service name",
         "count": "Count",
@@ -87,7 +83,7 @@
     },
     "datasource": {
       "usage": "Connection Pool Usage",
-      "title": "DataSource statistics (time in millisecond)",
+      "title": "DataSource statistics (time in milliseconds)",
       "name": "Pool usage",
       "count": "Count",
       "mean": "Mean",

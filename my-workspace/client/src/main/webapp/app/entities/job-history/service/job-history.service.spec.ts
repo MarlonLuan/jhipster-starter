@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { IJobHistory } from '../job-history.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../job-history.test-samples';
 
-import { JobHistoryService, RestJobHistory } from './job-history.service';
+import { JobHistoriesService, JobHistoryService, RestJobHistory } from './job-history.service';
 
 const requireRestSample: RestJobHistory = {
   ...sampleWithRequiredData,
@@ -75,6 +75,17 @@ describe('JobHistory Service', () => {
       expect(expectedResult).toMatchObject(expected);
     });
 
+    it('should send null for the dates a partial update does not have', () => {
+      service.partialUpdate({ id: sampleWithRequiredData.id }).subscribe();
+
+      const req = httpMock.expectOne({ method: 'PATCH' });
+      expect(req.request.body).toMatchObject({
+        startDate: null,
+        endDate: null,
+      });
+      req.flush(requireRestSample);
+    });
+
     it('should return a list of JobHistory', () => {
       const returnedFromService = { ...requireRestSample };
 
@@ -84,8 +95,15 @@ describe('JobHistory Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
+    });
+
+    it('should return an empty list of JobHistory', () => {
+      let body: IJobHistory[] | null | undefined;
+      service.query().subscribe(resp => (body = resp.body));
+
+      httpMock.expectOne({ method: 'GET' }).flush(null);
+      expect(body).toBeNull();
     });
 
     it('should delete a JobHistory', () => {
@@ -181,7 +199,7 @@ describe('JobHistory Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
         const entity2 = { id: '9da078bb-af84-4931-a283-fb9e5a42b6fd' };
 
@@ -190,6 +208,21 @@ describe('JobHistory Service', () => {
 
         expect(compareResult1).toEqual(true);
         expect(compareResult2).toEqual(true);
+      });
+    });
+  });
+
+  describe('JobHistoriesService', () => {
+    it('should list the jobHistories of the params', async () => {
+      const jobHistoriesService = TestBed.inject(JobHistoriesService);
+      jobHistoriesService.jobHistoriesParams.set({ page: 0 });
+      TestBed.tick();
+
+      httpMock.expectOne({ method: 'GET' }).flush([requireRestSample]);
+
+      await vi.waitFor(() => {
+        TestBed.tick();
+        expect(jobHistoriesService.jobHistories()).toMatchObject([sampleWithRequiredData]);
       });
     });
   });
