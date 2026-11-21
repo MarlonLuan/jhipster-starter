@@ -1,16 +1,18 @@
 package com.mycompany.myapp.web.rest;
 
+import static com.mycompany.myapp.domain.CountryTestSamples.*;
 import static com.mycompany.myapp.domain.LocationAsserts.*;
-import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
+import static com.mycompany.myapp.test.util.TestUtil.convertObjectToPartialUpdateBody;
+import static com.mycompany.myapp.test.util.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Location;
+import com.mycompany.myapp.repository.CountryRepository;
 import com.mycompany.myapp.repository.LocationRepository;
 import com.mycompany.myapp.service.dto.LocationDTO;
 import com.mycompany.myapp.service.mapper.LocationMapper;
@@ -25,6 +27,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Integration tests for the {@link LocationResource} REST controller.
@@ -34,17 +38,17 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class LocationResourceIT {
 
-    private static final String DEFAULT_STREET_ADDRESS = "AAAAAAAAAA";
-    private static final String UPDATED_STREET_ADDRESS = "BBBBBBBBBB";
+    private static final String DEFAULT_STREET_ADDRESS = "offend";
+    private static final String UPDATED_STREET_ADDRESS = "augment";
 
-    private static final String DEFAULT_POSTAL_CODE = "AAAAAAAAAA";
-    private static final String UPDATED_POSTAL_CODE = "BBBBBBBBBB";
+    private static final String DEFAULT_POSTAL_CODE = "though gee quantify";
+    private static final String UPDATED_POSTAL_CODE = "fooey kissingly";
 
-    private static final String DEFAULT_CITY = "AAAAAAAAAA";
-    private static final String UPDATED_CITY = "BBBBBBBBBB";
+    private static final String DEFAULT_CITY = "Adamsport";
+    private static final String UPDATED_CITY = "Ornworth";
 
-    private static final String DEFAULT_STATE_PROVINCE = "AAAAAAAAAA";
-    private static final String UPDATED_STATE_PROVINCE = "BBBBBBBBBB";
+    private static final String DEFAULT_STATE_PROVINCE = "whether emotional consequently";
+    private static final String UPDATED_STATE_PROVINCE = "minion";
 
     private static final String ENTITY_API_URL = "/api/locations";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -67,6 +71,9 @@ class LocationResourceIT {
     private Location location;
 
     private Location insertedLocation;
+
+    @Autowired
+    private CountryRepository countryRepository;
 
     /**
      * Create an entity for this test.
@@ -173,6 +180,24 @@ class LocationResourceIT {
 
     @Test
     @Transactional
+    void getAllLocationsSortedByWhatIsNotAProperty() throws Exception {
+        restLocationMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=doesNotExist,asc"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("error.notsortable"));
+    }
+
+    @Test
+    @Transactional
+    void getAllLocationsSortedByWhatIsNotAPropertyOfARelationship() throws Exception {
+        restLocationMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=country.doesNotExist,asc"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("error.notsortable"));
+    }
+
+    @Test
+    @Transactional
     void getLocation() throws Exception {
         // Initialize the database
         insertedLocation = locationRepository.saveAndFlush(location);
@@ -261,7 +286,7 @@ class LocationResourceIT {
         // Create the Location
         LocationDTO locationDTO = locationMapper.toDto(location);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restLocationMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -284,13 +309,57 @@ class LocationResourceIT {
         // Create the Location
         LocationDTO locationDTO = locationMapper.toDto(location);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restLocationMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(locationDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Location in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void shouldNotUpdateRelatedEntitiesThroughLocation() throws Exception {
+        // Persist the related entities and a location related to them
+        var relatedCountry = CountryResourceIT.createUpdatedEntity();
+        em.persist(relatedCountry);
+        var relatedCountryValue = relatedCountry.getCountryName();
+        location.setCountry(relatedCountry);
+        em.flush();
+        insertedLocation = locationRepository.saveAndFlush(location);
+
+        // Each nested related object carries another value, which must stay in the request
+        var relatedCountryJson = om.createObjectNode();
+        relatedCountryJson.set("id", om.valueToTree(relatedCountry.getId()));
+        relatedCountryJson.set("countryName", om.valueToTree(getCountrySample2().getCountryName()));
+
+        ObjectNode updateJson = om.valueToTree(locationMapper.toDto(insertedLocation));
+        updateJson.set("country", relatedCountryJson);
+        restLocationMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, insertedLocation.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(updateJson))
+            )
+            .andExpect(status().isOk());
+
+        var patchJson = om.createObjectNode();
+        patchJson.set("id", om.valueToTree(insertedLocation.getId()));
+        patchJson.set("country", relatedCountryJson);
+        restLocationMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, insertedLocation.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(patchJson))
+            )
+            .andExpect(status().isOk());
+
+        em.flush();
+        em.clear();
+        assertThat(countryRepository.findById(relatedCountry.getId()).orElseThrow().getCountryName()).isEqualTo(relatedCountryValue);
     }
 
     @Test
@@ -310,7 +379,7 @@ class LocationResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedLocation.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedLocation))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedLocation))
             )
             .andExpect(status().isOk());
 
@@ -343,7 +412,7 @@ class LocationResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedLocation.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedLocation))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedLocation))
             )
             .andExpect(status().isOk());
 
@@ -385,7 +454,7 @@ class LocationResourceIT {
         // Create the Location
         LocationDTO locationDTO = locationMapper.toDto(location);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restLocationMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -408,7 +477,7 @@ class LocationResourceIT {
         // Create the Location
         LocationDTO locationDTO = locationMapper.toDto(location);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restLocationMockMvc
             .perform(
                 patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(locationDTO))

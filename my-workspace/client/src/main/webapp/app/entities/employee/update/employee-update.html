@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <form name="editForm" novalidate [formRoot]="editForm">
       <h2 id="jhi-employee-heading" data-cy="EmployeeCreateUpdateHeading" jhiTranslate="jhipsterApp.employee.home.createOrEditLabel">
         Create or edit a Employee
       </h2>
@@ -8,10 +8,10 @@
       <div>
         <jhi-alert-error />
 
-        @if (editForm.controls.id.value !== null) {
+        @if (editForm.id().value() !== '') {
           <div class="mb-3">
             <label class="form-label" for="field_id" jhiTranslate="jhipsterApp.employee.id">Id</label>
-            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+            <input type="text" class="form-control" id="field_id" data-cy="id" [formField]="editForm.id" />
           </div>
         }
 
@@ -23,29 +23,22 @@
             jhiTranslate="jhipsterApp.employee.firstName"
             >First Name</label
           >
-          <input type="text" class="form-control" name="firstName" id="field_firstName" data-cy="firstName" formControlName="firstName" />
+          <input type="text" class="form-control" id="field_firstName" data-cy="firstName" [formField]="editForm.firstName" />
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="field_lastName" jhiTranslate="jhipsterApp.employee.lastName">Last Name</label>
-          <input type="text" class="form-control" name="lastName" id="field_lastName" data-cy="lastName" formControlName="lastName" />
+          <input type="text" class="form-control" id="field_lastName" data-cy="lastName" [formField]="editForm.lastName" />
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="field_email" jhiTranslate="jhipsterApp.employee.email">Email</label>
-          <input type="text" class="form-control" name="email" id="field_email" data-cy="email" formControlName="email" />
+          <input type="text" class="form-control" id="field_email" data-cy="email" [formField]="editForm.email" />
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="field_phoneNumber" jhiTranslate="jhipsterApp.employee.phoneNumber">Phone Number</label>
-          <input
-            type="text"
-            class="form-control"
-            name="phoneNumber"
-            id="field_phoneNumber"
-            data-cy="phoneNumber"
-            formControlName="phoneNumber"
-          />
+          <input type="text" class="form-control" id="field_phoneNumber" data-cy="phoneNumber" [formField]="editForm.phoneNumber" />
         </div>
 
         <div class="mb-3">
@@ -56,8 +49,7 @@
               data-cy="hireDate"
               type="datetime-local"
               class="form-control"
-              name="hireDate"
-              formControlName="hireDate"
+              [formField]="editForm.hireDate"
               placeholder="YYYY-MM-DD HH:mm"
             />
           </div>
@@ -65,34 +57,27 @@
 
         <div class="mb-3">
           <label class="form-label" for="field_salary" jhiTranslate="jhipsterApp.employee.salary">Salary</label>
-          <input type="number" class="form-control" name="salary" id="field_salary" data-cy="salary" formControlName="salary" />
+          <input type="number" class="form-control" id="field_salary" data-cy="salary" [formField]="editForm.salary" />
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="field_commissionPct" jhiTranslate="jhipsterApp.employee.commissionPct">Commission Pct</label>
-          <input
-            type="number"
-            class="form-control"
-            name="commissionPct"
-            id="field_commissionPct"
-            data-cy="commissionPct"
-            formControlName="commissionPct"
-          />
+          <input type="number" class="form-control" id="field_commissionPct" data-cy="commissionPct" [formField]="editForm.commissionPct" />
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="field_manager" jhiTranslate="jhipsterApp.employee.manager">Manager</label>
           <select
-            class="form-control"
+            class="form-select"
             id="field_manager"
             data-cy="manager"
-            name="manager"
-            formControlName="manager"
+            [formField]="editForm.manager"
+            [jhiSelectOptions]="employeesSharedCollection()"
             [compareWith]="compareEmployee"
           >
-            <option [ngValue]="null"></option>
+            <option value=""></option>
             @for (employeeOption of employeesSharedCollection(); track $index) {
-              <option [ngValue]="employeeOption">{{ employeeOption.id }}</option>
+              <option [value]="$index">{{ employeeOption.id }}</option>
             }
           </select>
         </div>
@@ -100,33 +85,27 @@
         <div class="mb-3">
           <label class="form-label" for="field_department" jhiTranslate="jhipsterApp.employee.department">Department</label>
           <select
-            class="form-control"
+            class="form-select"
             id="field_department"
             data-cy="department"
-            name="department"
-            formControlName="department"
+            [formField]="editForm.department"
+            [jhiSelectOptions]="departmentsSharedCollection()"
             [compareWith]="compareDepartment"
           >
-            <option [ngValue]="null"></option>
+            <option value=""></option>
             @for (departmentOption of departmentsSharedCollection(); track $index) {
-              <option [ngValue]="departmentOption">{{ departmentOption.id }}</option>
+              <option [value]="$index">{{ departmentOption.id }}</option>
             }
           </select>
         </div>
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-info" (click)="previousState()">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
-        <button
-          type="submit"
-          id="save-entity"
-          data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
-        >
+        <button type="submit" id="save-entity" data-cy="entityCreateSaveButton" [disabled]="isSaving()" class="btn btn-primary">
           <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>
       </div>

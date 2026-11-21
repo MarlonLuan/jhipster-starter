@@ -1,37 +1,19 @@
-import { KeyValuePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal';
 
-import { TranslateDirective } from 'app/shared/language';
-import { HealthDetails, HealthKey } from '../health.model';
+import { HealthCheck } from 'app/shared/jhipster/health.model';
+import { LabelPipe, TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-health-modal',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './health-modal.html',
-  imports: [TranslateDirective, KeyValuePipe],
+  imports: [LabelPipe, TranslateDirective],
 })
 export default class HealthModal {
-  health?: { key: HealthKey; value: HealthDetails };
+  check?: HealthCheck;
 
   private readonly activeModal = inject(NgbActiveModal);
-
-  readableValue(value: any): string {
-    if (this.health?.key === 'diskSpace') {
-      // should display storage space in a human readable unit
-      const val = value / 1073741824;
-      if (val > 1) {
-        return `${val.toFixed(2)} GB`;
-      }
-      return `${(value / 1048576).toFixed(2)} MB`;
-    }
-
-    if (typeof value === 'object') {
-      return JSON.stringify(value);
-    }
-    return String(value);
-  }
 
   dismiss(): void {
     this.activeModal.dismiss();

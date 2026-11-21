@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Service, WritableSignal } from '@angular/core';
+import { FieldTree, FormOptions, form, readonly } from '@angular/forms/signals';
 
 import dayjs from 'dayjs/esm';
 
-import { DATE_TIME_FORMAT } from 'app/config/input.constants';
+import { DATE_TIME_FORMAT } from 'app/config';
 import { IJobHistory, NewJobHistory } from '../job-history.model';
 
 /**
@@ -12,101 +12,76 @@ import { IJobHistory, NewJobHistory } from '../job-history.model';
 type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
 
 /**
- * Type for createFormGroup and resetForm argument.
- * It accepts IJobHistory for edit and NewJobHistoryFormGroupInput for create.
+ * Type for the createFormModel argument.
+ * It accepts IJobHistory for edit and NewJobHistoryFormInput for create.
  */
-type JobHistoryFormGroupInput = IJobHistory | PartialWithRequiredKeyOf<NewJobHistory>;
-
-/**
- * Type that converts some properties for forms.
- */
-type FormValueOf<T extends IJobHistory | NewJobHistory> = Omit<T, 'startDate' | 'endDate'> & {
-  startDate?: string | null;
-  endDate?: string | null;
-};
-
-type JobHistoryFormRawValue = FormValueOf<IJobHistory>;
-
-type NewJobHistoryFormRawValue = FormValueOf<NewJobHistory>;
+type JobHistoryFormInput = IJobHistory | PartialWithRequiredKeyOf<NewJobHistory>;
 
 type JobHistoryFormDefaults = Pick<NewJobHistory, 'id' | 'startDate' | 'endDate'>;
 
-type JobHistoryFormGroupContent = {
-  id: FormControl<JobHistoryFormRawValue['id'] | NewJobHistory['id']>;
-  startDate: FormControl<JobHistoryFormRawValue['startDate']>;
-  endDate: FormControl<JobHistoryFormRawValue['endDate']>;
-  language: FormControl<JobHistoryFormRawValue['language']>;
-  job: FormControl<JobHistoryFormRawValue['job']>;
-  department: FormControl<JobHistoryFormRawValue['department']>;
-  employee: FormControl<JobHistoryFormRawValue['employee']>;
+/**
+ * The value of the form: the text fields are strings, empty when the entity has no value, and the dates and times
+ * are the text of their inputs.
+ */
+export type JobHistoryFormModel = {
+  id: string;
+  startDate: string;
+  endDate: string;
+  language: NonNullable<IJobHistory['language']> | '';
+  job: NonNullable<IJobHistory['job']> | null;
+  department: NonNullable<IJobHistory['department']> | null;
+  employee: NonNullable<IJobHistory['employee']> | null;
 };
 
-export type JobHistoryFormGroup = FormGroup<JobHistoryFormGroupContent>;
+export type JobHistoryForm = FieldTree<JobHistoryFormModel>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class JobHistoryFormService {
-  createJobHistoryFormGroup(jobHistory?: JobHistoryFormGroupInput): JobHistoryFormGroup {
-    const jobHistoryRawValue = this.convertJobHistoryToJobHistoryRawValue({
-      ...this.getFormDefaults(),
-      ...(jobHistory ?? { id: null }),
-    });
-
-    return new FormGroup<JobHistoryFormGroupContent>({
-      id: new FormControl(
-        { value: jobHistoryRawValue.id, disabled: true },
-        {
-          nonNullable: true,
-          validators: [Validators.required],
-        },
-      ),
-      startDate: new FormControl(jobHistoryRawValue.startDate),
-      endDate: new FormControl(jobHistoryRawValue.endDate),
-      language: new FormControl(jobHistoryRawValue.language),
-      job: new FormControl(jobHistoryRawValue.job),
-      department: new FormControl(jobHistoryRawValue.department),
-      employee: new FormControl(jobHistoryRawValue.employee),
-    });
+  createJobHistoryFormModel(jobHistory?: JobHistoryFormInput): JobHistoryFormModel {
+    const value: Partial<IJobHistory> | Partial<NewJobHistory> = { ...this.getFormDefaults(), ...jobHistory };
+    return {
+      id: value.id ?? '',
+      startDate: value.startDate ? dayjs(value.startDate).format(DATE_TIME_FORMAT) : '',
+      endDate: value.endDate ? dayjs(value.endDate).format(DATE_TIME_FORMAT) : '',
+      language: value.language ?? '',
+      job: value.job ?? null,
+      department: value.department ?? null,
+      employee: value.employee ?? null,
+    };
   }
 
-  getJobHistory(form: JobHistoryFormGroup): IJobHistory | NewJobHistory {
-    return this.convertJobHistoryRawValueToJobHistory(form.getRawValue());
+  /**
+   * The form of the model, its validation included, created in an injection context.
+   */
+  createJobHistoryForm(model: WritableSignal<JobHistoryFormModel>, options: FormOptions<JobHistoryFormModel> = {}): JobHistoryForm {
+    return form(
+      model,
+      path => {
+        readonly(path.id);
+      },
+      options,
+    );
   }
 
-  resetForm(form: JobHistoryFormGroup, jobHistory: JobHistoryFormGroupInput): void {
-    const jobHistoryRawValue = this.convertJobHistoryToJobHistoryRawValue({ ...this.getFormDefaults(), ...jobHistory });
-    form.reset({
-      ...jobHistoryRawValue,
-      id: { value: jobHistoryRawValue.id, disabled: true },
-    });
+  getJobHistory(model: JobHistoryFormModel): IJobHistory | NewJobHistory {
+    return {
+      id: model.id || null,
+      startDate: model.startDate ? dayjs(model.startDate, DATE_TIME_FORMAT).toJSON() : null,
+      endDate: model.endDate ? dayjs(model.endDate, DATE_TIME_FORMAT).toJSON() : null,
+      language: model.language || null,
+      job: model.job,
+      department: model.department,
+      employee: model.employee,
+    };
   }
 
   private getFormDefaults(): JobHistoryFormDefaults {
-    const currentTime = dayjs();
+    const currentTime = dayjs().toJSON();
 
     return {
       id: null,
       startDate: currentTime,
       endDate: currentTime,
-    };
-  }
-
-  private convertJobHistoryRawValueToJobHistory(
-    rawJobHistory: JobHistoryFormRawValue | NewJobHistoryFormRawValue,
-  ): IJobHistory | NewJobHistory {
-    return {
-      ...rawJobHistory,
-      startDate: dayjs(rawJobHistory.startDate, DATE_TIME_FORMAT),
-      endDate: dayjs(rawJobHistory.endDate, DATE_TIME_FORMAT),
-    };
-  }
-
-  private convertJobHistoryToJobHistoryRawValue(
-    jobHistory: IJobHistory | (Partial<NewJobHistory> & JobHistoryFormDefaults),
-  ): JobHistoryFormRawValue | PartialWithRequiredKeyOf<NewJobHistoryFormRawValue> {
-    return {
-      ...jobHistory,
-      startDate: jobHistory.startDate ? jobHistory.startDate.format(DATE_TIME_FORMAT) : undefined,
-      endDate: jobHistory.endDate ? jobHistory.endDate.format(DATE_TIME_FORMAT) : undefined,
     };
   }
 }

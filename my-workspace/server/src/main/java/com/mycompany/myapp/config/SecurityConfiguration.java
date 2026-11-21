@@ -15,9 +15,11 @@ import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
@@ -30,9 +32,17 @@ import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.JwtValidationException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.*;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import tech.jhipster.config.JHipsterProperties;
 
@@ -71,9 +81,24 @@ public class SecurityConfiguration {
                     .requestMatchers("/management/prometheus").permitAll()
                     .requestMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
             )
+            .exceptionHandling(exceptionHanding -> {
+                AntPathMatcher pathMatcher = new AntPathMatcher();
+                RequestMatcher apiRequestMatcher = request -> pathMatcher.match("/api/**", request.getRequestURI());
+                exceptionHanding.defaultAuthenticationEntryPointFor(
+                    new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+                    new OrRequestMatcher(apiRequestMatcher)
+                );
+            })
             .oauth2Login(oauth2 -> oauth2.loginPage("/").userInfoEndpoint(userInfo -> userInfo.oidcUserService(this.oidcUserService())))
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authenticationConverter())))
             .oauth2Client(withDefaults());
+        http.oauth2ResourceServer(oauth2 -> oauth2.authenticationEntryPoint(bearerTokenAuthenticationEntryPoint()));
+        // The access tokens are not bound to a client certificate
+        http.oauth2ResourceServer(oauth2 ->
+            oauth2.protectedResourceMetadata(metadata ->
+                metadata.protectedResourceMetadataCustomizer(builder -> builder.tlsClientCertificateBoundAccessTokens(false))
+            )
+        );
         return http.build();
     }
 
@@ -181,5 +206,24 @@ public class SecurityConfiguration {
              */
             return this.xor.resolveCsrfTokenValue(request, csrfToken);
         }
+    }
+
+    /**
+     * Answers an invalid bearer token with a description that does not depend on the library that decodes the token.
+     */
+    private AuthenticationEntryPoint bearerTokenAuthenticationEntryPoint() {
+        BearerTokenAuthenticationEntryPoint entryPoint = new BearerTokenAuthenticationEntryPoint();
+        return (request, response, exception) -> entryPoint.commence(request, response, describeInvalidBearerToken(exception));
+    }
+
+    private AuthenticationException describeInvalidBearerToken(AuthenticationException exception) {
+        if (!(exception instanceof InvalidBearerTokenException)) return exception;
+        boolean expired =
+            exception.getCause() instanceof JwtValidationException validation &&
+            validation
+                .getErrors()
+                .stream()
+                .anyMatch(error -> error.getDescription() != null && error.getDescription().startsWith("Jwt expired"));
+        return new InvalidBearerTokenException(expired ? "The access token expired" : "The access token is invalid", exception.getCause());
     }
 }

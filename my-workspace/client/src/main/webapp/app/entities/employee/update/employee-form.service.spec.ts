@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../employee.test-samples';
@@ -13,89 +14,81 @@ describe('Employee Form Service', () => {
   });
 
   describe('Service methods', () => {
-    describe('createEmployeeFormGroup', () => {
-      it('should create a new form with FormControl', () => {
-        const formGroup = service.createEmployeeFormGroup();
+    describe('createEmployeeFormModel', () => {
+      it('should create the model of a new entity', () => {
+        const model = service.createEmployeeFormModel();
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            firstName: expect.any(Object),
-            lastName: expect.any(Object),
-            email: expect.any(Object),
-            phoneNumber: expect.any(Object),
-            hireDate: expect.any(Object),
-            salary: expect.any(Object),
-            commissionPct: expect.any(Object),
-            manager: expect.any(Object),
-            department: expect.any(Object),
-          }),
+        expect(Object.keys(model)).toEqual(
+          expect.arrayContaining([
+            'id',
+            'firstName',
+            'lastName',
+            'email',
+            'phoneNumber',
+            'hireDate',
+            'salary',
+            'commissionPct',
+            'manager',
+            'department',
+          ]),
         );
       });
 
-      it('passing IEmployee should create a new form with FormGroup', () => {
-        const formGroup = service.createEmployeeFormGroup(sampleWithRequiredData);
+      it('passing IEmployee without dates should create a model with empty values', () => {
+        const model = service.createEmployeeFormModel({
+          ...sampleWithRequiredData,
+          hireDate: null,
+        });
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            firstName: expect.any(Object),
-            lastName: expect.any(Object),
-            email: expect.any(Object),
-            phoneNumber: expect.any(Object),
-            hireDate: expect.any(Object),
-            salary: expect.any(Object),
-            commissionPct: expect.any(Object),
-            manager: expect.any(Object),
-            department: expect.any(Object),
-          }),
-        );
+        expect(model.hireDate).toBe('');
+      });
+    });
+
+    describe('createEmployeeForm', () => {
+      it('should create the form of the model', () => {
+        const model = signal(service.createEmployeeFormModel(sampleWithRequiredData));
+
+        const form = TestBed.runInInjectionContext(() => service.createEmployeeForm(model));
+
+        expect(form().value()).toEqual(model());
+      });
+
+      it('should accept the values of an entity with its required data', () => {
+        const entity = sampleWithRequiredData;
+        const form = TestBed.runInInjectionContext(() => service.createEmployeeForm(signal(service.createEmployeeFormModel(entity))));
+
+        expect(
+          form()
+            .errorSummary()
+            .map(error => error.kind),
+        ).toEqual([]);
+        expect(form().valid()).toBe(true);
+      });
+
+      it('should keep the id readonly', () => {
+        const form = TestBed.runInInjectionContext(() => service.createEmployeeForm(signal(service.createEmployeeFormModel())));
+
+        expect(form.id().readonly()).toBe(true);
       });
     });
 
     describe('getEmployee', () => {
       it('should return NewEmployee for default Employee initial value', () => {
-        const formGroup = service.createEmployeeFormGroup(sampleWithNewData);
-
-        const employee = service.getEmployee(formGroup);
+        const employee = service.getEmployee(service.createEmployeeFormModel(sampleWithNewData));
 
         expect(employee).toMatchObject(sampleWithNewData);
       });
 
       it('should return NewEmployee for empty Employee initial value', () => {
-        const formGroup = service.createEmployeeFormGroup();
-
-        const employee = service.getEmployee(formGroup);
+        const employee = service.getEmployee(service.createEmployeeFormModel());
 
         expect(employee).toMatchObject({});
       });
 
       it('should return IEmployee', () => {
-        const formGroup = service.createEmployeeFormGroup(sampleWithRequiredData);
-
-        const employee = service.getEmployee(formGroup);
+        const employee = service.getEmployee(service.createEmployeeFormModel(sampleWithRequiredData));
 
         expect(employee).toMatchObject(sampleWithRequiredData);
-      });
-    });
-
-    describe('resetForm', () => {
-      it('passing IEmployee should not enable id FormControl', () => {
-        const formGroup = service.createEmployeeFormGroup();
-        expect(formGroup.controls.id.disabled).toBe(true);
-
-        service.resetForm(formGroup, sampleWithRequiredData);
-
-        expect(formGroup.controls.id.disabled).toBe(true);
-      });
-
-      it('passing NewEmployee should disable id FormControl', () => {
-        const formGroup = service.createEmployeeFormGroup(sampleWithRequiredData);
-        expect(formGroup.controls.id.disabled).toBe(true);
-
-        service.resetForm(formGroup, { id: null });
-
-        expect(formGroup.controls.id.disabled).toBe(true);
       });
     });
   });

@@ -1,26 +1,25 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormField, FormRoot } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
 import { Observable, finalize, map } from 'rxjs';
 
 import { ICountry } from 'app/entities/country/country.model';
 import { CountryService } from 'app/entities/country/service/country.service';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
+import { SelectOptionsDirective } from 'app/shared/form';
 import { TranslateDirective } from 'app/shared/language';
 import { ILocation } from '../location.model';
 import { LocationService } from '../service/location.service';
 
-import { LocationFormGroup, LocationFormService } from './location-form.service';
+import { LocationFormService } from './location-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-location-update',
   templateUrl: './location-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, FormField, FormRoot, SelectOptionsDirective],
 })
 export class LocationUpdate implements OnInit {
   readonly isSaving = signal(false);
@@ -28,13 +27,18 @@ export class LocationUpdate implements OnInit {
 
   countriesCollection = signal<ICountry[]>([]);
 
-  protected locationService = inject(LocationService);
-  protected locationFormService = inject(LocationFormService);
-  protected countryService = inject(CountryService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly locationService = inject(LocationService);
+  private readonly locationFormService = inject(LocationFormService);
+  private readonly countryService = inject(CountryService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: LocationFormGroup = this.locationFormService.createLocationFormGroup();
+  readonly locationModel = signal(this.locationFormService.createLocationFormModel());
+  // A submit marks the fields as touched and sends nothing while the form is invalid.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly editForm = this.locationFormService.createLocationForm(this.locationModel, {
+    submission: { action: () => Promise.resolve(this.save()) },
+  });
 
   compareCountry = (o1: ICountry | null, o2: ICountry | null): boolean => this.countryService.compareCountry(o1, o2);
 
@@ -55,7 +59,7 @@ export class LocationUpdate implements OnInit {
 
   save(): void {
     this.isSaving.set(true);
-    const location = this.locationFormService.getLocation(this.editForm);
+    const location = this.locationFormService.getLocation(this.locationModel());
     if (location.id === null) {
       this.subscribeToSaveResponse(this.locationService.create(location));
     } else {
@@ -63,35 +67,35 @@ export class LocationUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<ILocation | null>): void {
+  private subscribeToSaveResponse(result: Observable<ILocation | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
     });
   }
 
-  protected onSaveSuccess(): void {
+  private onSaveSuccess(): void {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  private onSaveError(): void {
+    // API for inheritance.
   }
 
-  protected onSaveFinalize(): void {
+  private onSaveFinalize(): void {
     this.isSaving.set(false);
   }
 
-  protected updateForm(location: ILocation): void {
+  private updateForm(location: ILocation): void {
     this.location = location;
-    this.locationFormService.resetForm(this.editForm, location);
+    this.locationModel.set(this.locationFormService.createLocationFormModel(location));
 
     this.countriesCollection.set(
       this.countryService.addCountryToCollectionIfMissing<ICountry>(this.countriesCollection(), location.country),
     );
   }
 
-  protected loadRelationshipsOptions(): void {
+  private loadRelationshipsOptions(): void {
     this.countryService
       .query({ filter: 'location-is-null' })
       .pipe(map((res: HttpResponse<ICountry[]>) => res.body ?? []))

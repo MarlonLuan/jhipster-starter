@@ -2,11 +2,19 @@ package com.mycompany.myapp.web.rest.errors;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.TransientObjectException;
+import org.hibernate.query.sqm.UnknownPathException;
+import org.springdoc.api.OpenApiResourceNotFoundException;
 import org.springframework.dao.ConcurrencyFailureException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/exception-translator-test")
@@ -17,8 +25,36 @@ public class ExceptionTranslatorTestController {
         throw new ConcurrencyFailureException("test concurrency failure");
     }
 
+    @GetMapping("/data-integrity-violation")
+    public void dataIntegrityViolation() {
+        throw new DataIntegrityViolationException("test data integrity violation");
+    }
+
+    @GetMapping("/transient-reference")
+    public void transientReference() {
+        throw new InvalidDataAccessApiUsageException(
+            "test transient reference",
+            new IllegalStateException(new TransientObjectException("test transient object"))
+        );
+    }
+
+    @GetMapping("/unknown-reference")
+    public void unknownReference() {
+        throw new ObjectRetrievalFailureException(Object.class, 1L);
+    }
+
+    @GetMapping("/invalid-sort")
+    public void invalidSort() {
+        throw new InvalidDataAccessApiUsageException("test invalid sort", new UnknownPathException("test unknown path"));
+    }
+
     @PostMapping("/method-argument")
     public void methodArgument(@Valid @RequestBody TestDTO testDTO) {
+        // empty method
+    }
+
+    @PostMapping("/method-validation/{name}")
+    public void methodValidation(@PathVariable("name") @Size(max = 3) String name, @Valid @RequestBody TestDTO testDTO) {
         // empty method
     }
 
@@ -42,14 +78,47 @@ public class ExceptionTranslatorTestController {
         throw new BadCredentialsException("test authentication failed!");
     }
 
+    @GetMapping("/bad-request-alert")
+    public void badRequestAlert() {
+        throw new BadRequestAlertException("test bad request", "entity", "testkey");
+    }
+
+    @GetMapping("/response-status-exception")
+    public void responseStatusException() {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/binding-failure")
+    public void bindingFailure(@Valid @ModelAttribute TestBinding binding) {
+        // The binding fails before the method is called.
+    }
+
     @GetMapping("/response-status")
     public void exceptionWithResponseStatus() {
         throw new TestResponseStatusException();
     }
 
+    @GetMapping("/open-api-resource-not-found")
+    public void openApiResourceNotFound() {
+        throw new OpenApiResourceNotFoundException("test open api resource not found");
+    }
+
     @GetMapping("/internal-server-error")
     public void internalServerError() {
         throw new RuntimeException();
+    }
+
+    public static class TestBinding {
+
+        private Integer number;
+
+        public Integer getNumber() {
+            return number;
+        }
+
+        public void setNumber(Integer number) {
+            this.number = number;
+        }
     }
 
     public static class TestDTO {

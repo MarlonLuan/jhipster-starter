@@ -6,7 +6,7 @@ import static com.mycompany.myapp.domain.JobTestSamples.*;
 import static com.mycompany.myapp.domain.TaskTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.mycompany.myapp.web.rest.TestUtil;
+import com.mycompany.myapp.test.util.TestUtil;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;

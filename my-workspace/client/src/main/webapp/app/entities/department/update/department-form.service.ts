@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Service, WritableSignal } from '@angular/core';
+import { FieldTree, FormOptions, form, readonly, required } from '@angular/forms/signals';
 
 import { IDepartment, NewDepartment } from '../department.model';
 
@@ -9,54 +9,56 @@ import { IDepartment, NewDepartment } from '../department.model';
 type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
 
 /**
- * Type for createFormGroup and resetForm argument.
- * It accepts IDepartment for edit and NewDepartmentFormGroupInput for create.
+ * Type for the createFormModel argument.
+ * It accepts IDepartment for edit and NewDepartmentFormInput for create.
  */
-type DepartmentFormGroupInput = IDepartment | PartialWithRequiredKeyOf<NewDepartment>;
+type DepartmentFormInput = IDepartment | PartialWithRequiredKeyOf<NewDepartment>;
 
 type DepartmentFormDefaults = Pick<NewDepartment, 'id'>;
 
-type DepartmentFormGroupContent = {
-  id: FormControl<IDepartment['id'] | NewDepartment['id']>;
-  departmentName: FormControl<IDepartment['departmentName']>;
-  location: FormControl<IDepartment['location']>;
+/**
+ * The value of the form: the text fields are strings, empty when the entity has no value, and the dates and times
+ * are the text of their inputs.
+ */
+export type DepartmentFormModel = {
+  id: string;
+  departmentName: string;
+  location: NonNullable<IDepartment['location']> | null;
 };
 
-export type DepartmentFormGroup = FormGroup<DepartmentFormGroupContent>;
+export type DepartmentForm = FieldTree<DepartmentFormModel>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DepartmentFormService {
-  createDepartmentFormGroup(department?: DepartmentFormGroupInput): DepartmentFormGroup {
-    const departmentRawValue = {
-      ...this.getFormDefaults(),
-      ...(department ?? { id: null }),
+  createDepartmentFormModel(department?: DepartmentFormInput): DepartmentFormModel {
+    const value: Partial<IDepartment> | Partial<NewDepartment> = { ...this.getFormDefaults(), ...department };
+    return {
+      id: value.id ?? '',
+      departmentName: value.departmentName ?? '',
+      location: value.location ?? null,
     };
-
-    return new FormGroup<DepartmentFormGroupContent>({
-      id: new FormControl(
-        { value: departmentRawValue.id, disabled: true },
-        {
-          nonNullable: true,
-          validators: [Validators.required],
-        },
-      ),
-      departmentName: new FormControl(departmentRawValue.departmentName, {
-        validators: [Validators.required],
-      }),
-      location: new FormControl(departmentRawValue.location),
-    });
   }
 
-  getDepartment(form: DepartmentFormGroup): IDepartment | NewDepartment {
-    return form.getRawValue();
+  /**
+   * The form of the model, its validation included, created in an injection context.
+   */
+  createDepartmentForm(model: WritableSignal<DepartmentFormModel>, options: FormOptions<DepartmentFormModel> = {}): DepartmentForm {
+    return form(
+      model,
+      path => {
+        readonly(path.id);
+        required(path.departmentName);
+      },
+      options,
+    );
   }
 
-  resetForm(form: DepartmentFormGroup, department: DepartmentFormGroupInput): void {
-    const departmentRawValue = { ...this.getFormDefaults(), ...department };
-    form.reset({
-      ...departmentRawValue,
-      id: { value: departmentRawValue.id, disabled: true },
-    });
+  getDepartment(model: DepartmentFormModel): IDepartment | NewDepartment {
+    return {
+      id: model.id || null,
+      departmentName: model.departmentName || null,
+      location: model.location,
+    };
   }
 
   private getFormDefaults(): DepartmentFormDefaults {

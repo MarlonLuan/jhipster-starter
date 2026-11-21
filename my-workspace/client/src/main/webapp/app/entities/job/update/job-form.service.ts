@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Service, WritableSignal } from '@angular/core';
+import { FieldTree, FormOptions, form, readonly } from '@angular/forms/signals';
 
 import { IJob, NewJob } from '../job.model';
 
@@ -9,58 +9,64 @@ import { IJob, NewJob } from '../job.model';
 type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
 
 /**
- * Type for createFormGroup and resetForm argument.
- * It accepts IJob for edit and NewJobFormGroupInput for create.
+ * Type for the createFormModel argument.
+ * It accepts IJob for edit and NewJobFormInput for create.
  */
-type JobFormGroupInput = IJob | PartialWithRequiredKeyOf<NewJob>;
+type JobFormInput = IJob | PartialWithRequiredKeyOf<NewJob>;
 
 type JobFormDefaults = Pick<NewJob, 'id' | 'tasks'>;
 
-type JobFormGroupContent = {
-  id: FormControl<IJob['id'] | NewJob['id']>;
-  jobTitle: FormControl<IJob['jobTitle']>;
-  minSalary: FormControl<IJob['minSalary']>;
-  maxSalary: FormControl<IJob['maxSalary']>;
-  tasks: FormControl<IJob['tasks']>;
-  employee: FormControl<IJob['employee']>;
+/**
+ * The value of the form: the text fields are strings, empty when the entity has no value, and the dates and times
+ * are the text of their inputs.
+ */
+export type JobFormModel = {
+  id: string;
+  jobTitle: string;
+  minSalary: NonNullable<IJob['minSalary']> | null;
+  maxSalary: NonNullable<IJob['maxSalary']> | null;
+  tasks: NonNullable<IJob['tasks']>;
+  employee: NonNullable<IJob['employee']> | null;
 };
 
-export type JobFormGroup = FormGroup<JobFormGroupContent>;
+export type JobForm = FieldTree<JobFormModel>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class JobFormService {
-  createJobFormGroup(job?: JobFormGroupInput): JobFormGroup {
-    const jobRawValue = {
-      ...this.getFormDefaults(),
-      ...(job ?? { id: null }),
+  createJobFormModel(job?: JobFormInput): JobFormModel {
+    const value: Partial<IJob> | Partial<NewJob> = { ...this.getFormDefaults(), ...job };
+    return {
+      id: value.id ?? '',
+      jobTitle: value.jobTitle ?? '',
+      minSalary: value.minSalary ?? null,
+      maxSalary: value.maxSalary ?? null,
+      tasks: value.tasks ?? [],
+      employee: value.employee ?? null,
     };
-
-    return new FormGroup<JobFormGroupContent>({
-      id: new FormControl(
-        { value: jobRawValue.id, disabled: true },
-        {
-          nonNullable: true,
-          validators: [Validators.required],
-        },
-      ),
-      jobTitle: new FormControl(jobRawValue.jobTitle),
-      minSalary: new FormControl(jobRawValue.minSalary),
-      maxSalary: new FormControl(jobRawValue.maxSalary),
-      tasks: new FormControl(jobRawValue.tasks ?? []),
-      employee: new FormControl(jobRawValue.employee),
-    });
   }
 
-  getJob(form: JobFormGroup): IJob | NewJob {
-    return form.getRawValue();
+  /**
+   * The form of the model, its validation included, created in an injection context.
+   */
+  createJobForm(model: WritableSignal<JobFormModel>, options: FormOptions<JobFormModel> = {}): JobForm {
+    return form(
+      model,
+      path => {
+        readonly(path.id);
+      },
+      options,
+    );
   }
 
-  resetForm(form: JobFormGroup, job: JobFormGroupInput): void {
-    const jobRawValue = { ...this.getFormDefaults(), ...job };
-    form.reset({
-      ...jobRawValue,
-      id: { value: jobRawValue.id, disabled: true },
-    });
+  getJob(model: JobFormModel): IJob | NewJob {
+    return {
+      id: model.id || null,
+      jobTitle: model.jobTitle || null,
+      minSalary: model.minSalary,
+      maxSalary: model.maxSalary,
+      tasks: model.tasks,
+      employee: model.employee,
+    };
   }
 
   private getFormDefaults(): JobFormDefaults {

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../location.test-samples';
@@ -13,81 +14,61 @@ describe('Location Form Service', () => {
   });
 
   describe('Service methods', () => {
-    describe('createLocationFormGroup', () => {
-      it('should create a new form with FormControl', () => {
-        const formGroup = service.createLocationFormGroup();
+    describe('createLocationFormModel', () => {
+      it('should create the model of a new entity', () => {
+        const model = service.createLocationFormModel();
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            streetAddress: expect.any(Object),
-            postalCode: expect.any(Object),
-            city: expect.any(Object),
-            stateProvince: expect.any(Object),
-            country: expect.any(Object),
-          }),
+        expect(Object.keys(model)).toEqual(
+          expect.arrayContaining(['id', 'streetAddress', 'postalCode', 'city', 'stateProvince', 'country']),
         );
       });
+    });
 
-      it('passing ILocation should create a new form with FormGroup', () => {
-        const formGroup = service.createLocationFormGroup(sampleWithRequiredData);
+    describe('createLocationForm', () => {
+      it('should create the form of the model', () => {
+        const model = signal(service.createLocationFormModel(sampleWithRequiredData));
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            streetAddress: expect.any(Object),
-            postalCode: expect.any(Object),
-            city: expect.any(Object),
-            stateProvince: expect.any(Object),
-            country: expect.any(Object),
-          }),
-        );
+        const form = TestBed.runInInjectionContext(() => service.createLocationForm(model));
+
+        expect(form().value()).toEqual(model());
+      });
+
+      it('should accept the values of an entity with its required data', () => {
+        const entity = sampleWithRequiredData;
+        const form = TestBed.runInInjectionContext(() => service.createLocationForm(signal(service.createLocationFormModel(entity))));
+
+        expect(
+          form()
+            .errorSummary()
+            .map(error => error.kind),
+        ).toEqual([]);
+        expect(form().valid()).toBe(true);
+      });
+
+      it('should keep the id readonly', () => {
+        const form = TestBed.runInInjectionContext(() => service.createLocationForm(signal(service.createLocationFormModel())));
+
+        expect(form.id().readonly()).toBe(true);
       });
     });
 
     describe('getLocation', () => {
       it('should return NewLocation for default Location initial value', () => {
-        const formGroup = service.createLocationFormGroup(sampleWithNewData);
-
-        const location = service.getLocation(formGroup);
+        const location = service.getLocation(service.createLocationFormModel(sampleWithNewData));
 
         expect(location).toMatchObject(sampleWithNewData);
       });
 
       it('should return NewLocation for empty Location initial value', () => {
-        const formGroup = service.createLocationFormGroup();
-
-        const location = service.getLocation(formGroup);
+        const location = service.getLocation(service.createLocationFormModel());
 
         expect(location).toMatchObject({});
       });
 
       it('should return ILocation', () => {
-        const formGroup = service.createLocationFormGroup(sampleWithRequiredData);
-
-        const location = service.getLocation(formGroup);
+        const location = service.getLocation(service.createLocationFormModel(sampleWithRequiredData));
 
         expect(location).toMatchObject(sampleWithRequiredData);
-      });
-    });
-
-    describe('resetForm', () => {
-      it('passing ILocation should not enable id FormControl', () => {
-        const formGroup = service.createLocationFormGroup();
-        expect(formGroup.controls.id.disabled).toBe(true);
-
-        service.resetForm(formGroup, sampleWithRequiredData);
-
-        expect(formGroup.controls.id.disabled).toBe(true);
-      });
-
-      it('passing NewLocation should disable id FormControl', () => {
-        const formGroup = service.createLocationFormGroup(sampleWithRequiredData);
-        expect(formGroup.controls.id.disabled).toBe(true);
-
-        service.resetForm(formGroup, { id: null });
-
-        expect(formGroup.controls.id.disabled).toBe(true);
       });
     });
   });

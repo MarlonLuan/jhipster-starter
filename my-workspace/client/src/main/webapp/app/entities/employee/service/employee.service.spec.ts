@@ -1,15 +1,14 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { IEmployee } from '../employee.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../employee.test-samples';
 
-import { EmployeeService, RestEmployee } from './employee.service';
+import { EmployeeService, EmployeesService } from './employee.service';
 
-const requireRestSample: RestEmployee = {
+const requireRestSample: IEmployee = {
   ...sampleWithRequiredData,
-  hireDate: sampleWithRequiredData.hireDate?.toJSON(),
 };
 
 describe('Employee Service', () => {
@@ -74,6 +73,14 @@ describe('Employee Service', () => {
       expect(expectedResult).toMatchObject(expected);
     });
 
+    it('should send a partial update as it is, without the dates it does not have', () => {
+      service.partialUpdate({ id: sampleWithRequiredData.id }).subscribe();
+
+      const req = httpMock.expectOne({ method: 'PATCH' });
+      expect(req.request.body).toEqual({ id: sampleWithRequiredData.id });
+      req.flush(requireRestSample);
+    });
+
     it('should return a list of Employee', () => {
       const returnedFromService = { ...requireRestSample };
 
@@ -83,7 +90,6 @@ describe('Employee Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -180,7 +186,7 @@ describe('Employee Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
         const entity2 = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
 
@@ -189,6 +195,21 @@ describe('Employee Service', () => {
 
         expect(compareResult1).toEqual(true);
         expect(compareResult2).toEqual(true);
+      });
+    });
+  });
+
+  describe('EmployeesService', () => {
+    it('should list the employees of the params', async () => {
+      const employeesService = TestBed.inject(EmployeesService);
+      employeesService.employeesParams.set({ page: 0 });
+      TestBed.tick();
+
+      httpMock.expectOne({ method: 'GET' }).flush([requireRestSample]);
+
+      await vi.waitFor(() => {
+        TestBed.tick();
+        expect(employeesService.employees()).toMatchObject([sampleWithRequiredData]);
       });
     });
   });

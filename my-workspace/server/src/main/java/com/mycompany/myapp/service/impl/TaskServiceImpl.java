@@ -23,9 +23,9 @@ public class TaskServiceImpl implements TaskService {
 
     private static final Logger LOG = LoggerFactory.getLogger(TaskServiceImpl.class);
 
-    private final TaskRepository taskRepository;
+    protected final TaskRepository taskRepository;
 
-    private final TaskMapper taskMapper;
+    protected final TaskMapper taskMapper;
 
     public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
@@ -46,21 +46,6 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskMapper.toEntity(taskDTO);
         task = taskRepository.save(task);
         return taskMapper.toDto(task);
-    }
-
-    @Override
-    public Optional<TaskDTO> partialUpdate(TaskDTO taskDTO) {
-        LOG.debug("Request to partially update Task : {}", taskDTO);
-
-        return taskRepository
-            .findById(taskDTO.getId())
-            .map(existingTask -> {
-                taskMapper.partialUpdate(existingTask, taskDTO);
-
-                return existingTask;
-            })
-            .map(taskRepository::save)
-            .map(taskMapper::toDto);
     }
 
     @Override

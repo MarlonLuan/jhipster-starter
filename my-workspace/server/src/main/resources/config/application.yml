@@ -207,7 +207,6 @@ jhipster:
         - account
         - api://default
 
-
 # jhipster-needle-add-application-yaml-document
 ---
 # ===================================================================

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../region.test-samples';
@@ -13,73 +14,59 @@ describe('Region Form Service', () => {
   });
 
   describe('Service methods', () => {
-    describe('createRegionFormGroup', () => {
-      it('should create a new form with FormControl', () => {
-        const formGroup = service.createRegionFormGroup();
+    describe('createRegionFormModel', () => {
+      it('should create the model of a new entity', () => {
+        const model = service.createRegionFormModel();
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            regionName: expect.any(Object),
-          }),
-        );
+        expect(Object.keys(model)).toEqual(expect.arrayContaining(['id', 'regionName']));
+      });
+    });
+
+    describe('createRegionForm', () => {
+      it('should create the form of the model', () => {
+        const model = signal(service.createRegionFormModel(sampleWithRequiredData));
+
+        const form = TestBed.runInInjectionContext(() => service.createRegionForm(model));
+
+        expect(form().value()).toEqual(model());
       });
 
-      it('passing IRegion should create a new form with FormGroup', () => {
-        const formGroup = service.createRegionFormGroup(sampleWithRequiredData);
+      it('should accept the values of an entity with its required data', () => {
+        const entity = sampleWithRequiredData;
+        const form = TestBed.runInInjectionContext(() => service.createRegionForm(signal(service.createRegionFormModel(entity))));
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            regionName: expect.any(Object),
-          }),
-        );
+        expect(
+          form()
+            .errorSummary()
+            .map(error => error.kind),
+        ).toEqual([]);
+        expect(form().valid()).toBe(true);
+      });
+
+      it('should keep the id readonly', () => {
+        const form = TestBed.runInInjectionContext(() => service.createRegionForm(signal(service.createRegionFormModel())));
+
+        expect(form.id().readonly()).toBe(true);
       });
     });
 
     describe('getRegion', () => {
       it('should return NewRegion for default Region initial value', () => {
-        const formGroup = service.createRegionFormGroup(sampleWithNewData);
-
-        const region = service.getRegion(formGroup);
+        const region = service.getRegion(service.createRegionFormModel(sampleWithNewData));
 
         expect(region).toMatchObject(sampleWithNewData);
       });
 
       it('should return NewRegion for empty Region initial value', () => {
-        const formGroup = service.createRegionFormGroup();
-
-        const region = service.getRegion(formGroup);
+        const region = service.getRegion(service.createRegionFormModel());
 
         expect(region).toMatchObject({});
       });
 
       it('should return IRegion', () => {
-        const formGroup = service.createRegionFormGroup(sampleWithRequiredData);
-
-        const region = service.getRegion(formGroup);
+        const region = service.getRegion(service.createRegionFormModel(sampleWithRequiredData));
 
         expect(region).toMatchObject(sampleWithRequiredData);
-      });
-    });
-
-    describe('resetForm', () => {
-      it('passing IRegion should not enable id FormControl', () => {
-        const formGroup = service.createRegionFormGroup();
-        expect(formGroup.controls.id.disabled).toBe(true);
-
-        service.resetForm(formGroup, sampleWithRequiredData);
-
-        expect(formGroup.controls.id.disabled).toBe(true);
-      });
-
-      it('passing NewRegion should disable id FormControl', () => {
-        const formGroup = service.createRegionFormGroup(sampleWithRequiredData);
-        expect(formGroup.controls.id.disabled).toBe(true);
-
-        service.resetForm(formGroup, { id: null });
-
-        expect(formGroup.controls.id.disabled).toBe(true);
       });
     });
   });

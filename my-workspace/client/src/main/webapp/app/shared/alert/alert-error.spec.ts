@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { WritableSignal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { provideTranslateService } from '@ngx-translate/core';
 
-import { AlertModel, AlertService } from 'app/core/util/alert.service';
-import { EventManager } from 'app/core/util/event-manager.service';
+import { AlertModel, AlertService, EventManager } from 'app/core/util';
 import { MESSAGE_ERROR_HEADER_NAME, MESSAGE_PARAM_HEADER_NAME } from 'app/shared/jhipster/constants';
 import { ProblemWithMessageType } from 'app/shared/jhipster/problem-details';
 
@@ -28,15 +28,63 @@ describe('Alert Error Component', () => {
     comp = fixture.componentInstance;
     eventManager = TestBed.inject(EventManager);
     alertService = TestBed.inject(AlertService);
-    alertService.addAlert = (alert: AlertModel, alerts?: AlertModel[]) => {
-      if (alerts) {
-        alerts.push(alert);
-      }
+    alertService.addAlert = (alert: AlertModel, alerts?: WritableSignal<AlertModel[]>) => {
+      alerts?.update(current => [...current, alert]);
       return alert;
     };
   });
 
   describe('Error Handling', () => {
+    it('should display an alert on error events', () => {
+      eventManager.broadcast({ name: 'jhipsterApp.error', content: { message: 'Failed', key: 'error.failed' } });
+
+      expect(comp.alerts()).toHaveLength(1);
+      expect(comp.alerts()[0].translationKey).toBe('error.failed');
+    });
+
+    it('should display an alert on status 400 for an error message header', () => {
+      const response = new HttpErrorResponse({
+        url: 'http://localhost:8080/api/foos',
+        headers: new HttpHeaders().append(MESSAGE_ERROR_HEADER_NAME, 'A foo cannot be created'),
+        status: 400,
+        error: {},
+      });
+      eventManager.broadcast({ name: 'jhipsterApp.httpError', content: response });
+
+      expect(comp.alerts()).toHaveLength(1);
+      expect(comp.alerts()[0].message).toBe('A foo cannot be created');
+    });
+
+    it('should display an alert on status 400 for an error key header without entity', () => {
+      const response = new HttpErrorResponse({
+        url: 'http://localhost:8080/api/foos',
+        headers: new HttpHeaders().append(MESSAGE_ERROR_HEADER_NAME, 'header.error'),
+        status: 400,
+        error: {},
+      });
+      eventManager.broadcast({ name: 'jhipsterApp.httpError', content: response });
+
+      expect(comp.alerts()).toHaveLength(1);
+      expect(comp.alerts()[0].translationParams).toBeUndefined();
+    });
+
+    it('should display an alert for each invalid field', () => {
+      const response = new HttpErrorResponse({
+        url: 'http://localhost:8080/api/foos',
+        headers: new HttpHeaders(),
+        status: 400,
+        error: {
+          type: ProblemWithMessageType,
+          message: 'error.validation',
+          fieldErrors: [{ objectName: 'foo', field: 'items[3].name', message: 'NotNull' }],
+        },
+      });
+      eventManager.broadcast({ name: 'jhipsterApp.httpError', content: response });
+
+      expect(comp.alerts()).toHaveLength(1);
+      expect(comp.alerts()[0].translationKey).toBe('error.NotNull');
+    });
+
     it('should display an alert on status 0', () => {
       // GIVEN
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: { status: 0 } });
@@ -111,7 +159,7 @@ describe('Alert Error Component', () => {
           status: 400,
           path: '/api/foos',
           message: 'error.validation',
-          fieldErrors: [{ objectName: 'foo', field: 'minField', message: 'Min' }],
+          fieldErrors: [{ objectName: 'foo', field: 'minField', message: 'must be greater than or equal to 1', code: 'Min' }],
         },
       });
       eventManager.broadcast({ name: 'jhipsterApp.httpError', content: response });
