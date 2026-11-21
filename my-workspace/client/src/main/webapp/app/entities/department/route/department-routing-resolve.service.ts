@@ -15,9 +15,9 @@ const departmentResolve = (route: ActivatedRouteSnapshot): Observable<null | IDe
     return service.find(id).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 404) {
-          router.navigate(['404']);
+          void router.navigate(['404']);
         } else {
-          router.navigate(['error']);
+          void router.navigate(['error']);
         }
         return EMPTY;
       }),

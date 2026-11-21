@@ -27,9 +27,9 @@ public class LocationServiceImpl implements LocationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(LocationServiceImpl.class);
 
-    private final LocationRepository locationRepository;
+    protected final LocationRepository locationRepository;
 
-    private final LocationMapper locationMapper;
+    protected final LocationMapper locationMapper;
 
     public LocationServiceImpl(LocationRepository locationRepository, LocationMapper locationMapper) {
         this.locationRepository = locationRepository;
@@ -50,21 +50,6 @@ public class LocationServiceImpl implements LocationService {
         Location location = locationMapper.toEntity(locationDTO);
         location = locationRepository.save(location);
         return locationMapper.toDto(location);
-    }
-
-    @Override
-    public Optional<LocationDTO> partialUpdate(LocationDTO locationDTO) {
-        LOG.debug("Request to partially update Location : {}", locationDTO);
-
-        return locationRepository
-            .findById(locationDTO.getId())
-            .map(existingLocation -> {
-                locationMapper.partialUpdate(existingLocation, locationDTO);
-
-                return existingLocation;
-            })
-            .map(locationRepository::save)
-            .map(locationMapper::toDto);
     }
 
     @Override

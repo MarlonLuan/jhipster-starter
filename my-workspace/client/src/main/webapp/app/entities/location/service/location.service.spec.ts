@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { ILocation } from '../location.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../location.test-samples';
 
-import { LocationService } from './location.service';
+import { LocationService, LocationsService } from './location.service';
 
 const requireRestSample: ILocation = {
   ...sampleWithRequiredData,
@@ -82,7 +82,6 @@ describe('Location Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -179,7 +178,7 @@ describe('Location Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
         const entity2 = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
 
@@ -188,6 +187,21 @@ describe('Location Service', () => {
 
         expect(compareResult1).toEqual(true);
         expect(compareResult2).toEqual(true);
+      });
+    });
+  });
+
+  describe('LocationsService', () => {
+    it('should list the locations of the params', async () => {
+      const locationsService = TestBed.inject(LocationsService);
+      locationsService.locationsParams.set({ page: 0 });
+      TestBed.tick();
+
+      httpMock.expectOne({ method: 'GET' }).flush([requireRestSample]);
+
+      await vi.waitFor(() => {
+        TestBed.tick();
+        expect(locationsService.locations()).toMatchObject([sampleWithRequiredData]);
       });
     });
   });

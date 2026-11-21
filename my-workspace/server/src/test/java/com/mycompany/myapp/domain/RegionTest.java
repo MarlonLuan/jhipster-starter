@@ -4,7 +4,7 @@ import static com.mycompany.myapp.domain.CountryTestSamples.*;
 import static com.mycompany.myapp.domain.RegionTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.mycompany.myapp.web.rest.TestUtil;
+import com.mycompany.myapp.test.util.TestUtil;
 import org.junit.jupiter.api.Test;
 
 class RegionTest {

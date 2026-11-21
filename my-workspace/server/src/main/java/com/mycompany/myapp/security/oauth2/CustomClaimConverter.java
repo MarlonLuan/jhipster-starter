@@ -1,7 +1,5 @@
 package com.mycompany.myapp.security.oauth2;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mycompany.myapp.security.SecurityUtils;
@@ -23,6 +21,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Claim converter to add custom claims by retrieving the user from the userinfo endpoint.
@@ -76,31 +76,31 @@ public class CustomClaimConverter implements Converter<Map<String, Object>, Map<
 
             // Add custom claims
             if (user != null) {
-                convertedClaims.put("preferred_username", user.get("preferred_username").asText());
+                convertedClaims.put("preferred_username", user.get("preferred_username").asString());
                 if (user.has("given_name")) {
-                    convertedClaims.put("given_name", user.get("given_name").asText());
+                    convertedClaims.put("given_name", user.get("given_name").asString());
                 }
                 if (user.has("family_name")) {
-                    convertedClaims.put("family_name", user.get("family_name").asText());
+                    convertedClaims.put("family_name", user.get("family_name").asString());
                 }
                 if (user.has("email")) {
-                    convertedClaims.put("email", user.get("email").asText());
+                    convertedClaims.put("email", user.get("email").asString());
                 }
                 // Allow full name in a name claim - happens with Auth0
                 if (user.has("name")) {
-                    String[] name = user.get("name").asText().split("\\s+");
+                    String[] name = user.get("name").asString().split("\\s+");
                     if (name.length > 0) {
                         convertedClaims.put("given_name", name[0]);
                         convertedClaims.put("family_name", String.join(" ", Arrays.copyOfRange(name, 1, name.length)));
                     }
                 }
                 if (user.has("groups")) {
-                    List<String> groups = StreamSupport.stream(user.get("groups").spliterator(), false).map(JsonNode::asText).toList();
+                    List<String> groups = StreamSupport.stream(user.get("groups").spliterator(), false).map(JsonNode::asString).toList();
                     convertedClaims.put("groups", groups);
                 }
                 if (user.has(SecurityUtils.CLAIMS_NAMESPACE + "roles")) {
                     List<String> roles = StreamSupport.stream(user.get(SecurityUtils.CLAIMS_NAMESPACE + "roles").spliterator(), false)
-                        .map(JsonNode::asText)
+                        .map(JsonNode::asString)
                         .toList();
                     convertedClaims.put("roles", roles);
                 }

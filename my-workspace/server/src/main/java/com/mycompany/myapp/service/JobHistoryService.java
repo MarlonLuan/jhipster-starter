@@ -27,14 +27,6 @@ public interface JobHistoryService {
     JobHistoryDTO update(JobHistoryDTO jobHistoryDTO);
 
     /**
-     * Partially updates a jobHistory.
-     *
-     * @param jobHistoryDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<JobHistoryDTO> partialUpdate(JobHistoryDTO jobHistoryDTO);
-
-    /**
      * Get all the jobHistories.
      *
      * @param pageable the pagination information.

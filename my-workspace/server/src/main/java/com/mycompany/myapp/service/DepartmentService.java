@@ -28,14 +28,6 @@ public interface DepartmentService {
     DepartmentDTO update(DepartmentDTO departmentDTO);
 
     /**
-     * Partially updates a department.
-     *
-     * @param departmentDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<DepartmentDTO> partialUpdate(DepartmentDTO departmentDTO);
-
-    /**
      * Get all the departments.
      *
      * @param pageable the pagination information.

@@ -1,11 +1,15 @@
-import { Injectable } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { Service } from '@angular/core';
 
 import { Observable, Observer } from 'rxjs';
 
-import { byteSize, openFile, toBase64 } from 'app/shared/jhipster/data-utils';
+import { type BlobType, byteSize, openFile, toBase64 } from 'app/shared/jhipster/data-utils';
 
 export type FileLoadErrorType = 'not.image' | 'could.not.extract';
+
+export interface LoadedFile {
+  data: string;
+  contentType: string;
+}
 
 export interface FileLoadError {
   message: string;
@@ -16,9 +20,7 @@ export interface FileLoadError {
 /**
  * A utility service for data.
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class DataUtils {
   /**
    * Method to find the byte size of the string provides
@@ -30,23 +32,20 @@ export class DataUtils {
   /**
    * Method to open file
    */
-  openFile(data: string, contentType: string | null | undefined): void {
-    openFile(data, contentType);
+  openFile(data: string, contentType: string | null | undefined, blobType?: BlobType): void {
+    openFile(data, contentType, blobType);
   }
 
   /**
-   * Sets the base 64 data & file type of the 1st file on the event (event.target.files[0]) in the passed entity object
-   * and returns an observable.
+   * Loads the base 64 data & file type of the 1st file on the event (event.target.files[0]).
    *
    * @param event the object containing the file (at event.target.files[0])
-   * @param editForm the form group where the input field is located
-   * @param field the field name to set the file's 'base 64 data' on
    * @param isImage boolean representing if the file represented by the event is an image
-   * @returns an observable that loads file to form field and completes if successful
+   * @returns an observable that emits the loaded file and completes if successful
    *      or returns error as FileLoadError on failure
    */
-  loadFileToForm(event: Event, editForm: FormGroup, field: string, isImage: boolean): Observable<void> {
-    return new Observable((observer: Observer<void>) => {
+  loadFile(event: Event, isImage: boolean): Observable<LoadedFile> {
+    return new Observable((observer: Observer<LoadedFile>) => {
       const eventTarget: HTMLInputElement | null = event.target as HTMLInputElement | null;
       if (eventTarget?.files?.[0]) {
         const file: File = eventTarget.files[0];
@@ -58,13 +57,8 @@ export class DataUtils {
           };
           observer.error(error);
         } else {
-          const fieldContentType = `${field}ContentType`;
           toBase64(file, (base64Data: string) => {
-            editForm.patchValue({
-              [field]: base64Data,
-              [fieldContentType]: file.type,
-            });
-            observer.next();
+            observer.next({ data: base64Data, contentType: file.type });
             observer.complete();
           });
         }

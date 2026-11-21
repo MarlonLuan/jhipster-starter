@@ -1,5 +1,3 @@
-import dayjs from 'dayjs/esm';
-
 import { IDepartment } from 'app/entities/department/department.model';
 
 export interface IEmployee {
@@ -8,7 +6,7 @@ export interface IEmployee {
   lastName?: string | null;
   email?: string | null;
   phoneNumber?: string | null;
-  hireDate?: dayjs.Dayjs | null;
+  hireDate?: string | null;
   salary?: number | null;
   commissionPct?: number | null;
   manager?: Pick<IEmployee, 'id'> | null;

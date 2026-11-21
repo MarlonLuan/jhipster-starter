@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { IDepartment } from '../department.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../department.test-samples';
 
-import { DepartmentService } from './department.service';
+import { DepartmentService, DepartmentsService } from './department.service';
 
 const requireRestSample: IDepartment = {
   ...sampleWithRequiredData,
@@ -82,7 +82,6 @@ describe('Department Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -179,7 +178,7 @@ describe('Department Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
         const entity2 = { id: 'e72f1487-bf87-4c47-8e97-2cce52db762d' };
 
@@ -188,6 +187,21 @@ describe('Department Service', () => {
 
         expect(compareResult1).toEqual(true);
         expect(compareResult2).toEqual(true);
+      });
+    });
+  });
+
+  describe('DepartmentsService', () => {
+    it('should list the departments of the params', async () => {
+      const departmentsService = TestBed.inject(DepartmentsService);
+      departmentsService.departmentsParams.set({ page: 0 });
+      TestBed.tick();
+
+      httpMock.expectOne({ method: 'GET' }).flush([requireRestSample]);
+
+      await vi.waitFor(() => {
+        TestBed.tick();
+        expect(departmentsService.departments()).toMatchObject([sampleWithRequiredData]);
       });
     });
   });

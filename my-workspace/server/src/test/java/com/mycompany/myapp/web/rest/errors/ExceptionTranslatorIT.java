@@ -4,6 +4,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +37,56 @@ class ExceptionTranslatorIT {
     }
 
     @Test
+    void testDataIntegrityViolation() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/data-integrity-violation"))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_DATA_INTEGRITY_VIOLATION));
+    }
+
+    @Test
+    void testTransientReference() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/transient-reference"))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_DATA_INTEGRITY_VIOLATION));
+    }
+
+    @Test
+    void testUnknownReference() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/unknown-reference"))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_DATA_INTEGRITY_VIOLATION));
+    }
+
+    @Test
+    void testInvalidSort() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/invalid-sort"))
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value("error.http.400"));
+    }
+
+    @Test
+    void testUnreadableBody() throws Exception {
+        mockMvc
+            .perform(
+                post("/api/exception-translator-test/method-argument").content("{").contentType(MediaType.APPLICATION_JSON).with(csrf())
+            )
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.type").value("https://www.jhipster.tech/problem/problem-with-message"))
+            .andExpect(jsonPath("$.message").value("error.http.400"))
+            .andExpect(jsonPath("$.path").value("/api/exception-translator-test/method-argument"))
+            .andExpect(jsonPath("$.detail").value("Failed to read request"));
+    }
+
+    @Test
     void testMethodArgumentNotValid() throws Exception {
         mockMvc
             .perform(
@@ -46,7 +97,43 @@ class ExceptionTranslatorIT {
             .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_VALIDATION))
             .andExpect(jsonPath("$.fieldErrors.[0].objectName").value("test"))
             .andExpect(jsonPath("$.fieldErrors.[0].field").value("test"))
-            .andExpect(jsonPath("$.fieldErrors.[0].message").value("must not be null"));
+            .andExpect(jsonPath("$.fieldErrors.[0].message").value("must not be null"))
+            .andExpect(jsonPath("$.fieldErrors.[0].code").value("NotNull"));
+    }
+
+    @Test
+    void testMethodValidationOfTheBody() throws Exception {
+        mockMvc
+            .perform(
+                post("/api/exception-translator-test/method-validation/abc")
+                    .content("{}")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(csrf())
+            )
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_VALIDATION))
+            .andExpect(jsonPath("$.fieldErrors.[0].objectName").value("test"))
+            .andExpect(jsonPath("$.fieldErrors.[0].field").value("test"))
+            .andExpect(jsonPath("$.fieldErrors.[0].message").value("must not be null"))
+            .andExpect(jsonPath("$.fieldErrors.[0].code").value("NotNull"));
+    }
+
+    @Test
+    void testMethodValidationOfAParameter() throws Exception {
+        mockMvc
+            .perform(
+                post("/api/exception-translator-test/method-validation/abcdef")
+                    .content("{\"test\": \"test\"}")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(csrf())
+            )
+            .andExpect(status().isBadRequest())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_VALIDATION))
+            .andExpect(jsonPath("$.fieldErrors.[0].objectName").value("exceptionTranslatorTestController"))
+            .andExpect(jsonPath("$.fieldErrors.[0].field").value("name"))
+            .andExpect(jsonPath("$.fieldErrors.[0].code").value("Size"));
     }
 
     @Test
@@ -89,6 +176,37 @@ class ExceptionTranslatorIT {
     }
 
     @Test
+    void testBadRequestAlert() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/bad-request-alert"))
+            .andExpect(status().isBadRequest())
+            .andExpect(header().string("X-jhipster-error", "error.testkey"))
+            .andExpect(jsonPath("$.message").value("error.testkey"))
+            .andExpect(jsonPath("$.detail").doesNotExist());
+    }
+
+    @Test
+    void testResponseStatusException() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/response-status-exception").with(csrf()))
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value("error.http.404"))
+            .andExpect(jsonPath("$.title").value("Not Found"))
+            .andExpect(jsonPath("$.detail").value("Not Found"));
+    }
+
+    @Test
+    void testBindingFailure() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/binding-failure").param("number", "abc"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.fieldErrors.[0].field").value("number"))
+            .andExpect(jsonPath("$.fieldErrors.[0].message").value("typeMismatch"))
+            .andExpect(jsonPath("$.fieldErrors.[0].code").value("typeMismatch"));
+    }
+
+    @Test
     void testMethodNotSupported() throws Exception {
         mockMvc
             .perform(post("/api/exception-translator-test/access-denied").with(csrf()))
@@ -99,6 +217,17 @@ class ExceptionTranslatorIT {
     }
 
     @Test
+    void testNotFound() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/nothing").with(csrf()))
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value("error.http.404"))
+            .andExpect(jsonPath("$.title").value("Not Found"))
+            .andExpect(jsonPath("$.detail").value("Not Found"));
+    }
+
+    @Test
     void testExceptionWithResponseStatus() throws Exception {
         mockMvc
             .perform(get("/api/exception-translator-test/response-status").with(csrf()))
@@ -106,6 +235,16 @@ class ExceptionTranslatorIT {
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
             .andExpect(jsonPath("$.message").value("error.http.400"))
             .andExpect(jsonPath("$.title").value("test response status"));
+    }
+
+    @Test
+    void testOpenApiResourceNotFound() throws Exception {
+        mockMvc
+            .perform(get("/api/exception-translator-test/open-api-resource-not-found").with(csrf()))
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.message").value("error.http.404"))
+            .andExpect(jsonPath("$.title").value("Not Found"));
     }
 
     @Test

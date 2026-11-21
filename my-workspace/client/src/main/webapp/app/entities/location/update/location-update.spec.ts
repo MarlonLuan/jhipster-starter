@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { submit } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { provideTranslateService } from '@ngx-translate/core';
@@ -10,6 +11,7 @@ import { Subject, from, of } from 'rxjs';
 import { ICountry } from 'app/entities/country/country.model';
 import { CountryService } from 'app/entities/country/service/country.service';
 import { ILocation } from '../location.model';
+import { sampleWithRequiredData } from '../location.test-samples';
 import { LocationService } from '../service/location.service';
 
 import { LocationFormService } from './location-form.service';
@@ -53,9 +55,9 @@ describe('Location Management Update Component', () => {
       location.country = country;
 
       const countryCollection: ICountry[] = [{ id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' }];
-      vitest.spyOn(countryService, 'query').mockReturnValue(of(new HttpResponse({ body: countryCollection })));
+      vi.spyOn(countryService, 'query').mockReturnValue(of(new HttpResponse({ body: countryCollection })));
       const expectedCollection: ICountry[] = [country, ...countryCollection];
-      vitest.spyOn(countryService, 'addCountryToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(countryService, 'addCountryToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ location });
       comp.ngOnInit();
@@ -79,13 +81,26 @@ describe('Location Management Update Component', () => {
   });
 
   describe('save', () => {
+    it('should save a valid submitted form', async () => {
+      // GIVEN
+      vi.spyOn(comp, 'save').mockImplementation(() => undefined);
+      activatedRoute.data = of({ location: sampleWithRequiredData });
+      comp.ngOnInit();
+
+      // WHEN
+      await submit(comp.editForm);
+
+      // THEN
+      expect(comp.save).toHaveBeenCalled();
+    });
+
     it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<ILocation>();
       const location = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
-      vitest.spyOn(locationFormService, 'getLocation').mockReturnValue(location);
-      vitest.spyOn(locationService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(locationFormService, 'getLocation').mockReturnValue(location);
+      vi.spyOn(locationService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ location });
       comp.ngOnInit();
 
@@ -106,9 +121,9 @@ describe('Location Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<ILocation>();
       const location = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
-      vitest.spyOn(locationFormService, 'getLocation').mockReturnValue({ id: null });
-      vitest.spyOn(locationService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(locationFormService, 'getLocation').mockReturnValue({ id: null });
+      vi.spyOn(locationService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ location: null });
       comp.ngOnInit();
 
@@ -129,8 +144,8 @@ describe('Location Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<ILocation>();
       const location = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
-      vitest.spyOn(locationService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(locationService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ location });
       comp.ngOnInit();
 
@@ -151,7 +166,7 @@ describe('Location Management Update Component', () => {
       it('should forward to countryService', () => {
         const entity = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
         const entity2 = { id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' };
-        vitest.spyOn(countryService, 'compareCountry');
+        vi.spyOn(countryService, 'compareCountry');
         comp.compareCountry(entity, entity2);
         expect(countryService.compareCountry).toHaveBeenCalledWith(entity, entity2);
       });

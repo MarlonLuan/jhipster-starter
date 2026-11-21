@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { ICountry } from '../country.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../country.test-samples';
 
-import { CountryService } from './country.service';
+import { CountriesService, CountryService } from './country.service';
 
 const requireRestSample: ICountry = {
   ...sampleWithRequiredData,
@@ -82,7 +82,6 @@ describe('Country Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -179,7 +178,7 @@ describe('Country Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
         const entity2 = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
 
@@ -188,6 +187,21 @@ describe('Country Service', () => {
 
         expect(compareResult1).toEqual(true);
         expect(compareResult2).toEqual(true);
+      });
+    });
+  });
+
+  describe('CountriesService', () => {
+    it('should list the countries of the params', async () => {
+      const countriesService = TestBed.inject(CountriesService);
+      countriesService.countriesParams.set({ page: 0 });
+      TestBed.tick();
+
+      httpMock.expectOne({ method: 'GET' }).flush([requireRestSample]);
+
+      await vi.waitFor(() => {
+        TestBed.tick();
+        expect(countriesService.countries()).toMatchObject([sampleWithRequiredData]);
       });
     });
   });

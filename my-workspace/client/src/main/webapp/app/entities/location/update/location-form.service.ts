@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Service, WritableSignal } from '@angular/core';
+import { FieldTree, FormOptions, form, readonly } from '@angular/forms/signals';
 
 import { ILocation, NewLocation } from '../location.model';
 
@@ -9,58 +9,64 @@ import { ILocation, NewLocation } from '../location.model';
 type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
 
 /**
- * Type for createFormGroup and resetForm argument.
- * It accepts ILocation for edit and NewLocationFormGroupInput for create.
+ * Type for the createFormModel argument.
+ * It accepts ILocation for edit and NewLocationFormInput for create.
  */
-type LocationFormGroupInput = ILocation | PartialWithRequiredKeyOf<NewLocation>;
+type LocationFormInput = ILocation | PartialWithRequiredKeyOf<NewLocation>;
 
 type LocationFormDefaults = Pick<NewLocation, 'id'>;
 
-type LocationFormGroupContent = {
-  id: FormControl<ILocation['id'] | NewLocation['id']>;
-  streetAddress: FormControl<ILocation['streetAddress']>;
-  postalCode: FormControl<ILocation['postalCode']>;
-  city: FormControl<ILocation['city']>;
-  stateProvince: FormControl<ILocation['stateProvince']>;
-  country: FormControl<ILocation['country']>;
+/**
+ * The value of the form: the text fields are strings, empty when the entity has no value, and the dates and times
+ * are the text of their inputs.
+ */
+export type LocationFormModel = {
+  id: string;
+  streetAddress: string;
+  postalCode: string;
+  city: string;
+  stateProvince: string;
+  country: NonNullable<ILocation['country']> | null;
 };
 
-export type LocationFormGroup = FormGroup<LocationFormGroupContent>;
+export type LocationForm = FieldTree<LocationFormModel>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class LocationFormService {
-  createLocationFormGroup(location?: LocationFormGroupInput): LocationFormGroup {
-    const locationRawValue = {
-      ...this.getFormDefaults(),
-      ...(location ?? { id: null }),
+  createLocationFormModel(location?: LocationFormInput): LocationFormModel {
+    const value: Partial<ILocation> | Partial<NewLocation> = { ...this.getFormDefaults(), ...location };
+    return {
+      id: value.id ?? '',
+      streetAddress: value.streetAddress ?? '',
+      postalCode: value.postalCode ?? '',
+      city: value.city ?? '',
+      stateProvince: value.stateProvince ?? '',
+      country: value.country ?? null,
     };
-
-    return new FormGroup<LocationFormGroupContent>({
-      id: new FormControl(
-        { value: locationRawValue.id, disabled: true },
-        {
-          nonNullable: true,
-          validators: [Validators.required],
-        },
-      ),
-      streetAddress: new FormControl(locationRawValue.streetAddress),
-      postalCode: new FormControl(locationRawValue.postalCode),
-      city: new FormControl(locationRawValue.city),
-      stateProvince: new FormControl(locationRawValue.stateProvince),
-      country: new FormControl(locationRawValue.country),
-    });
   }
 
-  getLocation(form: LocationFormGroup): ILocation | NewLocation {
-    return form.getRawValue();
+  /**
+   * The form of the model, its validation included, created in an injection context.
+   */
+  createLocationForm(model: WritableSignal<LocationFormModel>, options: FormOptions<LocationFormModel> = {}): LocationForm {
+    return form(
+      model,
+      path => {
+        readonly(path.id);
+      },
+      options,
+    );
   }
 
-  resetForm(form: LocationFormGroup, location: LocationFormGroupInput): void {
-    const locationRawValue = { ...this.getFormDefaults(), ...location };
-    form.reset({
-      ...locationRawValue,
-      id: { value: locationRawValue.id, disabled: true },
-    });
+  getLocation(model: LocationFormModel): ILocation | NewLocation {
+    return {
+      id: model.id || null,
+      streetAddress: model.streetAddress || null,
+      postalCode: model.postalCode || null,
+      city: model.city || null,
+      stateProvince: model.stateProvince || null,
+      country: model.country,
+    };
   }
 
   private getFormDefaults(): LocationFormDefaults {

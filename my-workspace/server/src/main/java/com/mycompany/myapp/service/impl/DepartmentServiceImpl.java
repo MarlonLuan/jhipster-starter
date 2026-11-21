@@ -27,9 +27,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DepartmentServiceImpl.class);
 
-    private final DepartmentRepository departmentRepository;
+    protected final DepartmentRepository departmentRepository;
 
-    private final DepartmentMapper departmentMapper;
+    protected final DepartmentMapper departmentMapper;
 
     public DepartmentServiceImpl(DepartmentRepository departmentRepository, DepartmentMapper departmentMapper) {
         this.departmentRepository = departmentRepository;
@@ -50,21 +50,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department = departmentMapper.toEntity(departmentDTO);
         department = departmentRepository.save(department);
         return departmentMapper.toDto(department);
-    }
-
-    @Override
-    public Optional<DepartmentDTO> partialUpdate(DepartmentDTO departmentDTO) {
-        LOG.debug("Request to partially update Department : {}", departmentDTO);
-
-        return departmentRepository
-            .findById(departmentDTO.getId())
-            .map(existingDepartment -> {
-                departmentMapper.partialUpdate(existingDepartment, departmentDTO);
-
-                return existingDepartment;
-            })
-            .map(departmentRepository::save)
-            .map(departmentMapper::toDto);
     }
 
     @Override

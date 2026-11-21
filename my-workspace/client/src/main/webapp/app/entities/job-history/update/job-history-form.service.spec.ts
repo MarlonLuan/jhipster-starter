@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../job-history.test-samples';
@@ -13,83 +14,72 @@ describe('JobHistory Form Service', () => {
   });
 
   describe('Service methods', () => {
-    describe('createJobHistoryFormGroup', () => {
-      it('should create a new form with FormControl', () => {
-        const formGroup = service.createJobHistoryFormGroup();
+    describe('createJobHistoryFormModel', () => {
+      it('should create the model of a new entity', () => {
+        const model = service.createJobHistoryFormModel();
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            startDate: expect.any(Object),
-            endDate: expect.any(Object),
-            language: expect.any(Object),
-            job: expect.any(Object),
-            department: expect.any(Object),
-            employee: expect.any(Object),
-          }),
+        expect(Object.keys(model)).toEqual(
+          expect.arrayContaining(['id', 'startDate', 'endDate', 'language', 'job', 'department', 'employee']),
         );
       });
 
-      it('passing IJobHistory should create a new form with FormGroup', () => {
-        const formGroup = service.createJobHistoryFormGroup(sampleWithRequiredData);
+      it('passing IJobHistory without dates should create a model with empty values', () => {
+        const model = service.createJobHistoryFormModel({
+          ...sampleWithRequiredData,
+          startDate: null,
+          endDate: null,
+        });
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            startDate: expect.any(Object),
-            endDate: expect.any(Object),
-            language: expect.any(Object),
-            job: expect.any(Object),
-            department: expect.any(Object),
-            employee: expect.any(Object),
-          }),
-        );
+        expect(model.startDate).toBe('');
+        expect(model.endDate).toBe('');
+      });
+    });
+
+    describe('createJobHistoryForm', () => {
+      it('should create the form of the model', () => {
+        const model = signal(service.createJobHistoryFormModel(sampleWithRequiredData));
+
+        const form = TestBed.runInInjectionContext(() => service.createJobHistoryForm(model));
+
+        expect(form().value()).toEqual(model());
+      });
+
+      it('should accept the values of an entity with its required data', () => {
+        const entity = sampleWithRequiredData;
+        const form = TestBed.runInInjectionContext(() => service.createJobHistoryForm(signal(service.createJobHistoryFormModel(entity))));
+
+        expect(
+          form()
+            .errorSummary()
+            .map(error => error.kind),
+        ).toEqual([]);
+        expect(form().valid()).toBe(true);
+      });
+
+      it('should keep the id readonly', () => {
+        const form = TestBed.runInInjectionContext(() => service.createJobHistoryForm(signal(service.createJobHistoryFormModel())));
+
+        expect(form.id().readonly()).toBe(true);
       });
     });
 
     describe('getJobHistory', () => {
       it('should return NewJobHistory for default JobHistory initial value', () => {
-        const formGroup = service.createJobHistoryFormGroup(sampleWithNewData);
-
-        const jobHistory = service.getJobHistory(formGroup);
+        const jobHistory = service.getJobHistory(service.createJobHistoryFormModel(sampleWithNewData));
 
         expect(jobHistory).toMatchObject(sampleWithNewData);
       });
 
       it('should return NewJobHistory for empty JobHistory initial value', () => {
-        const formGroup = service.createJobHistoryFormGroup();
-
-        const jobHistory = service.getJobHistory(formGroup);
+        const jobHistory = service.getJobHistory(service.createJobHistoryFormModel());
 
         expect(jobHistory).toMatchObject({});
       });
 
       it('should return IJobHistory', () => {
-        const formGroup = service.createJobHistoryFormGroup(sampleWithRequiredData);
-
-        const jobHistory = service.getJobHistory(formGroup);
+        const jobHistory = service.getJobHistory(service.createJobHistoryFormModel(sampleWithRequiredData));
 
         expect(jobHistory).toMatchObject(sampleWithRequiredData);
-      });
-    });
-
-    describe('resetForm', () => {
-      it('passing IJobHistory should not enable id FormControl', () => {
-        const formGroup = service.createJobHistoryFormGroup();
-        expect(formGroup.controls.id.disabled).toBe(true);
-
-        service.resetForm(formGroup, sampleWithRequiredData);
-
-        expect(formGroup.controls.id.disabled).toBe(true);
-      });
-
-      it('passing NewJobHistory should disable id FormControl', () => {
-        const formGroup = service.createJobHistoryFormGroup(sampleWithRequiredData);
-        expect(formGroup.controls.id.disabled).toBe(true);
-
-        service.resetForm(formGroup, { id: null });
-
-        expect(formGroup.controls.id.disabled).toBe(true);
       });
     });
   });

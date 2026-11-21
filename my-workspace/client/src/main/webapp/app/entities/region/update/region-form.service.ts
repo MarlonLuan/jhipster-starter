@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Service, WritableSignal } from '@angular/core';
+import { FieldTree, FormOptions, form, readonly } from '@angular/forms/signals';
 
 import { IRegion, NewRegion } from '../region.model';
 
@@ -9,50 +9,52 @@ import { IRegion, NewRegion } from '../region.model';
 type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
 
 /**
- * Type for createFormGroup and resetForm argument.
- * It accepts IRegion for edit and NewRegionFormGroupInput for create.
+ * Type for the createFormModel argument.
+ * It accepts IRegion for edit and NewRegionFormInput for create.
  */
-type RegionFormGroupInput = IRegion | PartialWithRequiredKeyOf<NewRegion>;
+type RegionFormInput = IRegion | PartialWithRequiredKeyOf<NewRegion>;
 
 type RegionFormDefaults = Pick<NewRegion, 'id'>;
 
-type RegionFormGroupContent = {
-  id: FormControl<IRegion['id'] | NewRegion['id']>;
-  regionName: FormControl<IRegion['regionName']>;
+/**
+ * The value of the form: the text fields are strings, empty when the entity has no value, and the dates and times
+ * are the text of their inputs.
+ */
+export type RegionFormModel = {
+  id: string;
+  regionName: string;
 };
 
-export type RegionFormGroup = FormGroup<RegionFormGroupContent>;
+export type RegionForm = FieldTree<RegionFormModel>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class RegionFormService {
-  createRegionFormGroup(region?: RegionFormGroupInput): RegionFormGroup {
-    const regionRawValue = {
-      ...this.getFormDefaults(),
-      ...(region ?? { id: null }),
+  createRegionFormModel(region?: RegionFormInput): RegionFormModel {
+    const value: Partial<IRegion> | Partial<NewRegion> = { ...this.getFormDefaults(), ...region };
+    return {
+      id: value.id ?? '',
+      regionName: value.regionName ?? '',
     };
-
-    return new FormGroup<RegionFormGroupContent>({
-      id: new FormControl(
-        { value: regionRawValue.id, disabled: true },
-        {
-          nonNullable: true,
-          validators: [Validators.required],
-        },
-      ),
-      regionName: new FormControl(regionRawValue.regionName),
-    });
   }
 
-  getRegion(form: RegionFormGroup): IRegion | NewRegion {
-    return form.getRawValue();
+  /**
+   * The form of the model, its validation included, created in an injection context.
+   */
+  createRegionForm(model: WritableSignal<RegionFormModel>, options: FormOptions<RegionFormModel> = {}): RegionForm {
+    return form(
+      model,
+      path => {
+        readonly(path.id);
+      },
+      options,
+    );
   }
 
-  resetForm(form: RegionFormGroup, region: RegionFormGroupInput): void {
-    const regionRawValue = { ...this.getFormDefaults(), ...region };
-    form.reset({
-      ...regionRawValue,
-      id: { value: regionRawValue.id, disabled: true },
-    });
+  getRegion(model: RegionFormModel): IRegion | NewRegion {
+    return {
+      id: model.id || null,
+      regionName: model.regionName || null,
+    };
   }
 
   private getFormDefaults(): RegionFormDefaults {

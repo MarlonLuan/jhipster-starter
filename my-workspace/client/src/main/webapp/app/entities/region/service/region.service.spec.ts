@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { IRegion } from '../region.model';
 import { sampleWithFullData, sampleWithNewData, sampleWithPartialData, sampleWithRequiredData } from '../region.test-samples';
 
-import { RegionService } from './region.service';
+import { RegionService, RegionsService } from './region.service';
 
 const requireRestSample: IRegion = {
   ...sampleWithRequiredData,
@@ -82,7 +82,6 @@ describe('Region Service', () => {
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
-      httpMock.verify();
       expect(expectedResult).toMatchObject([expected]);
     });
 
@@ -179,7 +178,7 @@ describe('Region Service', () => {
         expect(compareResult2).toEqual(false);
       });
 
-      it('should return false if primaryKey matches', () => {
+      it('should return true if primaryKey matches', () => {
         const entity1 = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
         const entity2 = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
 
@@ -188,6 +187,21 @@ describe('Region Service', () => {
 
         expect(compareResult1).toEqual(true);
         expect(compareResult2).toEqual(true);
+      });
+    });
+  });
+
+  describe('RegionsService', () => {
+    it('should list the regions of the params', async () => {
+      const regionsService = TestBed.inject(RegionsService);
+      regionsService.regionsParams.set({ page: 0 });
+      TestBed.tick();
+
+      httpMock.expectOne({ method: 'GET' }).flush([requireRestSample]);
+
+      await vi.waitFor(() => {
+        TestBed.tick();
+        expect(regionsService.regions()).toMatchObject([sampleWithRequiredData]);
       });
     });
   });

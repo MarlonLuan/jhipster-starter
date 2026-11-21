@@ -1,14 +1,14 @@
 package com.mycompany.myapp.web.rest;
 
 import static com.mycompany.myapp.domain.TaskAsserts.*;
-import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
+import static com.mycompany.myapp.test.util.TestUtil.convertObjectToPartialUpdateBody;
+import static com.mycompany.myapp.test.util.TestUtil.createUpdateProxyForBean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Task;
 import com.mycompany.myapp.repository.TaskRepository;
@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Integration tests for the {@link TaskResource} REST controller.
@@ -34,11 +35,11 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class TaskResourceIT {
 
-    private static final String DEFAULT_TITLE = "AAAAAAAAAA";
-    private static final String UPDATED_TITLE = "BBBBBBBBBB";
+    private static final String DEFAULT_TITLE = "really devise after";
+    private static final String UPDATED_TITLE = "anti till finally";
 
-    private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
-    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
+    private static final String DEFAULT_DESCRIPTION = "especially";
+    private static final String UPDATED_DESCRIPTION = "except thankfully";
 
     private static final String ENTITY_API_URL = "/api/tasks";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -155,6 +156,15 @@ class TaskResourceIT {
 
     @Test
     @Transactional
+    void getAllTasksSortedByWhatIsNotAProperty() throws Exception {
+        restTaskMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=doesNotExist,asc"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("error.notsortable"));
+    }
+
+    @Test
+    @Transactional
     void getTask() throws Exception {
         // Initialize the database
         insertedTask = taskRepository.saveAndFlush(task);
@@ -237,7 +247,7 @@ class TaskResourceIT {
         // Create the Task
         TaskDTO taskDTO = taskMapper.toDto(task);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restTaskMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -260,7 +270,7 @@ class TaskResourceIT {
         // Create the Task
         TaskDTO taskDTO = taskMapper.toDto(task);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restTaskMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(taskDTO)))
             .andExpect(status().isMethodNotAllowed());
@@ -288,7 +298,7 @@ class TaskResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedTask.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedTask))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedTask))
             )
             .andExpect(status().isOk());
 
@@ -317,7 +327,7 @@ class TaskResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedTask.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedTask))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedTask))
             )
             .andExpect(status().isOk());
 
@@ -359,7 +369,7 @@ class TaskResourceIT {
         // Create the Task
         TaskDTO taskDTO = taskMapper.toDto(task);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restTaskMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -382,7 +392,7 @@ class TaskResourceIT {
         // Create the Task
         TaskDTO taskDTO = taskMapper.toDto(task);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restTaskMockMvc
             .perform(patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(taskDTO)))
             .andExpect(status().isMethodNotAllowed());

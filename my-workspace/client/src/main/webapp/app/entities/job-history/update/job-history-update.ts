@@ -1,6 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormField, FormRoot } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -14,18 +14,18 @@ import { EmployeeService } from 'app/entities/employee/service/employee.service'
 import { Language } from 'app/entities/enumerations/language.model';
 import { IJob } from 'app/entities/job/job.model';
 import { JobService } from 'app/entities/job/service/job.service';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
+import { SelectOptionsDirective } from 'app/shared/form';
 import { TranslateDirective } from 'app/shared/language';
 import { IJobHistory } from '../job-history.model';
 import { JobHistoryService } from '../service/job-history.service';
 
-import { JobHistoryFormGroup, JobHistoryFormService } from './job-history-form.service';
+import { JobHistoryFormService } from './job-history-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-job-history-update',
   templateUrl: './job-history-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, FormField, FormRoot, SelectOptionsDirective],
 })
 export class JobHistoryUpdate implements OnInit {
   readonly isSaving = signal(false);
@@ -36,15 +36,20 @@ export class JobHistoryUpdate implements OnInit {
   departmentsCollection = signal<IDepartment[]>([]);
   employeesCollection = signal<IEmployee[]>([]);
 
-  protected jobHistoryService = inject(JobHistoryService);
-  protected jobHistoryFormService = inject(JobHistoryFormService);
-  protected jobService = inject(JobService);
-  protected departmentService = inject(DepartmentService);
-  protected employeeService = inject(EmployeeService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly jobHistoryService = inject(JobHistoryService);
+  private readonly jobHistoryFormService = inject(JobHistoryFormService);
+  private readonly jobService = inject(JobService);
+  private readonly departmentService = inject(DepartmentService);
+  private readonly employeeService = inject(EmployeeService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: JobHistoryFormGroup = this.jobHistoryFormService.createJobHistoryFormGroup();
+  readonly jobHistoryModel = signal(this.jobHistoryFormService.createJobHistoryFormModel());
+  // A submit marks the fields as touched and sends nothing while the form is invalid.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly editForm = this.jobHistoryFormService.createJobHistoryForm(this.jobHistoryModel, {
+    submission: { action: () => Promise.resolve(this.save()) },
+  });
 
   compareJob = (o1: IJob | null, o2: IJob | null): boolean => this.jobService.compareJob(o1, o2);
 
@@ -69,7 +74,7 @@ export class JobHistoryUpdate implements OnInit {
 
   save(): void {
     this.isSaving.set(true);
-    const jobHistory = this.jobHistoryFormService.getJobHistory(this.editForm);
+    const jobHistory = this.jobHistoryFormService.getJobHistory(this.jobHistoryModel());
     if (jobHistory.id === null) {
       this.subscribeToSaveResponse(this.jobHistoryService.create(jobHistory));
     } else {
@@ -77,28 +82,28 @@ export class JobHistoryUpdate implements OnInit {
     }
   }
 
-  protected subscribeToSaveResponse(result: Observable<IJobHistory | null>): void {
+  private subscribeToSaveResponse(result: Observable<IJobHistory | null>): void {
     result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
       next: () => this.onSaveSuccess(),
       error: () => this.onSaveError(),
     });
   }
 
-  protected onSaveSuccess(): void {
+  private onSaveSuccess(): void {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  private onSaveError(): void {
+    // API for inheritance.
   }
 
-  protected onSaveFinalize(): void {
+  private onSaveFinalize(): void {
     this.isSaving.set(false);
   }
 
-  protected updateForm(jobHistory: IJobHistory): void {
+  private updateForm(jobHistory: IJobHistory): void {
     this.jobHistory = jobHistory;
-    this.jobHistoryFormService.resetForm(this.editForm, jobHistory);
+    this.jobHistoryModel.set(this.jobHistoryFormService.createJobHistoryFormModel(jobHistory));
 
     this.jobsCollection.set(this.jobService.addJobToCollectionIfMissing<IJob>(this.jobsCollection(), jobHistory.job));
     this.departmentsCollection.set(
@@ -109,7 +114,7 @@ export class JobHistoryUpdate implements OnInit {
     );
   }
 
-  protected loadRelationshipsOptions(): void {
+  private loadRelationshipsOptions(): void {
     this.jobService
       .query({ filter: 'jobhistory-is-null' })
       .pipe(map((res: HttpResponse<IJob[]>) => res.body ?? []))

@@ -1,4 +1,4 @@
-import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader } from '@ngx-translate/core';
+import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader, TranslationObject } from '@ngx-translate/core';
 import { loadLocale } from 'i18n';
 import { Observable, from } from 'rxjs';
 
@@ -13,8 +13,8 @@ export class MissingTranslationHandlerImpl implements MissingTranslationHandler 
 
 export function translatePartialLoader(): TranslateLoader {
   return {
-    getTranslation(lang: string): Observable<any> {
-      return from(loadLocale(lang as any));
+    getTranslation(lang: string): Observable<TranslationObject> {
+      return from(loadLocale(lang as Parameters<typeof loadLocale>[0]));
     },
   };
 }
