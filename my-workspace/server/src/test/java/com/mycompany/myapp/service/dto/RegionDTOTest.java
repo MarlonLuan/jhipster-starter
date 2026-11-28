@@ -2,7 +2,7 @@ package com.mycompany.myapp.service.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.mycompany.myapp.web.rest.TestUtil;
+import com.mycompany.myapp.test.util.TestUtil;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 

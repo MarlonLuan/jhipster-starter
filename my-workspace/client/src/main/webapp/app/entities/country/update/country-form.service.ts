@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Service, WritableSignal } from '@angular/core';
+import { FieldTree, FormOptions, form, readonly } from '@angular/forms/signals';
 
 import { ICountry, NewCountry } from '../country.model';
 
@@ -9,52 +9,58 @@ import { ICountry, NewCountry } from '../country.model';
 type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
 
 /**
- * Type for createFormGroup and resetForm argument.
- * It accepts ICountry for edit and NewCountryFormGroupInput for create.
+ * Type for the createFormModel argument.
+ * It accepts ICountry for edit and NewCountryFormInput for create.
  */
-type CountryFormGroupInput = ICountry | PartialWithRequiredKeyOf<NewCountry>;
+type CountryFormInput = ICountry | PartialWithRequiredKeyOf<NewCountry>;
 
 type CountryFormDefaults = Pick<NewCountry, 'id'>;
 
-type CountryFormGroupContent = {
-  id: FormControl<ICountry['id'] | NewCountry['id']>;
-  countryName: FormControl<ICountry['countryName']>;
-  region: FormControl<ICountry['region']>;
+/**
+ * The value of the form: the text fields are strings, empty when the entity has no value, and the dates and times
+ * are the text of their inputs.
+ */
+export type CountryFormModel = {
+  id: string;
+  countryName: string;
+  region: NonNullable<ICountry['region']> | null;
 };
 
-export type CountryFormGroup = FormGroup<CountryFormGroupContent>;
+export type CountryForm = FieldTree<CountryFormModel>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class CountryFormService {
-  createCountryFormGroup(country?: CountryFormGroupInput): CountryFormGroup {
-    const countryRawValue = {
-      ...this.getFormDefaults(),
-      ...(country ?? { id: null }),
+  createCountryFormModel(country?: CountryFormInput): CountryFormModel {
+    const value: Partial<ICountry> | Partial<NewCountry> = { ...this.getFormDefaults(), ...country };
+    return {
+      id: value.id ?? '',
+      countryName: value.countryName ?? '',
+      region: value.region ?? null,
     };
-
-    return new FormGroup<CountryFormGroupContent>({
-      id: new FormControl(
-        { value: countryRawValue.id, disabled: true },
-        {
-          nonNullable: true,
-          validators: [Validators.required],
-        },
-      ),
-      countryName: new FormControl(countryRawValue.countryName),
-      region: new FormControl(countryRawValue.region),
-    });
   }
 
-  getCountry(form: CountryFormGroup): ICountry | NewCountry {
-    return form.getRawValue();
+  /**
+   * The form of the model, its validation included, created in an injection context.
+   */
+  createCountryForm(model: WritableSignal<CountryFormModel>, options: FormOptions<CountryFormModel> = {}): CountryForm {
+    return form(
+      model,
+      path => {
+        readonly(path.id);
+      },
+      options,
+    );
   }
 
-  resetForm(form: CountryFormGroup, country: CountryFormGroupInput): void {
-    const countryRawValue = { ...this.getFormDefaults(), ...country };
-    form.reset({
-      ...countryRawValue,
-      id: { value: countryRawValue.id, disabled: true },
-    });
+  /**
+   * The entity of the form. An empty value of the form keeps the empty value of the edited entity, a null one included.
+   */
+  getCountry(model: CountryFormModel, country?: CountryFormInput | null): ICountry | NewCountry {
+    return {
+      id: model.id || null,
+      countryName: model.countryName || (country?.countryName === '' ? '' : null),
+      region: model.region,
+    };
   }
 
   private getFormDefaults(): CountryFormDefaults {

@@ -19,8 +19,7 @@
       },
       "id": "Id",
       "countryName": "Country Name",
-      "region": "Region",
-      "location": "Location"
+      "region": "Region"
     }
   }
 }

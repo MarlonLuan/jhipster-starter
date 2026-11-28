@@ -1,12 +1,15 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpErrorResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { submit } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { provideTranslateService } from '@ngx-translate/core';
 import { Subject, from, of } from 'rxjs';
 
 import { IRegion } from '../region.model';
+import { sampleWithRequiredData } from '../region.test-samples';
 import { RegionService } from '../service/region.service';
 
 import { RegionFormService } from './region-form.service';
@@ -53,13 +56,26 @@ describe('Region Management Update Component', () => {
   });
 
   describe('save', () => {
+    it('should save a valid submitted form', async () => {
+      // GIVEN
+      vi.spyOn(comp, 'save').mockResolvedValue(undefined);
+      activatedRoute.data = of({ region: sampleWithRequiredData });
+      comp.ngOnInit();
+
+      // WHEN
+      await submit(comp.editForm);
+
+      // THEN
+      expect(comp.save).toHaveBeenCalled();
+    });
+
     it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<IRegion>();
       const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
-      vitest.spyOn(regionFormService, 'getRegion').mockReturnValue(region);
-      vitest.spyOn(regionService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(regionFormService, 'getRegion').mockReturnValue(region);
+      vi.spyOn(regionService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ region });
       comp.ngOnInit();
 
@@ -70,7 +86,7 @@ describe('Region Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
-      expect(regionFormService.getRegion).toHaveBeenCalled();
+      expect(regionFormService.getRegion).toHaveBeenCalledWith(comp.regionModel(), region);
       expect(comp.previousState).toHaveBeenCalled();
       expect(regionService.update).toHaveBeenCalledWith(expect.objectContaining(region));
       expect(comp.isSaving()).toEqual(false);
@@ -80,9 +96,9 @@ describe('Region Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IRegion>();
       const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
-      vitest.spyOn(regionFormService, 'getRegion').mockReturnValue({ id: null });
-      vitest.spyOn(regionService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(regionFormService, 'getRegion').mockReturnValue({ id: null });
+      vi.spyOn(regionService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ region: null });
       comp.ngOnInit();
 
@@ -99,12 +115,29 @@ describe('Region Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
+    it('should resolve the submission when the service completes without a value', async () => {
+      // GIVEN
+      const saveSubject = new Subject<IRegion>();
+      vi.spyOn(regionFormService, 'getRegion').mockReturnValue({ id: null });
+      vi.spyOn(regionService, 'create').mockReturnValue(saveSubject);
+      activatedRoute.data = of({ region: null });
+      comp.ngOnInit();
+
+      // WHEN
+      const result = comp.save();
+      saveSubject.complete();
+
+      // THEN
+      expect(await result).toBeUndefined();
+      expect(comp.isSaving()).toEqual(false);
+    });
+
     it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<IRegion>();
       const region = { id: '1ecde3bf-dd1f-4d49-8a3d-4407d415f7b6' };
-      vitest.spyOn(regionService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(regionService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ region });
       comp.ngOnInit();
 
@@ -117,6 +150,53 @@ describe('Region Management Update Component', () => {
       expect(regionService.update).toHaveBeenCalled();
       expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
+    });
+
+    it('should mark the fields the server refused', async () => {
+      // GIVEN
+      const saveSubject = new Subject<IRegion>();
+      vi.spyOn(regionFormService, 'getRegion').mockReturnValue({ id: null });
+      vi.spyOn(regionService, 'create').mockReturnValue(saveSubject);
+      activatedRoute.data = of({ region: null });
+      comp.ngOnInit();
+
+      // WHEN
+      const result = comp.save();
+      saveSubject.error(
+        new HttpErrorResponse({
+          status: 400,
+          error: {
+            type: 'https://www.jhipster.tech/problem/constraint-violation',
+            message: 'error.validation',
+            fieldErrors: [
+              { objectName: 'region', field: 'regionName', message: 'is refused', code: 'Refused' },
+              { objectName: 'region', field: 'id', message: 'is refused', code: 'Refused' },
+              { objectName: 'region', field: 'notAField', message: 'is refused', code: 'Refused' },
+            ],
+          },
+        }),
+      );
+
+      // THEN
+      expect(await result).toEqual([
+        expect.objectContaining({ kind: 'server', message: 'is refused', fieldTree: comp.editForm.regionName }),
+      ]);
+    });
+
+    it('should mark no field for an error without field errors', async () => {
+      // GIVEN
+      const saveSubject = new Subject<IRegion>();
+      vi.spyOn(regionFormService, 'getRegion').mockReturnValue({ id: null });
+      vi.spyOn(regionService, 'create').mockReturnValue(saveSubject);
+      activatedRoute.data = of({ region: null });
+      comp.ngOnInit();
+
+      // WHEN
+      const result = comp.save();
+      saveSubject.error(new HttpErrorResponse({ status: 500, error: null }));
+
+      // THEN
+      expect(await result).toBeUndefined();
     });
   });
 });

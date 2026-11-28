@@ -1,5 +1,3 @@
-import dayjs from 'dayjs/esm';
-
 import { IEmployee, NewEmployee } from './employee.model';
 
 export const sampleWithRequiredData: IEmployee = {
@@ -8,22 +6,22 @@ export const sampleWithRequiredData: IEmployee = {
 
 export const sampleWithPartialData: IEmployee = {
   id: 'e7bb318e-817b-4234-a44c-3feb57a7d003',
-  firstName: 'Earl',
-  lastName: 'McGlynn',
-  email: 'Kathleen.Harvey@gmail.com',
-  phoneNumber: 'awareness to',
-  salary: 31027,
+  firstName: 'broadcast pace who',
+  lastName: 'postbox severe',
+  email: 'how',
+  phoneNumber: 'customise avow',
+  salary: 24896,
 };
 
 export const sampleWithFullData: IEmployee = {
   id: '9cc8c9f0-b708-4c46-b961-1f02c7e2a3bc',
-  firstName: 'Morton',
-  lastName: 'VonRueden',
-  email: 'Dagmar49@hotmail.com',
-  phoneNumber: 'regarding rigid roughly',
-  hireDate: dayjs('2023-12-24T15:38'),
-  salary: 14746,
-  commissionPct: 15920,
+  firstName: 'eminent once out',
+  lastName: 'tattered',
+  email: 'roughly unique exaggerate',
+  phoneNumber: 'powerful',
+  hireDate: '2023-12-24T08:19:00.000Z',
+  salary: 13793,
+  commissionPct: 15557,
 };
 
 export const sampleWithNewData: NewEmployee = {

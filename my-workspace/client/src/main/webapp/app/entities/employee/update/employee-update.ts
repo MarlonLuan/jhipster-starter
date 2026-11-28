@@ -1,27 +1,37 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormField, FormRoot, TreeValidationResult } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Observable, finalize, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 
 import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
+import { SelectOptionsDirective, ServerError, toSubmissionResult } from 'app/shared/form';
 import { TranslateDirective } from 'app/shared/language';
 import { IEmployee } from '../employee.model';
 import { EmployeeService } from '../service/employee.service';
 
-import { EmployeeFormGroup, EmployeeFormService } from './employee-form.service';
+import { EmployeeFormService } from './employee-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-employee-update',
   templateUrl: './employee-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule, NgbTooltip],
+  imports: [
+    TranslateDirective,
+    TranslatePipe,
+    FontAwesomeModule,
+    AlertError,
+    FormField,
+    FormRoot,
+    SelectOptionsDirective,
+    ServerError,
+    NgbTooltip,
+  ],
 })
 export class EmployeeUpdate implements OnInit {
   readonly isSaving = signal(false);
@@ -30,13 +40,32 @@ export class EmployeeUpdate implements OnInit {
   employeesSharedCollection = signal<IEmployee[]>([]);
   departmentsSharedCollection = signal<IDepartment[]>([]);
 
-  protected employeeService = inject(EmployeeService);
-  protected employeeFormService = inject(EmployeeFormService);
-  protected departmentService = inject(DepartmentService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly employeeService = inject(EmployeeService);
+  private readonly employeeFormService = inject(EmployeeFormService);
+  private readonly departmentService = inject(DepartmentService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: EmployeeFormGroup = this.employeeFormService.createEmployeeFormGroup();
+  readonly employeeModel = signal(this.employeeFormService.createEmployeeFormModel());
+  // The properties showing the error of the server, which marks them invalid and leaves them out of the alert.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly serverErrorFields = [
+    'firstName',
+    'lastName',
+    'email',
+    'phoneNumber',
+    'hireDate',
+    'salary',
+    'commissionPct',
+    'manager',
+    'department',
+  ] as const;
+
+  // A submit marks the fields as touched and sends nothing while the form is invalid.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly editForm = this.employeeFormService.createEmployeeForm(this.employeeModel, {
+    submission: { action: () => this.save() },
+  });
 
   compareEmployee = (o1: IEmployee | null, o2: IEmployee | null): boolean => this.employeeService.compareEmployee(o1, o2);
 
@@ -57,38 +86,38 @@ export class EmployeeUpdate implements OnInit {
     globalThis.history.back();
   }
 
-  save(): void {
+  save(): Promise<TreeValidationResult> {
     this.isSaving.set(true);
-    const employee = this.employeeFormService.getEmployee(this.editForm);
+    const employee = this.employeeFormService.getEmployee(this.employeeModel(), this.employee);
     if (employee.id === null) {
-      this.subscribeToSaveResponse(this.employeeService.create(employee));
-    } else {
-      this.subscribeToSaveResponse(this.employeeService.update(employee));
+      return this.subscribeToSaveResponse(this.employeeService.create(employee));
     }
+    return this.subscribeToSaveResponse(this.employeeService.update(employee));
   }
 
-  protected subscribeToSaveResponse(result: Observable<IEmployee | null>): void {
-    result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(),
-      error: () => this.onSaveError(),
-    });
+  private subscribeToSaveResponse(result: Observable<IEmployee | null>): Promise<TreeValidationResult> {
+    return toSubmissionResult(
+      this.editForm,
+      this.serverErrorFields,
+      result.pipe(tap({ next: () => this.onSaveSuccess(), error: () => this.onSaveError(), finalize: () => this.onSaveFinalize() })),
+    );
   }
 
-  protected onSaveSuccess(): void {
+  private onSaveSuccess(): void {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  private onSaveError(): void {
+    // API for inheritance.
   }
 
-  protected onSaveFinalize(): void {
+  private onSaveFinalize(): void {
     this.isSaving.set(false);
   }
 
-  protected updateForm(employee: IEmployee): void {
+  private updateForm(employee: IEmployee): void {
     this.employee = employee;
-    this.employeeFormService.resetForm(this.editForm, employee);
+    this.employeeModel.set(this.employeeFormService.createEmployeeFormModel(employee));
 
     this.employeesSharedCollection.update(employees =>
       this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, employee.manager),
@@ -98,7 +127,7 @@ export class EmployeeUpdate implements OnInit {
     );
   }
 
-  protected loadRelationshipsOptions(): void {
+  private loadRelationshipsOptions(): void {
     this.employeeService
       .query()
       .pipe(map((res: HttpResponse<IEmployee[]>) => res.body ?? []))

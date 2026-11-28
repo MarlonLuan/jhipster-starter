@@ -5,11 +5,9 @@ export interface InfoResponse {
   activeProfiles?: string[];
 }
 
-export class ProfileInfo {
-  constructor(
-    public activeProfiles?: string[],
-    public ribbonEnv?: string,
-    public inProduction?: boolean,
-    public openAPIEnabled?: boolean,
-  ) {}
+export interface ProfileInfo {
+  activeProfiles?: string[];
+  ribbonEnv?: string;
+  inProduction?: boolean;
+  openAPIEnabled?: boolean;
 }

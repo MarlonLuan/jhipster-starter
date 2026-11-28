@@ -1,34 +1,42 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormField, FormRoot, TreeValidationResult } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
-import { Observable, finalize } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
+import { ServerError, toSubmissionResult } from 'app/shared/form';
 import { TranslateDirective } from 'app/shared/language';
 import { IRegion } from '../region.model';
 import { RegionService } from '../service/region.service';
 
-import { RegionFormGroup, RegionFormService } from './region-form.service';
+import { RegionFormService } from './region-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-region-update',
   templateUrl: './region-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, FormField, FormRoot, ServerError],
 })
 export class RegionUpdate implements OnInit {
   readonly isSaving = signal(false);
   region: IRegion | null = null;
 
-  protected regionService = inject(RegionService);
-  protected regionFormService = inject(RegionFormService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly regionService = inject(RegionService);
+  private readonly regionFormService = inject(RegionFormService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: RegionFormGroup = this.regionFormService.createRegionFormGroup();
+  readonly regionModel = signal(this.regionFormService.createRegionFormModel());
+  // The properties showing the error of the server, which marks them invalid and leaves them out of the alert.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly serverErrorFields = ['regionName'] as const;
+
+  // A submit marks the fields as touched and sends nothing while the form is invalid.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly editForm = this.regionFormService.createRegionForm(this.regionModel, {
+    submission: { action: () => this.save() },
+  });
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ region }) => {
@@ -43,37 +51,37 @@ export class RegionUpdate implements OnInit {
     globalThis.history.back();
   }
 
-  save(): void {
+  save(): Promise<TreeValidationResult> {
     this.isSaving.set(true);
-    const region = this.regionFormService.getRegion(this.editForm);
+    const region = this.regionFormService.getRegion(this.regionModel(), this.region);
     if (region.id === null) {
-      this.subscribeToSaveResponse(this.regionService.create(region));
-    } else {
-      this.subscribeToSaveResponse(this.regionService.update(region));
+      return this.subscribeToSaveResponse(this.regionService.create(region));
     }
+    return this.subscribeToSaveResponse(this.regionService.update(region));
   }
 
-  protected subscribeToSaveResponse(result: Observable<IRegion | null>): void {
-    result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(),
-      error: () => this.onSaveError(),
-    });
+  private subscribeToSaveResponse(result: Observable<IRegion | null>): Promise<TreeValidationResult> {
+    return toSubmissionResult(
+      this.editForm,
+      this.serverErrorFields,
+      result.pipe(tap({ next: () => this.onSaveSuccess(), error: () => this.onSaveError(), finalize: () => this.onSaveFinalize() })),
+    );
   }
 
-  protected onSaveSuccess(): void {
+  private onSaveSuccess(): void {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  private onSaveError(): void {
+    // API for inheritance.
   }
 
-  protected onSaveFinalize(): void {
+  private onSaveFinalize(): void {
     this.isSaving.set(false);
   }
 
-  protected updateForm(region: IRegion): void {
+  private updateForm(region: IRegion): void {
     this.region = region;
-    this.regionFormService.resetForm(this.editForm, region);
+    this.regionModel.set(this.regionFormService.createRegionFormModel(region));
   }
 }

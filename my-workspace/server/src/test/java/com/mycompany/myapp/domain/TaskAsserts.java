@@ -58,8 +58,6 @@ public class TaskAsserts {
      * @param actual the actual entity
      */
     public static void assertTaskUpdatableRelationshipsEquals(Task expected, Task actual) {
-        assertThat(actual)
-            .as("Verify Task relationships")
-            .satisfies(a -> assertThat(a.getJobs()).as("check jobs").isEqualTo(expected.getJobs()));
+        // empty method
     }
 }

@@ -8,8 +8,10 @@ import java.util.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.FactorGrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +24,16 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
  * Test class for the {@link SecurityUtils} utility class.
  */
 class SecurityUtilsUnitTest {
+
+    @Test
+    void testGetUserAuthoritiesLeavesTheFactorsOut() {
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.USER));
+        authorities.add(FactorGrantedAuthority.fromAuthority(FactorGrantedAuthority.PASSWORD_AUTHORITY));
+        assertThat(SecurityUtils.getUserAuthorities(new UsernamePasswordAuthenticationToken("user", "user", authorities))).containsExactly(
+            AuthoritiesConstants.USER
+        );
+    }
 
     @BeforeEach
     @AfterEach
@@ -36,6 +48,16 @@ class SecurityUtilsUnitTest {
         SecurityContextHolder.setContext(securityContext);
         Optional<String> login = SecurityUtils.getCurrentUserLogin();
         assertThat(login).contains("admin");
+    }
+
+    @Test
+    void testGetCurrentUserLoginForAnonymousUser() {
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        var authorities = List.of(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS));
+        securityContext.setAuthentication(new AnonymousAuthenticationToken("key", "anonymousUser", authorities));
+        SecurityContextHolder.setContext(securityContext);
+        Optional<String> login = SecurityUtils.getCurrentUserLogin();
+        assertThat(login).isEmpty();
     }
 
     @Test

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../country.test-samples';
@@ -13,75 +14,81 @@ describe('Country Form Service', () => {
   });
 
   describe('Service methods', () => {
-    describe('createCountryFormGroup', () => {
-      it('should create a new form with FormControl', () => {
-        const formGroup = service.createCountryFormGroup();
+    describe('createCountryFormModel', () => {
+      it('should create the model of a new entity', () => {
+        const model = service.createCountryFormModel();
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            countryName: expect.any(Object),
-            region: expect.any(Object),
-          }),
-        );
+        expect(Object.keys(model)).toEqual(expect.arrayContaining(['id', 'countryName', 'region']));
+      });
+    });
+
+    describe('createCountryForm', () => {
+      it('should create the form of the model', () => {
+        const model = signal(service.createCountryFormModel(sampleWithRequiredData));
+
+        const form = TestBed.runInInjectionContext(() => service.createCountryForm(model));
+
+        expect(form().value()).toEqual(model());
       });
 
-      it('passing ICountry should create a new form with FormGroup', () => {
-        const formGroup = service.createCountryFormGroup(sampleWithRequiredData);
+      it('should accept the values of an entity with its required data', () => {
+        const entity = sampleWithRequiredData;
+        const form = TestBed.runInInjectionContext(() => service.createCountryForm(signal(service.createCountryFormModel(entity))));
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            countryName: expect.any(Object),
-            region: expect.any(Object),
-          }),
-        );
+        expect(
+          form()
+            .errorSummary()
+            .map(error => error.kind),
+        ).toEqual([]);
+        expect(form().valid()).toBe(true);
+      });
+
+      it('should keep the id readonly', () => {
+        const form = TestBed.runInInjectionContext(() => service.createCountryForm(signal(service.createCountryFormModel())));
+
+        expect(form.id().readonly()).toBe(true);
       });
     });
 
     describe('getCountry', () => {
       it('should return NewCountry for default Country initial value', () => {
-        const formGroup = service.createCountryFormGroup(sampleWithNewData);
-
-        const country = service.getCountry(formGroup);
+        const country = service.getCountry(service.createCountryFormModel(sampleWithNewData));
 
         expect(country).toMatchObject(sampleWithNewData);
       });
 
       it('should return NewCountry for empty Country initial value', () => {
-        const formGroup = service.createCountryFormGroup();
-
-        const country = service.getCountry(formGroup);
+        const country = service.getCountry(service.createCountryFormModel());
 
         expect(country).toMatchObject({});
       });
 
       it('should return ICountry', () => {
-        const formGroup = service.createCountryFormGroup(sampleWithRequiredData);
-
-        const country = service.getCountry(formGroup);
+        const country = service.getCountry(service.createCountryFormModel(sampleWithRequiredData));
 
         expect(country).toMatchObject(sampleWithRequiredData);
       });
-    });
 
-    describe('resetForm', () => {
-      it('passing ICountry should not enable id FormControl', () => {
-        const formGroup = service.createCountryFormGroup();
-        expect(formGroup.controls.id.disabled).toBe(true);
+      it('should keep the empty values of the edited entity', () => {
+        const entity = {
+          ...sampleWithRequiredData,
+          countryName: '',
+        };
 
-        service.resetForm(formGroup, sampleWithRequiredData);
+        const country = service.getCountry(service.createCountryFormModel(entity), entity);
 
-        expect(formGroup.controls.id.disabled).toBe(true);
+        expect(country.countryName).toBe('');
       });
 
-      it('passing NewCountry should disable id FormControl', () => {
-        const formGroup = service.createCountryFormGroup(sampleWithRequiredData);
-        expect(formGroup.controls.id.disabled).toBe(true);
+      it('should return the empty values of an entity without them', () => {
+        const entity = {
+          ...sampleWithRequiredData,
+          countryName: null,
+        };
 
-        service.resetForm(formGroup, { id: null });
+        const country = service.getCountry(service.createCountryFormModel(entity), entity);
 
-        expect(formGroup.controls.id.disabled).toBe(true);
+        expect(country.countryName).toBeNull();
       });
     });
   });

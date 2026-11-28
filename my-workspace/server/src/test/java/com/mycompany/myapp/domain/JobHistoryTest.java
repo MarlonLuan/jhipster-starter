@@ -6,7 +6,7 @@ import static com.mycompany.myapp.domain.JobHistoryTestSamples.*;
 import static com.mycompany.myapp.domain.JobTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.mycompany.myapp.web.rest.TestUtil;
+import com.mycompany.myapp.test.util.TestUtil;
 import org.junit.jupiter.api.Test;
 
 class JobHistoryTest {

@@ -27,9 +27,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
-    private final EmployeeRepository employeeRepository;
+    protected final EmployeeRepository employeeRepository;
 
-    private final EmployeeMapper employeeMapper;
+    protected final EmployeeMapper employeeMapper;
 
     public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper) {
         this.employeeRepository = employeeRepository;
@@ -50,21 +50,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeMapper.toEntity(employeeDTO);
         employee = employeeRepository.save(employee);
         return employeeMapper.toDto(employee);
-    }
-
-    @Override
-    public Optional<EmployeeDTO> partialUpdate(EmployeeDTO employeeDTO) {
-        LOG.debug("Request to partially update Employee : {}", employeeDTO);
-
-        return employeeRepository
-            .findById(employeeDTO.getId())
-            .map(existingEmployee -> {
-                employeeMapper.partialUpdate(existingEmployee, employeeDTO);
-
-                return existingEmployee;
-            })
-            .map(employeeRepository::save)
-            .map(employeeMapper::toDto);
     }
 
     @Override

@@ -1,18 +1,19 @@
 const formatAsBytes = (size: number): string => `${size.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} bytes`; // NOSONAR
 
-export const endsWith = (suffix: string, str: string): boolean => str.includes(suffix, str.length - suffix.length);
-
 export const paddingSize = (value: string): number => {
-  if (endsWith('==', value)) {
+  if (value.endsWith('==')) {
     return 2;
   }
-  if (endsWith('=', value)) {
+  if (value.endsWith('=')) {
     return 1;
   }
   return 0;
 };
 
-const size = (value: string): number => (value.length / 4) * 3 - paddingSize(value);
+/**
+ * The size in bytes of a base64 value.
+ */
+export const byteLength = (value: string): number => (value.length / 4) * 3 - paddingSize(value);
 
 export const toBase64 = (file: File, callback: (base64Data: string) => void): void => {
   const fileReader: FileReader = new FileReader();
@@ -25,17 +26,34 @@ export const toBase64 = (file: File, callback: (base64Data: string) => void): vo
   fileReader.readAsDataURL(file);
 };
 
-export const openFile = (data: string, contentType: string | null | undefined): void => {
-  contentType ??= '';
+export type BlobType = 'image' | 'text' | 'any';
 
-  const byteCharacters = atob(data);
-  const byteNumbers = new Array(byteCharacters.length);
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteNumbers[i] = byteCharacters.codePointAt(i);
+const DOWNLOAD_CONTENT_TYPE = 'application/octet-stream';
+
+/**
+ * Resolves the content type used to open a stored blob in a new window.
+ * Image blobs are opened as images, except XML based images like SVG which could execute scripts under the application origin.
+ * Text blobs are opened as plain text.
+ * Any other blob is opened as a download.
+ */
+export const toOpenableContentType = (contentType: string | null | undefined, blobType: BlobType = 'any'): string => {
+  const type = (contentType ?? '').split(';')[0].trim().toLowerCase();
+  if (type.endsWith('+xml')) {
+    return DOWNLOAD_CONTENT_TYPE;
   }
-  const byteArray = new Uint8Array(byteNumbers);
+  if (blobType === 'image' && type.startsWith('image/')) {
+    return type;
+  }
+  if (blobType === 'text' && type === 'text/plain') {
+    return type;
+  }
+  return DOWNLOAD_CONTENT_TYPE;
+};
+
+export const openFile = (data: string, contentType: string | null | undefined, blobType: BlobType = 'any'): void => {
+  const byteArray = Uint8Array.from(atob(data), c => c.codePointAt(0) ?? 0);
   const blob = new Blob([byteArray], {
-    type: contentType,
+    type: toOpenableContentType(contentType, blobType),
   });
   const fileURL = globalThis.URL.createObjectURL(blob);
   const win = globalThis.open(fileURL);
@@ -44,4 +62,4 @@ export const openFile = (data: string, contentType: string | null | undefined): 
   }
 };
 
-export const byteSize = (base64String: string): string => formatAsBytes(size(base64String));
+export const byteSize = (base64String: string): string => formatAsBytes(byteLength(base64String));

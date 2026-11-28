@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Service, WritableSignal } from '@angular/core';
+import { FieldTree, FormOptions, form, readonly } from '@angular/forms/signals';
 
 import { ITask, NewTask } from '../task.model';
 
@@ -9,52 +9,58 @@ import { ITask, NewTask } from '../task.model';
 type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
 
 /**
- * Type for createFormGroup and resetForm argument.
- * It accepts ITask for edit and NewTaskFormGroupInput for create.
+ * Type for the createFormModel argument.
+ * It accepts ITask for edit and NewTaskFormInput for create.
  */
-type TaskFormGroupInput = ITask | PartialWithRequiredKeyOf<NewTask>;
+type TaskFormInput = ITask | PartialWithRequiredKeyOf<NewTask>;
 
 type TaskFormDefaults = Pick<NewTask, 'id'>;
 
-type TaskFormGroupContent = {
-  id: FormControl<ITask['id'] | NewTask['id']>;
-  title: FormControl<ITask['title']>;
-  description: FormControl<ITask['description']>;
+/**
+ * The value of the form: the text fields are strings, empty when the entity has no value, and the dates and times
+ * are the text of their inputs.
+ */
+export type TaskFormModel = {
+  id: string;
+  title: string;
+  description: string;
 };
 
-export type TaskFormGroup = FormGroup<TaskFormGroupContent>;
+export type TaskForm = FieldTree<TaskFormModel>;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class TaskFormService {
-  createTaskFormGroup(task?: TaskFormGroupInput): TaskFormGroup {
-    const taskRawValue = {
-      ...this.getFormDefaults(),
-      ...(task ?? { id: null }),
+  createTaskFormModel(task?: TaskFormInput): TaskFormModel {
+    const value: Partial<ITask> | Partial<NewTask> = { ...this.getFormDefaults(), ...task };
+    return {
+      id: value.id ?? '',
+      title: value.title ?? '',
+      description: value.description ?? '',
     };
-
-    return new FormGroup<TaskFormGroupContent>({
-      id: new FormControl(
-        { value: taskRawValue.id, disabled: true },
-        {
-          nonNullable: true,
-          validators: [Validators.required],
-        },
-      ),
-      title: new FormControl(taskRawValue.title),
-      description: new FormControl(taskRawValue.description),
-    });
   }
 
-  getTask(form: TaskFormGroup): ITask | NewTask {
-    return form.getRawValue();
+  /**
+   * The form of the model, its validation included, created in an injection context.
+   */
+  createTaskForm(model: WritableSignal<TaskFormModel>, options: FormOptions<TaskFormModel> = {}): TaskForm {
+    return form(
+      model,
+      path => {
+        readonly(path.id);
+      },
+      options,
+    );
   }
 
-  resetForm(form: TaskFormGroup, task: TaskFormGroupInput): void {
-    const taskRawValue = { ...this.getFormDefaults(), ...task };
-    form.reset({
-      ...taskRawValue,
-      id: { value: taskRawValue.id, disabled: true },
-    });
+  /**
+   * The entity of the form. An empty value of the form keeps the empty value of the edited entity, a null one included.
+   */
+  getTask(model: TaskFormModel, task?: TaskFormInput | null): ITask | NewTask {
+    return {
+      id: model.id || null,
+      title: model.title || (task?.title === '' ? '' : null),
+      description: model.description || (task?.description === '' ? '' : null),
+    };
   }
 
   private getFormDefaults(): TaskFormDefaults {

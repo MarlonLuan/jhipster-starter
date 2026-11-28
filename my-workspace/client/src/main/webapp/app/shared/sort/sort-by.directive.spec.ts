@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
-import { ChangeDetectionStrategy, Component, DebugElement, Type, inject } from '@angular/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Component, DebugElement, Type, inject } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
@@ -11,16 +11,16 @@ import { sortStateSignal } from './sort-state';
 import { SortDirective } from './sort.directive';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SortDirective, SortByDirective, FaIconComponent],
   template: `
     <table>
       <thead>
-        <tr jhiSort [(sortState)]="sortState" (sortChange)="transition($event)">
+        <tr jhiSort [(sortState)]="sortState" (sortStateChange)="transition($event)">
           <th jhiSortBy="name">
             ID
             <fa-icon [icon]="'sort'" />
           </th>
+          <th id="without-icon" jhiSortBy="id">Name</th>
         </tr>
       </thead>
     </table>
@@ -28,7 +28,7 @@ import { SortDirective } from './sort.directive';
 })
 class TestSortByDirective {
   sortState = sortStateSignal({ predicate: 'name' });
-  transition = vitest.fn();
+  transition = vi.fn();
 
   private readonly library = inject(FaIconLibrary);
 
@@ -49,65 +49,65 @@ describe('Directive: SortByDirective', () => {
     tableHead = fixture.debugElement.query(By.directive(SortByDirective));
   });
 
-  it('should have a neutral state for predicate column and undefined order value', () => {
+  it('should have a neutral state for predicate column and undefined order value', async () => {
     // GIVEN
     component.sortState.set({ predicate: 'name' });
     const sortByDirective = tableHead.injector.get(SortByDirective as Type<SortByDirective>);
 
     // WHEN
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // THEN
     expect(sortByDirective.jhiSortBy()).toEqual('name');
     expect(sortByDirective.iconComponent()?.icon()).toEqual(faSort.iconName);
   });
 
-  it('should have an asc state for predicate column and true asc value', () => {
+  it('should have an asc state for predicate column and true asc value', async () => {
     // GIVEN
     component.sortState.set({ predicate: 'name', order: 'asc' });
     const sortByDirective = tableHead.injector.get(SortByDirective as Type<SortByDirective>);
 
     // WHEN
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // THEN
     expect(sortByDirective.jhiSortBy()).toEqual('name');
     expect(sortByDirective.iconComponent()?.icon()).toEqual(faSortUp.iconName);
   });
 
-  it('should have a desc state for predicate column and desc value', () => {
+  it('should have a desc state for predicate column and desc value', async () => {
     // GIVEN
     component.sortState.set({ predicate: 'name', order: 'desc' });
     const sortByDirective = tableHead.injector.get(SortByDirective as Type<SortByDirective>);
 
     // WHEN
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // THEN
     expect(sortByDirective.jhiSortBy()).toEqual('name');
     expect(sortByDirective.iconComponent()?.icon()).toEqual(faSortDown.iconName);
   });
 
-  it('should have a neutral state for non-predicate column', () => {
+  it('should have a neutral state for non-predicate column', async () => {
     // GIVEN
     component.sortState.set({ predicate: 'non-existing-column', order: 'asc' });
     const sortByDirective = tableHead.injector.get(SortByDirective as Type<SortByDirective>);
 
     // WHEN
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     // THEN
     expect(sortByDirective.jhiSortBy()).toEqual('name');
     expect(sortByDirective.iconComponent()?.icon()).toEqual(faSort.iconName);
   });
 
-  it('multiple clicks at same component, should call SortDirective sort', () => {
+  it('multiple clicks at same component, should call SortDirective sort', async () => {
     // GIVEN
     const sortDirective = tableHead.injector.get(SortDirective as Type<SortDirective>);
-    sortDirective.sort = vitest.fn();
+    sortDirective.sort = vi.fn();
 
     // WHEN
-    fixture.detectChanges();
+    await fixture.whenStable();
     tableHead.triggerEventHandler('click', null);
     tableHead.triggerEventHandler('click', null);
 
@@ -115,5 +115,16 @@ describe('Directive: SortByDirective', () => {
     expect(sortDirective.sort).toHaveBeenCalledTimes(2);
     expect(sortDirective.sort).toHaveBeenNthCalledWith(1, 'name');
     expect(sortDirective.sort).toHaveBeenNthCalledWith(2, 'name');
+  });
+
+  it('should not sort by a column without icon', async () => {
+    const columnWithoutIcon = fixture.debugElement.query(By.css('#without-icon'));
+    const sortDirective = columnWithoutIcon.injector.get(SortDirective as Type<SortDirective>);
+    sortDirective.sort = vi.fn();
+
+    await fixture.whenStable();
+    columnWithoutIcon.triggerEventHandler('click', null);
+
+    expect(sortDirective.sort).not.toHaveBeenCalled();
   });
 });

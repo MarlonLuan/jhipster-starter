@@ -1,15 +1,15 @@
-import { Mock, afterEach, beforeEach, describe, expect, it, vitest } from 'vitest';
+import { Mock, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 
 import { TranslateService, provideTranslateService } from '@ngx-translate/core';
 
-import { Account } from 'app/core/auth/account.model';
-import { StateStorageService } from 'app/core/auth/state-storage.service';
 import { Authority } from 'app/shared/jhipster/constants';
 
+import { Account } from './account.model';
 import { AccountService } from './account.service';
+import { StateStorageService } from './state-storage.service';
 
 function accountWithAuthorities(authorities: string[]): Account {
   return {
@@ -24,7 +24,7 @@ function accountWithAuthorities(authorities: string[]): Account {
   };
 }
 
-const mockFn = (value: string | null): Mock => vitest.fn(() => value);
+const mockFn = (value: string | null): Mock => vi.fn(() => value);
 
 describe('Account Service', () => {
   let service: AccountService;
@@ -41,8 +41,8 @@ describe('Account Service', () => {
         {
           provide: StateStorageService,
           useValue: {
-            clearUrl: vitest.fn(),
-            getUrl: vitest.fn(),
+            clearUrl: vi.fn(),
+            getUrl: vi.fn(),
           },
         },
       ],
@@ -52,10 +52,10 @@ describe('Account Service', () => {
     httpMock = TestBed.inject(HttpTestingController);
     mockStorageService = TestBed.inject(StateStorageService);
     mockRouter = TestBed.inject(Router);
-    vitest.spyOn(mockRouter, 'navigateByUrl');
+    vi.spyOn(mockRouter, 'navigateByUrl');
 
     mockTranslateService = TestBed.inject(TranslateService);
-    vitest.spyOn(mockTranslateService, 'use');
+    vi.spyOn(mockTranslateService, 'use');
   });
 
   afterEach(() => {
@@ -71,6 +71,7 @@ describe('Account Service', () => {
       httpMock.expectOne({ method: 'GET' }).flush(account);
       // Then account signal has account value
       expect(service.account()).toBe(account);
+      expect(service.isAuthenticated()).toBe(true);
     });
 
     it('should call /account only once if last call have not returned', () => {
@@ -99,9 +100,30 @@ describe('Account Service', () => {
       // and then call
       service.identity().subscribe();
 
-      // Then there is a new request
+      // Then there is no request until a sign in
+      httpMock.expectNone({ method: 'GET' });
+      service.identity(true).subscribe();
       const requests = httpMock.match({ method: 'GET' });
       expect(requests).toHaveLength(1);
+    });
+
+    it('should not call /account again once it answered that there is no session', () => {
+      service.identity().subscribe();
+      httpMock.expectOne({ method: 'GET' }).flush(null, { status: 401, statusText: 'Unauthorized' });
+
+      service.identity().subscribe();
+
+      httpMock.expectNone({ method: 'GET' });
+      expect(service.isAuthenticated()).toBe(false);
+    });
+
+    it('should call /account again after a failure other than no session', () => {
+      service.identity().subscribe();
+      httpMock.expectOne({ method: 'GET' }).flush(null, { status: 500, statusText: 'Server Error' });
+
+      service.identity().subscribe();
+
+      expect(httpMock.match({ method: 'GET' })).toHaveLength(1);
     });
 
     describe('should change the language on authentication if necessary', () => {
@@ -179,7 +201,7 @@ describe('Account Service', () => {
         expect(hasAuthority).toBe(false);
       });
 
-      it('should return false if user is logged and has not authority', () => {
+      it('should return false if user is logged and has no authority', () => {
         service.authenticate(accountWithAuthorities([Authority.USER]));
 
         const hasAuthority = service.hasAnyAuthority(Authority.ADMIN);
@@ -202,7 +224,7 @@ describe('Account Service', () => {
         expect(hasAuthority).toBeFalsy();
       });
 
-      it('should return false if user is logged and has not authority', () => {
+      it('should return false if user is logged and has no authority', () => {
         service.authenticate(accountWithAuthorities([Authority.USER]));
 
         const hasAuthority = service.hasAnyAuthority([Authority.ADMIN]);

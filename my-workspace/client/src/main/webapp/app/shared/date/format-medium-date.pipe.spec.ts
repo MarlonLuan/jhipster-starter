@@ -1,11 +1,17 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 
 import dayjs from 'dayjs/esm';
 
 import FormatMediumDatePipe from './format-medium-date.pipe';
 
 describe('FormatMediumDatePipe', () => {
-  const formatMediumDatePipe = new FormatMediumDatePipe();
+  let formatMediumDatePipe: FormatMediumDatePipe;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [FormatMediumDatePipe] });
+    formatMediumDatePipe = TestBed.inject(FormatMediumDatePipe);
+  });
 
   it('should return an empty string when receive undefined', () => {
     expect(formatMediumDatePipe.transform(undefined)).toBe('');
@@ -17,5 +23,9 @@ describe('FormatMediumDatePipe', () => {
 
   it('should format date like this D MMM YYYY', () => {
     expect(formatMediumDatePipe.transform(dayjs('2020-11-16').locale('fr'))).toBe('16 Nov 2020');
+  });
+
+  it('should format the string of a date like this D MMM YYYY', () => {
+    expect(formatMediumDatePipe.transform('2020-11-16')).toBe('16 Nov 2020');
   });
 });

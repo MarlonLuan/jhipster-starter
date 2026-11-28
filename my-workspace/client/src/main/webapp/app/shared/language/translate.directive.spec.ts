@@ -1,13 +1,13 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TranslateService, provideTranslateService } from '@ngx-translate/core';
+import { throwError } from 'rxjs';
 
 import TranslateDirective from './translate.directive';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TranslateDirective],
   template: `<div jhiTranslate="test"></div>`,
 })
@@ -28,11 +28,19 @@ describe('TranslateDirective Tests', () => {
     fixture = TestBed.createComponent(TestTranslateDirective);
   });
 
-  it('should change HTML', () => {
-    const spy = vitest.spyOn(translateService, 'get');
+  it('should change HTML', async () => {
+    const spy = vi.spyOn(translateService, 'get');
 
-    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(spy).toHaveBeenCalled();
+  });
+
+  it('should keep the HTML when the translation fails', async () => {
+    vi.spyOn(translateService, 'get').mockReturnValue(throwError(() => new Error('failed')));
+
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('div').innerHTML).toBe('');
   });
 });

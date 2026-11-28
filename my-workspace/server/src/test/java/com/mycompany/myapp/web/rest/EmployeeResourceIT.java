@@ -1,20 +1,24 @@
 package com.mycompany.myapp.web.rest;
 
+import static com.mycompany.myapp.domain.DepartmentTestSamples.*;
 import static com.mycompany.myapp.domain.EmployeeAsserts.*;
-import static com.mycompany.myapp.web.rest.TestUtil.createUpdateProxyForBean;
+import static com.mycompany.myapp.test.util.TestUtil.convertObjectToPartialUpdateBody;
+import static com.mycompany.myapp.test.util.TestUtil.createUpdateProxyForBean;
+import static com.mycompany.myapp.test.util.TestUtil.sameNumber;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.domain.Employee;
+import com.mycompany.myapp.repository.DepartmentRepository;
 import com.mycompany.myapp.repository.EmployeeRepository;
 import com.mycompany.myapp.service.dto.EmployeeDTO;
 import com.mycompany.myapp.service.mapper.EmployeeMapper;
 import jakarta.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +30,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Integration tests for the {@link EmployeeResource} REST controller.
@@ -35,26 +41,26 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class EmployeeResourceIT {
 
-    private static final String DEFAULT_FIRST_NAME = "AAAAAAAAAA";
-    private static final String UPDATED_FIRST_NAME = "BBBBBBBBBB";
+    private static final String DEFAULT_FIRST_NAME = "Sylvester";
+    private static final String UPDATED_FIRST_NAME = "Lindsey";
 
-    private static final String DEFAULT_LAST_NAME = "AAAAAAAAAA";
-    private static final String UPDATED_LAST_NAME = "BBBBBBBBBB";
+    private static final String DEFAULT_LAST_NAME = "Hintz";
+    private static final String UPDATED_LAST_NAME = "Borer";
 
-    private static final String DEFAULT_EMAIL = "AAAAAAAAAA";
-    private static final String UPDATED_EMAIL = "BBBBBBBBBB";
+    private static final String DEFAULT_EMAIL = "Jaeden_Vandervort@hotmail.com";
+    private static final String UPDATED_EMAIL = "Addison40@gmail.com";
 
-    private static final String DEFAULT_PHONE_NUMBER = "AAAAAAAAAA";
-    private static final String UPDATED_PHONE_NUMBER = "BBBBBBBBBB";
+    private static final String DEFAULT_PHONE_NUMBER = "scuffle righteously provision";
+    private static final String UPDATED_PHONE_NUMBER = "overcook";
 
-    private static final Instant DEFAULT_HIRE_DATE = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_HIRE_DATE = Instant.ofEpochMilli(1703440313582L);
+    private static final Instant DEFAULT_HIRE_DATE = Instant.parse("2023-12-24T00:58:00.000Z");
+    private static final Instant UPDATED_HIRE_DATE = Instant.parse("2023-12-24T17:30:00.000Z");
 
-    private static final Long DEFAULT_SALARY = 1L;
-    private static final Long UPDATED_SALARY = 2L;
+    private static final Long DEFAULT_SALARY = 12468L;
+    private static final Long UPDATED_SALARY = 21121L;
 
-    private static final Long DEFAULT_COMMISSION_PCT = 1L;
-    private static final Long UPDATED_COMMISSION_PCT = 2L;
+    private static final Long DEFAULT_COMMISSION_PCT = 16417L;
+    private static final Long UPDATED_COMMISSION_PCT = 22890L;
 
     private static final String ENTITY_API_URL = "/api/employees";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -77,6 +83,9 @@ class EmployeeResourceIT {
     private Employee employee;
 
     private Employee insertedEmployee;
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     /**
      * Create an entity for this test.
@@ -171,6 +180,26 @@ class EmployeeResourceIT {
 
     @Test
     @Transactional
+    void patchEmployeeWithUpperCaseId() throws Exception {
+        // Initialize the database
+        insertedEmployee = employeeRepository.saveAndFlush(employee);
+
+        // A UUID is the same whatever the case of its letters
+        var patchJson = om.createObjectNode();
+        patchJson.put("id", insertedEmployee.getId().toString().toUpperCase());
+
+        restEmployeeMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, insertedEmployee.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(patchJson))
+            )
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @Transactional
     void getAllEmployees() throws Exception {
         // Initialize the database
         insertedEmployee = employeeRepository.saveAndFlush(employee);
@@ -186,8 +215,26 @@ class EmployeeResourceIT {
             .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
             .andExpect(jsonPath("$.[*].phoneNumber").value(hasItem(DEFAULT_PHONE_NUMBER)))
             .andExpect(jsonPath("$.[*].hireDate").value(hasItem(DEFAULT_HIRE_DATE.toString())))
-            .andExpect(jsonPath("$.[*].salary").value(hasItem(DEFAULT_SALARY.intValue())))
-            .andExpect(jsonPath("$.[*].commissionPct").value(hasItem(DEFAULT_COMMISSION_PCT.intValue())));
+            .andExpect(jsonPath("$.[*].salary").value(hasItem(sameNumber(BigDecimal.valueOf(DEFAULT_SALARY)))))
+            .andExpect(jsonPath("$.[*].commissionPct").value(hasItem(sameNumber(BigDecimal.valueOf(DEFAULT_COMMISSION_PCT)))));
+    }
+
+    @Test
+    @Transactional
+    void getAllEmployeesSortedByWhatIsNotAProperty() throws Exception {
+        restEmployeeMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=doesNotExist,asc"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("error.notsortable"));
+    }
+
+    @Test
+    @Transactional
+    void getAllEmployeesSortedByWhatIsNotAPropertyOfARelationship() throws Exception {
+        restEmployeeMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=manager.doesNotExist,asc"))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("error.notsortable"));
     }
 
     @Test
@@ -207,8 +254,8 @@ class EmployeeResourceIT {
             .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL))
             .andExpect(jsonPath("$.phoneNumber").value(DEFAULT_PHONE_NUMBER))
             .andExpect(jsonPath("$.hireDate").value(DEFAULT_HIRE_DATE.toString()))
-            .andExpect(jsonPath("$.salary").value(DEFAULT_SALARY.intValue()))
-            .andExpect(jsonPath("$.commissionPct").value(DEFAULT_COMMISSION_PCT.intValue()));
+            .andExpect(jsonPath("$.salary").value(sameNumber(BigDecimal.valueOf(DEFAULT_SALARY))))
+            .andExpect(jsonPath("$.commissionPct").value(sameNumber(BigDecimal.valueOf(DEFAULT_COMMISSION_PCT))));
     }
 
     @Test
@@ -286,7 +333,7 @@ class EmployeeResourceIT {
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(
                 put(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -309,13 +356,59 @@ class EmployeeResourceIT {
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(put(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(employeeDTO)))
             .andExpect(status().isMethodNotAllowed());
 
         // Validate the Employee in the database
         assertSameRepositoryCount(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void shouldNotUpdateRelatedEntitiesThroughEmployee() throws Exception {
+        // Persist the related entities and a employee related to them
+        var relatedDepartment = DepartmentResourceIT.createUpdatedEntity();
+        em.persist(relatedDepartment);
+        var relatedDepartmentValue = relatedDepartment.getDepartmentName();
+        employee.setDepartment(relatedDepartment);
+        em.flush();
+        insertedEmployee = employeeRepository.saveAndFlush(employee);
+
+        // Each nested related object carries another value, which must stay in the request
+        var relatedDepartmentJson = om.createObjectNode();
+        relatedDepartmentJson.set("id", om.valueToTree(relatedDepartment.getId()));
+        relatedDepartmentJson.set("departmentName", om.valueToTree(getDepartmentSample2().getDepartmentName()));
+
+        ObjectNode updateJson = om.valueToTree(employeeMapper.toDto(insertedEmployee));
+        updateJson.set("department", relatedDepartmentJson);
+        restEmployeeMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, insertedEmployee.getId())
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(updateJson))
+            )
+            .andExpect(status().isOk());
+
+        var patchJson = om.createObjectNode();
+        patchJson.set("id", om.valueToTree(insertedEmployee.getId()));
+        patchJson.set("department", relatedDepartmentJson);
+        restEmployeeMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, insertedEmployee.getId())
+                    .with(csrf())
+                    .contentType("application/merge-patch+json")
+                    .content(om.writeValueAsBytes(patchJson))
+            )
+            .andExpect(status().isOk());
+
+        em.flush();
+        em.clear();
+        assertThat(departmentRepository.findById(relatedDepartment.getId()).orElseThrow().getDepartmentName()).isEqualTo(
+            relatedDepartmentValue
+        );
     }
 
     @Test
@@ -337,7 +430,7 @@ class EmployeeResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedEmployee.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedEmployee))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedEmployee))
             )
             .andExpect(status().isOk());
 
@@ -373,7 +466,7 @@ class EmployeeResourceIT {
                 patch(ENTITY_API_URL_ID, partialUpdatedEmployee.getId())
                     .with(csrf())
                     .contentType("application/merge-patch+json")
-                    .content(om.writeValueAsBytes(partialUpdatedEmployee))
+                    .content(convertObjectToPartialUpdateBody(om, partialUpdatedEmployee))
             )
             .andExpect(status().isOk());
 
@@ -415,7 +508,7 @@ class EmployeeResourceIT {
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, UUID.randomUUID())
@@ -438,7 +531,7 @@ class EmployeeResourceIT {
         // Create the Employee
         EmployeeDTO employeeDTO = employeeMapper.toDto(employee);
 
-        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        // If URL ID doesn't match entity ID, it will throw BadRequestAlertException
         restEmployeeMockMvc
             .perform(
                 patch(ENTITY_API_URL).with(csrf()).contentType("application/merge-patch+json").content(om.writeValueAsBytes(employeeDTO))

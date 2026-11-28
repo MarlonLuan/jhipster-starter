@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
-import { HttpResponse } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { submit } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { provideTranslateService } from '@ngx-translate/core';
@@ -12,6 +13,7 @@ import { EmployeeService } from 'app/entities/employee/service/employee.service'
 import { TaskService } from 'app/entities/task/service/task.service';
 import { ITask } from 'app/entities/task/task.model';
 import { IJob } from '../job.model';
+import { sampleWithRequiredData } from '../job.test-samples';
 import { JobService } from '../service/job.service';
 
 import { JobFormService } from './job-form.service';
@@ -57,10 +59,10 @@ describe('Job Management Update Component', () => {
       job.tasks = tasks;
 
       const taskCollection: ITask[] = [{ id: 'ca341530-545c-46df-8582-8232c8c59bdb' }];
-      vitest.spyOn(taskService, 'query').mockReturnValue(of(new HttpResponse({ body: taskCollection })));
+      vi.spyOn(taskService, 'query').mockReturnValue(of(new HttpResponse({ body: taskCollection })));
       const additionalTasks = [...tasks];
       const expectedCollection: ITask[] = [...additionalTasks, ...taskCollection];
-      vitest.spyOn(taskService, 'addTaskToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(taskService, 'addTaskToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ job });
       comp.ngOnInit();
@@ -79,10 +81,10 @@ describe('Job Management Update Component', () => {
       job.employee = employee;
 
       const employeeCollection: IEmployee[] = [{ id: '004a716c-7d58-420f-b029-f644967e1d69' }];
-      vitest.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
+      vi.spyOn(employeeService, 'query').mockReturnValue(of(new HttpResponse({ body: employeeCollection })));
       const additionalEmployees = [employee];
       const expectedCollection: IEmployee[] = [...additionalEmployees, ...employeeCollection];
-      vitest.spyOn(employeeService, 'addEmployeeToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(employeeService, 'addEmployeeToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ job });
       comp.ngOnInit();
@@ -112,13 +114,26 @@ describe('Job Management Update Component', () => {
   });
 
   describe('save', () => {
+    it('should save a valid submitted form', async () => {
+      // GIVEN
+      vi.spyOn(comp, 'save').mockResolvedValue(undefined);
+      activatedRoute.data = of({ job: sampleWithRequiredData });
+      comp.ngOnInit();
+
+      // WHEN
+      await submit(comp.editForm);
+
+      // THEN
+      expect(comp.save).toHaveBeenCalled();
+    });
+
     it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<IJob>();
       const job = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
-      vitest.spyOn(jobFormService, 'getJob').mockReturnValue(job);
-      vitest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(jobFormService, 'getJob').mockReturnValue(job);
+      vi.spyOn(jobService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ job });
       comp.ngOnInit();
 
@@ -129,7 +144,7 @@ describe('Job Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
-      expect(jobFormService.getJob).toHaveBeenCalled();
+      expect(jobFormService.getJob).toHaveBeenCalledWith(comp.jobModel(), job);
       expect(comp.previousState).toHaveBeenCalled();
       expect(jobService.update).toHaveBeenCalledWith(expect.objectContaining(job));
       expect(comp.isSaving()).toEqual(false);
@@ -139,9 +154,9 @@ describe('Job Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<IJob>();
       const job = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
-      vitest.spyOn(jobFormService, 'getJob').mockReturnValue({ id: null });
-      vitest.spyOn(jobService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(jobFormService, 'getJob').mockReturnValue({ id: null });
+      vi.spyOn(jobService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ job: null });
       comp.ngOnInit();
 
@@ -158,12 +173,29 @@ describe('Job Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
+    it('should resolve the submission when the service completes without a value', async () => {
+      // GIVEN
+      const saveSubject = new Subject<IJob>();
+      vi.spyOn(jobFormService, 'getJob').mockReturnValue({ id: null });
+      vi.spyOn(jobService, 'create').mockReturnValue(saveSubject);
+      activatedRoute.data = of({ job: null });
+      comp.ngOnInit();
+
+      // WHEN
+      const result = comp.save();
+      saveSubject.complete();
+
+      // THEN
+      expect(await result).toBeUndefined();
+      expect(comp.isSaving()).toEqual(false);
+    });
+
     it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<IJob>();
       const job = { id: 'fe5fddd6-1eb2-44f0-b155-6defcd44ea6c' };
-      vitest.spyOn(jobService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(jobService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ job });
       comp.ngOnInit();
 
@@ -177,6 +209,51 @@ describe('Job Management Update Component', () => {
       expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });
+
+    it('should mark the fields the server refused', async () => {
+      // GIVEN
+      const saveSubject = new Subject<IJob>();
+      vi.spyOn(jobFormService, 'getJob').mockReturnValue({ id: null });
+      vi.spyOn(jobService, 'create').mockReturnValue(saveSubject);
+      activatedRoute.data = of({ job: null });
+      comp.ngOnInit();
+
+      // WHEN
+      const result = comp.save();
+      saveSubject.error(
+        new HttpErrorResponse({
+          status: 400,
+          error: {
+            type: 'https://www.jhipster.tech/problem/constraint-violation',
+            message: 'error.validation',
+            fieldErrors: [
+              { objectName: 'job', field: 'jobTitle', message: 'is refused', code: 'Refused' },
+              { objectName: 'job', field: 'id', message: 'is refused', code: 'Refused' },
+              { objectName: 'job', field: 'notAField', message: 'is refused', code: 'Refused' },
+            ],
+          },
+        }),
+      );
+
+      // THEN
+      expect(await result).toEqual([expect.objectContaining({ kind: 'server', message: 'is refused', fieldTree: comp.editForm.jobTitle })]);
+    });
+
+    it('should mark no field for an error without field errors', async () => {
+      // GIVEN
+      const saveSubject = new Subject<IJob>();
+      vi.spyOn(jobFormService, 'getJob').mockReturnValue({ id: null });
+      vi.spyOn(jobService, 'create').mockReturnValue(saveSubject);
+      activatedRoute.data = of({ job: null });
+      comp.ngOnInit();
+
+      // WHEN
+      const result = comp.save();
+      saveSubject.error(new HttpErrorResponse({ status: 500, error: null }));
+
+      // THEN
+      expect(await result).toBeUndefined();
+    });
   });
 
   describe('Compare relationships', () => {
@@ -184,7 +261,7 @@ describe('Job Management Update Component', () => {
       it('should forward to taskService', () => {
         const entity = { id: 'ca341530-545c-46df-8582-8232c8c59bdb' };
         const entity2 = { id: '59358286-4c96-4301-945b-e60ba7cd5403' };
-        vitest.spyOn(taskService, 'compareTask');
+        vi.spyOn(taskService, 'compareTask');
         comp.compareTask(entity, entity2);
         expect(taskService.compareTask).toHaveBeenCalledWith(entity, entity2);
       });
@@ -194,7 +271,7 @@ describe('Job Management Update Component', () => {
       it('should forward to employeeService', () => {
         const entity = { id: '004a716c-7d58-420f-b029-f644967e1d69' };
         const entity2 = { id: '17d5e87d-f0c0-4fac-b985-ff279089a9cd' };
-        vitest.spyOn(employeeService, 'compareEmployee');
+        vi.spyOn(employeeService, 'compareEmployee');
         comp.compareEmployee(entity, entity2);
         expect(employeeService.compareEmployee).toHaveBeenCalledWith(entity, entity2);
       });

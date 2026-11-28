@@ -1,40 +1,48 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormField, FormRoot, TreeValidationResult } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
-import { Observable, finalize, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 
 import { IRegion } from 'app/entities/region/region.model';
 import { RegionService } from 'app/entities/region/service/region.service';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
+import { SelectOptionsDirective, ServerError, toSubmissionResult } from 'app/shared/form';
 import { TranslateDirective } from 'app/shared/language';
 import { ICountry } from '../country.model';
 import { CountryService } from '../service/country.service';
 
-import { CountryFormGroup, CountryFormService } from './country-form.service';
+import { CountryFormService } from './country-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-country-update',
   templateUrl: './country-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, FormField, FormRoot, SelectOptionsDirective, ServerError],
 })
 export class CountryUpdate implements OnInit {
   readonly isSaving = signal(false);
   country: ICountry | null = null;
 
-  regionsCollection = signal<IRegion[]>([]);
+  regionsSharedCollection = signal<IRegion[]>([]);
 
-  protected countryService = inject(CountryService);
-  protected countryFormService = inject(CountryFormService);
-  protected regionService = inject(RegionService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly countryService = inject(CountryService);
+  private readonly countryFormService = inject(CountryFormService);
+  private readonly regionService = inject(RegionService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: CountryFormGroup = this.countryFormService.createCountryFormGroup();
+  readonly countryModel = signal(this.countryFormService.createCountryFormModel());
+  // The properties showing the error of the server, which marks them invalid and leaves them out of the alert.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly serverErrorFields = ['countryName', 'region'] as const;
+
+  // A submit marks the fields as touched and sends nothing while the form is invalid.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly editForm = this.countryFormService.createCountryForm(this.countryModel, {
+    submission: { action: () => this.save() },
+  });
 
   compareRegion = (o1: IRegion | null, o2: IRegion | null): boolean => this.regionService.compareRegion(o1, o2);
 
@@ -53,47 +61,47 @@ export class CountryUpdate implements OnInit {
     globalThis.history.back();
   }
 
-  save(): void {
+  save(): Promise<TreeValidationResult> {
     this.isSaving.set(true);
-    const country = this.countryFormService.getCountry(this.editForm);
+    const country = this.countryFormService.getCountry(this.countryModel(), this.country);
     if (country.id === null) {
-      this.subscribeToSaveResponse(this.countryService.create(country));
-    } else {
-      this.subscribeToSaveResponse(this.countryService.update(country));
+      return this.subscribeToSaveResponse(this.countryService.create(country));
     }
+    return this.subscribeToSaveResponse(this.countryService.update(country));
   }
 
-  protected subscribeToSaveResponse(result: Observable<ICountry | null>): void {
-    result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(),
-      error: () => this.onSaveError(),
-    });
+  private subscribeToSaveResponse(result: Observable<ICountry | null>): Promise<TreeValidationResult> {
+    return toSubmissionResult(
+      this.editForm,
+      this.serverErrorFields,
+      result.pipe(tap({ next: () => this.onSaveSuccess(), error: () => this.onSaveError(), finalize: () => this.onSaveFinalize() })),
+    );
   }
 
-  protected onSaveSuccess(): void {
+  private onSaveSuccess(): void {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  private onSaveError(): void {
+    // API for inheritance.
   }
 
-  protected onSaveFinalize(): void {
+  private onSaveFinalize(): void {
     this.isSaving.set(false);
   }
 
-  protected updateForm(country: ICountry): void {
+  private updateForm(country: ICountry): void {
     this.country = country;
-    this.countryFormService.resetForm(this.editForm, country);
+    this.countryModel.set(this.countryFormService.createCountryFormModel(country));
 
-    this.regionsCollection.set(this.regionService.addRegionToCollectionIfMissing<IRegion>(this.regionsCollection(), country.region));
+    this.regionsSharedCollection.update(regions => this.regionService.addRegionToCollectionIfMissing<IRegion>(regions, country.region));
   }
 
-  protected loadRelationshipsOptions(): void {
+  private loadRelationshipsOptions(): void {
     this.regionService
-      .query({ filter: 'country-is-null' })
+      .query()
       .pipe(map((res: HttpResponse<IRegion[]>) => res.body ?? []))
       .pipe(map((regions: IRegion[]) => this.regionService.addRegionToCollectionIfMissing<IRegion>(regions, this.country?.region)))
-      .subscribe((regions: IRegion[]) => this.regionsCollection.set(regions));
+      .subscribe((regions: IRegion[]) => this.regionsSharedCollection.set(regions));
   }
 }

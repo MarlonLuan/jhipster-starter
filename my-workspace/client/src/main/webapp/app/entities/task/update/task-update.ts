@@ -1,34 +1,42 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormField, FormRoot, TreeValidationResult } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
-import { Observable, finalize } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
+import { ServerError, toSubmissionResult } from 'app/shared/form';
 import { TranslateDirective } from 'app/shared/language';
 import { TaskService } from '../service/task.service';
 import { ITask } from '../task.model';
 
-import { TaskFormGroup, TaskFormService } from './task-form.service';
+import { TaskFormService } from './task-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-task-update',
   templateUrl: './task-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, FormField, FormRoot, ServerError],
 })
 export class TaskUpdate implements OnInit {
   readonly isSaving = signal(false);
   task: ITask | null = null;
 
-  protected taskService = inject(TaskService);
-  protected taskFormService = inject(TaskFormService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly taskService = inject(TaskService);
+  private readonly taskFormService = inject(TaskFormService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: TaskFormGroup = this.taskFormService.createTaskFormGroup();
+  readonly taskModel = signal(this.taskFormService.createTaskFormModel());
+  // The properties showing the error of the server, which marks them invalid and leaves them out of the alert.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly serverErrorFields = ['title', 'description'] as const;
+
+  // A submit marks the fields as touched and sends nothing while the form is invalid.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly editForm = this.taskFormService.createTaskForm(this.taskModel, {
+    submission: { action: () => this.save() },
+  });
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ task }) => {
@@ -43,37 +51,37 @@ export class TaskUpdate implements OnInit {
     globalThis.history.back();
   }
 
-  save(): void {
+  save(): Promise<TreeValidationResult> {
     this.isSaving.set(true);
-    const task = this.taskFormService.getTask(this.editForm);
+    const task = this.taskFormService.getTask(this.taskModel(), this.task);
     if (task.id === null) {
-      this.subscribeToSaveResponse(this.taskService.create(task));
-    } else {
-      this.subscribeToSaveResponse(this.taskService.update(task));
+      return this.subscribeToSaveResponse(this.taskService.create(task));
     }
+    return this.subscribeToSaveResponse(this.taskService.update(task));
   }
 
-  protected subscribeToSaveResponse(result: Observable<ITask | null>): void {
-    result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(),
-      error: () => this.onSaveError(),
-    });
+  private subscribeToSaveResponse(result: Observable<ITask | null>): Promise<TreeValidationResult> {
+    return toSubmissionResult(
+      this.editForm,
+      this.serverErrorFields,
+      result.pipe(tap({ next: () => this.onSaveSuccess(), error: () => this.onSaveError(), finalize: () => this.onSaveFinalize() })),
+    );
   }
 
-  protected onSaveSuccess(): void {
+  private onSaveSuccess(): void {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  private onSaveError(): void {
+    // API for inheritance.
   }
 
-  protected onSaveFinalize(): void {
+  private onSaveFinalize(): void {
     this.isSaving.set(false);
   }
 
-  protected updateForm(task: ITask): void {
+  private updateForm(task: ITask): void {
     this.task = task;
-    this.taskFormService.resetForm(this.editForm, task);
+    this.taskModel.set(this.taskFormService.createTaskFormModel(task));
   }
 }
