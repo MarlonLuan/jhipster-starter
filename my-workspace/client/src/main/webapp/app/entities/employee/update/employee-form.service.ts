@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Service, WritableSignal } from '@angular/core';
+import { FieldTree, FormOptions, form, readonly } from '@angular/forms/signals';
 
 import dayjs from 'dayjs/esm';
 
-import { DATE_TIME_FORMAT } from 'app/config/input.constants';
+import { DATE_TIME_FORMAT } from 'app/config';
 import { IEmployee, NewEmployee } from '../employee.model';
 
 /**
@@ -12,101 +12,84 @@ import { IEmployee, NewEmployee } from '../employee.model';
 type PartialWithRequiredKeyOf<T extends { id: unknown }> = Partial<Omit<T, 'id'>> & { id: T['id'] };
 
 /**
- * Type for createFormGroup and resetForm argument.
- * It accepts IEmployee for edit and NewEmployeeFormGroupInput for create.
+ * Type for the createFormModel argument.
+ * It accepts IEmployee for edit and NewEmployeeFormInput for create.
  */
-type EmployeeFormGroupInput = IEmployee | PartialWithRequiredKeyOf<NewEmployee>;
+type EmployeeFormInput = IEmployee | PartialWithRequiredKeyOf<NewEmployee>;
+
+type EmployeeFormDefaults = Pick<NewEmployee, 'id'>;
 
 /**
- * Type that converts some properties for forms.
+ * The value of the form: the text fields are strings, empty when the entity has no value, and the dates and times
+ * are the text of their inputs.
  */
-type FormValueOf<T extends IEmployee | NewEmployee> = Omit<T, 'hireDate'> & {
-  hireDate?: string | null;
+export type EmployeeFormModel = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  hireDate: string;
+  salary: NonNullable<IEmployee['salary']> | null;
+  commissionPct: NonNullable<IEmployee['commissionPct']> | null;
+  manager: NonNullable<IEmployee['manager']> | null;
+  department: NonNullable<IEmployee['department']> | null;
 };
 
-type EmployeeFormRawValue = FormValueOf<IEmployee>;
+export type EmployeeForm = FieldTree<EmployeeFormModel>;
 
-type NewEmployeeFormRawValue = FormValueOf<NewEmployee>;
-
-type EmployeeFormDefaults = Pick<NewEmployee, 'id' | 'hireDate'>;
-
-type EmployeeFormGroupContent = {
-  id: FormControl<EmployeeFormRawValue['id'] | NewEmployee['id']>;
-  firstName: FormControl<EmployeeFormRawValue['firstName']>;
-  lastName: FormControl<EmployeeFormRawValue['lastName']>;
-  email: FormControl<EmployeeFormRawValue['email']>;
-  phoneNumber: FormControl<EmployeeFormRawValue['phoneNumber']>;
-  hireDate: FormControl<EmployeeFormRawValue['hireDate']>;
-  salary: FormControl<EmployeeFormRawValue['salary']>;
-  commissionPct: FormControl<EmployeeFormRawValue['commissionPct']>;
-  manager: FormControl<EmployeeFormRawValue['manager']>;
-  department: FormControl<EmployeeFormRawValue['department']>;
-};
-
-export type EmployeeFormGroup = FormGroup<EmployeeFormGroupContent>;
-
-@Injectable({ providedIn: 'root' })
+@Service()
 export class EmployeeFormService {
-  createEmployeeFormGroup(employee?: EmployeeFormGroupInput): EmployeeFormGroup {
-    const employeeRawValue = this.convertEmployeeToEmployeeRawValue({
-      ...this.getFormDefaults(),
-      ...(employee ?? { id: null }),
-    });
-
-    return new FormGroup<EmployeeFormGroupContent>({
-      id: new FormControl(
-        { value: employeeRawValue.id, disabled: true },
-        {
-          nonNullable: true,
-          validators: [Validators.required],
-        },
-      ),
-      firstName: new FormControl(employeeRawValue.firstName),
-      lastName: new FormControl(employeeRawValue.lastName),
-      email: new FormControl(employeeRawValue.email),
-      phoneNumber: new FormControl(employeeRawValue.phoneNumber),
-      hireDate: new FormControl(employeeRawValue.hireDate),
-      salary: new FormControl(employeeRawValue.salary),
-      commissionPct: new FormControl(employeeRawValue.commissionPct),
-      manager: new FormControl(employeeRawValue.manager),
-      department: new FormControl(employeeRawValue.department),
-    });
+  createEmployeeFormModel(employee?: EmployeeFormInput): EmployeeFormModel {
+    const value: Partial<IEmployee> | Partial<NewEmployee> = { ...this.getFormDefaults(), ...employee };
+    return {
+      id: value.id ?? '',
+      firstName: value.firstName ?? '',
+      lastName: value.lastName ?? '',
+      email: value.email ?? '',
+      phoneNumber: value.phoneNumber ?? '',
+      hireDate: value.hireDate ? dayjs(value.hireDate).format(DATE_TIME_FORMAT) : '',
+      salary: value.salary ?? null,
+      commissionPct: value.commissionPct ?? null,
+      manager: value.manager ?? null,
+      department: value.department ?? null,
+    };
   }
 
-  getEmployee(form: EmployeeFormGroup): IEmployee | NewEmployee {
-    return this.convertEmployeeRawValueToEmployee(form.getRawValue());
+  /**
+   * The form of the model, its validation included, created in an injection context.
+   */
+  createEmployeeForm(model: WritableSignal<EmployeeFormModel>, options: FormOptions<EmployeeFormModel> = {}): EmployeeForm {
+    return form(
+      model,
+      path => {
+        readonly(path.id);
+      },
+      options,
+    );
   }
 
-  resetForm(form: EmployeeFormGroup, employee: EmployeeFormGroupInput): void {
-    const employeeRawValue = this.convertEmployeeToEmployeeRawValue({ ...this.getFormDefaults(), ...employee });
-    form.reset({
-      ...employeeRawValue,
-      id: { value: employeeRawValue.id, disabled: true },
-    });
+  /**
+   * The entity of the form. An empty value of the form keeps the empty value of the edited entity, a null one included.
+   */
+  getEmployee(model: EmployeeFormModel, employee?: EmployeeFormInput | null): IEmployee | NewEmployee {
+    return {
+      id: model.id || null,
+      firstName: model.firstName || (employee?.firstName === '' ? '' : null),
+      lastName: model.lastName || (employee?.lastName === '' ? '' : null),
+      email: model.email || (employee?.email === '' ? '' : null),
+      phoneNumber: model.phoneNumber || (employee?.phoneNumber === '' ? '' : null),
+      hireDate: model.hireDate ? dayjs(model.hireDate, DATE_TIME_FORMAT).toJSON() : null,
+      salary: model.salary,
+      commissionPct: model.commissionPct,
+      manager: model.manager,
+      department: model.department,
+    };
   }
 
   private getFormDefaults(): EmployeeFormDefaults {
-    const currentTime = dayjs();
-
     return {
       id: null,
-      hireDate: currentTime,
-    };
-  }
-
-  private convertEmployeeRawValueToEmployee(rawEmployee: EmployeeFormRawValue | NewEmployeeFormRawValue): IEmployee | NewEmployee {
-    return {
-      ...rawEmployee,
-      hireDate: dayjs(rawEmployee.hireDate, DATE_TIME_FORMAT),
-    };
-  }
-
-  private convertEmployeeToEmployeeRawValue(
-    employee: IEmployee | (Partial<NewEmployee> & EmployeeFormDefaults),
-  ): EmployeeFormRawValue | PartialWithRequiredKeyOf<NewEmployeeFormRawValue> {
-    return {
-      ...employee,
-      hireDate: employee.hireDate ? employee.hireDate.format(DATE_TIME_FORMAT) : undefined,
     };
   }
 }

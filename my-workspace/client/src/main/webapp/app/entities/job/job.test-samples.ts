@@ -6,15 +6,15 @@ export const sampleWithRequiredData: IJob = {
 
 export const sampleWithPartialData: IJob = {
   id: '67252276-5028-44c6-8933-292efe5facda',
-  jobTitle: 'Internal Configuration Assistant',
-  maxSalary: 15580,
+  jobTitle: 'decent how even',
+  maxSalary: 20726,
 };
 
 export const sampleWithFullData: IJob = {
   id: '4dfdd60f-7466-42ea-af41-a893fc57e831',
-  jobTitle: 'Legacy Functionality Agent',
-  minSalary: 8606,
-  maxSalary: 14819,
+  jobTitle: 'or baptise upside-down',
+  minSalary: 2001,
+  maxSalary: 26127,
 };
 
 export const sampleWithNewData: NewJob = {

@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
-import { HttpResponse } from '@angular/common/http';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { submit } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { provideTranslateService } from '@ngx-translate/core';
@@ -10,6 +11,7 @@ import { Subject, from, of } from 'rxjs';
 import { ICountry } from 'app/entities/country/country.model';
 import { CountryService } from 'app/entities/country/service/country.service';
 import { ILocation } from '../location.model';
+import { sampleWithRequiredData } from '../location.test-samples';
 import { LocationService } from '../service/location.service';
 
 import { LocationFormService } from './location-form.service';
@@ -47,22 +49,26 @@ describe('Location Management Update Component', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should call country query and add missing value', () => {
+    it('should call Country query and add missing value', () => {
       const location: ILocation = { id: 'a63537fe-865d-41e2-bc62-b6de781e4f03' };
       const country: ICountry = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
       location.country = country;
 
       const countryCollection: ICountry[] = [{ id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' }];
-      vitest.spyOn(countryService, 'query').mockReturnValue(of(new HttpResponse({ body: countryCollection })));
-      const expectedCollection: ICountry[] = [country, ...countryCollection];
-      vitest.spyOn(countryService, 'addCountryToCollectionIfMissing').mockReturnValue(expectedCollection);
+      vi.spyOn(countryService, 'query').mockReturnValue(of(new HttpResponse({ body: countryCollection })));
+      const additionalCountries = [country];
+      const expectedCollection: ICountry[] = [...additionalCountries, ...countryCollection];
+      vi.spyOn(countryService, 'addCountryToCollectionIfMissing').mockReturnValue(expectedCollection);
 
       activatedRoute.data = of({ location });
       comp.ngOnInit();
 
       expect(countryService.query).toHaveBeenCalled();
-      expect(countryService.addCountryToCollectionIfMissing).toHaveBeenCalledWith(countryCollection, country);
-      expect(comp.countriesCollection()).toEqual(expectedCollection);
+      expect(countryService.addCountryToCollectionIfMissing).toHaveBeenCalledWith(
+        countryCollection,
+        ...additionalCountries.map(i => expect.objectContaining(i) as typeof i),
+      );
+      expect(comp.countriesSharedCollection()).toEqual(expectedCollection);
     });
 
     it('should update editForm', () => {
@@ -73,19 +79,32 @@ describe('Location Management Update Component', () => {
       activatedRoute.data = of({ location });
       comp.ngOnInit();
 
-      expect(comp.countriesCollection()).toContainEqual(country);
+      expect(comp.countriesSharedCollection()).toContainEqual(country);
       expect(comp.location).toEqual(location);
     });
   });
 
   describe('save', () => {
+    it('should save a valid submitted form', async () => {
+      // GIVEN
+      vi.spyOn(comp, 'save').mockResolvedValue(undefined);
+      activatedRoute.data = of({ location: sampleWithRequiredData });
+      comp.ngOnInit();
+
+      // WHEN
+      await submit(comp.editForm);
+
+      // THEN
+      expect(comp.save).toHaveBeenCalled();
+    });
+
     it('should call update service on save for existing entity', () => {
       // GIVEN
       const saveSubject = new Subject<ILocation>();
       const location = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
-      vitest.spyOn(locationFormService, 'getLocation').mockReturnValue(location);
-      vitest.spyOn(locationService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(locationFormService, 'getLocation').mockReturnValue(location);
+      vi.spyOn(locationService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ location });
       comp.ngOnInit();
 
@@ -96,7 +115,7 @@ describe('Location Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
-      expect(locationFormService.getLocation).toHaveBeenCalled();
+      expect(locationFormService.getLocation).toHaveBeenCalledWith(comp.locationModel(), location);
       expect(comp.previousState).toHaveBeenCalled();
       expect(locationService.update).toHaveBeenCalledWith(expect.objectContaining(location));
       expect(comp.isSaving()).toEqual(false);
@@ -106,9 +125,9 @@ describe('Location Management Update Component', () => {
       // GIVEN
       const saveSubject = new Subject<ILocation>();
       const location = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
-      vitest.spyOn(locationFormService, 'getLocation').mockReturnValue({ id: null });
-      vitest.spyOn(locationService, 'create').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(locationFormService, 'getLocation').mockReturnValue({ id: null });
+      vi.spyOn(locationService, 'create').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ location: null });
       comp.ngOnInit();
 
@@ -125,12 +144,29 @@ describe('Location Management Update Component', () => {
       expect(comp.previousState).toHaveBeenCalled();
     });
 
+    it('should resolve the submission when the service completes without a value', async () => {
+      // GIVEN
+      const saveSubject = new Subject<ILocation>();
+      vi.spyOn(locationFormService, 'getLocation').mockReturnValue({ id: null });
+      vi.spyOn(locationService, 'create').mockReturnValue(saveSubject);
+      activatedRoute.data = of({ location: null });
+      comp.ngOnInit();
+
+      // WHEN
+      const result = comp.save();
+      saveSubject.complete();
+
+      // THEN
+      expect(await result).toBeUndefined();
+      expect(comp.isSaving()).toEqual(false);
+    });
+
     it('should set isSaving to false on error', () => {
       // GIVEN
       const saveSubject = new Subject<ILocation>();
       const location = { id: '469e42cb-716b-406a-b8e0-a82cf8e41cdc' };
-      vitest.spyOn(locationService, 'update').mockReturnValue(saveSubject);
-      vitest.spyOn(comp, 'previousState');
+      vi.spyOn(locationService, 'update').mockReturnValue(saveSubject);
+      vi.spyOn(comp, 'previousState');
       activatedRoute.data = of({ location });
       comp.ngOnInit();
 
@@ -144,6 +180,53 @@ describe('Location Management Update Component', () => {
       expect(comp.isSaving()).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });
+
+    it('should mark the fields the server refused', async () => {
+      // GIVEN
+      const saveSubject = new Subject<ILocation>();
+      vi.spyOn(locationFormService, 'getLocation').mockReturnValue({ id: null });
+      vi.spyOn(locationService, 'create').mockReturnValue(saveSubject);
+      activatedRoute.data = of({ location: null });
+      comp.ngOnInit();
+
+      // WHEN
+      const result = comp.save();
+      saveSubject.error(
+        new HttpErrorResponse({
+          status: 400,
+          error: {
+            type: 'https://www.jhipster.tech/problem/constraint-violation',
+            message: 'error.validation',
+            fieldErrors: [
+              { objectName: 'location', field: 'streetAddress', message: 'is refused', code: 'Refused' },
+              { objectName: 'location', field: 'id', message: 'is refused', code: 'Refused' },
+              { objectName: 'location', field: 'notAField', message: 'is refused', code: 'Refused' },
+            ],
+          },
+        }),
+      );
+
+      // THEN
+      expect(await result).toEqual([
+        expect.objectContaining({ kind: 'server', message: 'is refused', fieldTree: comp.editForm.streetAddress }),
+      ]);
+    });
+
+    it('should mark no field for an error without field errors', async () => {
+      // GIVEN
+      const saveSubject = new Subject<ILocation>();
+      vi.spyOn(locationFormService, 'getLocation').mockReturnValue({ id: null });
+      vi.spyOn(locationService, 'create').mockReturnValue(saveSubject);
+      activatedRoute.data = of({ location: null });
+      comp.ngOnInit();
+
+      // WHEN
+      const result = comp.save();
+      saveSubject.error(new HttpErrorResponse({ status: 500, error: null }));
+
+      // THEN
+      expect(await result).toBeUndefined();
+    });
   });
 
   describe('Compare relationships', () => {
@@ -151,7 +234,7 @@ describe('Location Management Update Component', () => {
       it('should forward to countryService', () => {
         const entity = { id: 'a1ca43c7-d3dc-4ed5-b59f-305e45dea973' };
         const entity2 = { id: 'd8127cae-0381-4e62-bed7-eae338eaa9ae' };
-        vitest.spyOn(countryService, 'compareCountry');
+        vi.spyOn(countryService, 'compareCountry');
         comp.compareCountry(entity, entity2);
         expect(countryService.compareCountry).toHaveBeenCalledWith(entity, entity2);
       });

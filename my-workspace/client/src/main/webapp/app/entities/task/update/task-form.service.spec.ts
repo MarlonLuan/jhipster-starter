@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../task.test-samples';
@@ -13,75 +14,85 @@ describe('Task Form Service', () => {
   });
 
   describe('Service methods', () => {
-    describe('createTaskFormGroup', () => {
-      it('should create a new form with FormControl', () => {
-        const formGroup = service.createTaskFormGroup();
+    describe('createTaskFormModel', () => {
+      it('should create the model of a new entity', () => {
+        const model = service.createTaskFormModel();
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            title: expect.any(Object),
-            description: expect.any(Object),
-          }),
-        );
+        expect(Object.keys(model)).toEqual(expect.arrayContaining(['id', 'title', 'description']));
+      });
+    });
+
+    describe('createTaskForm', () => {
+      it('should create the form of the model', () => {
+        const model = signal(service.createTaskFormModel(sampleWithRequiredData));
+
+        const form = TestBed.runInInjectionContext(() => service.createTaskForm(model));
+
+        expect(form().value()).toEqual(model());
       });
 
-      it('passing ITask should create a new form with FormGroup', () => {
-        const formGroup = service.createTaskFormGroup(sampleWithRequiredData);
+      it('should accept the values of an entity with its required data', () => {
+        const entity = sampleWithRequiredData;
+        const form = TestBed.runInInjectionContext(() => service.createTaskForm(signal(service.createTaskFormModel(entity))));
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            title: expect.any(Object),
-            description: expect.any(Object),
-          }),
-        );
+        expect(
+          form()
+            .errorSummary()
+            .map(error => error.kind),
+        ).toEqual([]);
+        expect(form().valid()).toBe(true);
+      });
+
+      it('should keep the id readonly', () => {
+        const form = TestBed.runInInjectionContext(() => service.createTaskForm(signal(service.createTaskFormModel())));
+
+        expect(form.id().readonly()).toBe(true);
       });
     });
 
     describe('getTask', () => {
       it('should return NewTask for default Task initial value', () => {
-        const formGroup = service.createTaskFormGroup(sampleWithNewData);
-
-        const task = service.getTask(formGroup);
+        const task = service.getTask(service.createTaskFormModel(sampleWithNewData));
 
         expect(task).toMatchObject(sampleWithNewData);
       });
 
       it('should return NewTask for empty Task initial value', () => {
-        const formGroup = service.createTaskFormGroup();
-
-        const task = service.getTask(formGroup);
+        const task = service.getTask(service.createTaskFormModel());
 
         expect(task).toMatchObject({});
       });
 
       it('should return ITask', () => {
-        const formGroup = service.createTaskFormGroup(sampleWithRequiredData);
-
-        const task = service.getTask(formGroup);
+        const task = service.getTask(service.createTaskFormModel(sampleWithRequiredData));
 
         expect(task).toMatchObject(sampleWithRequiredData);
       });
-    });
 
-    describe('resetForm', () => {
-      it('passing ITask should not enable id FormControl', () => {
-        const formGroup = service.createTaskFormGroup();
-        expect(formGroup.controls.id.disabled).toBe(true);
+      it('should keep the empty values of the edited entity', () => {
+        const entity = {
+          ...sampleWithRequiredData,
+          title: '',
+          description: '',
+        };
 
-        service.resetForm(formGroup, sampleWithRequiredData);
+        const task = service.getTask(service.createTaskFormModel(entity), entity);
 
-        expect(formGroup.controls.id.disabled).toBe(true);
+        expect(task.title).toBe('');
+        expect(task.description).toBe('');
       });
 
-      it('passing NewTask should disable id FormControl', () => {
-        const formGroup = service.createTaskFormGroup(sampleWithRequiredData);
-        expect(formGroup.controls.id.disabled).toBe(true);
+      it('should return the empty values of an entity without them', () => {
+        const entity = {
+          ...sampleWithRequiredData,
+          title: null,
+          description: null,
+        };
 
-        service.resetForm(formGroup, { id: null });
+        const task = service.getTask(service.createTaskFormModel(entity), entity);
 
-        expect(formGroup.controls.id.disabled).toBe(true);
+        expect(task.title).toBeNull();
+        expect(task.description).toBeNull();
       });
     });
   });

@@ -2,28 +2,27 @@ package com.mycompany.myapp.security.oauth2;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mycompany.myapp.IntegrationTest;
 import com.mycompany.myapp.security.AuthoritiesConstants;
 import com.mycompany.myapp.security.SecurityUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestClient;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 @IntegrationTest
 class CustomClaimConverterIT {
@@ -37,8 +36,10 @@ class CustomClaimConverterIT {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    @MockitoBean
-    private RestTemplate restTemplate;
+    @Autowired
+    private RestClient.Builder restClientBuilder;
+
+    private MockRestServiceServer mockServer;
 
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
@@ -47,18 +48,23 @@ class CustomClaimConverterIT {
 
     @BeforeEach
     void initTest() {
-        customClaimConverter = new CustomClaimConverter(clientRegistrationRepository.findByRegistrationId("oidc"), restTemplate);
+        mockServer = MockRestServiceServer.bindTo(restClientBuilder).build();
+        customClaimConverter = new CustomClaimConverter(
+            clientRegistrationRepository.findByRegistrationId("oidc"),
+            restClientBuilder.build()
+        );
+    }
+
+    @AfterEach
+    void verifyUserInfoRequests() {
+        mockServer.verify();
     }
 
     private void mockHttpGetUserInfo(ObjectNode userInfo) {
-        when(
-            restTemplate.exchange(
-                eq("https://api.jhipster.org/user"),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                ArgumentMatchers.<Class<ObjectNode>>any()
-            )
-        ).thenReturn(ResponseEntity.ok(userInfo));
+        mockServer
+            .expect(requestTo("https://api.jhipster.org/user"))
+            .andExpect(method(HttpMethod.GET))
+            .andRespond(withSuccess(mapper.writeValueAsString(userInfo), MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -178,7 +184,6 @@ class CustomClaimConverterIT {
 
         assertThatCode(() -> {
             Map<String, Object> convertedClaims = customClaimConverter.convert(claims);
-            System.out.println(convertedClaims);
             assertThat(convertedClaims)
                 .containsEntry("preferred_username", USERNAME)
                 .containsEntry("given_name", NAME)

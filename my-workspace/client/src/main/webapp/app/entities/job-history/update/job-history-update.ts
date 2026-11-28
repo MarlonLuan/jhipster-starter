@@ -1,11 +1,11 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormField, FormRoot, TreeValidationResult } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Observable, finalize, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 
 import { IDepartment } from 'app/entities/department/department.model';
 import { DepartmentService } from 'app/entities/department/service/department.service';
@@ -14,37 +14,46 @@ import { EmployeeService } from 'app/entities/employee/service/employee.service'
 import { Language } from 'app/entities/enumerations/language.model';
 import { IJob } from 'app/entities/job/job.model';
 import { JobService } from 'app/entities/job/service/job.service';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
+import { SelectOptionsDirective, ServerError, toSubmissionResult } from 'app/shared/form';
 import { TranslateDirective } from 'app/shared/language';
 import { IJobHistory } from '../job-history.model';
 import { JobHistoryService } from '../service/job-history.service';
 
-import { JobHistoryFormGroup, JobHistoryFormService } from './job-history-form.service';
+import { JobHistoryFormService } from './job-history-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-job-history-update',
   templateUrl: './job-history-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, FormField, FormRoot, SelectOptionsDirective, ServerError],
 })
 export class JobHistoryUpdate implements OnInit {
   readonly isSaving = signal(false);
   jobHistory: IJobHistory | null = null;
   languageValues = Object.keys(Language);
 
-  jobsCollection = signal<IJob[]>([]);
-  departmentsCollection = signal<IDepartment[]>([]);
-  employeesCollection = signal<IEmployee[]>([]);
+  jobsSharedCollection = signal<IJob[]>([]);
+  departmentsSharedCollection = signal<IDepartment[]>([]);
+  employeesSharedCollection = signal<IEmployee[]>([]);
 
-  protected jobHistoryService = inject(JobHistoryService);
-  protected jobHistoryFormService = inject(JobHistoryFormService);
-  protected jobService = inject(JobService);
-  protected departmentService = inject(DepartmentService);
-  protected employeeService = inject(EmployeeService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly jobHistoryService = inject(JobHistoryService);
+  private readonly jobHistoryFormService = inject(JobHistoryFormService);
+  private readonly jobService = inject(JobService);
+  private readonly departmentService = inject(DepartmentService);
+  private readonly employeeService = inject(EmployeeService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: JobHistoryFormGroup = this.jobHistoryFormService.createJobHistoryFormGroup();
+  readonly jobHistoryModel = signal(this.jobHistoryFormService.createJobHistoryFormModel());
+  // The properties showing the error of the server, which marks them invalid and leaves them out of the alert.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly serverErrorFields = ['startDate', 'endDate', 'language', 'job', 'department', 'employee'] as const;
+
+  // A submit marks the fields as touched and sends nothing while the form is invalid.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly editForm = this.jobHistoryFormService.createJobHistoryForm(this.jobHistoryModel, {
+    submission: { action: () => this.save() },
+  });
 
   compareJob = (o1: IJob | null, o2: IJob | null): boolean => this.jobService.compareJob(o1, o2);
 
@@ -67,73 +76,73 @@ export class JobHistoryUpdate implements OnInit {
     globalThis.history.back();
   }
 
-  save(): void {
+  save(): Promise<TreeValidationResult> {
     this.isSaving.set(true);
-    const jobHistory = this.jobHistoryFormService.getJobHistory(this.editForm);
+    const jobHistory = this.jobHistoryFormService.getJobHistory(this.jobHistoryModel());
     if (jobHistory.id === null) {
-      this.subscribeToSaveResponse(this.jobHistoryService.create(jobHistory));
-    } else {
-      this.subscribeToSaveResponse(this.jobHistoryService.update(jobHistory));
+      return this.subscribeToSaveResponse(this.jobHistoryService.create(jobHistory));
     }
+    return this.subscribeToSaveResponse(this.jobHistoryService.update(jobHistory));
   }
 
-  protected subscribeToSaveResponse(result: Observable<IJobHistory | null>): void {
-    result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(),
-      error: () => this.onSaveError(),
-    });
+  private subscribeToSaveResponse(result: Observable<IJobHistory | null>): Promise<TreeValidationResult> {
+    return toSubmissionResult(
+      this.editForm,
+      this.serverErrorFields,
+      result.pipe(tap({ next: () => this.onSaveSuccess(), error: () => this.onSaveError(), finalize: () => this.onSaveFinalize() })),
+    );
   }
 
-  protected onSaveSuccess(): void {
+  private onSaveSuccess(): void {
     this.previousState();
   }
 
-  protected onSaveError(): void {
-    // Api for inheritance.
+  private onSaveError(): void {
+    // API for inheritance.
   }
 
-  protected onSaveFinalize(): void {
+  private onSaveFinalize(): void {
     this.isSaving.set(false);
   }
 
-  protected updateForm(jobHistory: IJobHistory): void {
+  private updateForm(jobHistory: IJobHistory): void {
     this.jobHistory = jobHistory;
-    this.jobHistoryFormService.resetForm(this.editForm, jobHistory);
+    this.jobHistoryModel.set(this.jobHistoryFormService.createJobHistoryFormModel(jobHistory));
 
-    this.jobsCollection.set(this.jobService.addJobToCollectionIfMissing<IJob>(this.jobsCollection(), jobHistory.job));
-    this.departmentsCollection.set(
-      this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(this.departmentsCollection(), jobHistory.department),
+    this.jobsSharedCollection.update(jobs => this.jobService.addJobToCollectionIfMissing<IJob>(jobs, jobHistory.job));
+    this.departmentsSharedCollection.update(departments =>
+      this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(departments, jobHistory.department),
     );
-    this.employeesCollection.set(
-      this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(this.employeesCollection(), jobHistory.employee),
+    this.employeesSharedCollection.update(employees =>
+      this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, jobHistory.employee),
     );
   }
 
-  protected loadRelationshipsOptions(): void {
+  private loadRelationshipsOptions(): void {
     this.jobService
-      .query({ filter: 'jobhistory-is-null' })
+      .query()
       .pipe(map((res: HttpResponse<IJob[]>) => res.body ?? []))
       .pipe(map((jobs: IJob[]) => this.jobService.addJobToCollectionIfMissing<IJob>(jobs, this.jobHistory?.job)))
-      .subscribe((jobs: IJob[]) => this.jobsCollection.set(jobs));
+      .subscribe((jobs: IJob[]) => this.jobsSharedCollection.set(jobs));
 
     this.departmentService
-      .query({ filter: 'jobhistory-is-null' })
+      .query()
       .pipe(map((res: HttpResponse<IDepartment[]>) => res.body ?? []))
       .pipe(
         map((departments: IDepartment[]) =>
           this.departmentService.addDepartmentToCollectionIfMissing<IDepartment>(departments, this.jobHistory?.department),
         ),
       )
-      .subscribe((departments: IDepartment[]) => this.departmentsCollection.set(departments));
+      .subscribe((departments: IDepartment[]) => this.departmentsSharedCollection.set(departments));
 
     this.employeeService
-      .query({ filter: 'jobhistory-is-null' })
+      .query()
       .pipe(map((res: HttpResponse<IEmployee[]>) => res.body ?? []))
       .pipe(
         map((employees: IEmployee[]) =>
           this.employeeService.addEmployeeToCollectionIfMissing<IEmployee>(employees, this.jobHistory?.employee),
         ),
       )
-      .subscribe((employees: IEmployee[]) => this.employeesCollection.set(employees));
+      .subscribe((employees: IEmployee[]) => this.employeesSharedCollection.set(employees));
   }
 }

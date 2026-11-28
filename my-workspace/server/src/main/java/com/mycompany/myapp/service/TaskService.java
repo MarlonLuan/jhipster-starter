@@ -27,14 +27,6 @@ public interface TaskService {
     TaskDTO update(TaskDTO taskDTO);
 
     /**
-     * Partially updates a task.
-     *
-     * @param taskDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<TaskDTO> partialUpdate(TaskDTO taskDTO);
-
-    /**
      * Get all the tasks.
      *
      * @param pageable the pagination information.

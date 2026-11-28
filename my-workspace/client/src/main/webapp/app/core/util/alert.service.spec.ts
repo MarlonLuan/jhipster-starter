@@ -1,14 +1,15 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { WritableSignal, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { MissingTranslationHandler, TranslateService, provideTranslateService } from '@ngx-translate/core';
 
-import { missingTranslationHandler } from '../../config/translation.config';
+import { missingTranslationHandler } from 'app/config';
 
 import { AlertModel, AlertService } from './alert.service';
 
 describe('Alert Service Test', () => {
-  let extAlerts: AlertModel[];
+  let extAlerts: WritableSignal<AlertModel[]>;
   let service: AlertService;
   let translateService: TranslateService;
 
@@ -26,8 +27,12 @@ describe('Alert Service Test', () => {
     service = TestBed.inject(AlertService);
     translateService = TestBed.inject(TranslateService);
     translateService.setFallbackLang('en');
-    vitest.useFakeTimers();
-    extAlerts = [];
+    vi.useFakeTimers();
+    extAlerts = signal([]);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should produce a proper alert object and fetch it', () => {
@@ -86,8 +91,8 @@ describe('Alert Service Test', () => {
       }),
     );
 
-    expect(extAlerts).toHaveLength(1);
-    expect(extAlerts[0]).toEqual(
+    expect(extAlerts()).toHaveLength(1);
+    expect(extAlerts()[0]).toEqual(
       expect.objectContaining({
         type: 'success',
         message: 'Hello Jhipster',
@@ -97,6 +102,8 @@ describe('Alert Service Test', () => {
         position: 'top left',
       }),
     );
+    extAlerts()[0].close?.();
+    expect(extAlerts()).toHaveLength(0);
   });
 
   it('should produce an alert object with correct id', () => {
@@ -132,7 +139,7 @@ describe('Alert Service Test', () => {
     );
 
     expect(service.get()).toHaveLength(3);
-    alert1.close?.(service.get());
+    alert1.close?.();
     expect(service.get()).toHaveLength(2);
     expect(service.get()[1]).not.toEqual(
       expect.objectContaining({
@@ -141,7 +148,7 @@ describe('Alert Service Test', () => {
         id: 1,
       }),
     );
-    alert2.close?.(service.get());
+    alert2.close?.();
     expect(service.get()).toHaveLength(1);
     expect(service.get()[0]).not.toEqual(
       expect.objectContaining({
@@ -150,7 +157,7 @@ describe('Alert Service Test', () => {
         id: 2,
       }),
     );
-    alert0.close?.(service.get());
+    alert0.close?.();
     expect(service.get()).toHaveLength(0);
   });
 
@@ -159,7 +166,7 @@ describe('Alert Service Test', () => {
 
     expect(service.get()).toHaveLength(1);
 
-    vitest.advanceTimersByTime(6000);
+    vi.advanceTimersByTime(6000);
 
     expect(service.get()).toHaveLength(0);
   });
@@ -183,7 +190,7 @@ describe('Alert Service Test', () => {
           toast: true,
           position: 'top left',
         },
-        [],
+        signal([]),
       ),
     ).toEqual(
       expect.objectContaining({
@@ -236,7 +243,7 @@ describe('Alert Service Test', () => {
     );
   });
 
-  it('should produce a info message', () => {
+  it('should produce an info message', () => {
     expect(service.addAlert({ type: 'info', message: 'Hello Jhipster' })).toEqual(
       expect.objectContaining({
         type: 'info',
@@ -245,7 +252,7 @@ describe('Alert Service Test', () => {
     );
   });
 
-  it('should produce a info message with translated message if key exists', () => {
+  it('should produce an info message with translated message if key exists', () => {
     translateService.setTranslation('en', {
       'hello.jhipster': 'Translated message',
     });
@@ -257,7 +264,7 @@ describe('Alert Service Test', () => {
     );
   });
 
-  it('should produce a info message with provided message if key does not exists', () => {
+  it('should produce an info message with provided message if key does not exist', () => {
     expect(service.addAlert({ type: 'info', message: 'Hello Jhipster', translationKey: 'hello.jhipster' })).toEqual(
       expect.objectContaining({
         type: 'info',
@@ -266,7 +273,7 @@ describe('Alert Service Test', () => {
     );
   });
 
-  it('should produce a info message with provided key if translation key does not exist in translations and message is not provided', () => {
+  it('should produce an info message with provided key if translation key does not exist in translations and message is not provided', () => {
     expect(service.addAlert({ type: 'info', translationKey: 'hello.jhipster' })).toEqual(
       expect.objectContaining({
         type: 'info',

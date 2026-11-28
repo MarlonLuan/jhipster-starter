@@ -1,6 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, LOCALE_ID, inject } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { provideSignalFormsConfig } from '@angular/forms/signals';
 import {
   NavigationError,
   Router,
@@ -18,10 +18,11 @@ import { environment } from 'environments/environment';
 
 import { authExpiredInterceptor } from 'app/core/interceptor/auth-expired.interceptor';
 import { errorHandlerInterceptor } from 'app/core/interceptor/error-handler.interceptor';
+import { languageInterceptor } from 'app/core/interceptor/language.interceptor';
 import { notificationInterceptor } from 'app/core/interceptor/notification.interceptor';
 
 import './config/dayjs';
-import { provideTranslation } from 'app/shared/language/translation.provider';
+import { provideTranslation } from 'app/shared/language';
 
 import { AppPageTitleStrategy } from './app-page-title-strategy';
 import routes from './app.routes';
@@ -32,13 +33,13 @@ const routerFeatures: RouterFeatures[] = [
   withNavigationErrorHandler((e: NavigationError) => {
     const router = inject(Router);
     if (e.error.status === 403) {
-      router.navigate(['/accessdenied']);
+      void router.navigate(['/accessdenied']);
     } else if (e.error.status === 404) {
-      router.navigate(['/404']);
+      void router.navigate(['/404']);
     } else if (e.error.status === 401) {
-      router.navigate(['/login']);
+      void router.navigate(['/login']);
     } else {
-      router.navigate(['/error']);
+      void router.navigate(['/error']);
     }
   }),
 ];
@@ -49,11 +50,18 @@ if (environment.DEBUG_INFO_ENABLED) {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideTranslation(),
+    // The validation classes of Bootstrap, the ones the clients have in common: a field is marked once touched or changed.
+    provideSignalFormsConfig({
+      classes: {
+        'is-invalid': ({ state }) => (state().touched() || state().dirty()) && state().invalid(),
+        'is-valid': ({ state }) => (state().touched() || state().dirty()) && state().valid(),
+        'is-touched': ({ state }) => state().touched(),
+      },
+    }),
     provideRouter(routes, ...routerFeatures),
     // Set this to true to enable service worker (PWA)
     provideServiceWorker('ngsw-worker.js', { enabled: false }),
-    provideHttpClient(withInterceptors([authExpiredInterceptor, errorHandlerInterceptor, notificationInterceptor])),
-    Title,
+    provideHttpClient(withInterceptors([languageInterceptor, authExpiredInterceptor, errorHandlerInterceptor, notificationInterceptor])),
     { provide: LOCALE_ID, useValue: 'en' },
     { provide: NgbDateAdapter, useClass: NgbDateDayjsAdapter },
     { provide: TitleStrategy, useClass: AppPageTitleStrategy },

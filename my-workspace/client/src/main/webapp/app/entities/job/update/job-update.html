@@ -1,83 +1,82 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <form name="editForm" [formRoot]="editForm">
       <h2 id="jhi-job-heading" data-cy="JobCreateUpdateHeading" jhiTranslate="jhipsterApp.job.home.createOrEditLabel">
         Create or edit a Job
       </h2>
 
       <div>
-        <jhi-alert-error />
+        <jhi-alert-error [formFields]="serverErrorFields" />
 
-        @if (editForm.controls.id.value !== null) {
+        @if (editForm.id().value() !== '') {
           <div class="mb-3">
             <label class="form-label" for="field_id" jhiTranslate="jhipsterApp.job.id">Id</label>
-            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+            <input type="text" class="form-control" id="field_id" data-cy="id" [formField]="editForm.id" />
           </div>
         }
 
         <div class="mb-3">
           <label class="form-label" for="field_jobTitle" jhiTranslate="jhipsterApp.job.jobTitle">Job Title</label>
-          <input type="text" class="form-control" name="jobTitle" id="field_jobTitle" data-cy="jobTitle" formControlName="jobTitle" />
+          <input type="text" class="form-control" id="field_jobTitle" data-cy="jobTitle" [formField]="editForm.jobTitle" />
+          <jhi-server-error [field]="editForm.jobTitle" />
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="field_minSalary" jhiTranslate="jhipsterApp.job.minSalary">Min Salary</label>
-          <input type="number" class="form-control" name="minSalary" id="field_minSalary" data-cy="minSalary" formControlName="minSalary" />
+          <input type="number" class="form-control" id="field_minSalary" data-cy="minSalary" [formField]="editForm.minSalary" />
+          <jhi-server-error [field]="editForm.minSalary" />
         </div>
 
         <div class="mb-3">
           <label class="form-label" for="field_maxSalary" jhiTranslate="jhipsterApp.job.maxSalary">Max Salary</label>
-          <input type="number" class="form-control" name="maxSalary" id="field_maxSalary" data-cy="maxSalary" formControlName="maxSalary" />
+          <input type="number" class="form-control" id="field_maxSalary" data-cy="maxSalary" [formField]="editForm.maxSalary" />
+          <jhi-server-error [field]="editForm.maxSalary" />
         </div>
 
         <div class="mb-3">
           <label for="field_tasks" jhiTranslate="jhipsterApp.job.task">Task</label>
           <select
-            class="form-control"
+            class="form-select"
             id="field_tasks"
             data-cy="task"
             multiple
-            name="tasks"
-            formControlName="tasks"
+            [formField]="editForm.tasks"
+            [jhiSelectOptions]="tasksSharedCollection()"
             [compareWith]="compareTask"
           >
             @for (taskOption of tasksSharedCollection(); track $index) {
-              <option [ngValue]="taskOption">{{ taskOption.title }}</option>
+              <option [value]="$index">{{ taskOption.title }}</option>
             }
           </select>
         </div>
+        <jhi-server-error [field]="editForm.tasks" />
 
         <div class="mb-3">
           <label class="form-label" for="field_employee" jhiTranslate="jhipsterApp.job.employee">Employee</label>
           <select
-            class="form-control"
+            class="form-select"
             id="field_employee"
             data-cy="employee"
-            name="employee"
-            formControlName="employee"
+            [formField]="editForm.employee"
+            [jhiSelectOptions]="employeesSharedCollection()"
             [compareWith]="compareEmployee"
           >
-            <option [ngValue]="null"></option>
+            <option value=""></option>
             @for (employeeOption of employeesSharedCollection(); track $index) {
-              <option [ngValue]="employeeOption">{{ employeeOption.id }}</option>
+              <option [value]="$index">{{ employeeOption.id }}</option>
             }
           </select>
         </div>
+        <jhi-server-error [field]="editForm.employee" />
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-info" (click)="previousState()">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
-        <button
-          type="submit"
-          id="save-entity"
-          data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
-        >
-          <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        <button type="submit" id="save-entity" data-cy="entityCreateSaveButton" [disabled]="isSaving()" class="btn btn-primary">
+          <fa-icon icon="floppy-disk" />&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>
       </div>
     </form>

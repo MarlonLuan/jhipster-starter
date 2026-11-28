@@ -1,47 +1,17 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 
-import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { TranslatePipe } from '@ngx-translate/core';
+import { map } from 'rxjs';
 
 import { TranslateDirective } from 'app/shared/language';
 
 @Component({
   selector: 'jhi-error',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslateDirective],
+  imports: [TranslateDirective, TranslatePipe],
   templateUrl: './error.html',
 })
-export default class Error implements OnInit, OnDestroy {
-  readonly errorMessage = signal<string | undefined>(undefined);
-  errorKey?: string;
-  langChangeSubscription?: Subscription;
-
-  private readonly translateService = inject(TranslateService);
-  private readonly route = inject(ActivatedRoute);
-
-  ngOnInit(): void {
-    this.route.data.subscribe(routeData => {
-      if (routeData.errorMessage) {
-        this.errorKey = routeData.errorMessage;
-        this.getErrorMessageTranslation();
-        this.langChangeSubscription = this.translateService.onLangChange.subscribe(() => this.getErrorMessageTranslation());
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    if (this.langChangeSubscription) {
-      this.langChangeSubscription.unsubscribe();
-    }
-  }
-
-  private getErrorMessageTranslation(): void {
-    this.errorMessage.set('');
-    if (this.errorKey) {
-      this.translateService.get(this.errorKey).subscribe(translatedErrorMessage => {
-        this.errorMessage.set(translatedErrorMessage);
-      });
-    }
-  }
+export default class Error {
+  readonly errorMessage = toSignal(inject(ActivatedRoute).data.pipe(map(data => data.errorMessage as string | undefined)));
 }

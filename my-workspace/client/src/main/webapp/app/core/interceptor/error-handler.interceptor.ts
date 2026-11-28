@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 
 import { tap } from 'rxjs';
 
-import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
+import { EventManager, EventWithContent } from 'app/core/util';
 
 export const errorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
   const eventManager = inject(EventManager);
@@ -11,7 +11,8 @@ export const errorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     tap({
       error(err: HttpErrorResponse) {
-        if (!(err.status === 401 && (err.message === '' || err.url?.includes('api/account')))) {
+        // A 401 leaves for the login, which tells why.
+        if (err.status !== 401) {
           eventManager.broadcast(new EventWithContent('jhipsterApp.httpError', err));
         }
       },

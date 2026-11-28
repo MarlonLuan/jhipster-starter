@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Refresh oauth2 tokens.
+ * Refresh OAuth2 tokens.
  */
 @Component
 public class OAuth2RefreshTokensWebFilter extends OncePerRequestFilter {
@@ -48,7 +48,8 @@ public class OAuth2RefreshTokensWebFilter extends OncePerRequestFilter {
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws IOException, ServletException {
+        throws IOException, ServletException
+    {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof OAuth2AuthenticationToken) {
             try {

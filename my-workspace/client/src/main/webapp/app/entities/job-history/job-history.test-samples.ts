@@ -1,5 +1,3 @@
-import dayjs from 'dayjs/esm';
-
 import { IJobHistory, NewJobHistory } from './job-history.model';
 
 export const sampleWithRequiredData: IJobHistory = {
@@ -13,8 +11,8 @@ export const sampleWithPartialData: IJobHistory = {
 
 export const sampleWithFullData: IJobHistory = {
   id: 'dbe9e736-a37d-4270-9102-6e7506f8aa24',
-  startDate: dayjs('2023-12-23T22:11'),
-  endDate: dayjs('2023-12-24T09:22'),
+  startDate: '2023-12-23T22:11:00.000Z',
+  endDate: '2023-12-24T09:22:00.000Z',
   language: 'FRENCH',
 };
 

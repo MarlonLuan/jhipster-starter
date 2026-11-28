@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vitest } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
@@ -6,9 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
-import { Account } from 'app/core/auth/account.model';
-import { AccountService } from 'app/core/auth/account.service';
-import { ProfileInfo } from 'app/layouts/profiles/profile-info.model';
+import { Account, AccountService } from 'app/core/auth';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { LoginService } from 'app/login/login.service';
 
@@ -53,7 +51,7 @@ describe('Navbar Component', () => {
 
   it('should call profileService.getProfileInfo on init', () => {
     // GIVEN
-    vitest.spyOn(profileService, 'getProfileInfo').mockReturnValue(of(new ProfileInfo()));
+    vi.spyOn(profileService, 'getProfileInfo').mockReturnValue(of({}));
 
     // WHEN
     comp.ngOnInit();

@@ -1,40 +1,48 @@
 import { HttpResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormField, FormRoot, TreeValidationResult } from '@angular/forms/signals';
 import { ActivatedRoute } from '@angular/router';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { TranslatePipe } from '@ngx-translate/core';
-import { Observable, finalize, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 
 import { ILocation } from 'app/entities/location/location.model';
 import { LocationService } from 'app/entities/location/service/location.service';
-import { AlertError } from 'app/shared/alert/alert-error';
+import { AlertError } from 'app/shared/alert';
+import { SelectOptionsDirective, ServerError, toSubmissionResult } from 'app/shared/form';
 import { TranslateDirective } from 'app/shared/language';
 import { IDepartment } from '../department.model';
 import { DepartmentService } from '../service/department.service';
 
-import { DepartmentFormGroup, DepartmentFormService } from './department-form.service';
+import { DepartmentFormService } from './department-form.service';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'jhi-department-update',
   templateUrl: './department-update.html',
-  imports: [TranslateDirective, TranslatePipe, FontAwesomeModule, AlertError, ReactiveFormsModule],
+  imports: [TranslateDirective, FontAwesomeModule, AlertError, FormField, FormRoot, SelectOptionsDirective, ServerError],
 })
 export class DepartmentUpdate implements OnInit {
   readonly isSaving = signal(false);
   department: IDepartment | null = null;
 
-  locationsCollection = signal<ILocation[]>([]);
+  locationsSharedCollection = signal<ILocation[]>([]);
 
-  protected departmentService = inject(DepartmentService);
-  protected departmentFormService = inject(DepartmentFormService);
-  protected locationService = inject(LocationService);
-  protected activatedRoute = inject(ActivatedRoute);
+  private readonly departmentService = inject(DepartmentService);
+  private readonly departmentFormService = inject(DepartmentFormService);
+  private readonly locationService = inject(LocationService);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
-  editForm: DepartmentFormGroup = this.departmentFormService.createDepartmentFormGroup();
+  readonly departmentModel = signal(this.departmentFormService.createDepartmentFormModel());
+  // The properties showing the error of the server, which marks them invalid and leaves them out of the alert.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly serverErrorFields = ['departmentName', 'location'] as const;
+
+  // A submit marks the fields as touched and sends nothing while the form is invalid.
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  readonly editForm = this.departmentFormService.createDepartmentForm(this.departmentModel, {
+    submission: { action: () => this.save() },
+  });
 
   compareLocation = (o1: ILocation | null, o2: ILocation | null): boolean => this.locationService.compareLocation(o1, o2);
 
@@ -53,53 +61,53 @@ export class DepartmentUpdate implements OnInit {
     globalThis.history.back();
   }
 
-  save(): void {
+  save(): Promise<TreeValidationResult> {
     this.isSaving.set(true);
-    const department = this.departmentFormService.getDepartment(this.editForm);
+    const department = this.departmentFormService.getDepartment(this.departmentModel());
     if (department.id === null) {
-      this.subscribeToSaveResponse(this.departmentService.create(department));
-    } else {
-      this.subscribeToSaveResponse(this.departmentService.update(department));
+      return this.subscribeToSaveResponse(this.departmentService.create(department));
     }
+    return this.subscribeToSaveResponse(this.departmentService.update(department));
   }
 
-  protected subscribeToSaveResponse(result: Observable<IDepartment | null>): void {
-    result.pipe(finalize(() => this.onSaveFinalize())).subscribe({
-      next: () => this.onSaveSuccess(),
-      error: () => this.onSaveError(),
-    });
-  }
-
-  protected onSaveSuccess(): void {
-    this.previousState();
-  }
-
-  protected onSaveError(): void {
-    // Api for inheritance.
-  }
-
-  protected onSaveFinalize(): void {
-    this.isSaving.set(false);
-  }
-
-  protected updateForm(department: IDepartment): void {
-    this.department = department;
-    this.departmentFormService.resetForm(this.editForm, department);
-
-    this.locationsCollection.set(
-      this.locationService.addLocationToCollectionIfMissing<ILocation>(this.locationsCollection(), department.location),
+  private subscribeToSaveResponse(result: Observable<IDepartment | null>): Promise<TreeValidationResult> {
+    return toSubmissionResult(
+      this.editForm,
+      this.serverErrorFields,
+      result.pipe(tap({ next: () => this.onSaveSuccess(), error: () => this.onSaveError(), finalize: () => this.onSaveFinalize() })),
     );
   }
 
-  protected loadRelationshipsOptions(): void {
+  private onSaveSuccess(): void {
+    this.previousState();
+  }
+
+  private onSaveError(): void {
+    // API for inheritance.
+  }
+
+  private onSaveFinalize(): void {
+    this.isSaving.set(false);
+  }
+
+  private updateForm(department: IDepartment): void {
+    this.department = department;
+    this.departmentModel.set(this.departmentFormService.createDepartmentFormModel(department));
+
+    this.locationsSharedCollection.update(locations =>
+      this.locationService.addLocationToCollectionIfMissing<ILocation>(locations, department.location),
+    );
+  }
+
+  private loadRelationshipsOptions(): void {
     this.locationService
-      .query({ filter: 'department-is-null' })
+      .query()
       .pipe(map((res: HttpResponse<ILocation[]>) => res.body ?? []))
       .pipe(
         map((locations: ILocation[]) =>
           this.locationService.addLocationToCollectionIfMissing<ILocation>(locations, this.department?.location),
         ),
       )
-      .subscribe((locations: ILocation[]) => this.locationsCollection.set(locations));
+      .subscribe((locations: ILocation[]) => this.locationsSharedCollection.set(locations));
   }
 }

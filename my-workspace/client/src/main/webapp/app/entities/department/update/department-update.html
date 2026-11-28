@@ -1,34 +1,34 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
-    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+    <form name="editForm" [formRoot]="editForm">
       <h2 id="jhi-department-heading" data-cy="DepartmentCreateUpdateHeading" jhiTranslate="jhipsterApp.department.home.createOrEditLabel">
         Create or edit a Department
       </h2>
 
       <div>
-        <jhi-alert-error />
+        <jhi-alert-error [formFields]="serverErrorFields" />
 
-        @if (editForm.controls.id.value !== null) {
+        @if (editForm.id().value() !== '') {
           <div class="mb-3">
             <label class="form-label" for="field_id" jhiTranslate="jhipsterApp.department.id">Id</label>
-            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+            <input type="text" class="form-control" id="field_id" data-cy="id" [formField]="editForm.id" />
           </div>
         }
 
-        @let departmentNameRef = editForm.get('departmentName')!;
+        @let departmentNameRef = editForm.departmentName();
         <div class="mb-3">
           <label class="form-label" for="field_departmentName" jhiTranslate="jhipsterApp.department.departmentName">Department Name</label>
           <input
             type="text"
             class="form-control"
-            name="departmentName"
             id="field_departmentName"
             data-cy="departmentName"
-            formControlName="departmentName"
+            [formField]="editForm.departmentName"
           />
-          @if (departmentNameRef.invalid && (departmentNameRef.dirty || departmentNameRef.touched)) {
+          <jhi-server-error [field]="editForm.departmentName" />
+          @if (departmentNameRef.invalid() && (departmentNameRef.dirty() || departmentNameRef.touched())) {
             <div>
-              @if (departmentNameRef.errors?.required) {
+              @if (departmentNameRef.getError('required')) {
                 <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
               }
             </div>
@@ -38,34 +38,29 @@
         <div class="mb-3">
           <label class="form-label" for="field_location" jhiTranslate="jhipsterApp.department.location">Location</label>
           <select
-            class="form-control"
+            class="form-select"
             id="field_location"
             data-cy="location"
-            name="location"
-            formControlName="location"
+            [formField]="editForm.location"
+            [jhiSelectOptions]="locationsSharedCollection()"
             [compareWith]="compareLocation"
           >
-            <option [ngValue]="null"></option>
-            @for (locationOption of locationsCollection(); track $index) {
-              <option [ngValue]="locationOption">{{ locationOption.id }}</option>
+            <option value=""></option>
+            @for (locationOption of locationsSharedCollection(); track $index) {
+              <option [value]="$index">{{ locationOption.id }}</option>
             }
           </select>
         </div>
+        <jhi-server-error [field]="editForm.location" />
       </div>
 
       <div>
-        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban" />&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-info" (click)="previousState()">
+          <fa-icon icon="arrow-left" />&nbsp;<span jhiTranslate="entity.action.back">Back</span>
         </button>
 
-        <button
-          type="submit"
-          id="save-entity"
-          data-cy="entityCreateSaveButton"
-          [disabled]="editForm.invalid || isSaving()"
-          class="btn btn-primary"
-        >
-          <fa-icon icon="save" />&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        <button type="submit" id="save-entity" data-cy="entityCreateSaveButton" [disabled]="isSaving()" class="btn btn-primary">
+          <fa-icon icon="floppy-disk" />&nbsp;<span jhiTranslate="entity.action.save">Save</span>
         </button>
       </div>
     </form>

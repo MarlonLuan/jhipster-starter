@@ -3,7 +3,7 @@
   "include": ["src/main/webapp/**/*.ts"],
   "compilerOptions": {
     "composite": true,
-    "outDir": "target/out-tsc/spec",
+    "outDir": "temp/out-tsc/spec",
     "types": ["node"]
   }
 }

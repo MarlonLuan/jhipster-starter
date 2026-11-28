@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { sampleWithNewData, sampleWithRequiredData } from '../department.test-samples';
@@ -13,75 +14,59 @@ describe('Department Form Service', () => {
   });
 
   describe('Service methods', () => {
-    describe('createDepartmentFormGroup', () => {
-      it('should create a new form with FormControl', () => {
-        const formGroup = service.createDepartmentFormGroup();
+    describe('createDepartmentFormModel', () => {
+      it('should create the model of a new entity', () => {
+        const model = service.createDepartmentFormModel();
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            departmentName: expect.any(Object),
-            location: expect.any(Object),
-          }),
-        );
+        expect(Object.keys(model)).toEqual(expect.arrayContaining(['id', 'departmentName', 'location']));
+      });
+    });
+
+    describe('createDepartmentForm', () => {
+      it('should create the form of the model', () => {
+        const model = signal(service.createDepartmentFormModel(sampleWithRequiredData));
+
+        const form = TestBed.runInInjectionContext(() => service.createDepartmentForm(model));
+
+        expect(form().value()).toEqual(model());
       });
 
-      it('passing IDepartment should create a new form with FormGroup', () => {
-        const formGroup = service.createDepartmentFormGroup(sampleWithRequiredData);
+      it('should accept the values of an entity with its required data', () => {
+        const entity = sampleWithRequiredData;
+        const form = TestBed.runInInjectionContext(() => service.createDepartmentForm(signal(service.createDepartmentFormModel(entity))));
 
-        expect(formGroup.controls).toEqual(
-          expect.objectContaining({
-            id: expect.any(Object),
-            departmentName: expect.any(Object),
-            location: expect.any(Object),
-          }),
-        );
+        expect(
+          form()
+            .errorSummary()
+            .map(error => error.kind),
+        ).toEqual([]);
+        expect(form().valid()).toBe(true);
+      });
+
+      it('should keep the id readonly', () => {
+        const form = TestBed.runInInjectionContext(() => service.createDepartmentForm(signal(service.createDepartmentFormModel())));
+
+        expect(form.id().readonly()).toBe(true);
       });
     });
 
     describe('getDepartment', () => {
       it('should return NewDepartment for default Department initial value', () => {
-        const formGroup = service.createDepartmentFormGroup(sampleWithNewData);
-
-        const department = service.getDepartment(formGroup);
+        const department = service.getDepartment(service.createDepartmentFormModel(sampleWithNewData));
 
         expect(department).toMatchObject(sampleWithNewData);
       });
 
       it('should return NewDepartment for empty Department initial value', () => {
-        const formGroup = service.createDepartmentFormGroup();
-
-        const department = service.getDepartment(formGroup);
+        const department = service.getDepartment(service.createDepartmentFormModel());
 
         expect(department).toMatchObject({});
       });
 
       it('should return IDepartment', () => {
-        const formGroup = service.createDepartmentFormGroup(sampleWithRequiredData);
-
-        const department = service.getDepartment(formGroup);
+        const department = service.getDepartment(service.createDepartmentFormModel(sampleWithRequiredData));
 
         expect(department).toMatchObject(sampleWithRequiredData);
-      });
-    });
-
-    describe('resetForm', () => {
-      it('passing IDepartment should not enable id FormControl', () => {
-        const formGroup = service.createDepartmentFormGroup();
-        expect(formGroup.controls.id.disabled).toBe(true);
-
-        service.resetForm(formGroup, sampleWithRequiredData);
-
-        expect(formGroup.controls.id.disabled).toBe(true);
-      });
-
-      it('passing NewDepartment should disable id FormControl', () => {
-        const formGroup = service.createDepartmentFormGroup(sampleWithRequiredData);
-        expect(formGroup.controls.id.disabled).toBe(true);
-
-        service.resetForm(formGroup, { id: null });
-
-        expect(formGroup.controls.id.disabled).toBe(true);
       });
     });
   });

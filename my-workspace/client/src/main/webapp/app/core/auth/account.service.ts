@@ -1,31 +1,32 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Service, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, catchError, of, shareReplay, tap } from 'rxjs';
+import { Observable, catchError, of, shareReplay, tap, throwError } from 'rxjs';
 
-import { Account } from 'app/core/auth/account.model';
-import { StateStorageService } from 'app/core/auth/state-storage.service';
-import { ApplicationConfigService } from '../config/application-config.service';
+import { serverApiUrl } from 'app/config';
 
-@Injectable({ providedIn: 'root' })
+import { Account } from './account.model';
+import { StateStorageService } from './state-storage.service';
+
+@Service()
 export class AccountService {
   private readonly userIdentity = signal<Account | null>(null);
   // eslint-disable-next-line @typescript-eslint/member-ordering
   readonly account = this.userIdentity.asReadonly();
-  private accountCache$?: Observable<Account> | null;
+  private accountCache$?: Observable<Account | null> | null;
 
   private readonly translateService = inject(TranslateService);
   private readonly http = inject(HttpClient);
   private readonly stateStorageService = inject(StateStorageService);
   private readonly router = inject(Router);
-  private readonly applicationConfigService = inject(ApplicationConfigService);
 
   authenticate(identity: Account | null): void {
     this.userIdentity.set(identity);
     if (!identity) {
-      this.accountCache$ = null;
+      // Signed out, there is no account until a sign in fetches it.
+      this.accountCache$ = of(null);
     }
   }
 
@@ -43,7 +44,12 @@ export class AccountService {
   identity(force?: boolean): Observable<Account | null> {
     if (!this.accountCache$ || force) {
       this.accountCache$ = this.fetch().pipe(
-        tap((account: Account) => {
+        // Without a session there is no account, and no reason to fetch it again.
+        catchError((error: unknown) => (error instanceof HttpErrorResponse && error.status === 401 ? of(null) : throwError(() => error))),
+        tap((account: Account | null) => {
+          if (!account) {
+            return;
+          }
           this.authenticate(account);
 
           // After retrieve the account info, the language will be changed to
@@ -66,7 +72,7 @@ export class AccountService {
   }
 
   private fetch(): Observable<Account> {
-    return this.http.get<Account>(this.applicationConfigService.getEndpointFor('api/account'));
+    return this.http.get<Account>(`${serverApiUrl}api/account`);
   }
 
   private navigateToStoredUrl(): void {
@@ -75,7 +81,7 @@ export class AccountService {
     const previousUrl = this.stateStorageService.getUrl();
     if (previousUrl) {
       this.stateStorageService.clearUrl();
-      this.router.navigateByUrl(previousUrl);
+      void this.router.navigateByUrl(previousUrl);
     }
   }
 }

@@ -1,27 +1,33 @@
 import { SlicePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { finalize } from 'rxjs';
 
+import { Level, Log } from 'app/shared/jhipster/logs.model';
 import { TranslateDirective } from 'app/shared/language';
 import { SortByDirective, SortDirective, SortService, sortStateSignal } from 'app/shared/sort';
 
-import { Level, Log, LoggersResponse } from './log.model';
 import { LogsService } from './logs.service';
 
 @Component({
   selector: 'jhi-logs',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './logs.html',
-  imports: [TranslateDirective, FontAwesomeModule, FormsModule, SortDirective, SortByDirective, SlicePipe],
+  imports: [TranslateDirective, FontAwesomeModule, SortDirective, SortByDirective, SlicePipe],
 })
 export default class Logs implements OnInit {
   readonly loggers = signal<Log[] | undefined>(undefined);
+  readonly levels: readonly { name: Level; activeClass: string }[] = [
+    { name: 'TRACE', activeClass: 'btn-primary' },
+    { name: 'DEBUG', activeClass: 'btn-success' },
+    { name: 'INFO', activeClass: 'btn-info' },
+    { name: 'WARN', activeClass: 'btn-warning' },
+    { name: 'ERROR', activeClass: 'btn-danger' },
+    { name: 'OFF', activeClass: 'btn-secondary' },
+  ];
   readonly isLoading = signal(false);
   readonly filter = signal('');
-  sortState = sortStateSignal({ predicate: 'name', order: 'asc' });
+  readonly sortState = sortStateSignal({ predicate: 'name', order: 'asc' });
   readonly filteredAndOrderedLoggers = computed<Log[] | undefined>(() => {
     let data = this.loggers() ?? [];
     const filter = this.filter();
@@ -57,8 +63,7 @@ export default class Logs implements OnInit {
         }),
       )
       .subscribe({
-        next: (response: LoggersResponse) =>
-          this.loggers.set(Object.entries(response.loggers).map(([key, logger]) => new Log(key, logger.effectiveLevel))),
+        next: loggers => this.loggers.set(loggers),
         error: () => this.loggers.set([]),
       });
   }

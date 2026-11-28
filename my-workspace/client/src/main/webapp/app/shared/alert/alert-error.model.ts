@@ -1,7 +1,5 @@
-export class AlertErrorModel {
-  constructor(
-    public message: string,
-    public key?: string,
-    public params?: Record<string, unknown>,
-  ) {}
+export interface AlertErrorModel {
+  message: string;
+  key?: string;
+  params?: Record<string, unknown>;
 }

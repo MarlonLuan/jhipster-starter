@@ -5,7 +5,7 @@
 #
 # To activate this configuration launch integration tests with the 'testcontainers' profile
 #
-# More information on database containers: https://www.testcontainers.org/modules/databases/
+# More information on database containers: https://java.testcontainers.org/modules/databases/
 # ===================================================================
 
 spring:
